@@ -6,7 +6,7 @@
 
 ## 📅 교육 개요
 - **교육 기관:** [KH정보교육원](https://www.kh-academy.co.kr/)
-- **교육 기간:** 2026. NN. NN ~ 2026. NN. NN (약 6개월, 일 8시간)
+- **교육 기간:** 2026. 05. 26 ~ 2026. 12. 05 (약 6개월, 일 8시간)
 - **학습 목표:** Java 및 Spring Framework 기반의 웹 풀스택 개발 기술 습득 및 실무 프로젝트 수행
 
 <br>
@@ -55,7 +55,7 @@ Apache Tomcat
 
 ```text
 ├── 01_Java/          # 자바 문법 및 알고리즘 실습
-├── 02_OracleDB/      # SQL 및 데이터베이스 실습 데이터
+├── 02_MySQL/      # SQL 및 데이터베이스 실습 데이터
 ├── 03_Frontend/      # HTML, CSS, JavaScript 소스 코드
 ├── 04_WebBackend/    # Servlet/JSP 프로젝트
 ├── 05_Spring/        # Spring MVC / Boot 프로젝트
