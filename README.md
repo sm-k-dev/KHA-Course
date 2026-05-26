@@ -55,7 +55,7 @@ Apache Tomcat
 
 ```text
 ├── 01_Java/          # 자바 문법 및 알고리즘 실습
-├── 02_MySQL/      # SQL 및 데이터베이스 실습 데이터
+├── 02_MySQL/         # SQL 및 데이터베이스 실습 데이터
 ├── 03_Frontend/      # HTML, CSS, JavaScript 소스 코드
 ├── 04_WebBackend/    # Servlet/JSP 프로젝트
 ├── 05_Spring/        # Spring MVC / Boot 프로젝트
