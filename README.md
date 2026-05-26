@@ -21,10 +21,12 @@
 
 ### 🔹 Framework & Library
 [![Spring](https://skillicons.dev/icons?i=spring)](https://skillicons.dev)
+
 Mybatis
 
 ### 🔹 Database & Server
 [![MySql](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
+
 Apache Tomcat
 
 ### 🔹 Tools & Collaboration
