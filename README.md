@@ -14,22 +14,22 @@
 ## 🛠️ Tech Stacks (기술 스택)
 
 ### 🔹 Language & Core
-![Java](https://shields.io)
-![HTML5](https://shields.io)
-![CSS3](https://shields.io)
-![JavaScript](https://shields.io)
+[![Java](https://skillicons.dev/icons?i=java)](https://skillicons.dev)
+[![HTML5](https://skillicons.dev/icons?i=html)](https://skillicons.dev)
+[![CSS3](https://skillicons.dev/icons?i=css)](https://skillicons.dev)
+[![JS](https://skillicons.dev/icons?i=js)](https://skillicons.dev)
 
 ### 🔹 Framework & Library
-![Spring](https://shields.io)
-![MyBatis](https://shields.io)
+[![Spring](https://skillicons.dev/icons?i=spring)](https://skillicons.dev)
+Mybatis
 
 ### 🔹 Database & Server
-![Oracle](https://shields.io)
-![Apache Tomcat](https://shields.io)
+[![MySql](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
+Apache Tomcat
 
 ### 🔹 Tools & Collaboration
-![Git](https://shields.io)
-![GitHub](https://shields.io)
+[![Git](https://skillicons.dev/icons?i=git)](https://skillicons.dev)
+[![GitHub](https://skillicons.dev/icons?i=github)](https://skillicons.dev)
 
 <br>
 
