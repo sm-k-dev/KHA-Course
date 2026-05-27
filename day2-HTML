@@ -1,1 +1,19 @@
+HTML: Hyper Text Markup Language
 
+웹페이지 3층 구조 - HTML (뼈대), CSS(디자인), JavaScript(동작)
+
+HTML 언어
+  - 태그들로 구성되어 있다
+  - 태그 작성 문법: <> 태그를 감싸는 괄호는 오브 라고 읽는다
+      여는 태그가 있으면 닫는 태그가 있어야 한다: <태그명 속성명="값"> 내용 </태그명> 
+        ex) <!-- 주석 태그 -->
+            <html> html 문서의 시작과 끝을 알림. 다른 태그를 포함 할 수 있다. </html>
+            <title> 창 제목 </title>
+            <body> 내용물. 다른 태그를 포함 할 수 있다. </body>
+      여는 태그만 있는 태그가 있다: <태그명 속성명="값">
+        빈 요소(void element) 또는 self-closing tag 라고 한다. 
+        ex) <!Doctype html>: 브라우저가 웹 페이지는 HTML5 버전 문서 명시
+            <meta>: 문서 정보
+            <br>: 줄바꿈
+            <img>: 이미지
+            <input>:
