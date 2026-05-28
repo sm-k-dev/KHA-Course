@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>레드향 주문하기</title>
+  <style>
+    hr {
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+  <h1>여러 데이터 나열하기</h1>
+  <form action="">  
+
+
+    <!-- 예제. 드롭다운 목록 만들기 -->
+    <!--
+      <select> 태그:
+        - 사용자가 여러 옵션 중 하나를 선택할 수 있도록 만드는 드롭다운 목록(셀렉트 박스).
+        - 회원가입 시 '국가 선택', '연령대 선택', '상품 옵션 선택' 등에 사용.
+
+      <option> 태그:
+        - <select> 안에 들어가는 실제 선택 항목.
+        - 여러 개의 <option>이 모여 하나의 드롭다운 메뉴를 이룸.
+
+      기본 문법:
+        <select>
+          <option>옵션1</option>
+          <option>옵션2</option>
+        </select>
+    --> 
+    <label for="prod1">상품 선택</label>  
+    <!--
+      <select id="prod1">
+        - 드롭다운 메뉴의 시작.
+        - id="prod1" 으로 고유 이름을 지정해서 <label>과 연결.
+    -->
+    <select id="prod1" name="go">
+      <!--
+        <option value="special_3" selected>
+          - value: 사용자가 선택한 옵션이 서버로 전송될 때 실제로 전달되는 값.
+          - 선택된 옵션을 구분할 때 서버에서 사용.
+          - 여기서는 'special_3'이라는 값이 선택됨.
+          - selected: 기본 선택값을 지정. 페이지가 처음 로드되면 이 옵션이 선택됨.
+        -->
+      <option value="special_3" selected>선물용 3kg</option>
+      <option value="special_5">선물용 5kg</option>
+      <option value="family_3" >가정용 3kg</option>
+      <option value="family_5">가정용 5kg</option>
+    </select>
+
+
+
+    <hr>  
+
+    <!-- 예제. 데이터 목록 만들기 -->
+    <!--
+      <datalist> 태그:
+        - 입력(input) 필드에 '자동 완성 옵션 목록'을 만들어 주는 태그.
+        - 사용자가 직접 입력할 수도 있고,
+          미리 정의된 옵션 중에서 선택할 수도 있음.
+        - 즉, 드롭다운(select)과는 다르게,
+          사용자가 자유롭게 새로운 값을 적을 수도 있음.
+
+      <option> 태그:
+        - <datalist> 안에서 선택 가능한 옵션 항목을 만듦.
+        - value 속성은 옵션 값으로,
+          사용자가 선택하거나 자동 완성될 때 사용됨.
+
+      기본 작성 문법:
+        <label for="inputID">라벨</label>
+        <input list="목록ID">
+        <datalist id="목록ID">
+          <option value="옵션1">
+          <option value="옵션2">
+        </datalist>
+        - input의 list 속성 값과 datalist의 id가 같아야 연결됨.
+    -->
+
+    <label for="prod2">포장 여부 </label>
+    <!--
+      <input type="text">:
+        - 사용자가 텍스트를 직접 입력할 수 있는 한 줄 입력칸.
+        - list="pack":
+          - 이 입력칸은 id="pack"인 datalist와 연결됨.
+          - 사용자가 입력을 시작하면 datalist의 옵션 목록이 자동 완성 후보로 표시됨.
+    -->
+    <input type="text" id="prod2" list="pack">
+    <!--
+      <datalist> 태그:
+        - id="pack": input의 list="pack"과 연결되기 위한 고유 이름.
+        - 이 안의 <option> 태그들이 자동 완성 옵션 후보가 됨.
+    -->
+    <datalist id="pack">
+        <option value="package">선물 포장</option>
+        <option value="no_package">포장 안함</option>
+    </datalist>
+
+
+      
+  </form>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>레드향 주문하기</title>
+</head>
+<body>
+  <h1>레드향 주문하기</h1>
+  <form>
+    <fieldset>
+      <legend>상품 선택</legend>
+      <p><b>주문할 상품을 선택해 주세요.</b></p>
+      <!--
+          숫자 입력 필드를 나타내는 type="number", type="range"
+
+          - 텍스트 필드에서 사용자가 숫자를 입력할 수도 있지만 type="number"를 사용하면
+            스핀박스 ▲ , ▼ 가 나타나면서 숫자를 선택할 수 있습니다.
+
+          -  그리고 type="range" 를 사용하면 슬라이드 막대를 움직여 숫자를 입력할 수 있습니다.
+
+          -  기본 작성 문법
+              <input type="number">
+              <input type="range">
+
+          -  <input type="number">  그리고 <input type="range"> 숫자 입력 필드들에서 사용할수 있는 속성들
+
+            속성                        설명
+            min               필드에 입력할 수 있는 최솟값을 지정합니다. 기본 최솟값은 0입니다.
+            max               필드에 입력할 수 있는 최댓값을 지정합니다. 기본 최댓값은 100입니다.
+            step              숫자 간격을 지정할 수 있습니다. 기본 간격값은 1입니다.
+            value             필드에 표시할 초깃값을 설정 하는 속성
+      -->
+      <!-- 예제. 주문 개수를 지정하기 위해 input type="number"를 사용한 것으로 
+                 입력란 위로 마우스 포인터를 가져가면 스핀 박스 ▲ , ▼ 가 나타나면서  숫자를 선택할 수 있습니다. -->
+      <ul>
+        <li>
+          <label><input type="checkbox" value="s_3">선물용 3kg</label>
+          <input type="number" min="0" max="5">개 (최대 5개)
+        </li>
+        <li>
+          <label><input type="checkbox" value="s_5">선물용 5kg</label>
+          <input type="number" min="0" max="3" value="1">개 (최대 3개)
+        </li>
+      </ul>
+      
+      <!--  예제. input type="range"를 사용해 슬라이드 막대로 숫자를 입력합니다.
+                  2개의 슬라이드 막대 모두 최솟값은 0으로 지정 했고 
+                  두 번째 슬라이드 막대의 초깃값은 1입니다.
+                  슬라이드 막대를 움직일 때 마다 1씩 커지거나 작아집니다.
+      -->
+      <ul>
+        <li>
+          <label><input type="checkbox" value="f_3">가정용 3kg</label>
+          <input type="range" min="0" max="5">개 (최대 5개)
+        </li>
+        <li>
+          <label><input type="checkbox" value="f_5">가정용 5kg</label>
+          <input type="range" min="0" max="3" value="1">개 (최대 3개)
+        </li>
+      </ul>      
+      <p><b>포장 선택</b></p>
+      <ul>
+        <li><label><input type="radio" name="gift" value="yes">선물 포장</label></li>
+        <li><label><input type="radio" name="gift" value="no">선물 포장 안 함</label></li>
+      </ul>    
+    </fieldset>
+    <fieldset>
+      <legend>배송 정보</legend>
+      <ul id="shipping">
+        <li>
+          <label for="user-name">이름 </label>
+          <input type="text" id="user-name">
+        </li>
+        <li>
+          <label for="addr">배송 주소</label>
+          <input type="text" id="addr">
+        </li>
+        <li>
+          <label for="mail">이메일</label>
+          <input type="email" id="mail">
+        </li>        
+        <li>
+          <label for="phone">연락처</label>
+          <input type="tel" id="phone">
+        </li>
+      </ul>  
+    </fieldset>
+    <div>
+      <input type="submit" value="주문하기"> 
+      <input type="reset" value="취소하기">
+    </div>        
+  </form>
+</body>
+</html>

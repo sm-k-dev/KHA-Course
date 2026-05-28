@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+		<meta charset="UTF-8">
+		<title>로그인</title>
+  </head>
+  <body>
+	<form action="index.jsp">
+    <fieldset>
+      <!--
+         화면 상 디자인으로 <input>태그의 디자인은 브라우저에 보이지 않고 
+         서버페이지로 요청할 값만 설정 할 type="hidden"
+         
+         -  기본 문법
+                <input type="hidden" name="이름" value="서버페이지로 넘길 값">
+      -->
+      <!--예제. 히든 필드를 사용해 서버페이지로 요청값 보내기-->
+      <input type="hidden" name="addr" id="url" value="부산시 동래구">
+      <input type="hidden" name="tel"  value="01012341234">
+
+    	<label>아이디: <input type="text" name="id"  id="user_id" size="10"></label>
+      <label>비밀번호: <input type="password"  name="pass"  id="user_pw" size="10"></label>
+
+      <input type="submit" value="로그인">
+    </fieldset>
+  </form>
+  </body>
+</html>

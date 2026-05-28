@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+		<meta charset="UTF-8">
+		<title>로그인</title>
+    <style>
+      /* 버튼 이미지를 수직으로 정렬하기 위한 스타일 */
+     input[type="image"] {
+       vertical-align: middle;
+     }
+	 </style>
+  </head>
+  <body>
+	<form action="a.jsp">
+    <!--
+      이미지 전송 버튼을 나타내는 type="image"
+      - type="submit" 전송 버튼과 같은 기능을 하는 이미지 전송버튼을 만들때 사용합니다.
+      - 기본 작성 문법
+          <input type="image" src="이미지 경로" alt="대체 텍스트"> 
+    -->
+    <!-- 예제. '로그인 '이미지 버튼을 클릭하면 입력한 정보를 서버페이지로 전달해 요청합니다.  -->
+    <fieldset>
+    	<label>아이디: <input type="text" id="user_id" size="10" name="id"></label>
+      <label>비밀번호: <input type="password" id="user_pw" size="10" name="pass"></label>
+      <input type="image"  src="images/login.png" alt="로그인">
+    </fieldset>
+  </form>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 소개 페이지</title>
+  <link rel="stylesheet" href="css/poster.css">
+</head>
+<body>
+  <div id="container">
+    <a href="../05/order.html"><img src="images/tangerines.jpg" alt="레드향"></a>
+    <h1>레드향</h1>
+    <p>껍질에 붉은 빛이 돌아 <b>레드향</b>이라 불린다.</p>
+    <p>레드향은 <em>한라봉과 귤을 교배</em>한 것으로<br>일반 귤보다 2~3배 크고, 과육이 붉고 통통하다.</p>
+    <p>비타민 C와 비타민 P가 풍부해<br> <strong>혈액순환, 감기예방</strong> 등에 좋은 것으로 알려져 있다.</p>
+    <hr>
+    <div>
+      <!--
+      target="_blank":
+          target 속성은 링크를 클릭했을 때,
+          새 창(또는 새 탭)에서 열릴지, 현재 창에서 열릴지를 결정합니다.
+          
+          - target 속성이 없으면 기본값은 target="_self"와 같아서 현재 창에서 링크가 열립니다.
+          - target="_blank"로 지정하면 새 창이나 새 탭에서 링크가 열립니다.
+            (사용자의 브라우저 설정에 따라 새 창 또는 새 탭으로 동작)
+
+          주로 사용자가 현재 페이지를 그대로 두고,
+          링크된 문서나 외부 사이트를 새로 띄워서 동시에 볼 수 있도록 할 때 사용합니다.
+
+          보안상 새 창에서 열 때는 rel="noopener"나 rel="noreferrer" 속성을 함께 쓰는 것이 좋습니다.
+          (이것이 없으면 새 창이 원본 페이지의 정보를 일부 참조할 수 있기 때문)
+      -->
+      <p><a href="../05/order.html"target="_blank">주문서 작성하기</a></p>
+      <!--
+        target 속성의 다른 예시
+            | 값        | 의미                           
+            | --------- | ---------------------------- 
+            | `_self`   | 현재 창(기본값)                   
+            | `_blank`  | 새 창/새 탭에서 열기                
+            | `_parent` | 부모 프레임에서 열기 (프레임셋 사용 시)      
+            | `_top`    | 최상위 프레임에서 열기 (중첩 프레임 해제)     
+            | `이름`     | 이름이 지정된 `<iframe>` 또는 창에서 열기 
+
+      -->
+
+    </div>
+    <hr>
+    <h2>레드향 샐러드 레시피</h2>
+    <p><b>재료 : </b>레드향 1개, 아보카도 1개, 토마토 1개, 샐러드 채소 30g</p>
+    <p><b>드레싱 : </b>올리브유 1큰술, 레몬즙 2큰술, 꿀 1큰술, 소금 약간</p>
+    <ol>
+      <li>샐러드 채소를 씻고 물기를 제거한 후 준비합니다.</li>
+      <li>레드향과 아보카도, 토마토를 먹기 좋은 크기를 썰어둡니다.</li>
+      <li>드레싱 재료를 믹서에 갈아줍니다.</li>
+      <li>볼에 샐러드 채소와 썰어 둔 레드향, 아보카도, 토마토를 넣고 드레싱을 뿌리면 끝!</li>
+    </ol>
+    <video src="medias/salad.mp4" controls width="700"></video>
+    <hr>
+    <h2>상품 구성</h2>
+    <table>
+      <caption>선물용과 가정용 상품 구성</caption>
+      <colgroup>
+        <col style="background-color:#eee;">
+        <col>
+        <col span="2" style="width:150px">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>용도</th>
+          <th>중량</th>
+          <th>갯수</t>
+          <th>가격</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2">선물용</td>
+          <td>3kg</td>
+          <td>11~16과</td>
+          <td>35,000원</td>
+        </tr>
+        <tr>
+          <td>5kg</td>
+          <td>18~26과</td>
+          <td>52,000원</td>
+        </tr>
+        <tr>
+          <td rowspan="2">가정용</td>
+          <td>3kg</td>
+          <td>11~16과</td>
+          <td>30,000원</td>
+        </tr>   
+        <tr>
+          <td>5kg</td>
+          <td>18~26과</td>
+          <td>47,000원</td>
+        </tr>
+      </tbody>        
+    </table>
+  </div>
+</body>
+</html>

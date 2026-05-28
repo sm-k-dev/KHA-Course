@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>레드향 주문하기</title>
+  <link rel="stylesheet" href="css/order-form.css">
+</head>
+<body>
+  <h1>레드향 주문하기</h1>
+  <form>
+    <fieldset>
+      <legend>반품 정보</legend>
+      <p>만일 수령한 상품에 문제가 있다면 즉시 <b>반품 신청</b>해 주세요.</p>
+      <p>반품 신청시 상품의 상태를 사진으로 첨부해 주세요.</p>
+      <hr>
+      <!--
+         업로드할 파일을 첨부할 때 사용하는 type="file"
+         
+          - type="file" 을 사용하면 웹브라우저 화면에 [파일선택] 이나 [찾아보기]버튼 등이 표시되는데,
+           이 버튼을 클릭하고 파일을 선택 후 <input type="submit" value="반품 신청"> 을 클릭하면?
+           자바코드로 업로드 기능을 구현 할 WAS가 실행 하는 JSP(서버페이지)에 전송 요청 됩니다.
+        
+          - 기본 작성 문법
+            <input type="file">
+      -->
+      <input type="file" id="f1">  
+      <input type="file" id="f2">
+      <input type="file" id="f3">
+
+    </fieldset>
+    <div>
+      <input type="submit" value="반품 신청"> 
+      <input type="reset" value="취소하기">
+    </div>        
+  </form>
+</body>
+</html>
