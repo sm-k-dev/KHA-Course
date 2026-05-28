@@ -29,11 +29,11 @@ HTML 언어
               target="_blank"를 추가하면 새 탭에서 링크가 열린다. 
               rel="noopener noreferrer"를 추가하면 보안상 안전하게 링크를 연결한다. 
               외부링크, 내부링크, 이메일링크</a>
-            <ul> ul 태그는 순서 없는 목록을 정의할 때 사용하는 태그이다. 
+            <ul> ul unordered list 태그는 순서 없는 목록을 정의할 때 사용하는 태그이다. 
               li 태그는 목록 항목을 정의할 때 사용하는 태그이다. 
               ul 태그 안에 li 태그를 작성하여 목록을 구성한다. 
               순서가 브라우저에 보이지 않는 목록 </ul>
-            <ol> ol 태그는 순서 있는 목록을 정의할 때 사용하는 태그이다. 
+            <ol> ol ordered list 태그는 순서 있는 목록을 정의할 때 사용하는 태그이다. 
               li 태그는 목록 항목을 정의할 때 사용하는 태그이다. 
               ol 태그 안에 li 태그를 작성하여 목록을 구성한다. 
               순서가 브라우저에 보이는 목록
@@ -42,13 +42,48 @@ HTML 언어
             <li> li 태그는 목록 항목을 정의할 때 사용하는 태그이다. 
               ul 태그 안에 li 태그를 작성하여 목록을 구성하면 순서가 브라우저에 보이지 않는 목록
               ol 태그 안에 li 태그를 작성하여 목록을 구성하면 순서가 브라우저에 보이는 목록 </li>
-            <table> table 태그는 표를 정의할 때 사용하는 태그이다. 행=row(가로 몇 칸) 열=col(세로 몇 칸) 
+            <table> table 태그는 표를 정의할 때 사용하는 태그이다. 행=row(가로줄 몇 칸) 열=col(세로줄 몇 칸) 
               align의 경우 table 태그 내에 넣어도 종속됨으로 table 태그에 적용 시켜도 되지만
               bootstrap 등을 사용하면 th나 td 태그의 설정을 우선시 하기때문에 table 태그의 설정을 무시 할 수도 있다.</table>
+            <caption> caption 태그는 table 태그 안에 작성하여 표의 제목을 정의할 때 사용하는 태그이다. </caption>
+            <thead> thead 태그는 table 태그 안에 작성하여 표의 헤더 부분을 정의할 때 사용하는 태그이다. table 태그 안에 caption 태그 아래에 쓰며 tr 태그를 감싼다</thead>
+            <tbody> tbody 태그는 table 태그 안에 작성하여 표의 본문 부분을 정의할 때 사용하는 태그이다. thead, tfoot 태그와 같은 들여쓰기 레벨이다.</tbody>
+            <tfoot> tfoot 태그는 table 태그 안에 작성하여 표의 푸터 부분을 정의할 때 사용하는 태그이다. thead, tbody 태그와 같은 들여쓰기 레벨이다.</tfoot>
             <tr> tr 태그는 표의 행을 정의할 때 사용하는 태그이다. </tr>
             <th> th 태그는 표의 헤더 셀을 정의할 때 사용하는 태그이다. 셀 안의 텍스트가 볼드체로 표시된다. </th>
             <td> td 태그는 표의 데이터 셀을 정의할 때 사용하는 태그이다. rowspan = 위아래(행) 병합, colspan = 좌우(열) 병합</td>
-
+            <colgroup> colgroup 태그는 table 태그 안에 작성하여 표의 열 그룹을 정의할 때 사용하는 태그이다. col 태그를 감싼다. </colgroup>
+            <col> col 태그는 colgroup 태그 안에 작성하여 표의 열을 정의할 때 사용하는 태그이다.(꼭 colgroup으로 묶지 않아도 된다.) </col>
+              ex> <table>
+                    <caption> 표 제목 </caption>
+                    <colgroup>
+                        <col style="background-color: lightgray;">
+                        <col> 스타일 속성을 적용 하지 않아도 된다.
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th> 헤더1 </th>
+                            <th> 헤더2 </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td> 데이터1 </td>
+                            <td> 데이터2 </td>
+                        </tr>
+                    </tbody>
+                </table>
+              ex> <table>
+                    <col style="width:80px;">
+                    <colgroup span="2" style="width: 150px;"></colgroup>
+                    <col style="width: 100px;">
+                    <tr>
+                        <th>번호</th>
+                        <th>상품명</th>
+                        <th>수량</th>
+                        <th>가격</th>
+                    </tr>
+                </table>
       여는 태그만 있는 태그가 있다: <태그명 속성명="값">
         빈 요소(void element) 또는 self-closing tag 라고 한다. 
         ex) <!Doctype html>: 브라우저가 웹 페이지는 HTML5 버전 문서 명시

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursor 유용한 단축키 정리 - 비전공자용</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      line-height: 1.7;
+      background: #f5f7fb;
+      color: #222;
+    }
+    header {
+      background: linear-gradient(135deg, #1f2937, #374151);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 32px; }
+    header p { margin-top: 12px; font-size: 17px; color: #e5e7eb; }
+    main { max-width: 1050px; margin: 30px auto; padding: 0 20px 50px; }
+    section {
+      background: white;
+      margin-bottom: 24px;
+      padding: 26px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+    }
+    h2 {
+      margin-top: 0;
+      color: #111827;
+      border-left: 6px solid #2563eb;
+      padding-left: 12px;
+      font-size: 24px;
+    }
+    h3 { margin-top: 24px; color: #1f2937; }
+    .desc {
+      background: #eff6ff;
+      border-left: 5px solid #3b82f6;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 14px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 13px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f3f4f6; color: #111827; }
+    tr:nth-child(even) { background: #fafafa; }
+    kbd {
+      display: inline-block;
+      background: #111827;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: Consolas, monospace;
+      margin: 2px;
+      white-space: nowrap;
+    }
+    .example {
+      background: #f9fafb;
+      border: 1px dashed #cbd5e1;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+    .tip {
+      background: #ecfdf5;
+      border-left: 5px solid #10b981;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+    .warning {
+      background: #fffbeb;
+      border-left: 5px solid #f59e0b;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      background: #ffffff;
+    }
+    .card h3 { margin-top: 0; color: #2563eb; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    @media print {
+      body { background: white; }
+      section {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+      }
+      header { background: #222 !important; color: white; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cursor 유용한 단축키 정리</h1>
+    <p>비전공자도 이해할 수 있는 AI 코드 에디터 Cursor 실전 단축키 가이드</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. Cursor란?</h2>
+      <p>
+        Cursor는 <strong>AI 기능이 들어간 코드 편집기</strong>입니다.
+        쉽게 말하면 Visual Studio Code처럼 코드를 작성하는 프로그램인데,
+        여기에 AI가 붙어서 코드를 설명해주고, 고쳐주고, 자동완성까지 도와줍니다.
+      </p>
+      <div class="desc">
+        <strong>비전공자용 설명:</strong><br />
+        Cursor는 개발자를 위한 “AI 비서가 들어있는 메모장”이라고 생각하면 됩니다.
+        내가 코드를 선택하고 “이거 고쳐줘”, “설명해줘”, “Spring Boot 방식으로 바꿔줘”라고 말하면
+        AI가 바로 도와줍니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 가장 먼저 외워야 하는 핵심 단축키 TOP 5</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>Windows 단축키</th>
+            <th>언제 쓰나요?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AI 채팅 열기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>L</kbd></td>
+            <td>AI에게 코드 설명, 오류 원인, 리팩토링 방향을 물어볼 때 사용합니다.</td>
+          </tr>
+          <tr>
+            <td>선택한 코드 AI 수정</td>
+            <td><kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+            <td>코드를 선택한 뒤 “이 코드 고쳐줘”처럼 바로 수정 요청할 때 사용합니다.</td>
+          </tr>
+          <tr>
+            <td>파일 빠르게 찾기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>P</kbd></td>
+            <td>프로젝트 안의 Controller, Service, HTML, JS 파일을 빠르게 찾을 때 사용합니다.</td>
+          </tr>
+          <tr>
+            <td>전체 검색</td>
+            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></td>
+            <td>프로젝트 전체에서 특정 단어, 함수명, URL 주소를 찾을 때 사용합니다.</td>
+          </tr>
+          <tr>
+            <td>터미널 열기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>`</kbd></td>
+            <td>npm, git, Spring Boot 실행 명령어를 입력할 때 사용합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tip">
+        <strong>추천 학습 순서:</strong>
+        처음에는 <kbd>Ctrl</kbd> + <kbd>L</kbd>,
+        <kbd>Ctrl</kbd> + <kbd>K</kbd>,
+        <kbd>Ctrl</kbd> + <kbd>P</kbd> 이 3개만 먼저 익혀도 충분합니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>3. AI 관련 단축키</h2>
+      <div class="shortcut-grid">
+        <div class="card">
+          <h3>AI Chat 열기</h3>
+          <p><kbd>Ctrl</kbd> + <kbd>L</kbd></p>
+          <p>Cursor 오른쪽 또는 별도 창에서 AI와 대화할 수 있습니다.</p>
+          <div class="example">
+            예시 질문:<br />
+            “이 Java 코드를 비전공자도 이해할 수 있게 설명해줘”<br />
+            “이 오류가 왜 발생하는지 알려줘”<br />
+            “Spring Boot 3 방식으로 바꿔줘”
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>선택 코드 AI 수정</h3>
+          <p><kbd>Ctrl</kbd> + <kbd>K</kbd></p>
+          <p>코드 일부를 드래그해서 선택한 뒤 AI에게 바로 수정 요청할 수 있습니다.</p>
+          <div class="example">
+            예시 명령:<br />
+            “주석 추가해줘”<br />
+            “중복 코드 제거해줘”<br />
+            “초보자도 이해하기 쉽게 바꿔줘”
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>AI 자동완성 수락</h3>
+          <p><kbd>Tab</kbd></p>
+          <p>Cursor가 회색 글씨로 코드를 추천하면 Tab 키로 받아들일 수 있습니다.</p>
+          <div class="example">
+            AI가 “이 다음 코드는 아마 이렇게 작성할 것 같아요”라고 제안하면
+            Tab으로 “좋아, 이 코드 사용할게”라고 선택하는 것입니다.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. 파일 이동과 검색 단축키</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>단축키</th>
+            <th>쉬운 설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>파일 찾기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>P</kbd></td>
+            <td>파일 이름을 입력해서 바로 열 수 있습니다.</td>
+          </tr>
+          <tr>
+            <td>전체 검색</td>
+            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></td>
+            <td>프로젝트 전체에서 특정 단어를 찾습니다.</td>
+          </tr>
+          <tr>
+            <td>현재 파일 안에서 검색</td>
+            <td><kbd>Ctrl</kbd> + <kbd>F</kbd></td>
+            <td>현재 보고 있는 파일 안에서만 단어를 찾습니다.</td>
+          </tr>
+          <tr>
+            <td>현재 파일 안에서 바꾸기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>H</kbd></td>
+            <td>특정 단어를 다른 단어로 바꿉니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="example">
+        Spring Boot 프로젝트 예시:<br />
+        <kbd>Ctrl</kbd> + <kbd>P</kbd> → <strong>UserController</strong> 입력 → 바로 Controller 파일 열기
+      </div>
+    </section>
+
+    <section>
+      <h2>5. 코드 이동 단축키</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>단축키</th>
+            <th>언제 쓰나요?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>정의로 이동</td>
+            <td><kbd>F12</kbd></td>
+            <td>함수, 클래스, 변수의 실제 선언 위치로 이동합니다.</td>
+          </tr>
+          <tr>
+            <td>이전 위치로 이동</td>
+            <td><kbd>Alt</kbd> + <kbd>←</kbd></td>
+            <td>방금 전에 보던 코드 위치로 돌아갑니다.</td>
+          </tr>
+          <tr>
+            <td>다음 위치로 이동</td>
+            <td><kbd>Alt</kbd> + <kbd>→</kbd></td>
+            <td>이전 위치로 갔다가 다시 앞으로 이동합니다.</td>
+          </tr>
+          <tr>
+            <td>파일 안의 함수 목록 보기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd></td>
+            <td>현재 파일 안에 있는 함수나 메서드 목록을 빠르게 확인합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="desc">
+        <strong>비전공자용 설명:</strong><br />
+        코드는 여러 파일이 연결되어 있습니다.
+        <kbd>F12</kbd>는 “이 코드가 실제로 어디서 만들어졌는지 찾아가기” 버튼입니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>6. 코드 정리 단축키</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>단축키</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>코드 자동 정렬</td>
+            <td><kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd></td>
+            <td>들여쓰기와 줄 정리를 자동으로 해줍니다.</td>
+          </tr>
+          <tr>
+            <td>Import 정리</td>
+            <td><kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>O</kbd></td>
+            <td>Java에서 사용하지 않는 import를 정리합니다.</td>
+          </tr>
+          <tr>
+            <td>이름 한 번에 변경</td>
+            <td><kbd>F2</kbd></td>
+            <td>변수명, 함수명, 클래스명을 안전하게 한 번에 변경합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warning">
+        <strong>주의:</strong>
+        파일 전체를 복사해서 직접 바꾸는 것보다 <kbd>F2</kbd>로 이름을 변경하는 것이 더 안전합니다.
+        연결된 코드까지 함께 바뀌기 때문입니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>7. 여러 줄을 한 번에 수정하는 단축키</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>단축키</th>
+            <th>쉬운 설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>여러 커서 만들기</td>
+            <td><kbd>Alt</kbd> + 마우스 클릭</td>
+            <td>여러 위치에 커서를 두고 동시에 입력할 수 있습니다.</td>
+          </tr>
+          <tr>
+            <td>같은 단어 하나씩 선택</td>
+            <td><kbd>Ctrl</kbd> + <kbd>D</kbd></td>
+            <td>같은 단어를 하나씩 추가 선택합니다.</td>
+          </tr>
+          <tr>
+            <td>세로 방향 선택</td>
+            <td><kbd>Shift</kbd> + <kbd>Alt</kbd> + 드래그</td>
+            <td>여러 줄의 같은 위치를 세로로 선택합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="example">
+        예시:<br />
+        input 태그 10개에 같은 class를 붙여야 할 때,
+        하나씩 수정하지 않고 여러 줄을 동시에 수정할 수 있습니다.
+      </div>
+    </section>
+
+    <section>
+      <h2>8. 터미널 단축키</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>단축키</th>
+            <th>사용 예시</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>터미널 열기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>`</kbd></td>
+            <td>명령어 입력 창을 엽니다.</td>
+          </tr>
+          <tr>
+            <td>새 터미널 만들기</td>
+            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>`</kbd></td>
+            <td>터미널 창을 하나 더 만듭니다.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="example">
+        자주 쓰는 명령어 예시:<br />
+        npm install<br />
+        npm run dev<br />
+        git status<br />
+        git add .<br />
+        git commit -m "작업 내용"
+      </div>
+    </section>
+
+    <section>
+      <h2>9. 웹 풀스택 개발자 추천 사용 흐름</h2>
+      <h3>Spring Boot 개발할 때</h3>
+      <ol>
+        <li><kbd>Ctrl</kbd> + <kbd>P</kbd>로 Controller 파일을 찾습니다.</li>
+        <li><kbd>F12</kbd>로 Service 또는 Repository 구현 위치로 이동합니다.</li>
+        <li>오류가 있는 코드를 선택하고 <kbd>Ctrl</kbd> + <kbd>K</kbd>로 AI에게 수정 요청합니다.</li>
+        <li>이해가 안 되는 코드는 <kbd>Ctrl</kbd> + <kbd>L</kbd>로 AI에게 설명을 요청합니다.</li>
+      </ol>
+
+      <h3>HTML / CSS / JavaScript 개발할 때</h3>
+      <ol>
+        <li><kbd>Ctrl</kbd> + <kbd>P</kbd>로 HTML 파일을 엽니다.</li>
+        <li><kbd>Ctrl</kbd> + <kbd>F</kbd>로 수정할 태그를 찾습니다.</li>
+        <li><kbd>Alt</kbd> + 클릭으로 여러 줄을 동시에 수정합니다.</li>
+        <li><kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>로 코드 정렬을 합니다.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>10. Cursor AI에게 요청하면 좋은 문장</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>상황</th>
+            <th>AI에게 이렇게 말하기</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>코드가 이해 안 될 때</td>
+            <td>“이 코드를 비전공자도 이해할 수 있게 설명해줘.”</td>
+          </tr>
+          <tr>
+            <td>오류가 났을 때</td>
+            <td>“이 오류의 원인과 해결 방법을 단계별로 알려줘.”</td>
+          </tr>
+          <tr>
+            <td>Spring Boot 코드 수정</td>
+            <td>“Spring Boot 3 기준으로 더 좋은 코드로 리팩토링해줘.”</td>
+          </tr>
+          <tr>
+            <td>JPA 성능 개선</td>
+            <td>“JPA N+1 문제가 발생할 수 있는지 확인하고 개선해줘.”</td>
+          </tr>
+          <tr>
+            <td>React 코드 수정</td>
+            <td>“React hooks 방식으로 초보자도 이해하기 쉽게 바꿔줘.”</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>11. 최종 암기용 요약표</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>우선순위</th>
+            <th>단축키</th>
+            <th>기능</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><kbd>Ctrl</kbd> + <kbd>L</kbd></td><td>AI 채팅</td></tr>
+          <tr><td>2</td><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>선택 코드 AI 수정</td></tr>
+          <tr><td>3</td><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>파일 찾기</td></tr>
+          <tr><td>4</td><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></td><td>전체 검색</td></tr>
+          <tr><td>5</td><td><kbd>F12</kbd></td><td>정의로 이동</td></tr>
+          <tr><td>6</td><td><kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd></td><td>코드 정렬</td></tr>
+          <tr><td>7</td><td><kbd>F2</kbd></td><td>이름 변경</td></tr>
+          <tr><td>8</td><td><kbd>Ctrl</kbd> + <kbd>`</kbd></td><td>터미널 열기</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>마무리 조언:</strong>
+        단축키를 한 번에 다 외우려고 하지 말고,
+        매일 <kbd>Ctrl</kbd> + <kbd>L</kbd>,
+        <kbd>Ctrl</kbd> + <kbd>K</kbd>,
+        <kbd>Ctrl</kbd> + <kbd>P</kbd>부터 반복해서 사용하면 됩니다.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Cursor 유용한 단축키 정리 문서 | 비전공자 학습용 HTML 자료
+  </footer>
+</body>
+</html>
