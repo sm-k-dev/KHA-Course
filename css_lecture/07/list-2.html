@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>불릿 이미지 사용하기</title>
-  <style>
-    ul {
-      list-style-image:url('images/dot.png');  /* 불릿으로 사용할 이미지 */
-    } 
-  </style>
-</head>
-<body>
-  <h1>도서 시리즈</h1>
-  <ul>
-    <li>Do it! 시리즈</li>
-    <li>첫 코딩 시리즈</li>
-    <li>된다 시리즈</li>
-  </ul>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>불릿 이미지 사용하기</title>
+    <style>
+      /* 
+        list-style-image 속성은 불릿 대신 사용할 이미지를 지정하는 속성입니다.
+      */
+      /* -----------------------
+        ul 선택자: 순서 없는 목록에 적용
+      ------------------------*/
+      ul {
+        list-style-image:url('images/dot.png');  /* 불릿으로 사용할 이미지 */
+        /* list-style-image → 리스트 항목 앞에 사용할 이미지 지정
+        값 url('경로') → 사용할 이미지 파일 경로 지정
+        → 각 <li> 항목 앞에 작은 아이콘 이미지로 표시
+        → 기본 불릿(●) 대신 이미지를 표시 가능 */
+      } 
+    </style>
+  </head>
+  <body>
+    <h1>도서 시리즈</h1>
+    <ul>
+      <li>Do it! 시리즈</li>
+      <li>첫 코딩 시리즈</li>
+      <li>된다 시리즈</li>
+    </ul>
+  </body>
 </html>

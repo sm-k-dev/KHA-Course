@@ -4,17 +4,52 @@
   <meta charset="UTF-8">
   <title>CSS display 속성</title>
   <style>
+    /*
+        display속성: HTML 요소의 박스모델을 정의하고 요소가 페이지에 어떻게 배치될지 결정하는 속성
+
+        값의 종류
+          block         : 인라인 레벨 요소를 블록 레벨 요소로 설정하는 값.
+          
+          inline        : 블록 레벨 요소를 인라인 레벨 요소로 설정하는 값.
+
+          inline-block  : 블록 레벨 요소를 인라인 블록 레벨 요소로 설정하는 값. (인라인 요소처럼 한 줄에 배치되지만, 블록 요소처럼 너비와 높이를 가질 수 있음)
+
+          none          : 요소를 화면에서 완전히 숨기는 값. (요소가 차지하는 공간도 숨겨짐) 
+
+          flex          : 요소를 플렉스 컨테이너로 설정하는 값. (자식 요소들을 유연하게 배치할 수 있음)
+          
+          inline-flex   : 요소를 인라인 플렉스 컨테이너로 설정하는 값. (플렉스 컨테이너이면서 인라인 요소처럼 한 줄에 배치됨)
+
+          grid          : 요소를 그리드 컨테이너로 설정하는 값. (자식 요소들을 행과 열로 배치할 수 있음)
+
+          inline-grid   : 요소를 인라인 그리드 컨테이너로 설정하는 값. (그리드 컨테이너이면서 인라인 요소처럼 한 줄에 배치됨)
+    */
     * {
+      /* 모든 요소를 border-box로 설정하여 패딩과 테두리를 포함한 크기 계산을 할 수 있게 설정 */
       box-sizing: border-box;
     }
+
+    /* 
+      빈공백 선택자 : 부모 요소에 포함된(하위에 있는) 자식 요소를 선택 할 수 있는 선택자
+        ex) nav ul li 선택자는 nav 요소의 하위에 있는 ul 요소의 하위에 있는 li 요소를 선택하는 선택자
+    */
     nav ul {
-      list-style:none;      
+      /* ul 요소에 작성된 모든 li의 불릿 기호 제거 */
+      list-style: none;      
     }
+
+    /*
+      nav요소의 하위 ul요소의 하위 모든 li 요소들을 가져와 스타일을 정의
+    */
     nav ul li {
-      display:inline-block;      
-      padding:20px;
-      margin:0 20px;
-      border:1px solid #222;
+      /* 최종 선택한 li 요소들을 인라인 레벨 요소로 설정하여 가로로 나열 될 수 있게 설정 */
+      display: inline-block; 
+      /* li 요소에 패딩 추가 */
+      padding: 20px;
+      /* li 요소 간의 여백 추가 */
+      margin: 0 20px;
+      /* li 요소에 테두리 추가 */
+      border: 1px solid #222;
     }
   </style>
 </head>

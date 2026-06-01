@@ -1,21 +1,28 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<title>박스모델</title>
-	<style>
-    div {
-      width:200px;
-      height:150px;
-    }
-		#round1 {
-      border:2px solid blue;
-      border-top-left-radius:20px;  /* 왼쪽 위 꼭짓점만 둥글게 */
-      border-top-right-radius:20px;  /* 오른쪽 위 꼭짓점만 둥글제 */
-    }    
-	</style>
-</head>
-<body>
-  <div id="round1"></div>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>박스모델</title>
+    <style>
+      /*
+        박스 모델에서 꼭짓점 4개를 모두 다르게 지정하고 싶다면 border와 radius 사이에 위치를 나타내는 예약어를 사용한다.
+          왼쪽 윗부분: border-top-left-radius
+          오른쪽 윗부분: border-top-right-radius
+          왼쪽 아랫부분: border-bottom-left-radius
+          오른쪽 아랫부분: border-bottom-right-radius
+      */
+      div {
+        width:200px;
+        height:150px;
+      }
+      #round1 {
+        border:2px solid blue;
+        border-top-left-radius:20px;  /* 왼쪽 위 꼭짓점만 둥글게 */
+        border-top-right-radius:20px;  /* 오른쪽 위 꼭짓점만 둥글제 */
+      }    
+    </style>
+  </head>
+  <body>
+    <div id="round1"></div>
+  </body>
 </html>

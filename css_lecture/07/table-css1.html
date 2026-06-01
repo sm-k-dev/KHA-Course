@@ -4,6 +4,31 @@
 		<meta charset="UTF-8">
 		<title>표 스타일</title>
     <style>
+		/*
+			표 제목은 <caption 태그를 이용해 캡션으로 표시한다.
+			캡션은 기본적으로 표 위쪽에 표시되지만 caption-side 속성으로 위치를 조절할 수 있다.
+				caption-side: top;  // 표 위쪽에 표시
+				caption-side: bottom;  // 표 아래쪽에 표시
+				caption-side: left;  // 표 왼쪽에 표시
+				caption-side: right;  // 표 오른쪽에 표시
+				caption-side: inherit;  // 부모 요소의 caption-side 속성값을 상속받아 표시
+				caption-side: initial;  // caption-side 속성의 기본값인 top으로 표시
+				caption-side: unset;  // 부모 요소의 caption-side 속성값이 있으면 상속받아 표시하고, 없으면 caption-side 속성의 기본값인 top으로 표시
+		*/
+		/*
+			표 테두리는 border 속성으로 설정한다.
+				border: 1px solid black;  // 검은 색 실선으로 1픽셀 두께의 테두리를 표시
+				border: 2px dashed red;  // 빨간 색 점선으로 2픽셀 두께의 테두리를 표시
+				border: 3px dotted blue;  // 파란 색 점선으로 3픽셀 두께의 테두리를 표시
+				border: none;  // 테두리를 표시하지 않음
+				border: inherit;  // 부모 요소의 border 속성값을 상속받아 표시
+				border: initial;  // border 속성의 기본값인 none으로 표시
+				border: unset;  // 부모 요소의 border 속성값이 있으면 상속받아 표시하고, 없으면 border 속성의 기본값인 none으로 표시
+
+			표 셀의 테두리는 td, th 선택자로 설정한다.
+			
+			셀과 내용 사이의 여백은 padding 속성으로 설정한다.
+		*/
 			table {
 				caption-side: bottom;  /* 표 캡션 위치 */
 				border:1px solid black;  /* 표 테두리는 검은 색 실선으로 */

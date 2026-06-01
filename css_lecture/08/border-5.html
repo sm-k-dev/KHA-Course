@@ -1,16 +1,28 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<title>박스모델</title>
-	<style>
-		#round {
-      border-radius: 25px;  /* 모든 꼭짓점을 둥글게 */
-    }    
-	</style>
-</head>
-<body>
-  <img src="images/cat.jpg">
-	<img id="round" src="images/cat.jpg">
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>박스모델</title>
+		<style>
+			/*
+				border-radius 속성을 사용하여 요소의 모서리를 둥글게 만들 수 있습니다.
+					값으로는 픽셀(px), 백분율(%), 또는 다른 단위를 사용할 수 있습니다.
+					이 값은 요소의 각 모서리를 둥글게 만드는 원의 반지름을 정의합니다.
+					값이 클수록 모서리가 더 둥글게 됩니다.
+				예시:
+					border-radius: 10px;  => 모든 모서리를 10px로 둥글게 만듭니다.
+					border-radius: 50%;   => 요소를 완전히 둥글게 만듭니다 (원형이 됩니다).
+					border-radius: 10px 20px 30px 40px; => 각각의 모서리를 다르게 둥글게 만듭니다 (시계 방향으로 top-left, top-right, bottom-right, bottom-left). 
+					border-radius: 10px 20px; => top-left과 bottom-right는 10px, top-right과 bottom-left는 20px로 둥글게 만듭니다.
+					border-radius: 10px 20px 30px; => top-left은 10px, top-right과 bottom-left은 20px, bottom-right은 30px로 둥글게 만듭니다.
+			*/
+			#round {
+				border-radius: 25px;  /* 모든 꼭짓점을 둥글게 */
+			}    
+		</style>
+	</head>
+	<body>
+		<img src="images/cat.jpg">
+		<img id="round" src="images/cat.jpg">
+	</body>
 </html>

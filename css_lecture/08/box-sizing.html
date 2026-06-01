@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-  <title>박스모델</title>  
-	<style>
-    div {
-      margin-bottom:20px;
-    }
-		.box1 {
-			width:200px;
-			height:100px;
-      padding:20px;
-      border:10px solid #ccc;
-		}
-    .box2 {
-      box-sizing: border-box;
-			width:200px;
-			height:100px;
-      padding:20px;
-      border:10px solid #00f;
-    }
-	</style>
-</head>
-<body>
-  <div class="box1"></div>
-  <div class="box2"></div>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>박스모델</title>  
+    <style>
+      /*
+        box-sizing: content-box;  => 기본값, 너비와 높이는 콘텐츠 영역만 포함
+        box-sizing: border-box;   => 너비와 높이에 패딩과 테두리를 포함
+      */
+      div {
+        margin-bottom:20px;
+      }
+      .box1 {
+        width:200px;
+        height:100px;
+        padding:20px;
+        border:10px solid #ccc;
+      }
+      .box2 {
+        box-sizing: border-box;
+        width:200px;
+        height:100px;
+        padding:20px;
+        border:10px solid #00f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+  </body>
 </html>

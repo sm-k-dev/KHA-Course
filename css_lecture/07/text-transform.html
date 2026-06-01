@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>text-transform</title>
-  <style>    
+  <style>
+    /*
+      text-transform 속성은 텍스트의 대소문자 혹은 전각문자로 변환하는 속성입니다.
+      capitalize: 각 단어의 첫 글자를 대문자로 변환합니다.
+      uppercase: 모든 글자를 대문자로 변환합니다.
+      lowercase: 모든 글자를 소문자로 변환합니다.
+      full-width: 모든 글자를 전각문자로 변환합니다. (일부 언어에서 사용)
+        전각문자란: 가로와 세로의 길이 비율이 같은 글자
+        반각문자란: 가로의 길이가 세로의 길이보다 짧은 글자
+    */  
     .trans1 {
       text-transform: capitalize;
     }
@@ -13,11 +22,15 @@
     .trans3 {
       text-transform: lowercase;
     }
+    .trans4 {
+      text-transform: full-width;
+    }
   </style>
 </head>
 <body>
   <p class="trans1">html</p> 
   <p class="trans2">css</p>
   <p class="trans3">javascript</p>
+  <p class="trans4">Hello, World!</p>
 </body>
 </html> 

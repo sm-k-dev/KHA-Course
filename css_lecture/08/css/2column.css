@@ -1,5 +1,49 @@
+/* 순서 1. 모든 HTML 요소를 선택. 페이지 안의 모든 태그에 적용 */
 * {
+  /* 순서 2. 브라우저가 기본으로 넣는 바깥 여백을 모두 제거*/
   margin:0;
+  /* 순서 3. 브라우저가 기본으로 넣는 안쪽 여백을 모두 제거 */
   padding:0;
+  /* 순서 4. width와 height 속성의 값을 계산 할 때 padding과 border 테두리 까지 포함한 계산을 위해 border-box 설정 */
   box-sizing: border-box;
+}
+
+/* 순서 5. id="container" 요소 전체 영역을 꾸민다 */
+#container {
+  /* 순서 6. 전체 페이지 내용의 너비를 1200px로 설정 */
+  width: 1200px;
+
+  /* 순서 7. 위 아래 여백은 20px, 좌우 여백은 auto로 설정하여 전체 페이지 내용을 화면 가운데로 배치 */
+  margin: 20px auto;
+  background-color: #eee;
+
+  text-align: center;
+}
+
+/* 순서 8. id="header" 요소를 꾸민다 */
+#header {
+  /* 순서 9. header 요소의 너비는 부모 요소인 container 요소의 너비를 전부(100%) 사용 */
+  width: 100%;
+  height: 120px;
+  background-color: lightgray;
+}
+
+#sidebar {
+  width: 300px;
+  height: 600px;
+  background-color: lightblue;
+  float: left;
+}
+
+#content {
+  width: 900px;
+  height: 600px;
+  background-color: white;
+}
+
+#footer {
+  width: 100%;
+  height: 120px;
+  background-color: lightgray;
+  clear: left;
 }

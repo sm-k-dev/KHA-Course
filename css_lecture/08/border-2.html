@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<title>박스모델</title>
-	<style>
-		div {
-			width:200px;
-			height:100px;
-			display:inline-block;
-			margin:15px;			
-			border-style:solid;  /* 테두리 스타일 - 실선 */
-		}
-    #box1 {
-      border-width:2px;  /* 네 방향 모두 2px */ 
-    }
-    #box2 {
-      border-width:thick thin;  /* top & bottom - thick, left & right - thin */
-    }
-    #box3 {
-      border-width:thick thin thin;  /* top - thick, right - thin, bottom - thin, left - thin */ 
-    }
-    #box4 {
-      border-width:10px 5px 5px 10px;  /* top - 10px, right - 5px, bottom - 5px, left - 10px */
-    }
-	</style>
-</head>
-<body>
-	<div id="box1"> </div>
-  <div id="box2"> </div>	
-	<div id="box3"> </div>
-	<div id="box4"> </div>	  
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>박스모델</title>
+		<style>
+			/*
+				border-width 속성은 테두리의 두께를 설정하는 데 사용됩니다.
+					값으로는 길이 단위(px, em, rem 등) 또는 키워드(thin, medium, thick)를 사용할 수 있습니다.
+					
+					네 방향(top, right, bottom, left)에 대해 각각 다른 값을 지정할 수 있습니다.
+						값이 하나인 경우 모든 방향에 동일한 두께가 적용됩니다.
+						값이 두 개인 경우 첫 번째 값은 top과 bottom에 적용되고, 두 번째 값은 left와 right에 적용됩니다.
+						값이 세 개인 경우 첫 번째 값은 top에 적용되고, 두 번째 값은 left와 right에 적용되며, 세 번째 값은 bottom에 적용됩니다.
+						값이 네 개인 경우 각각 top, right, bottom, left에 순서대로 적용됩니다.
+			*/
+			div {
+				width:200px;
+				height:100px;
+				display:inline-block;
+				margin:15px;			
+				border-style:solid;  /* 테두리 스타일 - 실선 */
+			}
+			#box1 {
+			border-width:2px;  /* 네 방향 모두 2px */ 
+			}
+			#box2 {
+			border-width:thick thin;  /* top & bottom - thick, left & right - thin */
+			}
+			#box3 {
+			border-width:thick thin thin;  /* top - thick, right - thin, bottom - thin, left - 지정이 되지 않음, 마주보고 있는 right의 thin 값을 따라감 */ 
+			}
+			#box4 {
+			border-width:10px 5px 5px 10px;  /* top - 10px, right - 5px, bottom - 5px, left - 10px */
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box1"> </div>
+		<div id="box2"> </div>	
+		<div id="box3"> </div>
+		<div id="box4"> </div>	  
+	</body>
 </html>

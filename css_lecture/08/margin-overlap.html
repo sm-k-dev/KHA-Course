@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<title>박스모델 - 마진 중첩</title>
-	<style>
-    * {
-      box-sizing:border-box;
-    }
-		div {
-			width:200px;  /* 너비 */
-			height:100px;  /* 높이 */
-  		margin:30px;  /* 마진 */
-		}
-    #box1 {
-      background:rgb(0, 77, 243);
-    }
-    #box2 {
-      background:rgb(255, 72, 0);
-    }
-    #box3 {
-      background:rgb(18, 219, 0);
-    }
-	</style>
-</head>
-<body>
-	<div id="box1"></div>
-	<div id="box2"></div>
-	<div id="box3"></div>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>박스모델 - 마진 중첩</title>
+    <style>
+      * {
+        box-sizing:border-box;
+      }
+
+      /*
+        마진 중첩 margin overlap / 마진 상쇄 margin collapse
+        요소를 세로로 배치할 때, 인접한 요소의 마진이 겹치는 현상을 마진 중첩이라고 한다. 
+        마진이 겹치는 경우에는 더 큰 마진이 적용된다.
+
+        이유: 마진은 요소의 바깥 영역이므로, 인접한 요소의 마진이 겹치는 경우에는 두 요소 사이의 간격이 더 커지는 것을 방지하기 위해 더 큰 마진이 적용된다.
+      */
+      div {
+        width:200px;  /* 너비 */
+        height:100px;  /* 높이 */
+        margin:30px;  /* 마진 */
+      }
+      #box1 {
+        background:rgb(0, 77, 243);
+      }
+      #box2 {
+        background:rgb(255, 72, 0);
+      }
+      #box3 {
+        background:rgb(18, 219, 0);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box1"></div>
+    <div id="box2"></div>
+    <div id="box3"></div>
+  </body>
 </html>

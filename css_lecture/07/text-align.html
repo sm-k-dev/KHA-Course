@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <title>text-align</title>
     <style>
+      /* p 요소를 한번에 선택해서 가져와 스타일 설정 */
       p {
-        width:600px;
-        border:1px solid #222;
-        padding:10px;
-        margin:10px;
+        width:600px; /* 너비 설정 */
+        border:1px solid #222; /* 테두리 선 설정 */
+        padding:10px; /* 안쪽 여백 설정 */
+        margin:10px; /* 바깥쪽 여백 설정 */
       }
+      /*
+        text-align 속성은 텍스트의 정렬 방식을 설정하는 속성입니다.
+          left: 텍스트를 왼쪽으로 정렬합니다. (기본값)
+          right: 텍스트를 오른쪽으로 정렬합니다.
+          center: 텍스트를 가운데로 정렬합니다.
+          justify: 텍스트를 양쪽으로 정렬하여 줄 간격을 조정합니다.
+          start: 텍스트를 시작점(왼쪽 또는 오른쪽)으로 정렬합니다. (언어 방향에 따라 다름)
+          end: 텍스트를 끝점(왼쪽 또는 오른쪽)으로 정렬합니다. (언어 방향에 따라 다름)
+          match-parent: 텍스트 정렬을 부모 요소의 text-align 속성과 일치시킵니다.
+      */
       .center {
         text-align: center;
       }

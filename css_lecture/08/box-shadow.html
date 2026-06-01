@@ -1,23 +1,47 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<title>박스모델</title>
-	<style>
-		div {
-			width:200px;
-			height:100px;
-			display:inline-block;
-			margin:15px;
-			border:1px solid blue;
-			border-radius:20px;
-		}
-		.box1{ box-shadow:2px -2px 5px 0px;}  /* 오른쪽 윗부분에 그림자 */
-		.box2{ box-shadow:5px 5px 15px 5px blue;}  /* 오른쪽 아랫부분에 파란색 그림자 */
-	</style>
-</head>
-<body>
-	<div class="box1"></div>
-	<div class="box2"></div>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>박스모델</title>
+		<style>
+			/*
+				box-shadow: h-offset v-offset blur spread color inset;
+					h-offset: 그림자의 수평 거리 (양수는 오른쪽, 음수는 왼쪽)
+					v-offset: 그림자의 수직 거리 (양수는 아래, 음수는 위)
+					blur: 그림자의 흐림 정도 (값이 클수록 더 흐릿해짐)
+					spread: 그림자의 크기 (양수는 커지고, 음수는 작아짐)
+					color: 그림자의 색상 (기본값은 현재 요소의 색상)
+					inset: 그림자를 요소 내부에 적용 (기본값은 외부)
+				예시:
+				box-shadow: 5px 5px 10px rgba(0,0,0,0.5);  => 오른쪽 아래에 반투명 검은색 그림자
+				box-shadow: -5px -5px 10px rgba(255,0,0,0.5);  => 왼쪽 위에 반투명 빨간색 그림자
+				box-shadow: 0px 0px 5px 2px rgba(0,0,255,0.5);  => 요소 주변에 파란색 그림자
+				box-shadow: 10px 10px 20px 5px rgba(0,255,0,0.5);  => 오른쪽 아래에 초록색 그림자
+				box-shadow: 0px 0px 0px 5px rgba(255,255,0,0.5);  => 요소 주변에 노란색 그림자
+			*/
+			div {
+				width:200px; /* 컨텐츠 영역의 너비 설정 */
+				height:100px; /* 컨텐츠 영역의 높이 설정 */
+				display:inline-block; /* 인라인 블록 요소로 설정 */
+				margin:15px;
+				border:1px solid blue;
+				border-radius:20px;
+				/* 요소의 모서리를 둥글게 만드는데 사용하는 속성*/
+			}
+			.box1{
+				/* box-shadow: 수평거리 수직거리 흐림정도 번짐정도 색상 inset */ 
+				box-shadow:2px -2px 5px 0px; /* 오른쪽 윗부분에 그림자 */
+			}
+			.box2{ 
+				/* box-shadow: 수평거리 수직거리 흐림정도 번짐정도 색상 inset */
+				box-shadow:5px 5px 15px 5px blue; /* 오른쪽 아랫부분에 파란색 그림자 */
+			}
+		</style>
+	</head>
+	<body>
+		<!-- box1은 그림자색을 지정하지 않아 검은색으로 나타남-->
+		<div class="box1"></div>
+		<!-- box2는 파란색 그림자를 지정함 -->
+		<div class="box2"></div>
+	</body>
 </html>

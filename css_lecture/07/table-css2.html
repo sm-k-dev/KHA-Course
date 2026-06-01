@@ -3,7 +3,23 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>표 스타일</title>
-    <style>
+		<style>
+			/*
+				border-spacing 속성은 표 셀 사이의 간격을 설정한다.
+					border-spacing: 10px;  // 셀 사이의 간격을 10픽셀로 설정
+					border-spacing: 0;  // 셀 사이의 간격을 없앰
+					border-spacing: inherit;  // 부모 요소의 border-spacing 속성값을 상속받아 표시
+					border-spacing: initial;  // border-spacing 속성의 기본값인 2px으로 표시
+					border-spacing: unset;  // 부모 요소의 border-spacing 속성값이 있으면 상속받아 표시하고, 없으면 border-spacing 속성의 기본값인 2px으로 표시
+					border-spacing: 10px 5px;  // 셀 사이의 간격을 가로 10픽셀, 세로 5픽셀로 설정
+
+				border-collapse 속성은 표의 테두리를 한 줄로 표시할지, 셀마다 표시할지를 설정한다.
+					border-collapse: collapse;  // 표의 테두리를 한 줄로 표시
+					border-collapse: separate;  // 표의 테두리를 셀마다 표시
+					border-collapse: inherit;  // 부모 요소의 border-collapse 속성값을 상속받아 표시
+					border-collapse: initial;  // border-collapse 속성의 기본값인 separate으로 표시
+					border-collapse: unset;  // 부모 요소의 border-collapse 속성값이 있으면 상속받아 표시하고, 없으면 border-collapse 속성의 기본값인 separate으로 표시		
+			*/
 			table {
 				caption-side: bottom;  /* 표 캡션 위치 */
 				border:1px solid black;  /* 표 테두리는 검은 색 실선으로 */

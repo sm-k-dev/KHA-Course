@@ -4,11 +4,42 @@
   <meta charset="UTF-8">
   <title>불릿과 번호 바꾸기</title>
   <style>
+    /*
+      list-style-type 속성은 목록 항목의 불릿이나 번호 스타일을 지정하는 속성입니다.
+        list-style-type: 스타일값;
+          스타일값은 다음과 같습니다:
+          none: 불릿이나 번호를 표시하지 않습니다.
+          disc: 기본 원형 불릿 (ul 요소의 기본값)
+          circle: 빈 원형 불릿
+          square: 사각형 불릿
+          decimal: 숫자 번호 (ol 요소의 기본값)
+          decimal-leading-zero: 숫자 번호에 앞에 0을 붙입니다 (01, 02, 03, ...).
+          lower-alpha or lower-latin: 소문자 알파벳 (a, b, c, ...)
+          upper-alpha or upper-latin: 대문자 알파벳 (A, B, C, ...)
+          lower-roman: 소문자 로마 숫자 (i, ii, iii, ...)
+          upper-roman: 대문자 로마 숫자 (I, II, III, ...)
+    */
+    /* -----------------------
+      .book1 클래스 선택자: 순서 없는 목록 스타일
+    ------------------------*/
+
+    /* <ul class="book1">...</ul> 한쌍을 선택해서  스타일 정의 */
     .book1 {
       list-style-type:none;  /* 불릿 없앰 */
+      /* list-style-type → 리스트 항목 앞의 표시 스타일 지정
+        값 none → 불릿(●)이나 숫자 없이 항목만 표시
+        → <ul> 요소에서 사용하면 기본 점 모양 제거 */
     }
+    /* -----------------------
+      .book2 클래스 선택자: 순서 있는 목록 스타일
+    ------------------------*/
+
+    /*<ol class="book2">.....</ol> 요소 를 선택해서 스타일 정의*/
     .book2 {
       list-style-type: upper-alpha;  /* 알파벳 대문자 */
+      /* list-style-type → 리스트 항목 앞 표시 스타일
+        값 upper-alpha → 알파벳 대문자 A, B, C, ...로 표시
+        → <ol> 요소에서 순서를 알파벳으로 나타낼 때 사용 */
     } 
   </style>
 </head>
