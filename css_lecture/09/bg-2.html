@@ -4,17 +4,34 @@
   <meta charset="UTF-8">
   <title>불릿 바꾸기</title>
   <style>
-    ul {
-      list-style:none;   /* 불릿 없앰 */
-      margin-left:-30px;  /* 왼쪽 여백 줄임 */
+    /* 
+      ul(목록 전체)에 대한 공통 스타일
+    */
+    ul{
+        list-style:none;   /* 불릿(●, ■ 같은 점 모양)을 없앰 */
+        margin-left: -30px;       /* 목록 전체의 왼쪽 바깥 여백을 -30px 줄임 */
     }
-    li {
-      background-image:url('images/book-icon.png');  /* 배경 이미지 파일 */
-      background-repeat:no-repeat;  /* 배경 이미지 반복 안함 */
-      background-position:left center;  /* 배경 이미지 위치 */
-      padding-left:50px;  /* 왼쪽 패딩 (박스 모델) */
-      line-height:40px;  /* 줄간격 */
+    /* 
+        li(목록의 각 항목)에 대한 공통 스타일
+    */
+    li{
+         /* 각 li 항목의 배경으로 이미지(book-icon.png)를 넣음 */
+          background-image: url('./images/book-icon.png');
+
+          background-repeat: no-repeat;  /* 배경 이미지 반복 안 함 */
+
+          background-position: left center;
+          /* 배경 이미지를 li의 왼쪽 중앙에 위치시킴 */
+
+          padding-left: 50px;
+        /* 왼쪽에 아이콘이 들어가므로, 글자는 이미지와 겹치지 않게
+           왼쪽 안쪽 여백을 50px 확보 */
+
+           line-height: 40px;
+        /* 각 항목(li)의 세로 줄 간격을 40px로 설정
+           → 글자가 세로로 넉넉하게 띄워져 보임 */
     }
+
   </style>
 </head>
 <body>

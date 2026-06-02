@@ -11,31 +11,107 @@
       border:1px solid #ccc;
       line-height:2;
     }
+
+    /* --------- position 속성별로 각 p태그에 스타일을 다르게 지정 --------- */
+    /*
+      position 속성: 텍스트나 이미지 요소를 나란히 배치할 수도 있고 원하는 위치를 선택할 수 있다.
+
+        position 속성값
+          static: 문서의 흐름에 맞춰 배치. 기본값
+          relative: 위치값을 지정 할 수 있다는 점을 제외하면 static과 같다
+          absolute: relative 값을 사용한 상위 요소를 기준으로 위치를 지정해 배치
+          fixed: 브라우저 창을 기준으로 위치를 지정해 배치
+    */
+
     #static {
-      position:static;
+        /* 
+          id="static"이 붙은 <p> 태그에만 적용되는 스타일입니다.
+          position: static은 위치 속성의 기본값(생략해도 기본적용)
+          모든 요소가 본문의 흐름(위에서 아래로 쌓임)에 따라 자기 차례로 배치됩니다.
+          → 브라우저 화면에서는 위에서부터 차례대로 쌓이는 기본배치가 보임
+        */
+        position: static; /* 따로 위치를 바꾸거나 다른 효과 없다면, 기본값이므로 안 써도 됨 */
+
     }
-    #relative-1{
-      position:relative;
+
+    #relative-1 {
+        /* 
+          id="relative-1"이 붙은 <p> 태그에만 적용
+          position: relative를 쓰더라도 left, top 등 이동값을 지정하지 않으면 
+          static과 똑같이 보입니다.(위에서 아래로 쌓임)
+          → 브라우저에는 바로 위 static 문단 아래에 동일하게 보임
+        */
+      position: relative;/* 이후에서 위치속성(left, top 등)을 쓸 수 있는 상태로 만듦 */
     }
+
     #relative-2 {
-      position:relative;   /* 포지셔닝 - relative */
-      left:100px;  /* 왼쪽에서 100px 떨어지게 */
-      top:-50px;   /* 위쪽에서 -50px 떨어지게 (위로 이동) */
+        /* 
+          id="relative-2"이 붙은 <p> 태그에만 적용
+          position: relative이면서, left, top 이동값을 함께 썼으므로
+          원래 자리를 기준으로 위치를 이동할 수 있습니다.
+          → 브라우저 화면에서 바로 앞 문단보다 오른쪽(100px), 위쪽(-50px)에 표시되어 
+            원래 자리를 기준으로 움직여 보입니다.
+        */
+      position: relative; /* 기본 자리를 기준으로 상대적으로 움직일 수 있게 함 */
+
+      left : 100px; /* 원래 위치(상대적 기준)에서 오른쪽으로 100픽셀 이동하여 표시됨
+                     → 문단이 오른쪽으로 밀려옴 */
+
+      top : -50px;      /* 원래 위치에서 위쪽으로 50픽셀 이동(음수라 아래가 아니라 위)
+                         → 문단이 윗쪽으로 올라가며, 앞 문단과 약간 겹쳐 보일 수도 있음 */          
     }
+
     #fixed {
-      width:100px;
-      height:100px;
-      background-color:#222;
-      position:fixed;  /* 포지셔닝 - fixed */
-      right:30px;  /* 오른쪽에서 30px 떨어지게 */
-      top:30px;  /* 위쪽에서 30px 떨어지게 */
+
+      width : 100px;  /* 가로폭을 100픽셀로 작게 고정
+                       → 화면 오른쪽 위에 작고 네모난 박스가 만들어집니다. */
+      height : 100px; /* 세로높이를 100픽셀로 지정 
+                       → 위와 마찬가지로 작은 정사각형이 생깁니다. */
+      background-color: #222;/* 네모박스의 배경색을 아주 진한 회색(검정에 가까움)으로 설정
+                                   → 뚜렷하게 눈에 띔 */
+      position: fixed;  /* 브라우저 창 자체를 기준으로 위치가 고정
+                          → 스크롤 내리거나 올려도 항상 같은 자리에 고정되어 있음 */
+
+      right: 30px;       /* 오른쪽에서 30픽셀 떨어진 위치에 오른쪽 선이 정렬됨
+                           → 브라우저 오른쪽 끝에 박스가 붙지 않고 약간 여유있게 보임 */     
+
+      top: 30px;         /* 위쪽에서 30픽셀 떨어진 위치에 상단이 정렬됨
+                          → 브라우저 화면 최상단에서 박스가 살짝 아래로 내려와 있습니다. */              
     }
   </style>
 </head>
 <body>
+  <!-- 
+        position: static(기본값)
+        → 문단은 위에서 아래로, 일반적인 흐름대로 차례로 쌓입니다.
+        → 위쪽에 위치하며 자연스럽게 다음 문단과 이어집니다.
+    -->
    <p id="static">Ex et adipisicing voluptate aliqua cupidatat nulla. Laboris est sint sit aliqua enim. Aute Lorem eu sint aute sunt proident. Do culpa consectetur elit duis laboris reprehenderit incididunt nulla. Pariatur fugiat voluptate ea non amet cupidatat. </p>
+   
+    <!-- 
+        position: relative (이동값 없음)
+        → static과 완전히 똑같이 보입니다.
+        → 바로 위 static 문단 아래에 붙어 출력되며, 눈으로는 변화가 없습니다.
+    -->
    <p id="relative-1">Lorem ipsum reprehenderit adipisicing exercitation enim velit veniam incididunt sit consectetur elit exercitation. Magna Lorem excepteur occaecat cupidatat sunt proident tempor do nostrud labore cillum non exercitation voluptate. </p>
+   
+   
+    <!-- 
+        position: relative + left(100px), top(-50px)
+        → 원래 위치에서 오른쪽으로 100픽셀, 위로 50픽셀 이동합니다.
+        → 브라우저에서는 앞 문단보다 오른쪽으로 밀려오고,
+           위로 좀 올라가서 앞 문단과 약간 겹칠 수도 있습니다.
+        → 원래 자리(빈 공간)는 그대로 남아서, 흐름은 영향받지 않습니다.
+    --> 
    <p id="relative-2">Excepteur voluptate ad irure ipsum duis. Deserunt cupidatat commodo proident eu mollit cillum commodo quis quis et ad. Velit id duis enim reprehenderit eu dolor Lorem excepteur excepteur. </p>
+   
+     <!-- 
+      position: fixed
+      → 브라우저 오른쪽 위 구석(오른쪽 30px, 위 30px) 떨어진 곳에
+        100x100 픽셀 크기의 진한 회색 네모가 떠 있습니다.
+      → 스크롤을 아무리 내려도(페이지 이동해도) 항상 같은 자리에 고정되어 계속 보입니다.
+      → 광고 또는 알림, 단축버튼 등에 종종 쓰입니다.
+    -->  
    <p id="fixed"></p>
 </body>
 </html>

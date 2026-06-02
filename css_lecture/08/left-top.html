@@ -1,38 +1,207 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>CSS 위치 속성</title>
-  <style>
-    *{
-      margin:0;  /* 마진 초기화 */
-      padding:0;  /* 패딩 초기화 */
-    }
-    p {
-      width:300px;  /* 너비 - 300px */
-      border:1px solid #ccc;  /* 테두리 - 1픽셀 회색 실선 */
-      padding:10px;  /* 네방향 패딩 10px */
-    }
-    #pos1{
-      position:absolute;  /* 포지셔닝 - absolute */
-      left:50px;  /* 왼쪽에서 50px 떨어지게 */
-      top:50px;   /* 위쪽에서 50px 떨어지게 */
-    }
-    #pos2 {
-      position:absolute;  /* 포지셔닝 - absolute */
-      right:100px;  /* 오른쪽에서 100px 떨어지게 */
-      top:100px;  /* 위쪽에서 100px 떨어지게 */
-    }
-    #pos3 {
-      position: absolute;  /* 포지셔닝 - absolute */
-      left:100px;   /* 왼쪽에서 50px 떨어지게 */
-      bottom:100px;  /* 아래쪽에서 100px 떨어지게 */
-    }
-  </style>
-</head>
-<body>  
-   <p id="pos1">Ex et adipisicing voluptate aliqua cupidatat nulla. Laboris est sint sit aliqua enim. Aute Lorem eu sint aute sunt proident. Do culpa consectetur elit duis laboris reprehenderit incididunt nulla. Irure exercitation tempor aliqua laboris cupidatat anim in non officia aliquip excepteur fugiat labore.</p>
-   <p id="pos2">Lorem ipsum reprehenderit adipisicing exercitation enim velit veniam incididunt sit consectetur elit exercitation. Commodo veniam sit quis nisi ea. Ipsum do aliqua nostrud laboris elit duis adipisicing id Lorem qui. Labore dolor ipsum enim incididunt. Velit qui cillum sunt labore incididunt duis aute Lorem nulla et. Sint commodo aute amet laboris ullamco exercitation Lorem dolore veniam ut reprehenderit incididunt. Laborum nulla eiusmod cillum irure anim aute.</p>
-   <p id="pos3">Excepteur voluptate ad irure ipsum duis. Deserunt cupidatat commodo proident eu mollit cillum commodo quis quis et ad. Incididunt adipisicing enim laboris voluptate.</p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 
+      문서에 어떤 문자 인코딩 방식을 사용할지 지정합니다.
+      UTF-8은 한글, 영문, 특수문자 등 거의 모든 문자를 표현할 수 있어
+      한글 웹사이트에는 가장 많이 사용합니다.
+      이 줄이 없으면 한글이 깨져서 보일 수 있습니다.
+    -->
+
+    <title>CSS 위치 속성</title>
+    <!-- 
+      브라우저 탭(상단)에 표시될 문서의 제목을 설정합니다.
+      예: 이 문서를 열면 브라우저 탭에 'CSS 위치 속성'이라는 글자가 보입니다.
+    -->
+
+    <style>
+      /* 
+        아래 영역은 CSS (웹페이지 디자인/꾸미는 코드)를 작성하는 곳입니다.
+        실제로 글씨나 배치 같은 웹페이지의 모양을 바꿔줍니다.
+      */
+
+      * {
+        /* 
+          * (별표)는 모든 태그(요소)를 한꺼번에 선택합니다. (전체 선택자)
+          즉, html 문서 안의 모든 요소에 아래 스타일이 공통 적용됩니다.
+        */
+        margin: 0; 
+        /* 
+          margin(바깥 여백)을 0으로. 
+          - 웹브라우저는 모든 요소에 기본적으로 바깥 여백을 줍니다.
+          - 이 속성으로 초기화하면 화면 가장자리(위,왼쪽)에 딱 붙어서 나옵니다.
+        */
+        padding: 0; 
+        /* 
+          padding(안쪽 여백)을 0으로. 
+          - 안쪽 여백이 없어져서 모든 요소가 내용 글씨에 맞게 딱 맞는 크기가 됩니다.
+        */
+      }
+
+      p {
+        /* 
+          p태그(문단)에만 적용되는 스타일.
+          즉, <p>로 시작하는 각 문단박스에 적용됩니다.
+        */
+        width: 300px; 
+        /* 
+          가로폭을 무조건 300픽셀로 고정. 
+          - 브라우저에서 각 p태그 박스가 너비 300px로 똑같이 나옵니다.
+        */
+        
+        border: 1px solid #ccc; 
+        /* 
+          테두리: 
+          - 선 두께 1픽셀, 실선, 그리고 연한 회색(#ccc)입니다.
+          - 각 문단 주위로 네모난 선이 생겨서 경계가 확실히 보입니다.
+        */
+        
+        padding: 10px; 
+        /* 
+          안쪽 여백을 10픽셀로. 
+          - 글자와 테두리 사이에 공간이 생김
+          - 박스 안 글씨가 네모 테두리에 붙지 않고 조금 떨어집니다.
+        */
+      }
+
+      /* 
+        아래부터는 각 <p> 태그에 구별되는 id 속성 (pos1, pos2, pos3)이 붙은 요소만
+        따로 위치를 지정하는 부분입니다.
+        # 기호는 'id 선택자'입니다.
+      */
+
+      #pos1 {
+        /* 
+          id="pos1"이 붙은 문단(<p id="pos1">)만 따로 선택합니다.
+        */
+
+        position: absolute; 
+        /* 
+          위치 지정방법을 '절대 위치'로 지정
+          - 이 태그는 원래 흐름(기본 위치)에서 벗어나 자유롭게 원하는 곳에 둘 수 있습니다.
+          - 꼭 부모요소(body) 기준으로 위치를 따집니다.
+          - 이 스타일이 없으면, 아래 left, top이 아무 효과가 없습니다.
+
+          [브라우저 화면 변화 설명]
+          이 p태그는 원래 나오는 자리(위에서 차례대로 쌓임)를 무시하고,
+          화면 좌상단을 (0,0)으로 삼아 내 맘대로 지정한 위치에 나타나게 됨.
+        */
+
+        left: 50px; 
+        /* 
+          왼쪽 화면 가장자리에서 50픽셀 떨어진 위치에 이 p태그의 왼쪽이 맞춰서 배치됨.
+          [브라우저 화면]
+          p태그 전체 네모가 왼쪽에서 50px 띄어서 보입니다.
+        */
+        top: 50px; 
+        /* 
+          화면 위에서 50픽셀 떨어진 곳에 이 p태그의 상단선이 맞춰짐.
+          [브라우저 화면]
+          p태그 전체 네모가 화면 위에서 50px 위치에 나타남.
+        */
+      }
+
+      #pos2 {
+        /* 
+          id="pos2"이 붙은 문단 전용 스타일
+        */
+
+        position: absolute; 
+        /* 
+          이 태그도 절대 위치 효과를 받음.
+          (기본 흐름/자리 무시하고, 지정한 좌표에 나타남)
+        */
+
+        right: 100px; 
+        /* 
+          오른쪽 화면 끝에서 100픽셀 떨어진 곳에 p태그의 오른쪽 선이 맞춰서 배치됨.
+          [브라우저 화면]
+          이 문단은 화면 오른쪽 끝에 딱 붙지 않고, 100px 띄워집니다.
+        */
+
+        top: 100px; 
+        /* 
+          화면 위에서 100픽셀 내려온 곳에서 시작.
+          [브라우저 화면]
+          이 문단의 네모가 위에서 100px 떨어진 지점에 나타남.
+        */
+      }
+
+      #pos3 {
+        /* 
+          id="pos3"이 붙은 문단 전용 스타일
+        */
+
+        position: absolute; 
+        /* 
+          절대 위치 지정
+          - 기본 자리 무시, 아래 좌표로 배치
+        */
+
+        left: 100px; 
+        /* 
+          왼쪽 화면 가장자리에서 100픽셀 띄워서 배치
+          [브라우저 화면]
+          이 문단이 화면 왼쪽에서 100px만큼 띄워서 나옵니다.
+        */
+
+        bottom: 100px; 
+        /* 
+          화면 아래쪽 끝에서 100픽셀 위쪽으로 올라온 곳에 
+          이 p태그의 하단이 위치함
+          [브라우저 화면]
+          그 결과, 이 문단은 왼쪽에서 100px, 아래에서 100px 위에 나란히 위치함.
+        */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 
+      여기서부터 실제로 웹브라우저에 보여지는 글, 즉 콘텐츠 영역입니다.
+      <p> 태그는 하나의 단락(문단)마다 쓰며, 아래 세 문단이 각각 따로 존재합니다.
+    -->
+
+    <p id="pos1">
+      <!-- 
+        id="pos1"인 문단
+        → 위 #pos1 스타일이 적용됨
+        [브라우저 화면]
+        왼쪽에서 50px, 위에서 50px 떨어진 곳에 네모 박스(문단)가 박혀서 나옵니다.
+      -->
+      Ex et adipisicing voluptate aliqua cupidatat nulla. Laboris est sint sit
+      aliqua enim. Aute Lorem eu sint aute sunt proident. Do culpa consectetur
+      elit duis laboris reprehenderit incididunt nulla. Irure exercitation
+      tempor aliqua laboris cupidatat anim in non officia aliquip excepteur
+      fugiat labore.
+    </p>
+
+    <p id="pos2">
+      <!-- 
+        id="pos2"인 문단
+        → 위 #pos2 스타일이 적용됨
+        [브라우저 화면]
+        오른쪽 끝에서 100px 띄고, 위에서 100px 떨어진 위치에 네모 박스로 딱 고정되어 나옵니다.
+      -->
+      Lorem ipsum reprehenderit adipisicing exercitation enim velit veniam
+      incididunt sit consectetur elit exercitation. Commodo veniam sit quis nisi
+      ea. Ipsum do aliqua nostrud laboris elit duis adipisicing id Lorem qui.
+      Labore dolor ipsum enim incididunt. Velit qui cillum sunt labore
+      incididunt duis aute Lorem nulla et. Sint commodo aute amet laboris
+      ullamco exercitation Lorem dolore veniam ut reprehenderit incididunt.
+      Laborum nulla eiusmod cillum irure anim aute.
+    </p>
+
+    <p id="pos3">
+      <!-- 
+        id="pos3"인 문단
+        → 위 #pos3 스타일이 적용됨
+        [브라우저 화면]
+        왼쪽에서 100px, 아래쪽(바닥)에서 100px 위에 네모로 떠 있게 나옵니다.
+      -->
+      Excepteur voluptate ad irure ipsum duis. Deserunt cupidatat commodo
+      proident eu mollit cillum commodo quis quis et ad. Incididunt adipisicing
+      enim laboris voluptate.
+    </p>
+  </body>
 </html>

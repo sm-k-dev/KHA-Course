@@ -4,23 +4,53 @@
   <meta charset="UTF-8">
   <title>상품 소개 페이지</title>
   <style>
+
+      /* 
+        .desc (class="desc") 라는 클래스를 가진 모든 div에 적용할 공통 스타일 
+        (세 박스 모두 같은 틀을 가짐)
+      */
     .desc {
-      border:5px dotted #222;
-      background-color:#ffd9a0;
-      width:350px;
-      padding:20px;
-      margin-right:20px;
-      float:left;
+      border:5px dotted #222; /* 5픽셀 두께의 점선 테두리 (검은색 계열) */
+      background-color:pink;  /* 박스 내부의 기본 배경색을 분홍색으로 */
+      width:350px;              /* 박스 가로폭 350픽셀 */
+      padding:20px;             /* 박스 안쪽 여백 20픽셀 (내용과 테두리 사이 공간) */
+      margin-right:20px;        /* 박스 사이 오른쪽 간격 20픽셀 */
+      float:left;               /* 왼쪽부터 차례대로 나란히 왼쪽 정렬 배치 */
     }
-    #clip-border {
-      background-clip: border-box;
-    }
-    #clip-padding {
-      background-clip: padding-box;
-    }
-    #clip-content {
-      background-clip: content-box;
-    }
+    
+      /* 
+        각 박스마다 background-clip 속성만 다르게 설정 
+      */
+    
+      #clip-border {
+        /* 
+          첫번째 div에 적용
+          background-clip: border-box → 기본값
+          배경색(pink)이 테두리(border)까지 모두 채워짐 
+        */
+        background-clip: border-box;
+      }
+
+      #clip-padding {
+        /* 
+          두번째 div에 적용
+          background-clip: padding-box
+          배경색(pink)이 '테두리 영역을 제외한' 패딩 영역까지만 채워짐
+          → 테두리 뒤쪽은 흰색으로 보임 
+        */
+        background-clip: padding-box;
+      }
+
+      #clip-content {
+        /* 
+          세번째 div에 적용
+          background-clip: content-box
+          배경색(pink)이 '콘텐츠 영역(글자가 있는 부분)'까지만 채워짐
+          → 패딩과 테두리 영역 뒤쪽은 흰색으로 보임
+        */
+        background-clip: content-box;
+      }
+
   </style>
 </head>
 <body>
