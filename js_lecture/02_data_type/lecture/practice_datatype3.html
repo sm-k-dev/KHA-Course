@@ -49,16 +49,23 @@
       // [2] hp 가 0보다 큰지 비교해 출력하세요.
       //     작성 공식: console.log(값1 > 값2);
       console.log("hp > 0 = " + (hp > 0));
+      console.log(`hp > 0 = ${hp > 0}`);
 
       // [3] hp 가 100보다 큰지 비교해 출력하세요.
       console.log("hp > 100 = " + (hp > 100));
+      console.log(`hp > 100 = ${hp > 100}`);
 
       // [4] hp 가 80과 같은지 비교해 출력하세요. (=== 등호 3개)
       //     작성 공식: console.log(값1 === 값2);
+      // JavaScript 비교 연산자 설명:
+      // === (엄격한 일치 Strict Equality): 값과 자료형(데이터 타입)이 모두 같은지 비교합니다. (예: 80 === "80"은 false)
+      // ==  (느슨한 일치 Abstract Equality): 자료형이 다르면 자바스크립트가 자동으로 자료형을 변환한 후, 값만 같은지 비교합니다. (예: 80 == "80"은 true)
       console.log("hp === 80 = " + (hp === 80));
+      console.log(`hp === 80 = ${hp === 80}`);
 
       // [5] hp 가 50과 다른지 비교해 출력하세요. (!==)
       console.log("hp !== 50 = " + (hp !== 50));
+      console.log(`hp !== 50 = ${hp !== 50}`);
 
       // [6] 'isAlive' 에 hp 가 0보다 큰 결과(불린)를 저장하세요.
       //     작성 공식: let 변수 = 비교식;
@@ -66,13 +73,15 @@
 
       // [7] isAlive 를 출력하세요.
       console.log("isAlive = " + isAlive);
+      console.log(`isAlive = ${isAlive}`);
 
       // [8] 'level' 에 5, 'needLevel' 에 10을 저장하세요.
       let level = 5;
       let needLevel = 10;
 
       // [9] level 이 needLevel 이상인지 출력하세요. (>=)
-      conosle.log("level >=  needLevel = " + (level >=  needLevel));
+      console.log("\"level >= needLevel\" = " + (level >=  needLevel));
+      console.log(`"level >= needLevel" = ${level >= needLevel}`);
     </script>
   </body>
 

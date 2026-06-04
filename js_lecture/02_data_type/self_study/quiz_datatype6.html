@@ -55,44 +55,60 @@
 
             // [1] 'name' 에 문자열 "용감한기사"를 저장하세요.
             //     작성 공식: let 변수이름 = "문자열";
+            let name = "용감한기사";
 
             // [2] 'hp' 에 숫자 100을 저장하세요.
+            let hp = 100;
 
             // [3] 'attack'(공격력)에 50, 'defense'(방어력)에 20을 저장하세요.
+            let attack = 50;
+            let defense = 20;
 
             // ===== 2단계: 스탯 시트 출력 (문자열 연결) =====
 
             // [4] "===== 스탯 시트 =====" 를 출력하세요.
             //     작성 공식: console.log("문자열");
+            console.log(name + "님의 HP는 " + hp + " 이며, 공격력은 " + attack + " 이고, 방어력은 " + defense + " 입니다.");
 
             // [5] "이름: " 과 name 을 이어 붙여 출력하세요.
             //     작성 공식: console.log("문자열" + 변수);
+            console.log("이름: " + name);
 
             // [6] "HP: " 와 hp 를 이어 붙여 출력하세요.
+            console.log("HP: " + hp);
 
             // [7] "공격력: " 과 attack 을 이어 붙여 출력하세요.
+            console.log("공격력: " + attack);
 
             // ===== 3단계: 데미지 계산 (산술 연산) =====
 
             // [8] 데미지 = 공격력 - 방어력 을 계산해 'damage' 에 저장하세요.
             //     작성 공식: let 변수 = 값1 - 값2;
+            let damage = attack - defense;
 
             // [9] "예상 데미지: " 와 damage 를 이어 붙여 출력하세요.
+            console.log("예상 데미지: " + damage);
 
             // ===== 4단계: 생존 판단 (비교 → 불린) =====
 
             // [10] 몬스터에게 damage 만큼 맞았습니다! hp 에서 damage 를 빼서 다시 hp 에 저장하세요.
             //      작성 공식: hp = hp - damage;
+            hp = hp - damage
 
             // [11] 남은 hp 를 출력하세요.
+            console.log("몬스터에게 맞았습니다!");
+            console.log("남은 HP: " + hp);
 
             // [12] 'isAlive' 에 hp 가 0보다 큰지 비교한 결과(불린)를 저장하세요.
             //      작성 공식: let 변수 = 값 > 0;
+            let isAlive = (hp > 0);
 
             // [13] "생존 여부: " 와 isAlive 를 이어 붙여 출력하세요.
+            console.log("생존 여부: " + isAlive);
 
             // [14] hp 와 isAlive 의 자료형을 각각 확인해 출력하세요.
             //      작성 공식: console.log(typeof 값);
+            console.log("typeof hp: " + typeof hp + ", typeof isAlive: " + typeof isAlive);
 
             // 완성! 스탯 시트가 콘솔에 출력되면 성공입니다.
         </script>
