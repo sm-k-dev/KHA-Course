@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>자료형 실습</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+                font-size: 16px
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 15px;
+                cursor: pointer;
+                margin: 4px
+            }
+
+            input {
+                padding: 8px;
+                font-size: 15px;
+                width: 250px
+            }
+
+            #out {
+                margin-top: 16px;
+                padding: 12px;
+                background: #eef1fb;
+                border-radius: 8px;
+                min-height: 24px
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+        <script>
+            /*
+                주제 : 문자열 연결과 자료형 주의점
+            
+                - + 연산자 : 숫자끼리면 '더하기', 문자열이 끼면 '이어 붙이기'
+                - "100" 은 따옴표가 있으니 문자열 → "100" + 50 = "10050" (계산 아님!)
+                - 진짜 계산하려면 따옴표 없는 숫자여야 함
+                - 문자열 연결로 "이름: 기사" 같은 메시지를 만들 수 있음
+            */
+
+            // [1] 'firstName' 에 "용감한", 'lastName' 에 "기사"를 저장하세요.
+            //     작성 공식: let 변수이름 = "문자열";
+            let firstName = "용감한";
+            let lastName = "기사";
+
+            // [2] 두 문자열을 이어 붙여 출력하세요.
+            //     작성 공식: console.log(문자열1 + 문자열2);
+            console.log("firstName + lastName" + firstName + lastName);
+
+            // [3] 사이에 공백을 넣어 출력하세요. (문자열 " " 도 더함)
+            console.log('firstName + " "  + lastName' + firstName + " "  + lastName);
+
+            // [4] 'level' 변수에 숫자 5를 저장하세요.
+            let level = 5;
+
+            // [5] "레벨: " 과 level 을 이어 붙여 출력하세요.
+            //     문자열 + 숫자 → 숫자가 글자로 붙음
+            console.log("레벨: " + level);
+
+            // [6] 'score' 변수에 문자열 "100" 을 저장하세요. (따옴표 있음!)
+            let score = "100";
+
+            // [7] score 에 50을 더해 출력하세요. (문자열이라 이어붙음)
+            console.log("score + 50 = " + (score + 50));
+
+            // [8] 'realScore' 변수에 숫자 100을 저장하세요. (따옴표 없음)
+            let realScore = 100;
+
+            // [9] realScore 에 50을 더해 출력하세요. (숫자라 진짜 계산)
+            console.log("realScore + 50 = " + (realScore + 50));
+
+            // [10] "HP: " 와 realScore 를 이어 붙여 출력하세요.
+            console.log("HP: " + realScore);
+        </script>
+    </body>
+
+</html>

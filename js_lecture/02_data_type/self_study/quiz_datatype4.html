@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>자료형 실습</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+                font-size: 16px
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 15px;
+                cursor: pointer;
+                margin: 4px
+            }
+
+            input {
+                padding: 8px;
+                font-size: 15px;
+                width: 250px
+            }
+
+            #out {
+                margin-top: 16px;
+                padding: 12px;
+                background: #eef1fb;
+                border-radius: 8px;
+                min-height: 24px
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+        <script>
+            /*
+                주제 : 불린과 비교 연산
+            
+                - 불린 : true(참) / false(거짓) 두 값뿐
+                - 비교 연산자로 두 값을 비교하면 결과가 불린으로 나옴
+                    · >  크다   · <  작다   · >= 크거나 같다  · <= 작거나 같다
+                    · === 같다  · !== 다르다
+                - 비교에는 === (등호 3개)를 씁니다 (= 하나는 '대입'이라 다름)
+            */
+
+            // [1] 'hp' 변수에 80을 저장하세요.
+            //     작성 공식: let 변수이름 = 값;
+            let hp = 80;
+
+            // [2] hp 가 0보다 큰지 비교해 출력하세요.
+            //     작성 공식: console.log(값1 > 값2);
+            console.log("hp > 0 = " + (hp > 0));
+
+            // [3] hp 가 100보다 큰지 비교해 출력하세요.
+            console.log("hp > 100 = " + (hp > 100));
+
+            // [4] hp 가 80과 같은지 비교해 출력하세요. (등호 3개 ===)
+            //     작성 공식: console.log(값1 === 값2);
+            console.log("hp === 80 = " + (hp === 80));
+
+            // [5] hp 가 50과 다른지 비교해 출력하세요. (!==)
+            console.log("hp !== 0 = " + (hp !== 0));
+
+            // [6] 'level' 에 5, 'requiredLevel' 에 10을 저장하세요.
+            let level = 5;
+            let requiredLevel = 10;
+
+            // [7] level 이 requiredLevel 이상인지 비교해 출력하세요. (>=)
+            console.log("'level >= requiredLevel = '" + (level >= requiredLevel));
+
+            // [8] 'isAlive' 변수에 hp 가 0보다 큰 결과(불린)를 저장하세요.
+            //     작성 공식: let 변수 = 비교식;
+            let isAlive = (hp > 0);
+
+            // [9] isAlive 를 출력하세요.
+            console.log("isAlive: " + isAlive);
+
+            // [10] isAlive 의 자료형을 출력하세요. (불린이므로 boolean)
+            console.log("typeof isAlive = " + typeof isAlive);
+        </script>
+    </body>
+
+</html>

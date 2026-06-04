@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>자료형 실습</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+                font-size: 16px
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 15px;
+                cursor: pointer;
+                margin: 4px
+            }
+
+            input {
+                padding: 8px;
+                font-size: 15px;
+                width: 250px
+            }
+
+            #out {
+                margin-top: 16px;
+                padding: 12px;
+                background: #eef1fb;
+                border-radius: 8px;
+                min-height: 24px
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+        <script>
+            /*
+                주제 : 숫자 계산 (산술 연산)
+            
+                - 더하기 +, 빼기 -, 곱하기 *, 나누기 /
+                - 곱하기는 x 가 아니라 별표 * 를 씁니다
+                - 나머지 % : 나눈 나머지를 구함 (짝수/홀수 판별 등에 사용)
+                - 계산 결과를 변수에 저장해 재사용할 수 있습니다
+            */
+
+            // [1] 'a' 변수에 10, 'b' 변수에 3을 저장하세요.
+            //     작성 공식: let 변수이름 = 값;
+            let a = 10;
+            let b = 3;
+
+            // [2] a 와 b 를 더한 결과를 출력하세요.
+            //     작성 공식: console.log(값1 + 값2);
+            console.log("a + b = " + (a + b));
+
+            // [3] a 에서 b 를 뺀 결과를 출력하세요.
+            console.log("a - b = " + (a - b));
+
+            // [4] a 와 b 를 곱한 결과를 출력하세요. (곱하기는 *)
+            console.log("a * b = " + (a * b));
+
+            // [5] a 를 b 로 나눈 결과를 출력하세요.
+            console.log("a / b = " + (a / b));
+
+            // [6] a 를 b 로 나눈 나머지를 출력하세요.
+            //     작성 공식: console.log(값1 % 값2);
+            console.log("a % b = " + (a % b));
+
+            // [7] 'attack'(공격력)에 50, 'defense'(방어력)에 20을 저장하세요.
+            let attack = 50;
+            let defense = 20;
+
+            // [8] 데미지 = 공격력 - 방어력 을 계산해 'damage' 변수에 저장하세요.
+            //     작성 공식: let 변수 = 값1 - 값2;
+            let damage = attack - defense;
+
+            // [9] damage 를 출력하세요.
+            console.log("damage = " + damage);
+
+            // [10] 7을 2로 나눈 나머지를 출력하세요. (1이면 홀수)
+            console.log("7 % 2 = " + (7 % 2));
+        </script>
+    </body>
+
+</html>

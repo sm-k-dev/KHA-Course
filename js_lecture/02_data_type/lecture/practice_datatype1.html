@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>실습 - 자료형 1차시</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.7
+      }
+
+      .g {
+        background: #fff7e8;
+        border: 1px solid #f0d999;
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #6b4e16
+      }
+
+      code {
+        background: #eee;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: monospace
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>⌨️ 실습 - 데미지 계산기</h1>
+    <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+    <script>
+      /*
+          주제 : 숫자 자료형과 산술 연산
+      
+          - 숫자(Number) : 따옴표 없이 쓰는 수
+          - 산술 연산 : + - * /, 나머지 %
+          - 계산 결과를 변수에 저장해 재사용
+      */
+
+      // [1] 'attack'(공격력)에 50, 'defense'(방어력)에 20을 저장하세요.
+      //     작성 공식: let 변수이름 = 값;
+      let attack = 50;
+      let defense = 20;
+
+      // [2] 데미지 = 공격력 - 방어력 을 계산해 'damage' 에 저장하세요.
+      //     작성 공식: let 변수 = 값1 - 값2;
+      let damage = attack - defense;
+
+      // [3] damage 를 출력하세요.
+      //     작성 공식: console.log(변수);
+      console.log("demage = " + demage);
+
+      // [4] 공격을 3번 했을 때 총 데미지(damage * 3)를 출력하세요.
+      //     작성 공식: console.log(값1 * 값2);
+      console.log("damage * 3 = " + (damage * 3));
+
+      // [5] 'totalGold' 에 1000, 'players' 에 4를 저장하세요.
+      let totalGold = 1000;
+      let players = 4;
+
+      // [6] 골드를 인원수로 나눠 1인당 골드를 출력하세요.
+      console.log("totalGold / 4 = " + (totalGold / 4));
+
+      // [7] 7을 2로 나눈 나머지를 출력하세요. (1이면 홀수)
+      //     작성 공식: console.log(값1 % 값2);
+      console.log("7 % 2 = " + (7 % 2));
+    </script>
+  </body>
+
+</html>

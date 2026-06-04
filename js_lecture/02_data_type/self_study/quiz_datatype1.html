@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>자료형 실습</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+                font-size: 16px
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 15px;
+                cursor: pointer;
+                margin: 4px
+            }
+
+            input {
+                padding: 8px;
+                font-size: 15px;
+                width: 250px
+            }
+
+            #out {
+                margin-top: 16px;
+                padding: 12px;
+                background: #eef1fb;
+                border-radius: 8px;
+                min-height: 24px
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+        <script>
+            /*
+                주제 : 기본 자료형 3가지
+            
+                - 숫자(Number)   : 따옴표 없이 쓰는 수.        예) 100, 3.14
+                - 문자열(String) : 큰따옴표로 감싼 글자.       예) "안녕"
+                - 불린(Boolean)  : 참(true) 또는 거짓(false). 따옴표 없이 씀
+                - typeof 값  : 그 값의 자료형을 글자로 알려줌
+            */
+
+            // [1] 'num' 변수에 숫자 100을 저장하세요.
+            //     작성 공식: let 변수이름 = 값;
+            let num = 100;
+
+            // [2] num 을 출력하세요.
+            console.log("num = " + num);
+
+            // [3] 'price' 변수에 숫자 1500을 저장하고 출력하세요.
+            let price = 1500;
+            console.log("price = " + price);
+
+            // [4] 'message' 변수에 문자열 "안녕하세요"를 저장하세요.
+            //     문자열은 큰따옴표로 감쌉니다.
+            let message = "안녕하세요";
+
+            // [5] message 를 출력하세요.
+            console.log("message = " + message);
+
+            // [6] 'isAlive' 변수에 불린 true 를 저장하세요. (따옴표 없이)
+            let isAlive = true
+
+            // [7] isAlive 를 출력하세요.
+            console.log("isAlive = " + isAlive);
+
+            // [8] num 의 자료형을 확인해 출력하세요.
+            //     작성 공식: console.log(typeof 값);
+            console.log("typeof num = " + typeof num);
+
+            // [9] message 의 자료형을 확인해 출력하세요.
+            console.log("typeof message = " + typeof message);
+
+            // [10] isAlive 의 자료형을 확인해 출력하세요.
+            console.log("typeof isAlive = " + typeof isAlive);
+        </script>
+    </body>
+
+</html>

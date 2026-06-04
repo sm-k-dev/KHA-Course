@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>실습 - 자료형 4차시</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.7
+      }
+
+      .g {
+        background: #fff7e8;
+        border: 1px solid #f0d999;
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #6b4e16
+      }
+
+      code {
+        background: #eee;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: monospace
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>⌨️ 실습 - 아이템 슬롯 (undefined vs null)</h1>
+    <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+    <script>
+      /*
+          주제 : undefined 와 null
+      
+          - undefined : 값을 안 넣으면 자동으로 들어가는 '없음'
+          - null      : 개발자가 일부러 넣는 '비어 있음'
+          - typeof 로 자료형을 확인할 수 있음
+      */
+
+      // [1] 'item' 변수를 값 없이 만드세요. (= 부분 없이)
+      //     작성 공식: let 변수이름;
+      let item;
+
+      // [2] item 을 출력하세요. (값을 안 넣어 undefined)
+      //     작성 공식: console.log(변수);
+      console.log("item = " + item);
+
+      // [3] 'weapon' 변수에 null 을 저장하세요. (슬롯을 일부러 비움)
+      //     작성 공식: let 변수이름 = null;
+      let weapon = null;
+
+      // [4] weapon 을 출력하세요.
+      console.log("weapon = " + weapon);
+
+      // [5] item 의 자료형을 출력하세요.
+      //     작성 공식: console.log(typeof 값);
+      console.log("typeof item = " + (typeof item));
+
+      // [6] 'slot' 변수에 "물약"을 저장하세요. (슬롯을 채움)
+      let slot = "물약";
+
+      // [7] slot 과 slot 의 자료형을 함께 출력하세요.
+      //     작성 공식: console.log(값, typeof 값);
+      /* 
+        * 원인: (slot, typeof slot)에서 쉼표(,)는 '쉼표 연산자'로 동작합니다.
+        * 쉼표 연산자는 왼쪽부터 차례대로 실행한 뒤, '가장 마지막 값'만 반환합니다.
+        * 1. slot을 실행 ("물약") -> 버려짐
+        * 2. typeof slot을 실행 ("string") -> 최종 반환
+        * 결과적으로 "slot, typeof slot = " + "string" 이 되어 "물약"이 사라집니다.
+        */
+      console.log("slot, typeof slot = " + (slot, typeof slot)); 
+      // 출력: slot, typeof slot = string
+      // ---------------------------------------------------------------
+      // [올바른 해결 방법 3가지]
+
+      // 방법 1. console.log()의 인자 나열 기능 활용 (가장 추천!)
+      // 쉼표를 괄호 밖으로 빼서 각각의 독립된 데이터로 넘기면 모두 출력됩니다.
+      console.log("1. 결과 -> slot:", slot, "/ typeof slot:", typeof slot);
+      // 출력: 1. 결과 -> slot: 물약 / typeof slot: string
+
+      // 방법 2. 템플릿 리터럴(Template Literal) 활용
+      // 백틱(`)과 ${}를 사용하면 문자열과 변수를 가장 직관적으로 섞을 수 있습니다.
+      console.log(`2. 결과 -> slot: ${slot}, typeof slot: ${typeof slot}`);
+      // 출력: 2. 결과 -> slot: 물약, typeof slot: string
+
+      // 방법 3. 문자열 연결 연산자(+) 활용
+      // 모든 값 사이에 + 기호를 넣어 명시적으로 이어붙입니다.
+      console.log("3. 결과 -> slot: " + slot + ", typeof slot: " + typeof slot);
+      
+      // 출력: 3. 결과 -> slot: 물약, typeof slot: string
+      console.log(slot, typeof slot);
+
+      // [8] 'gold' 변수에 숫자 0을 저장하세요. (0은 '없음'이 아니라 진짜 숫자)
+      let gold = 0;
+
+      // [9] gold 와 gold 의 자료형을 함께 출력하세요.
+      console.log(gold, typeof gold);
+    </script>
+  </body>
+
+</html>

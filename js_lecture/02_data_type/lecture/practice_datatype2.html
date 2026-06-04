@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>실습 - 자료형 2차시</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.7
+      }
+
+      .g {
+        background: #fff7e8;
+        border: 1px solid #f0d999;
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #6b4e16
+      }
+
+      code {
+        background: #eee;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: monospace
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>⌨️ 실습 - 캐릭터 대사 만들기</h1>
+    <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+    <script>
+      /*
+          주제 : 문자열과 연결(+)
+      
+          - 문자열(String) : 큰따옴표로 감싼 글자
+          - + 연산자 : 문자열끼리 이어 붙이기
+          - 문자열 + 숫자 → 숫자가 글자로 붙음
+      */
+
+      // [1] 'name' 에 "기사", 'job' 에 "전사"를 저장하세요.
+      //     작성 공식: let 변수이름 = "문자열";
+      let name = "기사";
+      let job = "전사";
+
+      // [2] name 과 job 을 이어 붙여 출력하세요.
+      //     작성 공식: console.log(문자열1 + 문자열2);
+      console.log("name + job = " + name + job);
+
+      // [3] 사이에 공백을 넣어 출력하세요.
+      //     작성 공식: console.log(문자열1 + " " + 문자열2);
+      console.log('name + " " + job = ' + name + " " + job);
+
+      // [4] 'level' 에 숫자 5를 저장하세요.
+      let level = 5;
+
+      // [5] "레벨: " 과 level 을 이어 붙여 출력하세요.
+      //     작성 공식: console.log("문자열" + 변수);
+      console.log("레벨: " + level);
+
+      // [6] "용감한 " 과 name 과 " 등장!" 을 모두 이어 붙여 출력하세요.
+      //     작성 공식: console.log("문자열" + 변수 + "문자열");
+      console.log("용감한 " + name + " 등장!");
+
+      // [7] 'hp' 에 100을 저장하고, "HP: " 와 hp 를 이어 붙여 출력하세요.
+      let hp = 100;
+      console.log("HP: " + hp);
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>실습 - 자료형 3차시</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.7
+      }
+
+      .g {
+        background: #fff7e8;
+        border: 1px solid #f0d999;
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #6b4e16
+      }
+
+      code {
+        background: #eee;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: monospace
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>⌨️ 실습 - 생존 판단기</h1>
+    <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+    <script>
+      /*
+          주제 : 불린과 비교 연산
+      
+          - 불린(Boolean) : true(참) / false(거짓)
+          - 비교 연산자 : >  <  >=  <=  ===(같다)  !==(다르다)
+          - 비교 결과는 불린으로 나옴
+      */
+
+      // [1] 'hp' 변수에 80을 저장하세요.
+      //     작성 공식: let 변수이름 = 값;
+      let hp = 80;
+
+      // [2] hp 가 0보다 큰지 비교해 출력하세요.
+      //     작성 공식: console.log(값1 > 값2);
+      console.log("hp > 0 = " + (hp > 0));
+
+      // [3] hp 가 100보다 큰지 비교해 출력하세요.
+      console.log("hp > 100 = " + (hp > 100));
+
+      // [4] hp 가 80과 같은지 비교해 출력하세요. (=== 등호 3개)
+      //     작성 공식: console.log(값1 === 값2);
+      console.log("hp === 80 = " + (hp === 80));
+
+      // [5] hp 가 50과 다른지 비교해 출력하세요. (!==)
+      console.log("hp !== 50 = " + (hp !== 50));
+
+      // [6] 'isAlive' 에 hp 가 0보다 큰 결과(불린)를 저장하세요.
+      //     작성 공식: let 변수 = 비교식;
+      let isAlive = (hp > 0);
+
+      // [7] isAlive 를 출력하세요.
+      console.log("isAlive = " + isAlive);
+
+      // [8] 'level' 에 5, 'needLevel' 에 10을 저장하세요.
+      let level = 5;
+      let needLevel = 10;
+
+      // [9] level 이 needLevel 이상인지 출력하세요. (>=)
+      conosle.log("level >=  needLevel = " + (level >=  needLevel));
+    </script>
+  </body>
+
+</html>

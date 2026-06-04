@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>실습 - 자료형 5차시</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 20px;
+        line-height: 1.7
+      }
+
+      .g {
+        background: #fff7e8;
+        border: 1px solid #f0d999;
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #6b4e16
+      }
+
+      code {
+        background: #eee;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: monospace
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>⌨️ 실습 - 자료형 탐정 (typeof)</h1>
+    <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+    <script>
+      /*
+          주제 : typeof 로 자료형 확인 종합
+      
+          - typeof 값 : 그 값의 자료형을 글자로 알려줌
+              · 숫자 → "number"   · 문자열 → "string"
+              · 불린 → "boolean"  · 값없음 → "undefined"
+      */
+
+      // [1] 숫자 100의 자료형을 출력하세요.
+      //     작성 공식: console.log(typeof 값);
+      console.log("typeof 100 = " + typeof 100);
+
+      // [2] 문자열 "기사"의 자료형을 출력하세요.
+      console.log("typeof '기사' = " + typeof "기사");
+
+      // [3] 불린 true 의 자료형을 출력하세요.
+      console.log("typeof true = " + typeof true);
+
+      // [4] 'hp' 에 100을 저장하고, hp 의 자료형을 출력하세요.
+      //     작성 공식: let 변수 = 값;  console.log(typeof 변수);
+      let hp = 100;
+      console.log("typeof hp = " + typeof hp);
+
+      // [5] 'name' 에 "전사"를 저장하고, name 의 자료형을 출력하세요.
+      let name = "전사";
+      console.log("typeof name = " + typeof name);
+
+      // [6] 'isAlive' 에 true 를 저장하고, isAlive 의 자료형을 출력하세요.
+      let isAlive = true;
+      console.log("typeof isAlive = " + typeof isAlive);
+
+      // [7] 'empty' 변수를 값 없이 만들고, empty 의 자료형을 출력하세요.
+      let empty;
+      console.log("typeof empty = " + typeof empty);
+
+      // [8] hp 와 hp 의 자료형을 한 줄에 함께 출력하세요.
+      //     작성 공식: console.log(값, typeof 값);
+      console.log("hp = " + hp + ", typeof hp = " + typeof hp);
+    </script>
+  </body>
+
+</html>
