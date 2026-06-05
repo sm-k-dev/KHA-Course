@@ -1,44 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="UTF-8"><title>연산자 실습</title>
-<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
-</head>
-<body>
-<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
-<script>
-/*
-    주제 : 논리 연산자
 
-    - && (그리고) : 양쪽이 모두 true 일 때만 true
-    - || (또는)   : 한쪽만 true 여도 true
-    - !  (부정)   : true 는 false 로, false 는 true 로 뒤집음
-    - 주의 : && 와 || 는 반드시 두 개씩 (하나면 다른 동작)
-    - 여러 조건을 한 번에 판단할 때 사용 (예: 체력 있고 물약도 있고)
-*/
+    <head>
+        <meta charset="UTF-8">
+        <title>연산자 실습</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+                font-size: 16px
+            }
 
-// [1] 'hp' 에 80, 'hasPotion' 에 true 를 저장하세요.
-//     작성 공식: let 변수이름 = 값;
+            button {
+                padding: 8px 16px;
+                font-size: 15px;
+                cursor: pointer;
+                margin: 4px
+            }
 
-// [2] hp 가 100 미만이고(&&) 물약이 있는지 비교해 출력하세요.
-//     작성 공식: console.log(조건1 && 조건2);
+            input {
+                padding: 8px;
+                font-size: 15px;
+                width: 250px
+            }
 
-// [3] hp 가 0보다 크고(&&) 100 이하인지 출력하세요.
+            #out {
+                margin-top: 16px;
+                padding: 12px;
+                background: #eef1fb;
+                border-radius: 8px;
+                min-height: 24px
+            }
+        </style>
+    </head>
 
-// [4] hp 가 200 초과거나(||) 물약이 있는지 출력하세요.
-//     작성 공식: console.log(조건1 || 조건2);
+    <body>
+        <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+        <script>
+            /*
+                주제 : 대입 연산자 (값 누적)
+            
+                - = : 오른쪽 값을 변수에 저장(대입)
+                - 복합 대입 : 기존 값에 연산해서 다시 저장 (짧게 쓰는 법)
+                    · hp += 10  은  hp = hp + 10  과 같음
+                    · hp -= 20  은  hp = hp - 20  과 같음
+                    · gold *= 2 는  gold = gold * 2 와 같음
+                - 게임에서 체력 회복/감소, 골드 증가 등에 자주 사용
+            */
 
-// [5] 물약 보유(hasPotion)를 부정해서 출력하세요. (!)
-//     작성 공식: console.log(!값);
+            // [1] 'hp' 변수에 100을 저장하세요.
+            //     작성 공식: let 변수이름 = 값;
+            let hp = 100;
 
-// [6] 'level' 에 10, 'gold' 에 500을 저장하세요.
+            // [2] 포션을 먹어 hp 를 20 늘리세요. (복합 대입 +=)
+            //     작성 공식: 변수 += 값;
+            hp += 20;
 
-// [7] 레벨 10 이상이고(&&) 골드 1000 이상인지 출력하세요. (장비 구매 가능?)
+            // [3] hp 를 출력하세요.
+            console.log("hp = " + hp);
+            console.log(`hp = ${hp}`);
 
-// [8] 'isAlive' 에 true, 'isPoisoned' 에 false 를 저장하세요.
+            // [4] 데미지를 입어 hp 를 50 줄이세요. (복합 대입 -=)
+            //     작성 공식: 변수 -= 값;
+            hp -= 50;
 
-// [9] 살아있고(&&) 중독이 아닌지(!) 출력하세요.
+            // [5] hp 를 출력하세요.
+            console.log("hp = " + hp);
+            console.log(`hp = ${hp}`);
 
-// [10] level 이 5 이상이거나 gold 가 0인지 출력하세요. (||)
-</script>
-</body>
+            // [6] 'gold' 변수에 100을 저장하세요.
+            let gold = 100;
+
+            // [7] 골드가 2배가 되었습니다! gold 를 2배로 만드세요. (복합 대입 *=)
+            //     작성 공식: 변수 *= 값;
+            gold *= 2;
+
+            // [8] gold 를 출력하세요.
+            console.log("gold = " + gold);
+            console.log(`gold = ${gold}`);
+
+            // [9] 'score' 변수에 0을 저장하세요.
+            let score = 0;
+
+            // [10] 점수를 10씩 세 번 올리세요. (+= 를 세 번)
+            score += 10;
+            score += 10;
+            score += 10;
+
+            // [11] score 를 출력하세요.
+            console.log("score = " + score);
+            console.log(`score = ${score}`);
+        </script>
+    </body>
+
 </html>
