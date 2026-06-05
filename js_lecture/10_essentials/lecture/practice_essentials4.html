@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 실무 필수 4차시</title>
+<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
+.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
+code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+  <h1>⌨️ 실습 - 진짜 데이터 받아오기 (async/await)</h1>
+  <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+  <script>
+/*
+    주제 : 비동기 fetch (async / await)
+
+    - 서버 데이터는 받는 데 시간이 걸림 -> 기다려야 함
+    - async function : 안에 기다리는 작업이 있다는 표시
+    - await : 결과를 기다림 (async 함수 안에서만)
+    - 순서 : fetch -> await -> .json() -> 사용
+*/
+
+// [1] 'getData' 라는 async 함수를 만드세요.
+//     작성 공식: async function 함수이름() { ... }
+
+// [2] (함수 안) await fetch 로 데이터를 받아 'res' 에 저장하세요.
+//     주소: "https://jsonplaceholder.typicode.com/users/1"
+//     작성 공식: let res = await fetch("주소");
+
+// [3] (함수 안) await 로 res 를 json 으로 변환해 'data' 에 저장하세요.
+//     작성 공식: let data = await res.json();
+
+// [4] (함수 안) data 전체를 출력하세요.
+
+// [5] (함수 안) data.name 만 꺼내 출력하세요.
+
+// [6] getData 함수를 호출하세요.
+//     작성 공식: 함수이름();
+
+// F12 -> Console 에서 서버 데이터가 나오면 성공입니다!
+  </script></body></html>

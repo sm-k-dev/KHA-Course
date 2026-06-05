@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 함수 7차시</title>
+<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
+.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
+code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+  <h1>⌨️ 실습 - 전투 함수 시스템 (미니 프로젝트)</h1>
+  <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요. 단원 전체를 활용한 종합 도전입니다!</div>
+  <script>
+// 주제 : [미니 프로젝트] 전투 함수 시스템 만들기
+//   함수 단원 전체 활용: 정의/매개변수/return/호출/화살표/기본값
+//   목표 : 데미지 계산·치명타·회복 함수를 만들어 전투를 처리
+
+// ===== 1단계: 데미지 계산 함수 (return + if) =====
+// [1] attack, defense 를 받아 데미지를 돌려주는 calcDamage 함수를 만드세요.
+//     기능: (attack - defense), 단 0보다 작으면 0을 돌려줌
+//     작성 공식: function 이름(a,b){ let d=a-b; if(d<0){ d=0; } return d; }  ↓
+
+// [2] calcDamage(80, 30) 결과를 baseDmg 에 저장하고 "기본 데미지: " 와 함께 출력하세요.  ↓
+
+// ===== 2단계: 치명타 적용 함수 (매개변수 + if) =====
+// [3] damage, isCritical 을 받아, 치명타면 2배·아니면 그대로 돌려주는
+//     applyCritical 함수를 만드세요.
+//     작성 공식: function 이름(damage, isCritical){ if(isCritical){ return damage*2; } return damage; }  ↓
+
+// [4] baseDmg 에 치명타(true)를 적용해 finalDmg 에 저장하고 "최종 데미지: " 와 함께 출력하세요.  ↓
+
+// ===== 3단계: 회복 함수 (화살표 + 기본값) =====
+// [5] hp, amount(기본값 20)를 받아 더해 돌려주는 heal 화살표 함수를 만드세요.
+//     작성 공식: const heal = (hp, amount = 20) => hp + amount;  ↓
+
+// [6] heal(40, 30) 을 출력하세요.  ↓
+
+// [7] heal(50) 을 인수 하나만 넣어 출력하세요. (기본값 20)  ↓
+
+// ===== 4단계: 함수 조합으로 전투 =====
+// [8] 몬스터 체력 monsterHp 에 100 을 저장하세요.  ↓
+
+// [9] 몬스터가 finalDmg 만큼 맞았습니다! monsterHp 에서 finalDmg 를 빼서 다시 저장하세요.
+//     작성 공식: monsterHp = monsterHp - finalDmg;  ↓
+
+// [10] "몬스터 남은 HP: " 와 monsterHp 를 이어 붙여 출력하세요.  ↓
+
+// [11] 몬스터가 죽었는지(monsterHp <= 0) isDead 에 저장하세요.  ↓
+
+// [12] isDead 면 "처치 성공!", 아니면 "전투 계속" 을 출력하세요.
+//      작성 공식: if (isDead) { } else { }  ↓
+
+// [13] 내 체력 myHp 에 40 을 저장하세요.  ↓
+
+// [14] heal 로 myHp 를 회복(인수 하나)시켜 다시 myHp 에 저장하고 출력하세요.
+//      작성 공식: myHp = heal(myHp);  ↓
+
+// ✅ 데미지50 → 최종100 → 몬스터HP0 → 처치 성공! → 내체력60 이면 성공!
+  </script></body></html>

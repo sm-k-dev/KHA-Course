@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>실무필수 실습</title>
+<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+</head>
+<body>
+<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+<script>
+/*
+    주제 : 옵셔널 체이닝(?.)과 단축평가(||, ??)
+
+    - ?. : 중간 값이 없어도 오류 대신 undefined 를 돌려줌 (안전하게 꺼내기)
+    - || : 값이 없을(falsy) 때 기본값 사용 (0·빈문자열도 '없는 것'으로 침)
+    - ?? : 값이 null/undefined 일 때만 기본값 (0 은 살림)
+    - 서버에서 받은 불완전한 데이터를 다룰 때 필수
+*/
+
+// [1] name "철수" 만 담은 'user' 객체를 만드세요. (address 는 없음)
+//     작성 공식: let 객체 = { key: value };
+
+// [2] 옵셔널 체이닝으로 user.address.city 를 안전하게 꺼내 출력하세요.
+//     (address 가 없어도 오류 안 나고 undefined)
+//     작성 공식: console.log(객체.없는key?.속성);
+
+// [3] user.name 이 없으면 "손님"을 쓰도록 || 로 처리해 'displayName' 에 저장하세요.
+//     작성 공식: let 변수 = 값 || "기본값";
+
+// [4] displayName 을 출력하세요.
+
+// [5] user.level 이 없으면 1을 쓰도록 ?? 로 처리해 'level' 에 저장하세요.
+//     작성 공식: let 변수 = 값 ?? 기본값;
+
+// [6] level 을 출력하세요.
+
+// [7] hp 0 을 담은 'player' 객체를 만드세요.
+
+// [8] player.hp 를 || 로 처리해 출력하세요. (0은 falsy라 기본값이 나옴)
+//     작성 공식: console.log(값 || 기본값);
+
+// [9] player.hp 를 ?? 로 처리해 출력하세요. (0은 살아남음)
+//     작성 공식: console.log(값 ?? 기본값);
+
+// [10] user 에 없는 guild 를 ?? 로 "무소속" 처리해 출력하세요.
+</script>
+</body>
+</html>

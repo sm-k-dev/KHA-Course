@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 객체 4차시</title>
+<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
+.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
+code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+  <h1>⌨️ 실습 - 파티원 목록 (객체 배열)</h1>
+  <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+  <script>
+/*
+    주제 : 객체 배열 (배열 + 객체)
+
+    - 배열 안에 객체를 여러 개 담은 형태 → 실무 데이터의 대부분
+    - 작성 공식 : let 배열 = [ {key:value}, {key:value} ];
+    - 꺼내기 : 배열[번호].key
+    - for 로 순회하며 각 객체의 값을 꺼냄
+*/
+
+// [1] {name:"기사",hp:100} 과 {name:"마법사",hp:80} 을 담은 'party' 배열을 만드세요.
+//     작성 공식: let 배열 = [ {...}, {...} ];
+
+// [2] party 의 0번 객체의 name 을 출력하세요.
+//     작성 공식: console.log(배열[번호].key);
+
+// [3] party 의 1번 객체의 hp 를 출력하세요.
+
+// [4] party 의 개수(길이)를 출력하세요.
+//     작성 공식: console.log(배열.length);
+
+// [5] for 문으로 party 전체의 name 을 출력하세요.
+//     작성 공식: for(...){ console.log(배열[i].name); }
+
+// [6] for 문으로 "OO (HP:OO)" 형태로 전체를 출력하세요.
+//     작성 공식: console.log(배열[i].name + " (HP:" + 배열[i].hp + ")");
+
+// [7] for 문으로 모든 hp 를 더해 'totalHp' 에 누적하고 출력하세요.
+//     작성 공식: 반복 안에서 totalHp += 배열[i].hp;
+  </script></body></html>

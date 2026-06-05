@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>실무필수 실습</title>
+<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+</head>
+<body>
+<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+<script>
+/*
+    주제 : 구조분해 할당
+
+    - 객체 구조분해 : const { key } = 객체;  → key 이름과 같은 변수로 꺼냄
+    - 배열 구조분해 : const [a, b] = 배열;   → 순서대로 꺼냄
+    - 한 줄로 여러 값을 꺼내 코드를 짧게 만듦
+    - React 의 const [value, setValue] = useState() 가 배열 구조분해
+*/
+
+// [1] name "기사", hp 100, level 5 를 담은 'character' 객체를 만드세요.
+//     작성 공식: let 객체 = { key: value, ... };
+
+// [2] 구조분해로 character 에서 name 과 hp 를 한 번에 꺼내세요.
+//     작성 공식: let { key1, key2 } = 객체;
+
+// [3] name 과 hp 를 함께 출력하세요.
+//     작성 공식: console.log(값1, 값2);
+
+// [4] 구조분해로 character 에서 level 만 꺼내세요.
+
+// [5] level 을 출력하세요.
+
+// [6] "빨강","파랑","초록"을 담은 'colors' 배열을 만드세요.
+
+// [7] 구조분해로 colors 에서 순서대로 first, second 를 꺼내세요.
+//     작성 공식: let [a, b] = 배열;
+
+// [8] first 와 second 를 함께 출력하세요.
+
+// [9] 몬스터 {name:"드래곤", atk:50} 객체를 만들고,
+//     구조분해로 name 과 atk 를 꺼내 "OO 공격력 OO" 형태로 출력하세요.
+//     작성 공식: let { name, atk } = 객체; console.log(name + " 공격력 " + atk);
+</script>
+</body>
+</html>

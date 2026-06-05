@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>실무필수 실습</title>
+<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+</head>
+<body>
+<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+<script>
+/*
+    주제 : [종합 미니 프로젝트] 사용자 프로필 카드 시스템
+
+    실무 필수 단원에서 배운 모든 것을 사용합니다.
+    - async/await + fetch / 구조분해 / 옵셔널 체이닝 / ?? / 스프레드
+
+    [완성 목표]
+    서버에서 사용자 데이터를 받아와, 구조분해로 필요한 값을 꺼내고,
+    없는 값은 안전하게 기본값으로 채우고, 스프레드로 프로필을 가공합니다.
+*/
+
+// ===== 1단계: 비동기 함수 만들기 =====
+
+// [1] 'loadProfile' 이라는 async 함수를 만드세요.
+//     작성 공식: async function 함수이름() { ... }
+
+// ===== 2단계: 서버 데이터 받기 (await) =====
+
+// [2] (함수 안) await fetch 로 데이터를 받아 'res' 에 저장하세요.
+//     주소: "https://jsonplaceholder.typicode.com/users/1"
+//     작성 공식: let res = await fetch("주소");
+
+// [3] (함수 안) await 로 json 변환해 'data' 에 저장하세요.
+//     작성 공식: let data = await res.json();
+
+// ===== 3단계: 구조분해로 값 꺼내기 =====
+
+// [4] (함수 안) 구조분해로 data 에서 name 과 email 을 꺼내세요.
+//     작성 공식: let { key1, key2 } = 객체;
+
+// [5] (함수 안) name 과 email 을 함께 출력하세요.
+//     작성 공식: console.log(값1, 값2);
+
+// ===== 4단계: 안전하게 꺼내기 (옵셔널 체이닝 + ??) =====
+
+// [6] (함수 안) 옵셔널 체이닝으로 data.company?.name 을 'companyName' 에 저장하세요.
+//     작성 공식: let 변수 = 객체.key?.속성;
+
+// [7] (함수 안) companyName 을 출력하세요.
+
+// [8] (함수 안) data.level 이 없으면 1을 쓰도록 ?? 로 'level' 에 저장하세요.
+//     작성 공식: let 변수 = 값 ?? 기본값;
+
+// [9] (함수 안) level 을 출력하세요.
+
+// ===== 5단계: 스프레드로 프로필 가공 =====
+
+// [10] (함수 안) name, email, level 을 담은 'profile' 객체를 만드세요.
+//      작성 공식: let 객체 = { key: value, ... };
+
+// [11] (함수 안) 스프레드로 profile 을 복사하며 grade "신규" 를 추가한
+//      새 객체를 'finalProfile' 에 저장하세요.
+//      작성 공식: let 새객체 = { ...객체, 새key: 값 };
+
+// [12] (함수 안) finalProfile 전체를 출력하세요.
+
+// [13] (함수 안) 구조분해로 finalProfile 에서 grade 를 꺼내 출력하세요.
+//      작성 공식: let { key } = 객체;
+
+// ===== 6단계: 함수 실행 =====
+
+// [14] loadProfile 함수를 호출하세요.
+//      작성 공식: 함수이름();
+
+// 완성! F12 콘솔에 서버 데이터로 만든 프로필 카드가 출력되면 성공입니다.
+</script>
+</body>
+</html>

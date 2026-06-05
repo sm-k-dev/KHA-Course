@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 실무 필수 3차시</title>
+<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
+.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
+code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+  <h1>⌨️ 실습 - 안전하게 꺼내기 (옵셔널 체이닝)</h1>
+  <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
+  <script>
+/*
+    주제 : 옵셔널 체이닝(?.)과 단축평가(||, ??)
+
+    - ?. : 중간 값이 없어도 오류 대신 undefined
+    - || : 값이 없을(falsy) 때 기본값 (0·빈문자열도 '없음'으로 침)
+    - ?? : null/undefined 일 때만 기본값 (0 은 살림)
+*/
+
+// [1] name "철수" 만 담은 'user' 객체를 만드세요. (address 없음)
+//     작성 공식: let 객체 = { key: value };
+
+// [2] 옵셔널 체이닝으로 user.address.city 를 안전하게 꺼내 출력하세요.
+//     작성 공식: console.log(객체.없는key?.속성);
+
+// [3] user.name 이 없으면 "손님"을 쓰도록 || 로 'displayName' 에 저장하세요.
+//     작성 공식: let 변수 = 값 || "기본값";
+
+// [4] displayName 을 출력하세요.
+
+// [5] user.level 이 없으면 1을 쓰도록 ?? 로 'level' 에 저장하세요.
+//     작성 공식: let 변수 = 값 ?? 기본값;
+
+// [6] level 을 출력하세요.
+
+// [7] hp 0 을 담은 'player' 객체를 만드세요.
+
+// [8] player.hp 를 || 로 처리해 출력하세요. (0은 falsy라 기본값)
+//     작성 공식: console.log(값 || 기본값);
+
+// [9] player.hp 를 ?? 로 처리해 출력하세요. (0은 살아남음)
+//     작성 공식: console.log(값 ?? 기본값);
+  </script></body></html>
