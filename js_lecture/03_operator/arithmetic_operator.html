@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>산술연산자</title>
+        <script>
+            /*
+                주제: 산술 연산자 중에서 
+                        나누기 연산자 /
+                        나머지 값 구하는 연산자 % 비교해 보기
+            */
+
+            /* 
+                결론: 정수 15를 정수 2로 나누면 소수 7.5가 나온다.
+                    정수 나누기 정수의 결과가 소수점 이하를 포함 할 수 있기 때문이다.
+            */
+            let dividing = 15 / 2;
+
+            /*
+                document = 문서객체 (html 정보를 갖고 있는 객체)
+                write = 함수
+                document.write(출력할 값 또는 변수명);
+                    - body 태그 사이에 출력하는 한 문장이다.
+            */
+            document.write(dividing, "<br>");
+            
+            /*
+                결론: 정수 15를 정수 2로 나누었을때 나머지 값을 구해 변수에 저장
+            */
+           let remainder = 15 % 2;
+           document.write(remainder, "<br>");
+
+           document.write("---------------------------<br>");
+
+           /* 
+                numberA 변수를 선언하는 동시에 1을 저장
+                numberB 변수를 선언하는 동시에 2를 저장
+           */
+            let numberA = 1;
+            let numberB = 2;
+
+            // numberA 변수에 저장된 값과 numberB 변수에 저장된 값으 합을 출력 한 후 한 줄 줄바꿈 출력
+            document.write( numberA + numberB, "<br>");
+
+            // numberA 변수에 저장된 값에서 numberB 변수에 저장된 값을 뺀 후 결과값 출력 후 한줄 줄바꿈
+            document.write( numberA - numberB, "<br>");
+
+            // numberA 변수에 저장된 값에서 numberB 변수에 저장된 값을 곱한 결과값 출력 후 한줄 줄바꿈
+            document.write( numberA * numberB, "<br>");
+
+            // numberA 변수에 저장된 값을 numberB 변수에 저장된 값으로 나눈 나머지 값을 출력 후 한줄 줄바꿈
+            document.write( numberA % numberB, "<br>");
+
+            // numberA 변수에 저장된 값을 numberB 변수에 저장된 값으로 나눈 몫을 출력 후 한줄 줄바꿈
+            document.write( numberA / numberB, "<br>");
+
+            document.write("---------------------------<br>");
+
+            /*
+                만일 연산자가 동등한 우선순위를 가질때는 왼쪽에서 오른쪽으로 차례대로 계산
+                    곱셈 또는 나눗셈이 덧셈, 뺄셈과 같은 연산식에 있을 때
+                    곱셈 또는 나눗셈을 먼저 계산하고, 덧셈 뺄셈을 계산한다.
+            */
+            let result4 = 1 + 2 * 10 ;
+            /*
+                순서1. 2 * 10 을 먼저 계산. 그래서 20으로 만들어 준다.
+                순서2. 1과 20을 더한다.
+                연산 결과 21을 만들어서 result4 라는 변수 메모리에 저장
+            */
+            document.write(result4, "<br>");
+
+            /*
+                괄호 () 는 괄호 연산자라고 부른다.
+            */
+            let result5 = (1 + 2) * 10;
+            /*
+                순서1. 괄호 안의 1 + 2를 먼저 계산. 3으로 만든다
+                순서2. 3을 10과 곱한다.
+                연산결과 30을 result5 라는 변수 메모리에 저장
+            */
+            document.write(result5);
+            document.write("<br>");
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>

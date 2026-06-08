@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증감 연산자 2</title>
+</head>
+<body>
+    <script>
+        let x = 5;
+        let y = x++ + ++x;
+        /*
+            y 변수의 값을 계산하는 과정
+                1. x++ 현재 x 변수에 저장된 값 5를 먼저 사용
+                    x++ 자리에 5가 투입
+                2. ++x를 하기전에 x++에 의해 x는 6이 된다.
+                3. ++x자리에 ++6이 되어 x 변수의 값을 1 증가 시켜 7로 만들어 준다
+                4. 현재 식은 x++ 자리에 5, ++x 자리에 7이 온다.
+                5. 5 + 7을 계산해서 12로 만든다
+                6. y변수에 12를 대입해서 저장한다.
+
+                y = 12, x = 7
+        */
+       document.write("y: ", y, "<br>x: ", x, "<br>");
+    </script>
+</body>
+</html>

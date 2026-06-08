@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증감 연산자 1</title>
+</head>
+<body>
+    <script>
+        /*
+            예를 들어 num1 변수 메모리에 10이 저장되어 있다고 가정한다.
+            num1 변수 메모리에 저장된 10을 1 차감해서 9로 만든 뒤
+            만든 9를 num1 변수를 다시 저장
+
+            let num1 = 10;
+
+            num1 = num1 - 1;
+            이 식보다 더 간결하게 작성할 수 있는 식
+            num1 -= 1;
+        */
+        let num1 = 10; let num2 = 20; let result; // result 는 계산할 결과 값을 저장할 변수
+
+        // num1 변수에 저장된 10을 1감소 시킨 9를 다시 num1 변수 메모리에 대입해서 저장
+        num1--; 
+        document.write(num1, "<br>");
+
+        // 현재 num1 변수는 9
+
+        // num1 변수에 저장된 9를 1증가 시킨 10을 다시 num1 변수 메모리에 대입해서 저장
+        num1++;
+        document.write("num1: ", num1, "<br>");
+
+        /*
+            num1 = 10; num2 = 20; result;
+        */
+        result = num2++;
+        // result = 20; num2 = 21;
+        document.write("result: ", result, "<br> num2: ", num2, "<br>");
+
+        result = ++num2;
+        // result = 22; num2 = 22;
+        document.write("result:&nbsp;", result, "<br>num2:&nbsp;", num2, "<br>");
+        // &nbsp; 는 스페이스 한 칸
+    </script>
+</body>
+</html>

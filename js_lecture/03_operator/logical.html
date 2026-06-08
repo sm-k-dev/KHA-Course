@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            논리 연산자?
+                - 피연산자를 논리적으로 평가 한 뒤 조건에 맞는 피연산자를 반환하는 연산을 수행하는 연산자
+                - 종류
+                    || && !
+        */
+
+        /*
+            AND 연산자(&&)는 피연산자를 왼쪽부터 평가해 평가 결과가 거짓이면 거짓이 나온 피연산자를 즉시 반환하고 
+            거짓이 아니면 마지막에 평가되는 피연산자를 반환한다.
+        */
+        document.write( true && true, "<br>");
+        // 왼쪽 ----->
+        document.write( true && true && true, "<br>");
+
+        /*
+            논리연산자에는 한가지 특징이 있다.
+            어떤 피연산자든 모두 논리형으로 평가한다.
+            숫자형을 쓰거나 문자열을 쓰거나 전부 논리값으로 평가한다.
+
+            자바스크립트의 자료형 중 [빈문자열, undefined, 0, null]만 거짓으로 평가되고 나머지는 참으로 평가한다.
+        */
+        console.log("" && "cat"); // "" = false, "cat" = true, 결과는 false 따라서 ""이 출력된다
+
+        console.log( undefined && "cat"); // undefined = false, 결과는 false 따라서 undefined 가 출력된다.
+
+        console.log( 0 && "cat"); // 0 = false, 결과는 false 따라서 0이 출력된다.
+
+        console.log( null && "cat"); // null = false, 결과는 false 따라서 null이 출력된다.
+
+        /*
+            논리연산자가 반드시 true, false를 반환하는 것이 아니라,
+            평가 결과에 따라 피연산자를 반환하는 특징이 있다.
+        */
+        console.log( "cat" && "dog" );
+        /*
+            "cat"은 자바스크립트에서 참으로 평가된다.
+            && 연산자는 첫번째 피연산자가 참이므로 두번째 피연산자인 "dog"를 평가한다.
+            "dog"도 참으로 평가되므로, 두번째 피연산자인 "dog"를 반환한다.
+        */
+        console.log( "cat" && "dog" && "bird"); // bird가 출력된다.
+
+        /*
+            실무 사용 예시: 로그인 여부에 따라 메뉴 보여주기
+        */
+        const isLogin = true; //로그인 되었다 판단 하는 참의 값 true
+        isLogin && console.log("마이페이지 메뉴 보여주기"); // 로그인 하면 메뉴 보여주기
+
+
+
+        /*
+            OR연산자 ||는 피연산자를 왼쪽부터 평가해 참으로 평가된 피연산자를 즉시 반환한다.
+            만약 모든 피연산자가 참으로 평가되지 않으면 마지막에 평가된 피연산자를 반환한다.
+        */
+
+        console.log( false || true || false); // true가 반환됨.
+        console.log( false || false ); // false 반환됨.
+
+        /*
+            첫번째 피연산자가 false는 거짓으로 평가된다.
+            || 연산자는 첫번째 피연산자가 거짓이므로 두번째 피연산자를 평가한다.
+            두번째 피연산자가 "cat"은 참으로 평가되므로 || 연산자는 "cat"을 반환한다.
+        */
+       console.log( false || "cat" ); // cat이 반환됨.
+
+       /*
+            || 연산자는 첫번째 피연산자가 "dog"가 참이므로 두번째 피연산자를 평가하지 않고 첫번째 피연산자 "dog"를 반환한다.
+       */
+        console.log( "dog" || "cat" ); // dog가 반환됨.
+
+        /*
+            || 연산자는 첫번째 피연산자가 참이면 두번째 피연산자를 평가하지 않고 첫번째 피연산자를 반환한다.
+            첫번째 피연산자가 거짓이면 두번째 피연산자를 평가하고 그 값을 반환한다.
+        */
+
+        /*
+            NOT 연산자 (!) 는 피연산자나 식을 평가한 논리값의 반대값 (true -> false, false -> true)을 반환함
+        */
+        console.log( !false ); // true
+
+        console.log( !( 10 < 20 ) ); // false
+
+        console.log( !( 10 < 20 && 20 < 10 ));
+        //           !( true && false );
+        //           !( false );
+        //           true;
+
+        /*
+            다만 NOT 연산자는 괄호로 식을 어떻게 묶는지에 따라 결과가 다를 수 있다.
+            예를들어 !true && false 식과 !(true && false) 식은 결과값이 다르다.
+        */
+        console.log( !true && false ); // false 출력
+        console.log( !( true && false ) ); // true 출력
+    </script>
+</body>
+</html>

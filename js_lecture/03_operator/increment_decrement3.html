@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증감 연산자 3</title>
+</head>
+<body>
+    <script>
+        let a = 3; let b = 4;
+
+        let c = a++ + ++b + b++ + ++a;
+        // a++ 3 대입 후 a에 4
+        // ++b > 5로 증 시킴
+        // 5 대입하고 b에 6
+        // ++a > 5로 증가
+        // c = 3 + 5 + 5 + 5
+        // a = 5, b = 6
+        console.log(`a: ${a}`);
+        console.log(`b: ${b}`);
+        console.log(`c: ${c}`);
+        document.write("a: ", a, "<br> b: ", b, "<br> c: ", c, "<br>");
+    </script>
+</body>
+</html>

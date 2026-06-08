@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>복합 대입 연산자</title>
+</head>
+
+<body>
+    <!--
+            자바스크립트 코드를 작성하는 영역의 태그 = script 선언문 태그
+        -->
+    <script>
+        /*
+            주제: 복합대입 연산자 기호들 사용
+                += , -= , /= , %= , *=
+        */
+
+        let number = 10;
+
+        /*
+            문제: number 변수에 저장된 10을 20으로 만들어 저장
+
+            방법1: number = 20; 을 작성해서 저장하면 10은 삭제가 되고 20이 최종 저장됨
+            방법2: number 변수에 저장된 10에 + 10을 해서 20으로 만든 뒤 20을 number변수에 다시 저장.
+            방법3: 복합대입 연산자(+=) 를 이용해서 number 변수에 저장된 10을 20으로 저장할 수 있다.
+        */
+        number = number + 10;
+        /*
+            연산 순서1. number + 10 먼저 계산해서 20을 만든다.
+            연산 순서2. 만든 20을 대입연산자(=)를 이용해서 number 변수에 대입해서 저장
+        */
+        // 현재 이 줄에서는 number 변수에 저장된 값이 20인 상태에서 아랫줄에서 계산 해야 한다.
+
+        number += 10;
+        /*
+             풀어서 작성하면?
+             number = number + 10; 과 같다.
+             연산 순서1. number 변수에 저장된 20에 + 10을 해서 30으로 만든다.
+             연산 순서2. 만든 30을 대입연산자 기호를 이용해서 number에 대입해서 최종 저장한다.
+        */
+
+        document.write(number, "<br>");
+        // 현재 위치에서 저장된 number 값은 30
+
+        /*
+             문제: number 변수에 저장된 값을 10 차감해서 다시 저장
+        */
+        number -= 10;
+        /*
+              number = number - 10;
+
+              연산 순서1. number - 10 => 20
+              연산 순서2. number = 20;
+        */
+
+        document.write(number, "<br>");
+        // 현재 위치에서 number 에 저장된 값은 20
+
+        /*
+            문제: number 변수에 저장된 값에 10을 곱해서 다시 저장
+        */
+        number *= 10;
+        document.write(number, "<br>");
+        // 현재 위치에서 number 에 저장된 값은 200
+
+        /*
+            문제: number 변수에 저장된 값에서 10으로 나눈 몫을 다시 저장
+        */
+        number /= 10;
+        document.write(number, "<br>");
+        // 현재 위치에서 number 에 저장된 값은 20
+
+        /*
+            문제: number 변수에 저장된 값에서 10으로 나눈 나머지를 다시 저장
+        */
+        number %= 10;
+        document.write(number, "<br>");
+        // 현재 위치에서 number 에 저장된 값은 0
+    </script>
+</body>
+
+</html>
