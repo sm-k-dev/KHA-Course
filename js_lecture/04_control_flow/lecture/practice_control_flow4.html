@@ -1,31 +1,77 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 제어문 4차시</title>
-<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
-.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
-code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>실습 - 제어문 4차시</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7
+    }
+
+    .g {
+      background: #fff7e8;
+      border: 1px solid #f0d999;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #6b4e16
+    }
+
+    code {
+      background: #eee;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace
+    }
+  </style>
+</head>
+
+<body>
   <h1>⌨️ 실습 - 골드 모으기 (while)</h1>
   <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
   <script>
-/*
-    주제 : while 반복문
+    /*
+        주제 : while 반복문
+    
+        - 작성 공식 : while (조건) { 조건이 true 인 동안 반복 }
+        - 주의 : 반복 안에서 조건을 false 로 만들 코드가 없으면 무한반복!
+        - "체력이 남아있는 동안" 같은 상태 기반 반복에 사용
+    */
 
-    - 작성 공식 : while (조건) { 조건이 true 인 동안 반복 }
-    - 주의 : 반복 안에서 조건을 false 로 만들 코드가 없으면 무한반복!
-    - "체력이 남아있는 동안" 같은 상태 기반 반복에 사용
-*/
+    // [1] 'gold' 변수에 0을 저장하세요.
+    //     작성 공식: let 변수이름 = 값;
+    let gold = 0;
 
-// [1] 'gold' 변수에 0을 저장하세요.
-//     작성 공식: let 변수이름 = 값;
+    // [2] gold 가 100 미만인 동안 25씩 늘리며 출력하세요.
+    //     작성 공식: while (조건) { gold += 값; console.log(gold); }
+    while ( gold < 100 ) {
+      document.write("gold: " + gold + "<br>");
+      gold += 25;
+    }
 
-// [2] gold 가 100 미만인 동안 25씩 늘리며 출력하세요.
-//     작성 공식: while (조건) { gold += 값; console.log(gold); }
+    // [3] 'hp' 변수에 100을 저장하세요.
+    let hp = 100;
 
-// [3] 'hp' 변수에 100을 저장하세요.
+    // [4] hp 가 0보다 큰 동안 30씩 줄이며 출력하세요.
+    while ( hp > 0 ) {
+      document.write("hp = " + hp + "<br>");
+      hp -= 30;
+    }
 
-// [4] hp 가 0보다 큰 동안 30씩 줄이며 출력하세요.
+    // [5] 'count' 변수에 1을 저장하세요.
+    let count = 1;
 
-// [5] 'count' 변수에 1을 저장하세요.
+    // [6] count 가 5 이하인 동안 출력하고 1씩 늘리세요.
+    //     주의: count++ 가 없으면 무한반복!
+    while (count <= 5) {
+      document.write("count = " + count + "<br>");
+      count++;
+    }
+  </script>
+</body>
 
-// [6] count 가 5 이하인 동안 출력하고 1씩 늘리세요.
-//     주의: count++ 가 없으면 무한반복!
-  </script></body></html>
+</html>
