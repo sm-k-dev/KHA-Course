@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>삼항 조건 연산자 2</title>
+</head>
+<body>
+    <script>
+        /*
+            주제: 삼항 조건 연산자식을 이용해 변수에 저장된 값이 홀수인지 짝수인지 판별하는 간단한 예
+        */
+        let num = 1; let result; // result 는 undefined
+
+        /*
+            삼항 조건 연산자식 작성 방법
+                조건식 ? 조건식의 결과가 참이면 실행될 코드 : 조건의 결과가 거짓이면 실행될 코드;
+        */
+        // num 변수 메모리에 저장된 값이 짝수 이면? result 변수에 "짝수" 문자열 저장, 홀수이면? result 변수에 "홀수" 문자열 저장.
+        result = ((num % 2) === 0 ? "짝수" : "홀수");
+        console.log(`result: ${result}`);
+
+        num = 10; // num 변수에 저장된 기존의 값 1은 삭제 되고, 10이 최종 저장된다.
+        /*
+            num 변수에 저장된 값이 짝수가 아니냐? 조건식을 작성하는데
+            console.log를 이용해 "홀수이다" 출력, 그 반대일때는 "짝수이다"라고 출력
+            삼항 조건 연산자 식 활용
+        */
+        (num % 2) !== 0 ? console.log("홀수이다") : console.log("짝수이다");
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>삼항 조건 연산자 1</title>
+</head>
+<body>
+    <script>
+        /*
+            주제: typeof 연산자와 삼항 조건 연산자식을 함께 사용하는데
+                    변수의 자료형에 따라 다른 동작을 수행하는 예제
+        */
+        // varA 이름의 상수메모리를 만들고 "안녕하세요" 문자열 저장
+        const varA = "안녕하세요";
+
+        /*
+            삼항 조건 연산자 식 작성 문법
+                조건식 ? 조건식의 결과가 참 일때 실행 될 코드 : 조건식의 결과가 거짓일 경우 실행 될 코드;
+        */
+        // varA 상수 메모리에 저장된 데이터 (자료형)가 string 문자열 이라면? "문자열" 을 출력하고
+        //                                        string 문자열이 아니라면? "문자열 아님"을 출력하자.
+
+        typeof varA === "string" ? console.log("문자열") : console.log("문자열 아님");
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>삼항 조건 연산자 4</title>
+</head>
+<body>
+    <script>
+        /*
+            주제 : 삼항 조건 연산자식을 이용하여 엘레베이터가 올라가고 내려가는 동작을 구현해 보자.
+            이 경우 각 버튼을 누를때의 동작을 별도의 코드로 나누어 작성할 수 있음
+        */
+        let currentFloor = 1; // 현재 위치 층
+        let button = ''; // 'up' 또는 'down'
+        // ---------------------------------------------------------------------------
+        // 위쪽 화살표를 눌렀다고 가정하고 'up' 문자열 button 변수에 저장
+        button = 'up';
+
+        // 삼항 조건 연산자식 활용
+        // 위쪽 화살표 'up' 눌렀으므로 direction 변수 메모리에는 'up' 문자열 저장
+        let direction = button === 'up' ? 'up' : 'down';
+
+        // 위쪽 화살표 'up'을 눌렀다면? 2층으로 만들어서 다시 currentFloor에 저장시키자
+        currentFloor = direction === 'up' ? currentFloor + 1 : currentFloor - 1;
+
+        // 출력 -> 엘레베이터가 '올라갑니다.' 현재 층: 2층
+        console.log(`엘레베이터가 ${direction === 'up' ? '올라갑니다' : '내려갑니다'}. 현재 층: ${currentFloor} 층`);
+
+        // ----------------------------------------------------------------------------
+        // 아래쪽 화살표를 눌렀다고 가정하고 'down' 문자열 button 변수에 저장
+        button = 'down';
+
+        // 아래쪽 화살표를 눌렀다면? 누른 'down' 문자열을 direction 변수에 다시 저장
+        direction = button === 'down' ? 'down' : 'up';
+
+        // 아래쪽 화살표를 누르면 2층에서 1층으로 내려가게 하기 위해 1을 currentFloor변수에 다시 저장
+        currentFloor = direction === 'down' ? currentFloor - 1 : currentFloor + 1;
+
+        // 출력 -> 엘레베이터가 '녀라갑니다.' 현재 층: 1층
+        console.log(`엘레베이터가 ${direction === 'down' ? '내려갑니다' : '올라갑니다'}. 현재 층: ${currentFloor} 층`);
+    </script>
+</body>
+</html>
