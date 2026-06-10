@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            문제2: 계절 판별기
+
+            사용자에게 월을 입력받아 해당 월의 계절을 출력하는 프로그램을 작성하세요 (switch문 활용)
+
+            3~5: "봄"
+            6~8: "여름"
+            9~11: "가을"
+            12, 1, 2: "겨울"
+        */
+
+        // 순서1. prompt 함수로 현재월을 입력받아 얻습니다.
+        // 순서2. parseInt 문자를 정수로 변환, parseInt 함수를 호출할때 첫번째 자리에 변수를 전달 하고, 두번째 자리에 변환할 10진수 값 10 전달
+        let mon = parseInt(prompt("지금이 몇 월 달인지 작성 해 주세요", "1"), 10);
+
+        switch ( mon ) {
+            
+            // mon 변수에 저장된 입력한 달이 3, 4 또는 5와 같냐
+            case 3 : case 4 : case 5 : // 3 ~ 5 월이면?
+                    message = "봄";
+                break;
+            
+            case 6 : case 7 : case 8 :
+                    message = "여름";
+                break;
+
+            case 9 : case 10 : case 11 :
+                    message = "가을";
+                break;
+
+            case 1 : case 2 : case 12 :
+                    message = "겨울";
+                break;
+        }
+
+        document.write(message);
+    </script>
+</body>
+</html>

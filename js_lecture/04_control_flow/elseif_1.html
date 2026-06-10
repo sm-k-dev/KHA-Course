@@ -11,6 +11,51 @@
             문제: 사이트 방문자에게 현재 몇월 달인지 입력 받습니다.
                     입력받은 월에 따라 각각 다른 문장을 출력하는 예
         */
+        
+        // 순서1. 웹사이트 방문자에게 현재 몇월 달인지 입력 받아 mon 변수에 저장
+        let mon = prompt("현재 몇월 달 인가요?", "1");
+
+        // 순서2. 입력받은 현재 몇월 달인지의 숫자 값에 따라 각각 다른 문장을 출력 시킵니다.
+        // if  else is  else  전체 구문을 사용해서 작성합니다.
+
+        if ( mon === 1 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 2 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 3 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 4 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 5 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 6 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 7 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 8 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 9 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 10 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else if ( mon === 11 ) {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        } else {
+            document.write("지금은 " + mon + " 월 달 입니다. <br>");
+        }
+
+        // 사이트 이용자에게 입력 받은 현재 월이 9, 10, 11 중에 해당하는지 조건식 1을 사용해 확인합니다.
+        if ( mon >= 9 && mon <= 11 ) {
+            document.write("독서의 계절 가을이네요! <br>"); // 클라이언트의 웹브라우저로 출력 (응답)
+        } // 사이트 이용자에게 입력 받은 현재 월이 6, 7, 8 중에 해당하는지 조건식 2을 사용해 확인합니다.
+        else if ( mon >= 6 && mon <= 8 ) {
+            document.write("여행 가기 좋은 여름이네요! <br>");
+        } // 사이트 이용자에게 입력 받은 현재 월이 3, 4, 5 중에 해당하는지 조건식 3을 사용해 확인합니다
+        else if ( mon >= 3 && mon <= 5 ) {
+            document.write("햇살 가득한 봄이네요! <br>");
+        } else { // 사이트 이용자에게 입력 받은 현재 월이 3 ~ 11 중에 해당하지 않는다면
+            document.write("스키의 계절 겨울이네요! <br>");
+        }
     </script>
 </body>
 </html>

@@ -49,32 +49,62 @@
     document.write("전투 시작! <br>");
     document.write("몬스터 " + monsterCount + "마리 <br>");
 
+    document.write("<br>");
+
     // ===== 2단계: for 반복으로 몬스터와 전투 =====
     // [3] i 를 1 부터 monsterCount 까지 반복하세요.
     //     작성 공식: for (let i=1; i<=monsterCount; i++) { ... }  ↓
-    for ( let i = 1 ; i <= monsterCount ; i ++ ) {
-      document.write()
-    }
 
     //   [4] (반복 안) i 가 짝수면(i % 2 === 0) "몬스터 i 치명타 처치! +20" 출력 + score += 20,
     //       아니면 "몬스터 i 처치! +10" 출력 + score += 10
     //       작성 공식: if (i % 2 === 0) { ...; score += 20; } else { ...; score += 10; }  ↓
 
+    for ( let i = 1 ; i <= monsterCount ; i ++ ) {
+      if ( i % 2 === 0 ) {
+        document.write("몬스터 " + i + " 치명타 처치! + 20 <br>");
+        score += 20;
+      } else {
+        document.write("몬스터 " + i + " 치명타 처치! + 10 <br>");
+        score += 10;
+      }
+    }
+
     // (※ 반복 끝 — 닫는 중괄호 } 를 잊지 마세요)
+
+    document.write("<br>");
 
     // ===== 3단계: 최종 점수 =====
     // [5] "전투 종료! 최종 점수: " 와 score 를 이어 붙여 출력하세요.  ↓
+
+    document.write("전투 종료! 최종 점수: " + score + "<br>");
+
+    document.write("<br>");
 
     // ===== 4단계: 등급 판정 (else if) =====
     // [6] score 80 이상 "S등급", 60 이상 "A등급", 그 외 "B등급" 을 출력하세요.
     //     작성 공식: if(조건){ } else if(조건){ } else { }  ↓
 
+    if ( score >= 80 ) {
+      document.write("S 등급 <br>");
+    } else if ( score >= 60 ) {
+      document.write("A 등급 <br>");
+    } else {
+      document.write("B 등급 <br>");
+    }
+
+    document.write("<br>");
+
     // ===== 5단계: while 로 보너스 골드 =====
     // [7] 보너스 bonus 에 0 을 저장하세요.  ↓
+    let bonus = 0;
 
     // [8] bonus 가 score 미만인 동안, 30씩 늘리며 출력하세요.
     //     주의: += 가 있어야 무한반복 안 함
     //     작성 공식: while (bonus < score) { bonus += 30; console.log(bonus); }  ↓
+    while( bonus < score ) {
+      bonus += 30;
+      document.write("bonus = " + bonus + "<br>");
+    }
 
     // ✅ 5마리 전투 → 점수70 → A등급 → 보너스 30~90 이 나오면 성공!
   </script>

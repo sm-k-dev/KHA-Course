@@ -1,38 +1,117 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="UTF-8"><title>제어문 실습</title>
-<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>제어문 실습</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.8;
+            font-size: 16px
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 4px
+        }
+
+        input {
+            padding: 8px;
+            font-size: 15px;
+            width: 250px
+        }
+
+        #out {
+            margin-top: 16px;
+            padding: 12px;
+            background: #eef1fb;
+            border-radius: 8px;
+            min-height: 24px
+        }
+    </style>
 </head>
+
 <body>
-<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
-<script>
-/*
-    주제 : else if 다중 분기
+    <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+    <script>
+        /*
+            주제 : else if 다중 분기
+        
+            - 갈림길이 셋 이상일 때 else if 로 조건을 추가
+            - 위에서부터 검사해 '처음 맞는 것 하나만' 실행하고 끝남
+            - 조건 순서가 중요 : 좁은(큰) 조건을 위에 둠
+            - 게임에서 등급/단계 판정에 사용 (점수→등급 등)
+        */
 
-    - 갈림길이 셋 이상일 때 else if 로 조건을 추가
-    - 위에서부터 검사해 '처음 맞는 것 하나만' 실행하고 끝남
-    - 조건 순서가 중요 : 좁은(큰) 조건을 위에 둠
-    - 게임에서 등급/단계 판정에 사용 (점수→등급 등)
-*/
+        // [1] 'score' 변수에 85를 저장하세요.
+        //     작성 공식: let 변수이름 = 값;
+        let score = 85;
 
-// [1] 'score' 변수에 85를 저장하세요.
-//     작성 공식: let 변수이름 = 값;
+        // [2] 90 이상이면 "A", 80 이상이면 "B", 그 외엔 "C"를 출력하세요.
+        //     작성 공식: if(조건){ } else if(조건){ } else { }
+        if ( score >= 90 ) {
+            document.write("A");
+            document.write("<br>");
+        } else if ( score >= 80 ) {
+            document.write("B");
+            document.write("<br>");
+        } else {
+            document.write("C");
+            document.write("<br>");
+        }
 
-// [2] 90 이상이면 "A", 80 이상이면 "B", 그 외엔 "C"를 출력하세요.
-//     작성 공식: if(조건){ } else if(조건){ } else { }
+        // [3] 'hp' 변수에 30을 저장하세요.
+        let hp = 30;
 
-// [3] 'hp' 변수에 30을 저장하세요.
+        // [4] hp 70 이상 "안전", 30 이상 "주의", 그 외 "위험"을 출력하세요.
+        if ( hp >= 70 ) {
+            document.write("안전");
+            document.write("<br>");
+        } else if ( hp >= 30 ) {
+            document.write("주의");
+            document.write("<br>");
+        } else {
+            document.write("위험");
+            document.write("<br>");
+        }
 
-// [4] hp 70 이상 "안전", 30 이상 "주의", 그 외 "위험"을 출력하세요.
+        // [5] 'level' 변수에 25를 저장하세요.
+        let level = 25;
 
-// [5] 'level' 변수에 25를 저장하세요.
+        // [6] 레벨 30 이상 "고수", 10 이상 "중수", 그 외 "초보"를 출력하세요.
+        if ( level >= 30 ) {
+            document.write("고수");
+            document.write("<br>");
+        } else if ( level >= 10 ) {
+            document.write("중수");
+            document.write("<br>");
+        } else {
+            document.write("초보");
+            document.write("<br>");
+        }
 
-// [6] 레벨 30 이상 "고수", 10 이상 "중수", 그 외 "초보"를 출력하세요.
+        // [7] 'job' 변수에 "마법사"를 저장하세요.
+        let job = "마법사";
 
-// [7] 'job' 변수에 "마법사"를 저장하세요.
-
-// [8] job 이 "전사"면 "근접", "마법사"면 "원거리", 그 외 "특수"를 출력하세요.
-//     (문자열도 === 로 비교)
-</script>
+        // [8] job 이 "전사"면 "근접", "마법사"면 "원거리", 그 외 "특수"를 출력하세요.
+        //     (문자열도 === 로 비교)
+        if ( job === "전사" ) {
+            document.write("근접");
+            document.write("<br>");
+        } else if ( job === "마법사" ) {
+            document.write("원거리");
+            document.write("<br>");
+        } else {
+            document.write("특수");
+            document.write("<br>");
+        }
+    </script>
 </body>
+
 </html>
