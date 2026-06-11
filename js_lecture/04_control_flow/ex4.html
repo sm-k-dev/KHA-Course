@@ -69,6 +69,75 @@
         }
 
         document.write( num1, operator, num2, " = ", result );
+
+        /*
+            parseFloat() 함수란? parsing : 구문 분석, 특정 형식의 데이터를 분석하여 컴퓨터가 이해하고 처리하기 쉬운 구조로 변환하는 과정
+                - parseFloat() 함수는 문자열을  실수(소수 포함 숫자)데이터로 변환하는 JavaScript의 내장 함수입니다.
+                - parseFloat() 문법
+                
+                    parseFloat(string);
+            
+                    string : 변환할 문자열
+                        반환값 : 변환된 실수 (소수점 포함 숫자)
+                        변환할 수 없으면 NaN(Not-a-Number) 반환
+
+                - parseFloat()의 동작 방식
+                    1️. 문자열에서 숫자가 시작되면 해당 숫자 부분만 변환
+                    2️. 공백은 무시하지만, 숫자가 아닌 문자를 만나면 변환을 멈춤
+                    3️. 변환할 숫자가 없으면 NaN 반환	
+
+            정리
+                함수						변환 대상				반환값
+                parseInt()				정수 변환				소수점 이하 버림
+                parseFloat()			실수 변환				소수점 유지
+                Number()			전체 변환 가능 여부 확인		변환 불가하면 NaN
+
+                체크포인트) parseFloat()은 소수점 있는 숫자 변환에 적합
+                체크포인트) parseInt()는 정수 변환 (소수점 버림)
+                체크포인트) Number()는 전체 문자열이 숫자인 경우 변환 가능	
+
+            결론: parseFloat()은 소수점을 포함한 숫자로 변환할 때 필수적인 함수입니다!
+        */
+
+        // parseFloat() 사용 예제
+        /*   
+            1) 기본적인 숫자 변환 : 소수점이 있는 숫자를 변환할 때 사용합니다
+                console.log(parseFloat("3.14"));   // 3.14
+                console.log(parseFloat("10.99"));  // 10.99
+                console.log(parseFloat("0.123"));  // 0.123
+                console.log(parseFloat("-5.67"));  // -5.67 
+                
+            2) 문자열에서 숫자 추출 (숫자가 먼저 나오는 경우) 
+                console.log(parseFloat("3.14abc"));   // 3.14
+                console.log(parseFloat("10.5px"));    // 10.5
+                console.log(parseFloat("99.99%"));    // 99.99
+                console.log(parseFloat("0.56abc123")); // 0.56
+            
+                숫자가 시작되면 변환을 진행하지만, 숫자가 아닌 문자를 만나면 변환을 멈춤.
+                
+            3) 숫자로 변환할 수 없는 경우 (NaN 반환)	 
+                
+                console.log(parseFloat("abc3.14"));  // NaN
+                console.log(parseFloat("hello"));    // NaN
+                console.log(parseFloat(" "));        // NaN
+                console.log(parseFloat(""));         // NaN
+
+                숫자로 변환할 수 없는 문자열은 NaN을 반환합니다.
+                
+            4) 숫자 앞뒤 공백 처리	 
+            
+                console.log(parseFloat("   45.67   ")); // 45.67
+                console.log(parseFloat("\t 99.99\n"));  // 99.99
+
+                공백, 탭, 줄바꿈 문자는 자동으로 무시됩니다.
+                
+                5) parseInt()와 parseFloat()의 차이
+                
+                console.log(parseInt("3.14"));   // 3  (정수 변환)
+                console.log(parseFloat("3.14")); // 3.14 (실수 변환)
+
+                parseInt()는 소수점 이하를 버림, parseFloat()은 소수점까지 유지.
+        */
     </script>
 </body>
 </html>
