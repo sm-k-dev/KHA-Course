@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            for 반복문 작성
+
+                i 변수의 초기값을 1로 저장하여 초기식; 을 작성하고
+                i 변수의 값을 1씩 증가시키는 증감식 작성
+                i 변수의 값이 10보다 작거나 같을때 까지의 조건식을 작성하여 반복시킨다.
+
+                i 변수에 저장된 숫자 1부터 10 사이의 숫자 중에서 1 2 3 4 5 만 반복해서 출력.
+        */
+
+        for ( let i = 1 ; i <= 10 ; i++ ) {
+            if ( i <= 5 ) {
+                document.write("i = " + i + "<br>");
+            } else {
+                document.write("원래는 출력되지 않음= " + i + "<br>");
+                break;
+            }
+        }
+
+        document.write("----------------------------------------------------- <br>");
+
+        for ( i = 1 ; i <= 10 ; i++ ) {
+
+            // 아래의 document.write(); 코드에 의해 1 2 3 4 5 까지만 출력되게 하고
+            // i 변수의 값이 6과 같으면? for (...) {} 중괄호 빠져나가 for문 종료시키자 -> break;
+            if ( i === 6 ) {
+                break; // <- 깨트린다, 빠져나간다. 강제로 for {} 중괄의 } 를 빠져나감
+            }
+            document.write("i = " + i + "<br>");
+        }
+
+        document.write("----------------------------------------------------- <br>");
+
+        // 위에 작성한 for 반복문 코드 전체를 while 반복문 코드로 모두 변경해서 같은 숫자가 출력되게 해보기
+
+        i = 1;
+        while ( i <= 10 ) {
+            if ( i === 6 ) {
+                break;
+            }
+            document.write("i = " + i + "<br>");
+            i++;
+        }
+    </script>
+</body>
+</html>

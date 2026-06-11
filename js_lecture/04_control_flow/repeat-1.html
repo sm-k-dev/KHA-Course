@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // "안녕하세요" 10번 열줄 출력
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        document.write("안녕하세요<br>");
+        /*
+            위 구문은 반복문을 사용하지 않고 순수 출력문을 이용해 
+            "안녕하세요<br>"문자열을 10번 반복해서 출력했다.
+            
+            단점: 이렇게 작성하면 코드 줄수가 늘어날 뿐만 아니라
+                프로그램 속도도 코드줄에 의해서 매우 느려질수도 있다.
+        */
+
+        // 
+        /*
+            위 단점을 보완해서 같은 문자열 등의 데이터들을 한줄의 코드만 작성해서 
+            10줄을 출력하기 위해 "반복문"이 등장
+        */
+        document.write("<br>-----------------------------------<br>");
+
+        // i 변수에 저장되는 값이 11보다 작을때까지만
+        // 아래 document.write("안녕하세요<br>"); 한 줄을 10번 반복해서 출력
+        for ( let i = 1 ; i < 11 ; i++ ) {
+            // 10번 반복해서 출력할 구문 한줄 작성
+            document.write("안녕하세요 " + i + "<br>");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript"> 
+    // type이란 type = "text/javascript" 뜻은 script 태그 사이에 text도 넣을 수 있고 javascript도 넣을 수 있다. 
+    // 최신버전 HTML5에선 생략 할 수 있다.
+
+    /*
+        문제: while 반복문을 사용하여 숫자 1부터 ~ 30까지 숫자중에서
+            2의 배수 이면서 6의 배수인 숫자만 반복해서 출력
+    */
+    
+    let i = 1;
+
+    while ( i <= 30 ) {
+        if ( (i % 2 === 0) && (i % 6 === 0) ) {
+            document.write("i: " + i + "<br>");
+        }
+        i++;
+    }
+        
+    </script>
+</body>
+</html>
