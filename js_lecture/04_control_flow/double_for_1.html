@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            구구단 2단 부터 9단까지 결과를 반복문을 이용해서 화면에 출력하는 예제입니다.
+        */
+        
+        // 바깥쪽 for 문: 2단부터 ~ 9단까지 차례대로 반복 진행합니다.
+        for ( let i = 2 ; i <= 9 ; i++ ) { // i 변수는 현재 몇 단인지 의미 ( 2단 ~ 9단 )
+
+            // 현재 몇 단인지 크게 표시
+            document.write("<h1>", i , "단 </h1> <br>");
+            
+            // 안쪽 for문: 각 단마다 곱하는 수 ( 1 ~ 9 )만큼 차례로 반복합니다.
+            for ( let j = 1 ; j <= 9 ; j++ ) { // j 변수에 저장되는 값들은 곱하는 숫자들 ( 1 ~ 9 )
+                document.write( i , " X " , j , " = ", i * j, "<br>");
+            } // 안쪽 for문 닫기
+            document.write("<br>");
+        } // 바깥 for문 닫기
+    </script>
+</body>
+</html>

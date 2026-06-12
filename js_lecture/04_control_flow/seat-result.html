@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 테이블과 셀에 대해 동일한 스타일 적용 */
+        table, td {
+            /* 테이블과 셀의 테두리 선 설정 */
+            border: 1px solid green;
+
+            /* 테이블 바깥 테두리 선과 셀의 바깥 테두리를 합쳐서 중복되지 않도록 하기 */
+            border-collapse: collapse;
+        }
+
+        /* 셀에 대한 추가 스타일 정의 */
+        td {
+            padding: 10px;
+            font-size: 0.9em; /* em은 상대 크기, body나 html 요소의 기본 값은 16px, 1em = 16px */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!--
+        주제: 입장객 수와 한 줄에 앉을 수 있는 사람의 수를 입력받아
+            좌석 배치도를 생성하는 프로그램
+    -->
+    <h1> 자리 배치도 </h1>
+    <script>
+        /*
+            i와 j는 반복문에서 사용할 변수
+            i는 현재 줄(행, 세로에 몇 칸인지, n번째 가로줄, record, 행번호 = index)의 위치번호가 저장된다.
+            j는 현재 줄(열, 가로 몇 칸인지, n번째 세로줄)의 위치번호가 저장된다.
+        */
+        let i, j;
+
+        // 사용자에게 전체 입장객 수를 prompt함수를 이용해서 입력 받아 memNum 변수에 저장
+        let memNum = parseInt( prompt("입장객은 몇 명 인가요?"), 10 );
+        // 결론: memNum 변수에 저장되는 값은 입력받은 전체 입장객 수가 저장된다.
+
+        // 사용자에게 한줄에 앉을 수 있는 사람 수 를 입력받아 colNum 변수에 저장
+        let colNum = parseInt( prompt("한 줄에 몇 명씩 앉습니까?"), 10 );
+        // 결론: colNum 변수에 저장되는 값은 한줄에 앉을 수 있는 사람의 수 저장
+
+        // 전체 줄(행) 수를 계산하여 저장할 rowNum변수 선언
+        let rowNum;
+        if ( memNum % colNum === 0 ) {
+            rowNum = memNum / colNum;
+        } else {
+            rowNum = (memNum / colNum) + 1;
+        }
+
+        document.write("<table>"); // 테이블의 시작 태그
+
+            for ( i = 0 ; i < rowNum ; i++ ) {
+
+                document.write("<tr>"); // 각 줄은 <tr> 태그로 시작합니다.
+                
+                // 한 줄에 앉을 수 있는 사람 수 만큼 반복
+                for ( j = 1 ; j <= colNum ; j++ ) {
+                    
+                    /*
+                        현재 좌석 번호를 계산
+                        seatNo = i * colNum + j;
+                    */
+                    let seatNo = ( i * colNum ) + j;
+                    
+                    if ( seatNo > memNum ) {
+                        break;
+                    }
+
+                    document.write("<td>"); // 
+
+                        document.write( seatNo + " 번 좌석" );
+                    
+                    document.write("</td>"); // 
+                }
+                
+                document.write("</tr>"); // 각 줄은 < / tr > 태그로 종료됩니다.
+            }
+
+        document.write("</table>"); // 테이블 표의 끝
+    </script>
+</body>
+</html>

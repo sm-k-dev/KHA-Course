@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- css 작성할 선언문 태그 영역 -->
+    <style>
+        /*
+            바깥쪽 for에서 9번 반복되면서 출력되는 모든 div를 한번에 선택해서 가져와 스타일 정의
+        */
+        div {
+            display: inline-block; /* 인라인 블록으로 설정하여 가로로 나열되게 한다. */
+            border: 1px solid grey; /* 바깥 경계선을 설정 */
+            padding: 0 20px 30px 20px; /* 패딩: 안쪽 여백, 위쪽 0, 오른쪽 20, 아래쪽 30, 왼쪽, 20 */
+            margin: 15px; /* 마진: 바깥 여백, 모든 방향으로 15px */
+            text-align: center;
+            line-height: 2; /* 줄 간격 글자 크기의 2배로 설정 */
+        }
+    </style>
+</head>
+<body>
+    <script>
+        /*
+            [주제]
+            중첩 for문으로 1단부터 9단까지 구구단을 HTML + CSS 형태로 화면에 출력한다.
+        */
+        for ( let i = 1 ; i <= 9 ; i++ ) {
+            // 각 단 마다 CSS가 적용된 박스 (div)를 시작합니다.
+            // 위쪽 <style> 에 div { border, padding, margin ... 이 적용됩니다. }
+            document.write("<div>") // document.write = body 사이에 보내서 쓰겠다.
+            document.write("<h3>", i , "단 </h3> <br>");
+            
+            for ( let j = 1 ; j <= 9 ; j++ ) {
+                document.write( i , " X " , j , " = ", i * j, "<br>");
+            }
+            document.write("</div>");
+        }
+    </script>
+</body>
+</html>

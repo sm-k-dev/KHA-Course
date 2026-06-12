@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            주제: for 반복문에서 continue 문을 사용하여
+                1부터 10까지의 숫자중에서 홀수만 반복해서 출력
+        */
+
+        for ( let i = 1 ; i <= 10 ; i++ ) {
+
+            // i 변수에 저장된 값이 짝수면? 
+            // i++ 증가연산자를 사용해서 i 변수값 1증가
+            // 더 이상 아래의 document.write(i, "<br>"); 
+            // 짝수를 출력하지 못하게 하자
+            if ( i % 2 === 0 ) {
+                continue; // i++ 증가연산을 해서 증감연산 하러 올라가 라고 명령하는 예약어
+            }
+
+            // i 변수에 저장되는 값이 홀수 일때만 출력되게 할 수 있다.
+            document.write("i = ", i, "<br>");
+        }
+    </script>
+</body>
+</html>
