@@ -263,9 +263,9 @@ from	member;
 
 -- 실습4. 회원테이블(member)에서 회원그룹이름(mem_name)이 '블랙핑크'가 저장되어 있는 위치의 행이 있는 모든 열의 데이터를 조회 = 레코드 조회
 -- 문법
---		select	조회할_데이터가_저장된_열_명
---		from	조회할_테이블_명
---		where	조건에서_사용할_데이터들이_저장된_열_명 = 비교할_조건값;
+	-- select	조회할_데이터가_저장된_열_명
+	-- from	조회할_테이블_명
+	-- where	조건에서_사용할_데이터들이_저장된_열_명 = 비교할_조건값;
 select	*
 from	member
 where	mem_name = '블랙핑크';
@@ -274,3 +274,224 @@ where	mem_name = '블랙핑크';
 select	*
 from	member
 where	mem_number = 4;
+
+-- 실습6. 관계(비교) 연산자 기호 <=, >=, <, >, =
+	-- member 테이블에서 회원 그룹 평균키들 중에서
+	-- 데이터가 162 이상인 회원 그룹의 아이디들, 회원그룹명들 조회
+select	mem_id, mem_name
+from	member
+where	height >= 162;
+
+-- 실습7-1. 관계(비교) 연산자 기호 <=, >=, <, >, =
+-- 논리 연산자 기호 AND OR
+	-- member 테이블에서 회원그룹 평균키 (height 열에 저장된 데이터들)가 165 이상이면서
+	-- 그룹 인원(mem_number)이 6명 초과인 회원 그룹의
+	-- mem_name, height, mem_number
+	select	mem_name, height, mem_number
+	from	member
+	where	height >= 165
+	and 	mem_number > 6;
+
+	-- member 테이블에서 회원그룹 평균키 (height 열에 저장된 데이터들)가 165 이상 이거나
+	-- 그룹 인원(mem_number)이 6명 초과인 회원 그룹의
+	-- mem_name, height, mem_number
+	select	mem_name, height, mem_number
+	from	member
+	where	height >= 165
+	or		mem_number > 6;
+    
+    -- 실습7-1-1. BETWEEN AND 절 미사용
+    -- 회원그룹 평균키 163 이상 이면서 165 이하인 회원 그룹의 그룹명, 평균키, 그룹인원수 조회
+    select	mem_name, height, mem_number
+    from	member
+    where	height >= 163
+    and		height <= 165;
+    
+    -- BETWEEN AND 절 작성 문법
+    /*
+		select 열명 from 테이블명
+        where 비교할_값들이_저장된_열명 between 범위의_최소값 and 범위의 최대값;
+    */
+    -- 실습7-1-2. BETWEEN AND 절 미사용
+    -- 회원그룹 평균키 163 이상 이면서 165 이하인 회원 그룹의 그룹명, 평균키, 그룹인원수 조회
+    select	mem_name, height, mem_number
+    from	member
+    where	height between 163 and 165;
+
+-- 실습8. 회원그룹의 평균키가 165이상이거나 또는 그룹인원이 6명 초과인
+-- 			회원그룹들의 그룹명, 그룹평균키, 그룹인원수 조회
+select	mem_name, height, mem_number
+from	member
+where	height >= 165 or mem_number > 6;
+
+-- 실습8-1. 회원그룹이 사는 지역이 경기 또는 전남 또는 경남 중 한 곳이라도 해당되는 그룹의 이름, 주소 조회
+-- IN() 절 사용하지 않고
+select	mem_name, addr
+from	member
+where	addr = '경기' or addr = '전남' or addr = '경남';
+
+-- 실습8-2. 회원그룹이 사는 지역이 경기 또는 전남 또는 경남 중 한 곳이라도 해당되는 그룹의 이름, 주소 조회
+-- IN() 절 사용
+select	mem_name, addr
+from	member
+where	addr in ('경기', '전남', '경남');
+
+/*
+	LIKE
+    - 문자열 데이터의 일부 글자가 옆의 데이터로 포함되어 있는 행에 대한 열의 값 조회 하는 예약어.
+		예를 들어 회원그룹명의 첫 글자가 '우'문자로 시작하는 단어를 포함하는 데이터가 저장된 행에
+        관한 열의 데이터를 조회할 수 있다.
+	- 문법
+		where 비교할_데이터가_저장된_열명 LIKE '문자%'
+*/
+-- 실습9. member 테이블에서 회원그룹명 중에서 '우'문자로 시작하는 단어가 포함된 데이터가 있으면
+-- 그 행에 관한 모든 열의 데이터들 조회
+select	*
+from	member
+where	mem_name like '우%';
+
+-- 실습9-1. LIKE절에 _ 언더바 기호 사용 가능
+-- member 테이블에서 회원그룹명 중에서 앞 두글자는 상관 없고 뒷 단어가 '핑크'인 => '__핑크' 언더바 두개, 언더바 하나당 한 글자
+-- 회원그룹의 이름이 저장되어 있으면? 이름이 저장된 행에 관한 모든 열의 데이터를 조회
+select	*
+from	member
+where 	mem_name like '__핑크';
+
+-- 실습9-2. LIKE 절에 %단어% 사용
+-- member 테이블에서 회원그룹면 중에서 '마' 라는 문자가 포함되어 있는 그룹명이 저장되어 있으면?
+-- 그 그룹의 행에 관한 모든 열의 데이터를 조회
+select	*
+from	member
+where	mem_name like '%마%';
+
+-- 실습9-2-1. LIKE 절에 '%단어' 사용
+-- member 테이블에서 회원그룹명 중에서 '친구' 단어로 끝나는 그룹명이 저장되어 있으면?
+-- 그 그룹의 행에 관한 모든 열의 데이터를 조회
+select	*
+from	member
+where	mem_name like '%친구';
+
+/*
+	서브쿼리 구문
+		- 안쪽 SELECT 구문을 이용하여 조회한 결과 데이터들을
+			바깥쪽 SELECT 구문을 이용하여 다시 조회하는 전체 구문을 말함.
+		- 문법
+			SELECT * FROM 테이블명
+			WHERE 조건열명 > (SELECT * FROM 테이블명
+							WHERE 조건열명 = 조건열의 값들과 비교할 값);
+*/
+-- 실습10-1. 서브쿼리를 사용하지 않고 두개의 SELECT 문장 사용 예
+-- 문제. 회원 그룹명이 에이핑크인 회원그룹의 평균키보다 큰 그룹회원의 그룹이름과 그룹평균키 조회
+	-- 순서1. 에이핑크 그룹의 평균키 조회
+	select	height
+	from	member
+	where	mem_name = '에이핑크';
+
+	-- 순서2. 에이핑크 그룹의 평균키는 순서1.에서 조회 했으므로
+	-- 		where 조건절의 조건값 자리에 164를 대입해서 164보다 큰 그룹의 이름과 평균키를 조회
+	select	mem_name, height
+	from	member
+	where	height > 164;
+
+-- 실습10-2. 서브쿼리 사용
+-- 문제. 회원 그룹명이 에이핑크인 회원그룹의 평균키보다 큰 그룹회원의 그룹이름과 그룹평균키 조회
+select	mem_name, height
+from	member
+where	height > (select	height
+				    from	member
+				   where	mem_name = '에이핑크');
+                   
+-- -----------------------------------------------------------------------------------
+-- 연습문제
+-- 1번. 회원 테이블에서 모든 회원의 ID와 그룹이름을 조회 해라.
+select	mem_id, mem_name
+from	member;
+
+-- 2번. 회원 테이블에서 그룹회원의 평균키가 167이상인 그룹회원의 모든 열의 정보를 조회 해라
+select	*
+from	member
+where	height > 167;
+
+-- 3번. 회원 테이블에서 그룹인원수가 5명 이하인 그룹의 이름과 인원수 조회
+select	mem_name, mem_number
+from	member
+where	mem_number <= 5;
+
+-- 4번. 구매 테이블(buy)에서 상품가격이 100 이상인 구매한 상품의 이름과 가격을 조회 해라
+select	prod_name, price
+from	buy
+where	price >= 100;
+
+-- 5번. 회원 테이블에서 주소가 '경기'인 회원그룹의 모든 열 정보를 조회
+select	*
+from	member
+where	addr like '%경기%';
+
+-- 6번. 구매 테이블(buy)에서 '패션'분류의 상품 이름과 구매 수량을 조회 해라.
+select	prod_name, amount
+from	buy
+where	group_name like '%패션%';
+
+-- 7번. 회원 테이블에서 '서울'에 사는 그룹회원 이름과 전화번호 (국번, 뒷번호 모두 포함)를 조회
+select	mem_name, phone1, phone2
+from	member
+where	addr like '%서울%';
+
+-- 8번. 회원 테이블에서 그룹명이 '트와이스'인 그룹 회원의 모든 열 정보 조회
+select	*
+from	member
+where	mem_name = '트와이스';
+
+-- 9번. '블랙핑크'라는 이름을 가진 그룹회원이 구매한 모든 제품의 정보(모든 열값)를 조회 (서브쿼리)
+select	*
+from	buy
+where	mem_id = (select 	mem_id
+					from	member
+				   where	mem_name = '블랙핑크');
+                   
+-- 10번. 회원 테이블에서 그룹 인원수가 8명인 그룹의 모든 열정보 조회
+select	*
+from	memeber
+where	mem_number = 8;
+
+-- 11번. 구매 테이블에서 구매한 상품이름에 '지갑' 단어가 포함된 상품의 모든 열정보 조회
+select	*
+from	buy
+where	prod_name like '%지갑%';
+
+-- 12번. 회원 테이블에서 평균키가 165cm 이하인 그룹의 이름과 평균키를 조회
+select	mem_name, mem_height
+from	member
+where	height <= 165;
+
+-- 13번. 회원 테이블에서 '여자친구' 또는 '트와이스' 그룹이름 가진 모든 열정보 조회
+select	*
+from	member
+where	mem_name in ('여자친구', '트와이스');
+
+-- 14번. 구매 테이블에서 구매한 제품 수량이 3이상 구매한 그룹의 그룹아이디와 상품의 이름과 가격을 조회
+select	mem_id, prod_name, price
+from	buy
+where	amount >= 3;
+
+-- 15번. 회원 테이블에서 사는 지역이 '강남'인 회원의 이름과 주소를 조회 -- 안 됨
+select	mem_name, addr
+from	member
+where	addr like '%강남%';
+
+-- 16번. 구매 테이블에서 '디지털' 분류의 상품 중 가격이 200 이하인 구매한 상품의 이름을 조회 하라.
+select	prod_name
+from	buy
+where	group_name like '%디지털%' and price <= 200;
+
+-- 17번. 구매 테이블에서 그룹 평균키가 162cm 이상인 그룹의 이름을 조회하라
+select	mem_name
+from	member
+where	height >= 162;
+
+-- 18번. 구매 테이블에서 특정그룹 ('블랙핑크')의 구매내역에서 가격이 50 이상인 구매한 상품의 모든열 정보를 조회하라 
+select	*
+from	buy
+where	price >= 50 and mem_id = ( select	mem_id
+									from	member
+                                    where	mem_name = '블랙핑크' );
