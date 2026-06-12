@@ -1,71 +1,137 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="UTF-8"><title>함수 실습</title>
-<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>함수 실습</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.8;
+            font-size: 16px
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 4px
+        }
+
+        input {
+            padding: 8px;
+            font-size: 15px;
+            width: 250px
+        }
+
+        #out {
+            margin-top: 16px;
+            padding: 12px;
+            background: #eef1fb;
+            border-radius: 8px;
+            min-height: 24px
+        }
+    </style>
 </head>
+
 <body>
-<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
-<script>
-/*
-    주제 : [종합 미니 프로젝트] 전투 함수 시스템 만들기
+    <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+    <script>
+        /*
+            주제 : [종합 미니 프로젝트] 전투 함수 시스템 만들기
+        
+            함수 단원에서 배운 모든 것을 사용합니다.
+            - 함수 정의 / 매개변수 / return / 함수 호출 / 화살표 함수 / 기본값
+        
+            [완성 목표]
+            데미지 계산, 치명타 적용, 회복 함수를 각각 만들고,
+            이들을 조합해 한 번의 전투를 처리하는 시스템을 완성합니다.
+        */
 
-    함수 단원에서 배운 모든 것을 사용합니다.
-    - 함수 정의 / 매개변수 / return / 함수 호출 / 화살표 함수 / 기본값
+        // ===== 1단계: 데미지 계산 함수 (return) =====
 
-    [완성 목표]
-    데미지 계산, 치명타 적용, 회복 함수를 각각 만들고,
-    이들을 조합해 한 번의 전투를 처리하는 시스템을 완성합니다.
-*/
+        // [1] attack(공격력), defense(방어력)를 받아 데미지를 돌려주는
+        //     'calcDamage' 함수를 만드세요.
+        //     기능: (공격력 - 방어력)을 돌려주되, 0보다 작으면 0을 돌려줌
+        //     작성 공식: function 이름(a, b) { let d = a - b; if (d < 0) { d = 0; } return d; }
+        function calcDamage ( attack, defense ) {
+            let d = attack - defense;
+            if ( d < 0 ) {
+                d = 0;
+            }
+            return d;
+        }
 
-// ===== 1단계: 데미지 계산 함수 (return) =====
+        // [2] calcDamage(80, 30) 결과를 'baseDmg' 에 저장하고 출력하세요.
+        //     작성 공식: let 변수 = 함수(인수);
+        let baseDmg = calcDamage(80, 30);
 
-// [1] attack(공격력), defense(방어력)를 받아 데미지를 돌려주는
-//     'calcDamage' 함수를 만드세요.
-//     기능: (공격력 - 방어력)을 돌려주되, 0보다 작으면 0을 돌려줌
-//     작성 공식: function 이름(a, b) { let d = a - b; if (d < 0) { d = 0; } return d; }
+        // ===== 2단계: 치명타 적용 함수 (매개변수 + if) =====
 
-// [2] calcDamage(80, 30) 결과를 'baseDmg' 에 저장하고 출력하세요.
-//     작성 공식: let 변수 = 함수(인수);
+        // [3] damage 와 isCritical(true/false)을 받아,
+        //     치명타면 2배, 아니면 그대로 돌려주는 'applyCritical' 함수를 만드세요.
+        //     작성 공식: function 이름(damage, isCritical) { if (isCritical) { return damage * 2; } return damage; }
+        function applyCritical ( damage, isCritical ) {
+            if ( isCritical ) {
+                return damage * 2;
+            }
+            return damage;
+        }
 
-// ===== 2단계: 치명타 적용 함수 (매개변수 + if) =====
+        // [4] baseDmg 에 치명타(true)를 적용해 'finalDmg' 에 저장하고 출력하세요.
+        let finalDmg = applyCritical(baseDmg, true);
+        document.write("finalDmg = ", finalDmg, "<br>");
 
-// [3] damage 와 isCritical(true/false)을 받아,
-//     치명타면 2배, 아니면 그대로 돌려주는 'applyCritical' 함수를 만드세요.
-//     작성 공식: function 이름(damage, isCritical) { if (isCritical) { return damage * 2; } return damage; }
+        // ===== 3단계: 회복 함수 (화살표 함수 + 기본값) =====
 
-// [4] baseDmg 에 치명타(true)를 적용해 'finalDmg' 에 저장하고 출력하세요.
+        // [5] hp 와 회복량 amount(기본값 20)를 받아 더해 돌려주는
+        //     'heal' 화살표 함수를 만드세요.
+        //     작성 공식: const 이름 = (hp, amount = 20) => hp + amount;
+        const heal = ( hp, amount=20 ) => hp + amount;
 
-// ===== 3단계: 회복 함수 (화살표 함수 + 기본값) =====
+        // [6] heal(40, 30) 을 출력하세요.
+        document.write("heal(40, 30) = ", heal(40, 30), "<br>");
 
-// [5] hp 와 회복량 amount(기본값 20)를 받아 더해 돌려주는
-//     'heal' 화살표 함수를 만드세요.
-//     작성 공식: const 이름 = (hp, amount = 20) => hp + amount;
+        // [7] heal(50) 을 인수 하나만 넣어 출력하세요. (기본값 20 사용)
+        document.write("heal(50) = ", heal(50), "<br>");
 
-// [6] heal(40, 30) 을 출력하세요.
+        // ===== 4단계: 함수 조합으로 전투 진행 =====
 
-// [7] heal(50) 을 인수 하나만 넣어 출력하세요. (기본값 20 사용)
+        // [8] 'monsterHp'(몬스터 체력)에 100을 저장하세요.
+        let monsterHp = 100;
 
-// ===== 4단계: 함수 조합으로 전투 진행 =====
+        // [9] 몬스터가 finalDmg 만큼 맞았습니다! monsterHp 에서 finalDmg 를 빼서 다시 저장하세요.
+        //     작성 공식: monsterHp = monsterHp - finalDmg;
+        monsterHp -= finalDmg;
 
-// [8] 'monsterHp'(몬스터 체력)에 100을 저장하세요.
+        // [10] "몬스터 남은 HP: " 와 monsterHp 를 이어 붙여 출력하세요.
+        document.write("몬스터 남은 HP: ", monsterHp, "<br>");
 
-// [9] 몬스터가 finalDmg 만큼 맞았습니다! monsterHp 에서 finalDmg 를 빼서 다시 저장하세요.
-//     작성 공식: monsterHp = monsterHp - finalDmg;
+        // [11] monsterHp 가 0 이하인지 판단해 'isDead' 에 저장하세요.
+        //      작성 공식: let 변수 = monsterHp <= 0;
+        let isDead = monsterHp <= 0;
 
-// [10] "몬스터 남은 HP: " 와 monsterHp 를 이어 붙여 출력하세요.
+        // [12] isDead 가 true 면 "몬스터 처치 성공!", 아니면 "전투 계속"을 출력하세요.
+        //      작성 공식: if (isDead) { ... } else { ... }
+        if ( isDead ) {
+            document.write("몬스터 처치 성공!<br>");
+        } else {
+            document.write("전투 계속 <br>");
+        }
 
-// [11] monsterHp 가 0 이하인지 판단해 'isDead' 에 저장하세요.
-//      작성 공식: let 변수 = monsterHp <= 0;
+        // [13] 'myHp'(내 체력)에 40을 저장하세요.
+        let myHp = 40;
 
-// [12] isDead 가 true 면 "몬스터 처치 성공!", 아니면 "전투 계속"을 출력하세요.
-//      작성 공식: if (isDead) { ... } else { ... }
+        // [14] heal 함수로 myHp 를 회복(인수 하나)시켜 다시 myHp 에 저장하고 출력하세요.
+        //      작성 공식: myHp = heal(myHp);
+        myHp = heal(myHp);
+        document.write("myHp = ", myHp, "<br>");
 
-// [13] 'myHp'(내 체력)에 40을 저장하세요.
-
-// [14] heal 함수로 myHp 를 회복(인수 하나)시켜 다시 myHp 에 저장하고 출력하세요.
-//      작성 공식: myHp = heal(myHp);
-
-// 완성! 데미지 계산 → 치명타 → 전투 → 회복이 모두 동작하면 성공입니다.
-</script>
+        // 완성! 데미지 계산 → 치명타 → 전투 → 회복이 모두 동작하면 성공입니다.
+    </script>
 </body>
+
 </html>

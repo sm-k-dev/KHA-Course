@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            0. 함수란?  실행할 코드를 하나의 이름으로 선언해두고,
+                        개발자가 코드 실행이 필요할때마다 그 이름으로 호출해서 코드를 실행하는 문법.
+            
+            1. 함수 만들기 (선언)
+
+                function 함수명 () {
+                    실행할 코드;
+                    ...
+                }
+            
+            2. 함수를 불러 실행한다 (호출)
+
+                함수명();
+
+            3. 이 실습의 핵심
+                - 함수 선언은 실행할 코드를 준비하는 단계
+                - 함수는 선언만 해서는 실행 할 코드가 실행되지 않는다.
+                - 함수명 뒤에 () 를 붙여 -> 함수명(); 이런식으로 호출해야 실행할 코드가 실행된다.
+        */
+
+        // 1. 함수를 선언하지 않고 구구단 3단을 직접 출력한다.
+        //      같은 형태의 console.log() 가 여러번 반복해서 작성해야 한다.
+        console.log(" 3 * 1 = 3");
+        console.log(" 3 * 2 = 6");
+        console.log(" 3 * 3 = 9");
+
+        console.log("====================================== for");
+
+        // 2. for 반복문을 사용하면 반복되는 출력 코드를 한줄로 작성해서 줄일 수 있다.
+        for ( let i = 1 ; i <= 9 ; i++ ) {
+            console.log(`3 * ${i} = ${ 3 * i }`);
+        }
+
+        console.log("====================================== 함수");
+
+        // 3. gugudan 함수 선언
+        //      함수 선언은 실행할 코드를 준비하는 단계이다.
+        function gugudan() {
+            for ( i = 1 ; i <= 9 ; i++ ) {
+                console.log(`3 * ${i} = ${ 3 * i }`);
+            }
+        }
+
+        // 4. gugudan 함수 호출
+        gugudan();
+
+    </script>
+</body>
+</html>

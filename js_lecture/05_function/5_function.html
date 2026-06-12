@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자바스크립트 함수 학습 문서</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      line-height: 1.75;
+      color: #222;
+      background: #f5f7fb;
+    }
+    header {
+      padding: 36px 24px;
+      background: #1f2937;
+      color: #fff;
+    }
+    header h1 { margin: 0 0 10px; font-size: 32px; }
+    header p { margin: 0; font-size: 17px; color: #e5e7eb; }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    section {
+      margin: 24px 0;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #dde3ee;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+    h2 { margin-top: 0; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; color: #111827; }
+    h3 { margin-top: 28px; color: #1f2937; }
+    .goal, .note, .warning, .term, .syntax, .read, .mistake {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-radius: 10px;
+    }
+    .goal { background: #ecfeff; border-left: 5px solid #0891b2; }
+    .note { background: #f8fafc; border-left: 5px solid #64748b; }
+    .warning { background: #fff7ed; border-left: 5px solid #f97316; }
+    .term { background: #eef2ff; border-left: 5px solid #4f46e5; }
+    .syntax { background: #f0fdf4; border-left: 5px solid #16a34a; }
+    .read { background: #fdf2f8; border-left: 5px solid #db2777; }
+    .mistake { background: #fef2f2; border-left: 5px solid #dc2626; }
+    pre {
+      margin: 12px 0;
+      padding: 16px;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: #111827;
+      color: #e5e7eb;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    code { font-family: Consolas, "D2Coding", monospace; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #dbe1ea;
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+    th { background: #f1f5f9; }
+    a.practice {
+      display: inline-block;
+      margin: 8px 8px 0 0;
+      padding: 8px 12px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .flow li { margin: 6px 0; }
+    .small { font-size: 14px; color: #475569; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>자바스크립트 함수</h1>
+    <p>함수 선언, 함수 호출, 매개변수, 인수, return, 스코프, 호이스팅, 즉시 실행 함수까지 순서대로 학습합니다.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>0. 학습 순서</h2>
+      <div class="goal">
+        <strong>학습 목표</strong><br>
+        함수는 처음부터 어려운 용어를 외우는 단원이 아닙니다.<br>
+        먼저 <strong>함수 선언은 준비</strong>, <strong>함수 호출은 실행</strong>, <strong>return은 값 반환</strong>이라는 흐름을 코드로 확인합니다.
+      </div>
+      <ol class="flow">
+        <li><a href="gugudan_console.html">gugudan_console.html</a> - 반복되는 코드를 함수로 작성하는 이유</li>
+        <li><a href="naming_func.html">naming_func.html</a> - 함수 표현식</li>
+        <li><a href="arrow_func.html">arrow_func.html</a> - 화살표 함수 기본형</li>
+        <li><a href="gugudan.html">gugudan.html</a> - 매개변수와 인수</li>
+        <li><a href="prameter_default.html">prameter_default.html</a> - 매개변수 전달과 기본값</li>
+        <li><a href="add_func.html">add_func.html</a> - return으로 계산 결과 반환</li>
+        <li><a href="return_exit.html">return_exit.html</a> - return으로 함수 종료</li>
+        <li><a href="function.html">function.html</a> - 함수 선언문 문제 실습</li>
+        <li><a href="arrow_function.html">arrow_function.html</a> - 화살표 함수 문제 실습</li>
+        <li><a href="function_1.html">function_1.html</a> - 매개변수 처리와 기본값 추가 실습</li>
+        <li><a href="global.html">global.html</a> - 전역 스코프와 지역 스코프</li>
+        <li><a href="block_scope.html">block_scope.html</a> - let, const의 블록 스코프</li>
+        <li><a href="block_scope2.html">block_scope2.html</a> - var의 함수 스코프</li>
+        <li><a href="reference.html">reference.html</a> - 식별자 참조 우선순위</li>
+        <li><a href="hoisting_func.html">hoisting_func.html</a> - 함수 선언문의 호이스팅</li>
+        <li><a href="hoisting_express.html">hoisting_express.html</a> - 함수 표현식과 호이스팅 오류</li>
+        <li><a href="llFE.html">llFE.html</a> - 즉시 실행 함수</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>1. 함수란?</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        함수는 실행할 코드를 하나의 이름으로 선언해 두고, 필요할 때 그 이름으로 호출해서 실행하는 문법입니다.
+      </div>
+      <div class="note">
+        <strong>핵심 흐름</strong>
+        <ol>
+          <li>함수를 선언하면 실행할 코드가 준비됩니다.</li>
+          <li>함수는 선언만 해서는 실행되지 않습니다.</li>
+          <li>함수 이름 뒤에 <code>()</code>를 붙여 호출해야 실행됩니다.</li>
+          <li>함수는 값을 받을 수 있습니다. 이때 사용하는 변수가 매개변수입니다.</li>
+          <li>함수는 실행 결과를 함수 밖으로 돌려줄 수 있습니다. 이때 사용하는 문법이 <code>return</code>입니다.</li>
+        </ol>
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>function 함수명() {
+  실행할 코드;
+}
+
+함수명();</code></pre>
+      </div>
+      <div class="read">
+        <strong>코드 읽는 순서</strong>
+        <pre><code>function gugudan() { ... }</code></pre>
+        위 코드는 <strong>gugudan 함수 선언</strong>입니다. 실행할 코드가 준비됩니다.
+        <pre><code>gugudan();</code></pre>
+        위 코드는 <strong>gugudan 함수 호출</strong>입니다. 준비된 함수 내부 코드가 실행됩니다.
+      </div>
+      <a class="practice" href="gugudan_console.html">실습: gugudan_console.html</a>
+    </section>
+
+    <section>
+      <h2>2. 함수 선언문</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        함수 선언문은 <code>function</code> 키워드와 함수명을 사용해서 함수를 선언하는 방식입니다.
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>function 함수명(매개변수1, 매개변수2) {
+  실행할 코드;
+  return 반환값;
+}
+
+함수명(인수1, 인수2);</code></pre>
+      </div>
+      <div class="read">
+        <strong>예제 코드 읽기</strong>
+        <pre><code>function add(a, b) {
+  return a + b;
+}
+
+let result = add(3, 5);
+console.log(result);</code></pre>
+        <ol>
+          <li><code>add</code> 함수가 선언됩니다.</li>
+          <li><code>a</code>, <code>b</code>는 매개변수입니다.</li>
+          <li><code>add(3, 5)</code>를 만나면 함수가 호출됩니다.</li>
+          <li>인수 <code>3</code>은 매개변수 <code>a</code>에 저장됩니다.</li>
+          <li>인수 <code>5</code>는 매개변수 <code>b</code>에 저장됩니다.</li>
+          <li><code>return a + b</code>가 실행되어 <code>8</code>을 함수 밖으로 반환합니다.</li>
+          <li><code>result</code> 변수에 반환값 <code>8</code>이 저장됩니다.</li>
+        </ol>
+      </div>
+      <a class="practice" href="function.html">실습: function.html</a>
+      <a class="practice" href="function_1.html">실습: function_1.html</a>
+    </section>
+
+    <section>
+      <h2>3. 함수 표현식</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        함수 표현식은 함수를 값처럼 만들고, 그 함수를 변수 또는 상수에 저장하는 작성 방식입니다.
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>const 상수명 = function() {
+  실행할 코드;
+};
+
+상수명();</code></pre>
+      </div>
+      <div class="note">
+        함수 표현식에서는 보통 <code>const</code>를 사용합니다. 함수가 저장된 상수명에 다른 값을 다시 대입하지 않기 위해서입니다.
+      </div>
+      <div class="syntax">
+        <strong>이름이 있는 함수 표현식</strong>
+        <pre><code>const 상수명 = function 함수명() {
+  실행할 코드;
+};</code></pre>
+        <strong>이름이 없는 함수 표현식</strong>
+        <pre><code>const 상수명 = function() {
+  실행할 코드;
+};</code></pre>
+      </div>
+      <a class="practice" href="naming_func.html">실습: naming_func.html</a>
+    </section>
+
+    <section>
+      <h2>4. 화살표 함수</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        화살표 함수는 <code>=&gt;</code> 기호를 사용해서 함수를 작성하는 문법입니다.
+      </div>
+      <div class="syntax">
+        <strong>기본 작성 문법</strong>
+        <pre><code>const 상수명 = () =&gt; {
+  실행할 코드;
+};
+
+상수명();</code></pre>
+      </div>
+      <div class="syntax">
+        <strong>매개변수가 있는 화살표 함수</strong>
+        <pre><code>const 상수명 = (매개변수1, 매개변수2) =&gt; {
+  실행할 코드;
+  return 반환값;
+};
+
+상수명(인수1, 인수2);</code></pre>
+      </div>
+      <div class="syntax">
+        <strong>실행 코드가 return 한 줄이면 중괄호와 return 생략 가능</strong>
+        <pre><code>const add = (a, b) =&gt; a + b;</code></pre>
+      </div>
+      <div class="warning">
+        중괄호 <code>{}</code>를 작성하면 <code>return</code>을 직접 작성해야 합니다.<br>
+        중괄호 <code>{}</code>를 생략하고 식 하나만 작성하면 그 식의 결과가 자동으로 반환됩니다.
+      </div>
+      <a class="practice" href="arrow_func.html">실습: arrow_func.html</a>
+      <a class="practice" href="arrow_function.html">실습: arrow_function.html</a>
+    </section>
+
+    <section>
+      <h2>5. 매개변수와 인수</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        매개변수는 함수가 값을 받기 위해 선언하는 변수입니다.<br>
+        인수는 함수를 호출할 때 전달하는 실제 값입니다.
+      </div>
+      <table>
+        <thead>
+          <tr><th>용어</th><th>위치</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>매개변수</td><td>함수 선언부의 소괄호</td><td>함수가 값을 받기 위해 선언한 변수</td></tr>
+          <tr><td>인수</td><td>함수 호출부의 소괄호</td><td>함수를 호출할 때 전달하는 실제 값</td></tr>
+        </tbody>
+      </table>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>function 함수명(매개변수1, 매개변수2) {
+  실행할 코드;
+}
+
+함수명(인수1, 인수2);</code></pre>
+      </div>
+      <div class="read">
+        <strong>코드 읽는 순서</strong>
+        <pre><code>function sum(num1, num2) {
+  return num1 + num2;
+}
+
+sum(10, 20);</code></pre>
+        <ol>
+          <li><code>num1</code>, <code>num2</code>는 매개변수입니다.</li>
+          <li><code>10</code>, <code>20</code>은 인수입니다.</li>
+          <li>첫 번째 인수 <code>10</code>은 첫 번째 매개변수 <code>num1</code>에 저장됩니다.</li>
+          <li>두 번째 인수 <code>20</code>은 두 번째 매개변수 <code>num2</code>에 저장됩니다.</li>
+        </ol>
+      </div>
+      <a class="practice" href="gugudan.html">실습: gugudan.html</a>
+      <a class="practice" href="prameter_default.html">실습: prameter_default.html</a>
+    </section>
+
+    <section>
+      <h2>6. 매개변수의 특징과 기본값</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        함수 호출 시 인수를 전달하지 않으면 해당 매개변수에는 <code>undefined</code>가 저장됩니다.
+      </div>
+      <div class="read">
+        <strong>확인 코드</strong>
+        <pre><code>function print(a, b) {
+  console.log(a, b);
+}
+
+print();</code></pre>
+        <code>print()</code>처럼 인수 없이 호출하면 <code>a</code>와 <code>b</code>에는 <code>undefined</code>가 저장됩니다.
+      </div>
+      <div class="syntax">
+        <strong>기본값 작성 문법</strong>
+        <pre><code>function 함수명(매개변수1 = 기본값1, 매개변수2 = 기본값2) {
+  실행할 코드;
+}</code></pre>
+      </div>
+      <div class="read">
+        <strong>기본값 코드 읽기</strong>
+        <pre><code>function sum(a = 10, b = 10) {
+  console.log(a, b);
+}
+
+sum();
+sum(20, 30);</code></pre>
+        <ol>
+          <li><code>sum()</code>은 인수를 전달하지 않습니다.</li>
+          <li><code>a</code>는 기본값 <code>10</code>을 사용합니다.</li>
+          <li><code>b</code>는 기본값 <code>10</code>을 사용합니다.</li>
+          <li><code>sum(20, 30)</code>은 인수를 전달합니다.</li>
+          <li>전달된 인수가 있으면 기본값 대신 인수 값이 사용됩니다.</li>
+        </ol>
+      </div>
+      <a class="practice" href="function_1.html">실습: function_1.html</a>
+      <a class="practice" href="prameter_default.html">실습: prameter_default.html</a>
+    </section>
+
+    <section>
+      <h2>7. return</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        <code>return</code>은 함수 실행 결과를 함수 밖으로 반환하는 문법입니다.
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>function 함수명() {
+  return 반환값;
+}</code></pre>
+      </div>
+      <div class="read">
+        <strong>코드 읽는 순서</strong>
+        <pre><code>function add() {
+  return 10 + 20;
+}
+
+let result = add();
+console.log(result);</code></pre>
+        <ol>
+          <li><code>add()</code>를 만나면 함수가 호출됩니다.</li>
+          <li>함수 안에서 <code>10 + 20</code>이 계산됩니다.</li>
+          <li><code>return</code>이 계산 결과 <code>30</code>을 함수 밖으로 반환합니다.</li>
+          <li><code>result</code> 변수에 <code>30</code>이 저장됩니다.</li>
+          <li><code>console.log(result)</code>가 <code>30</code>을 콘솔에 출력합니다.</li>
+        </ol>
+      </div>
+      <div class="mistake">
+        <strong>자주 헷갈리는 부분</strong><br>
+        <code>return</code>은 값을 출력하지 않습니다. 값을 함수 밖으로 반환합니다.<br>
+        <code>console.log()</code>는 값을 콘솔에 출력해서 확인합니다.
+      </div>
+      <a class="practice" href="add_func.html">실습: add_func.html</a>
+    </section>
+
+    <section>
+      <h2>8. return으로 함수 종료하기</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        <code>return;</code>처럼 반환값 없이 작성하면 함수를 즉시 종료합니다.
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>function 함수명() {
+  if (조건식) {
+    return;
+  }
+
+  실행할 코드;
+}</code></pre>
+      </div>
+      <div class="read">
+        <strong>코드 읽는 순서</strong>
+        <pre><code>function sum(num1, num2) {
+  if (typeof num1 !== "number" || typeof num2 !== "number") {
+    return;
+  }
+
+  return num1 + num2;
+}</code></pre>
+        <ol>
+          <li>함수가 호출됩니다.</li>
+          <li>두 인수 중 하나라도 숫자가 아니면 <code>return;</code>이 실행됩니다.</li>
+          <li><code>return;</code>은 함수를 즉시 종료합니다.</li>
+          <li>숫자 두 개가 전달되면 <code>return num1 + num2</code>가 실행됩니다.</li>
+        </ol>
+      </div>
+      <a class="practice" href="return_exit.html">실습: return_exit.html</a>
+    </section>
+
+    <section>
+      <h2>9. 스코프</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        스코프는 변수나 함수를 사용할 수 있는 코드 범위입니다.
+      </div>
+      <table>
+        <thead>
+          <tr><th>구분</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>전역 스코프</td><td>함수나 블록 바깥 영역입니다. 여러 위치에서 접근할 수 있습니다.</td></tr>
+          <tr><td>지역 스코프</td><td>함수나 블록 내부 영역입니다. 보통 해당 영역 안에서만 접근할 수 있습니다.</td></tr>
+          <tr><td>함수 스코프</td><td>함수의 중괄호 <code>{}</code>를 기준으로 범위가 나뉩니다.</td></tr>
+          <tr><td>블록 스코프</td><td><code>if</code>, <code>for</code>, 단독 블록의 중괄호 <code>{}</code>를 기준으로 범위가 나뉩니다.</td></tr>
+        </tbody>
+      </table>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>let 전역변수 = 값;
+
+function 함수명() {
+  let 지역변수 = 값;
+}</code></pre>
+      </div>
+      <div class="warning">
+        <code>let</code>, <code>const</code>는 블록 스코프를 따릅니다.<br>
+        <code>var</code>는 블록 스코프를 따르지 않고 함수 스코프를 따릅니다.
+      </div>
+      <a class="practice" href="global.html">실습: global.html</a>
+      <a class="practice" href="block_scope.html">실습: block_scope.html</a>
+      <a class="practice" href="block_scope2.html">실습: block_scope2.html</a>
+      <a class="practice" href="reference.html">실습: reference.html</a>
+    </section>
+
+    <section>
+      <h2>10. 호이스팅</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        호이스팅은 코드 실행 전에 선언 정보를 먼저 준비하는 동작입니다.
+      </div>
+      <div class="note">
+        함수 선언문은 선언 위치보다 위에서 호출할 수 있습니다.<br>
+        함수 표현식과 화살표 함수는 상수에 함수가 저장된 후에 호출해야 합니다.
+      </div>
+      <div class="syntax">
+        <strong>함수 선언문</strong>
+        <pre><code>printHello();
+
+function printHello() {
+  console.log("Hello");
+}</code></pre>
+        위 코드는 실행됩니다. 함수 선언문은 실행 전에 먼저 준비됩니다.
+      </div>
+      <div class="syntax">
+        <strong>함수 표현식</strong>
+        <pre><code>printHello();
+
+const printHello = function() {
+  console.log("Hello");
+};</code></pre>
+        위 코드는 오류가 발생합니다. <code>printHello</code> 상수에 함수가 저장되기 전에 호출했기 때문입니다.
+      </div>
+      <a class="practice" href="hoisting_func.html">실습: hoisting_func.html</a>
+      <a class="practice" href="hoisting_express.html">실습: hoisting_express.html</a>
+    </section>
+
+    <section>
+      <h2>11. 즉시 실행 함수</h2>
+      <div class="term">
+        <strong>개념 정의</strong><br>
+        즉시 실행 함수는 함수를 선언하는 동시에 바로 호출해서 실행하는 함수입니다.
+      </div>
+      <div class="syntax">
+        <strong>작성 문법</strong>
+        <pre><code>(function() {
+  실행할 코드;
+})();</code></pre>
+      </div>
+      <div class="read">
+        <strong>코드 읽는 순서</strong>
+        <pre><code>(function init() {
+  console.log("initialized");
+})();</code></pre>
+        <ol>
+          <li><code>function init() { ... }</code> 형태의 함수가 작성됩니다.</li>
+          <li>함수 전체를 소괄호로 감싸 함수 표현식으로 만듭니다.</li>
+          <li>마지막 <code>()</code>가 붙어 즉시 호출됩니다.</li>
+          <li>한 번 실행된 뒤에는 함수명으로 다시 호출할 수 없습니다.</li>
+        </ol>
+      </div>
+      <a class="practice" href="llFE.html">실습: llFE.html</a>
+    </section>
+
+    <section>
+      <h2>12. 반드시 구분해야 하는 용어</h2>
+      <table>
+        <thead>
+          <tr><th>용어</th><th>정확한 의미</th><th>확인 예시</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>함수 선언</td><td>실행할 코드를 함수 형태로 준비하는 것</td><td><code>function add() {}</code></td></tr>
+          <tr><td>함수 호출</td><td>준비된 함수 내부 코드를 실행하는 것</td><td><code>add();</code></td></tr>
+          <tr><td>매개변수</td><td>함수가 값을 받기 위해 선언한 변수</td><td><code>function add(a, b)</code></td></tr>
+          <tr><td>인수</td><td>함수를 호출할 때 전달하는 실제 값</td><td><code>add(10, 20)</code></td></tr>
+          <tr><td>return</td><td>함수 실행 결과를 함수 밖으로 반환하는 문법</td><td><code>return a + b;</code></td></tr>
+          <tr><td>console.log()</td><td>값을 콘솔에 출력해서 확인하는 문법</td><td><code>console.log(result);</code></td></tr>
+          <tr><td>스코프</td><td>변수나 함수를 사용할 수 있는 코드 범위</td><td>전역 스코프, 지역 스코프</td></tr>
+          <tr><td>호이스팅</td><td>코드 실행 전에 선언 정보를 먼저 준비하는 동작</td><td>함수 선언문 호출 위치</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

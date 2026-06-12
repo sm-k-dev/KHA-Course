@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        //화살표 함수 정의 후 호출해서 사용하는 문제
+
+        //1. 매개변수로 두개의 인수를 전달받아 더한 결괏값을 반환하는 화살표 함수 정의 (상수 명은 add)
+        //   위 화살표 함수 호출시 3,  5를 전달 하면 8을 반환받아 출력
+        const add = ( a, b ) => a + b;
+
+        document.write( "add(3, 5): ", add(3, 5), "<br>" );
+
+        //2. 매개변수로 두개의 인수를 전달받아  두 수 중 큰값을 반환하는 화살표 함수 정의 (상수 명은 max)
+        //   단! 기능구현은 삼항 조건연산자를 사용하여 첫번째 인수로 전달받은 값이 두번째 인수로 전달받은 값보다 크면
+        //		 첫번째 인수를 반환하고, 그렇지 않으면  두번째 인수의 값을 반환
+
+        /*
+        const max = (a, b) => {
+                return a > b ? a : b;
+        };
+        */
+        const max = ( a, b ) => {
+            return a > b ? a : b;
+        }
+
+        //   위 화살표 함수 호출시  7과 10을 전달하면 10을 반환받아 출력
+        document.write( "max(7, 10): ", max(7, 10), "<br>" );
+
+        //3. 매개변수로 전달받은 하나의 인수값(숫자값)이  양수인지 확인하는 기능의 화살표 함수 정의 (상수명은 isPositive)
+        //const isPositive = (num) => {  return num > 0    };
+        const isPositive = (num) => num > 0;
+
+        //	위 화살표 함수 호출시 5를 전달하면 true반환받게 하고,   -2를 전달하면 false 반환받아 출력
+        document.write( "isPositive(5): ", isPositive(5), ", isPositive(-2): ", isPositive(-2), "<br>" );
+
+        //4. 1부터  ~  매개변수로 전달 받은 하나의 인수값(숫자값) 까지의 합을 구해서 반환 하는 기능의
+        //   화살표 함수 정의(상수명은 sumUpto)
+        //5
+        //			   <=5;
+
+        // 0  =  0  + 1;
+        // 1
+
+        //sum = sum + i;
+        // 1  =  1  + 2;
+        // 3
+
+        //sum = sum + i;
+        // 3  =  3  + 3;
+        // 6
+
+        //sum = sum + i;
+        // 6  =  6  + 4;
+        // 10
+
+        //sum = sum + i;
+        // 10 =  10 + 5;
+        // 15
+        const sumUpto = (n) => {
+            let sum = 0;
+            for ( let i = 1 ; i <= n ; i++ ) {
+                sum += i;
+            }
+            return sum;
+        }
+
+        // 위 화살표 함수 호출시 5를 전달하면 15(1+2+3+4+5) 를 반환 받아 출력
+        document.write("sumUpto(5): ", sumUpto(5), "<br>" );
+
+        //5. 매개변수 num과 매개변수 count를 선언해서 화살표 함수를 정의 하는데
+        //   count매개변수로 전달받은 숫자만큼 반복해서 num매개변수로 전달 받은 값을  반복해서 출력
+        //  (상수명은 repeatNumber)
+        const repeatNumber = ( num, count ) => {
+            document.write("repeat ", num, ", count ", count, "<br>");
+            for ( let i = 1 ; i <= count ; i++ ) {
+                document.write(num, "<br>");
+            }
+        }
+
+        // 위 화살표 함수 호출시  num매개변수에는 3을 전달하고, count매개변수에는 5를 전달하면
+        //	3이 5번 반복해서 출력되게 하자
+        repeatNumber(3, 5);
+
+        //6. 매개변수num으로 하나의 숫자를 전달받아서  3으로 나눈 나머지가 0이면  true반환하고
+        //   3의 배수가 아니면 false를 반환하는 기능의 화살표 함수 정의 (상수명은 isMultipleOfThree)
+        //const isMultipleOfThree = (num) => {   return num %  3  === 0;  };
+        const isMultipleOfThree = ( num ) => {
+            return num % 3 === 0;
+        }
+
+        // 위 화살표 함수 호출시 num매개변수에 9를 전달하면 true반환받아 출력되게하고,
+        //                           10을 전달하면 false를 반환받아 출력되게하자
+        document.write("isMultipleOfThree(9): ", isMultipleOfThree(9), "<br>");
+        document.write("isMultipleOfThree(10): ", isMultipleOfThree(10), "<br>");
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+</body>
+
+</html>
