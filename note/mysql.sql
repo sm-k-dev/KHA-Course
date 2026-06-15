@@ -495,3 +495,342 @@ from	buy
 where	price >= 50 and mem_id = ( select	mem_id
 									from	member
                                     where	mem_name = '블랙핑크' );
+
+-- ---------------------------------------------------------------------------------------
+-- 03-2절 조금 더 깊게 알아보는 SELECT 문
+-- ---------------------------------------------------------------------------------------
+/*
+	ORDER BY 절
+		- 최종 조회 시 특정 열의 값을 기준으로 해서 내림 차순 또는 오름 차순 정렬해서 조회하는 예약어
+        - 문법
+			SELECT * FROM 조회할 테이블명
+            WHERE 조건식
+            ORDER BY 정렬할_데이터가_저장된_열_명 ASC 또는 DESC;
+            
+            ASC - ascending, 오름차순
+            DESC - descending, 내림차순
+*/
+
+select * from member;
+-- 실습1. 그룹 회원의 데뷔일자(debut_date 열에 저장된 날짜들)를 기준으로
+-- 		오름 차순 정렬 (데뷔 일자가 빠른 날짜순) 하여 조회시 ORDER BY 절을 사용.
+
+select		*
+from		member
+order by	debut_date asc;
+
+-- 실습2. 그룹 회원의 데뷔일자(debut_date)를 기준으로
+-- 		내림 차순 정렬 (데뷔 일자가 늦은 날짜순) 하여 조회시 ORDER BY 절을 사용.
+select		*
+from		member
+order by	debut_date desc;
+
+-- 실습3. ORDER BY 절과 WHERE 조건절 함께 사용하기
+-- 그룹 평균키(height 열에 저장된 데이터들)가 164 이상인 그룹 회원들의 키가 큰 순서대로(내림차순) 정렬해서
+-- 그룹명(mem_name), 그룹아이디(mem_id), 그룹평균키(height), 데뷔일(debut_date)
+select		mem_name, mem_id, height, debut_date
+from		member
+where		height >= 164
+order by	height desc;
+
+-- 실습4. ORDER BY 절과 WHERE 조건절 함께 사용하기2
+-- 		(정렬 조건 하나이상 설정가능)
+-- 그룹 평균키 (height)가 큰(내림차순) 순서대로 조회하되,
+-- 같은 평균키를 가진 그룹들이 있으면, 데뷔일자가 빠른순서대로 (오름차순) 최종 정렬
+select		mem_name, mem_id, height, debut_date
+from		member
+where		height >= 164
+order by	height desc, debut_date asc;
+
+-- ---------------------------------------------------------------------------------------
+-- LIMIT 예약어: 테이블 저장된 전체 행 (row, 레코드) 중에서
+-- 				원하는 행의 갯수를 정해서 조회할때 사용하는 예약어
+/*
+	문법
+		select * from 조회할_테이블_명
+        where 조건식
+        order by 정렬_기준_데이터가_저장된_열_명 asc 또는 desc;
+        limit 조회할_행의_개수를_숫자로_작성;
+*/
+
+-- 실습5. member 테이블에서 전체 행 데이터(레코드)들 중에서 3개의 행만 잘라서 조회
+select * from member
+limit 3;
+
+-- 실습6. member 테이블에서 회원그룹평균키가 큰 순 (desc)으로 정렬해서 조회하되,
+-- 		정렬해서 조회한 결과 데이터들 중에서
+-- 		3 index 위치 행의 레코드 부터 2개의 행(레코드)만 잘라서 조회
+select		*
+from		member
+order by	height desc
+limit		3, 2;
+
+-- ------------------------------------------------------------------------------
+-- distinct 예약어: 조회할 열의 데이터들이 중복되서 같은 이름의 데이터로 조회되면?
+-- 					중복된 데이터를 1개만 남기고 1개로만 조회시키는 예약어
+-- 					요약: 중복된 열의 데이터가 저장되어 있으면 하나로 조회하는 예약어.
+/*
+	문법
+		SELECT DISTINCT 조회할열명
+        FROM 조회할테이블명
+        WEHRE 조건식
+        ORDER BY 정렬기준데이터의_열명 정렬방식
+        LIMIT 숫자;
+*/
+-- 실습8-1. 모든 그룹회원의 사는 지역 조회
+select		addr, mem_name
+from		member
+order by	addr asc;
+
+-- 실습8-2. DISTINCT 사용해서 열에 중복된 데이터를 하나로 통일해서 하나의 데이터만 조회
+select		distinct addr
+from		member
+order by	addr asc;
+
+/*
+	group by 절
+		- group by절은 데이터베이스에서 데이터를 그룹으로 묶어서 조회하는데 사용되는 예약어.
+        - 예를 들어, 같은 날자에 해당하는 데이터들을 하나의 그룹으로 묶어 관리 할 수 있다.
+        - group by절은 보통 sum, count, avg 같은 집계함수와 함께 작성해서 사용해야 한다.
+        - 예를 들어, 각 카테고리별로 판매량의 합계를 구할때 사용한다.
+        - 문법
+			SELECT 		열_명1, 집계함수명(열_명2)
+            FROM		조회할테이블명
+            GROUP BY	그룹으로_묶을_같은_데이터가_저장된_열_명
+            HAVING 		조건식
+            ORDER BY	정렬기준열명 정렬방식
+            LIMIT		숫자;
+		
+        -- 제공해주는 집계함수들
+		-- SUM(): 열명을 SUM(열명)으로 작성하면 열에 저장된 데이터들의 함계를 반환해준다.
+        -- AVG(): 열명을 AVG(열명)으로 작성하면 열에 저장된 데이터들의 평균을 반환해준다.
+        -- MIN(): 열명을 MIN(열명)으로 작성하면 열에 저장된 데이터들 중에서 최소 값을 반환해준다.
+        -- MAX(): 열명을 MAX(열명)으로 작성하면 열에 저장된 데이터즐 중에서 최대 값을 반환해준다.
+        -- COUNT(*): 모든 열에 관한 행 갯수 반환 해 준다.
+        -- COUNT(DISTINCT): 행의 갯수를 반환 해 준다. (중복된 데이터는 1개만 인정)
+*/
+
+select * from buy;
+-- 실습9. 'buy' 테이블에서 각 mem_id별로 총 구매 수량을 계산해서
+-- 			계산한 총 구매 수량과 각회원 그룹아이디 같이 조회
+
+-- 순서1. 각 회원 그룹단위로 한번 상품 구매시 구매한 수량 조회
+select	mem_id as '그룹아이디', amount as '한번 구매시 구매한 수량'
+from	buy;
+-- 순서2. 각 회원 그룹의 아이디 단위로 묶어서 한번만 조회된 그룹아이디로 표시 하되
+-- 			(group by 그룹으로_묶을_같은_데이터가_저장된_열명) 을 이용해서
+-- 			그룹아이디 단위로 조회되게 묶어서 조회
+select 		mem_id as '그룹아이디'
+from		buy;
+
+-- 순서3. group by mem_id; 를 끝에 작성해
+-- 		mem_id열에 세로 방향으로 저장된 아이디를 하나의 그룹으로 묶어서 하나만 조회되게 해보자
+select 		mem_id as '그룹아이디'
+from		buy
+group by	mem_id; -- <-- 이 한줄을 추가 하니 아래의 조회 결과가 달라진다.
+
+-- 순서4. 'buy' 테이블에서 각 mem_id별로 총 구매 수량을 계산해서
+-- 			계산한 총 구매 수량과 같이 조회하기 위해 추가
+-- 			이때 SUM이라는 집계함수를 작성하여 amount 열에 조회되는 모든 행 위치의 열값들을 추출해
+-- 			+ 모두 합계 한 회원 그룹 아이디 별 총 구매 수량을 조회하면 같이 보여줄 수 있음.
+select 		mem_id as '그룹아이디', SUM(amount) as '총 구매 수량'
+from		buy
+group by	mem_id;
+
+-- 실습11. 전체 회원그룹이 구매한 총 구매 수량의 평균을 구해서 조회된 결과를 보여주자.
+select	avg(amount)
+from	buy;
+
+-- 실습12. 각 회원들이 한번 구매할 때마다 몇개의 상품을 구매했는지 평균 구매 개수 조회
+-- 		참고. 각 회원그룹들을 식별할 유일한 고유값은 mem_id열에 저장된 그룹id를 그룹으로 묶어주자
+select		mem_id, avg(amount)
+from		buy
+group by	mem_id;
+
+-- 실습13. member 테이블에 저장된 그룹회원의 전체 행(레코드, row)의 갯수 조회
+select	count(*)
+from	member;
+
+-- 실습13-1. member 테이블에서 연락처(phone1, phone2)가 저장되어 있는 그룹회원의 레코드(행)갯수만 조회
+select	count(phone1)
+from	member;
+
+-- ------------------------------------------------------------------------------
+-- having 조건절
+-- 			where 조건절 대신에 그룹으로 묶어준 데이터의 조건을 검사하는 구문
+
+-- 문법
+-- 		select 열명1, 집계함수(열명2)
+-- 		from 테이블명
+-- 		group by 그룹으로_묶을_같은_데이터가_저장된_열명
+-- 		having 조건식
+-- 		order by 정렬기준데이터가_저장된_열명 asc 또는 desc;
+
+-- 실습14. buy 테이블에서 조회
+-- 			회원그룹 아이디를 그룹으로 묶어서, 회원 그룹 아이디별로 각각 총 구매 금액과 그룹아이디열의 데이터 조회
+select		mem_id, sum(price*amount) as '총 구매 금액'
+from		buy
+group by	mem_id;
+
+-- 실습14-1. 위 실습14 에서, 그룹 아이디별로 총 구매 금액이 1000 이상이면 사은품을 증정하려고 한다.
+-- 			그룹 아이디별로 총 구매 금액이 1000이상인 그룹의 총 구매금액, 그룹아이디를 조회
+select		mem_id, sum(price*amount) as '총 구매 금액'
+from		buy
+group by	mem_id
+having		sum(price*amount) >= 1000;
+
+-- 실습14-2. 위 실습14-1의 결과에서, 총 구매 금액이 큰 순서대로 (내림차순) 정렬 하여 최종 조회해서 보여줌
+select		mem_id, sum(price*amount) as '총 구매 금액'
+from		buy
+group by	mem_id
+having		sum(price*amount) >= 1000
+order by	sum(price*amount) desc;
+
+-- -----------------------------------------------------------------------------------------
+-- 연습 ******************************************************
+
+-- 1. 회원그룹수 (count)
+-- 		회원 그룹 테이블의 총 그룹회원(행, 레코드) 수를 계산해서 조회
+select 	count(*)
+from 	member;
+
+-- 2. 평균 인원수 (avg)
+-- 		회원 그룹테이블의 그룹 평균 인원수 계산 조회
+select	avg(mem_number)
+from	member;
+
+-- 3. 최대 평균키(max)
+-- 		회원그룹 테이블에서 가장 키가 큰 그룹회원의 평균키 조회
+select	max(height)
+from	member;
+
+-- 4. 최소 평균키(min)
+-- 		회원그룹 테이블에서 가장 키가 작은 회원그룹의 평균키 조회
+select	min(height)
+from	member;
+
+-- 5. 구매 수량의 총합(sum)
+-- 		그매 테이블에서 모든 구매 수량의 총합 조회
+select	sum(amount)
+from	buy;
+
+-- 6. 각 회원별 구매 수량의 총합
+-- 		각 회원별로 구매한 총 수량을 계산합니다. mem_id로 그룹화 하여 각 회원의 총 구매 수량 조회
+select		mem_id, sum(amount)
+from		buy
+group by	mem_id;
+
+-- 7. 각 제품의 평균 가격 (avg)
+-- 		구매한 각 제품별 단가(가격)의 평균을 계산해서 계산한 평균값 조회되게 하기.
+-- 		참고. 제품 이름으로 그룹화하여 평균 가격을 구합니다.
+-- 			구매한 각 제품의 단가(가격)의 평균을 구하는 것.
+-- 			즉, 특정 제품이 여러 번 구매되었을 때, 그 제품의 가격을 모두 더한 후 구매 횟수로 나누어 평균 가격을 계산.
+select		prod_name, avg(price)
+from		buy
+group by	prod_name;
+
+-- 8. 특정 지역의 그룹 회원 수(count)
+-- 		각 사는 지역별 그룹명, 그룹회원 수 조회.
+-- 		참고. 지역 주소로 그룹화하여 각 지역의 회원그룹 수를 구합니다.
+select		addr, mem_name, count(*)
+from		member
+group by	addr;
+
+-- 9. 구매한 제품의 종류 수 (count distinct)
+-- 		구매테이블에서 구매한 제품의 종류 수를 계산합니다. 구매 제품 이름에 중복을 제거하여 고유한 제품 수를 구합니다.
+-- 		전체 흐름 참고.
+-- 		1. 구매 데이터 조회: buy 테이블에서 모든 구매 정보 가져오기
+-- 		2. 중복 제거: prod_name 열에서 중복된 제품 이름을 제거하여 고유한 제품 이름만 남긴다.
+-- 		3. 고유 제품 수 계산: 남은 고유한 제품 이름의 수를 세어 unique_products라는 이름으로 결과 반환.
+select		count(distinct prod_name)
+from		buy;
+
+-- 10. 구매 테이블에서 상품 분류별 총 구매수량
+-- 		예: 디지털 분류 전체 구매 수량, 패션 분류 전체 구매 수량
+select 		group_name, sum(amount)
+from		buy
+group by	group_name;
+
+-- 11. 구매 테이블에서 상품 분류별 평균가격을 조회 하시오.
+-- 	단, 상품 분류가 NULL인 데이터는 제외하시오.
+select		group_name, avg(price)
+from		buy
+group by	group_name
+having		group_name is not null;
+
+-- 12. 구매 테이블에서 회원별 구매 건수를 조회 하시오.
+-- 		구매 건수란 buy 테이블에 저장된 구매 기록의 갯수를 의마 한다.
+select		mem_id, count(*)
+from		buy
+group by	mem_id;
+
+-- 13. 구매 테이블에서 회원별 총 구매 금액을 조회 하시오.
+-- 		총 구매 금액은 가격(price) * 수량(amount)으로 계산하시오.
+select		mem_id, sum(price * amount)
+from		buy
+group by	mem_id;
+
+-- 14. 구매 테이블에서 상품별 총 판매 금액을 조회 하시오.
+-- 		총 판매 금액은 가격(price) * 수량(amount)으로 계산하시오.
+select		prod_name, sum(price * amount)
+from		buy
+group by	prod_name;
+
+SELECT mem_id, prod_name, SUM(amount) AS total_amount
+FROM buy 
+GROUP BY mem_id, prod_name;
+
+-- -----------------------------------------------------------------------------------------
+
+-- -----------------------------------------------------------------------------------------
+-- 03-3절. 데이터 변경을 위한 SQL문
+-- -----------------------------------------------------------------------------------------
+/*
+	주제: 데이터베이스 내부에 만든 특정 테이블에 데이터를 추가(입력) / 수정 / 삭제 하는 SQL문
+    
+		INSERT문 : 테이블에 새로운 행 데이터를 추가(입력)해서 저장
+
+			INSERT문 문법
+				insert into 테이블명 ( 열명1, 열명2, 열명3)
+							vlaues  ( 값1,  값2,   값3);
+*/
+-- market_db 데이터베이스 사용하기 위해 선택
+use market_db;
+
+/*
+	테이블 생성 문법
+		create table 생성할_테이블_명(
+			생성할_열_명1 열1에_저장할_데이터_유형,
+            생성할_열_명2 열2에_저장할_데이터_유형,
+			생성할_열_명3 열4에_저장할_데이터_유형
+            ... ...
+        );
+*/
+-- hongong1 이라는 이름의 테이블 생성
+create table hongong1(
+	toy_id		INT, 		-- 장난감 ID
+    toy_name	CHAR(4), 	-- 장난감 이름
+    age			INT			-- 장난감 나이
+);
+
+-- hongong1 테이블에 저장된 모든 열의 데이터 조회
+select	*
+from	hongong1;
+
+-- hongong1 테이블에 하나의 행(row, 레코드)을 추가하여 저장
+insert into hongong1	( toy_id, toy_name, age )
+			values		( 1,	  '우디',	25);
+
+-- hongong1 테이블에 toy_id열과 toy_name열에만 데이터를 추가하여 저장할 값 넣어보자
+insert into hongong1	( toy_id, toy_name )
+			values		( 2,	  '버즈');
+
+-- hongong1 테이블에 열명의 순서를 바꿔서 저장할 값 넣어보자
+-- 주의 할점은 테이블명() 사이에 작성한 열명의 순서에 맞게 values() 사이에 저장할 값 넣어야 한다.
+insert into hongong1	( toy_name, age, toy_id )
+			values		( '제시', 	20,  3 );
+
+-- hongong1 테이블에 ( 열명1, 열명2, 열명3 ) 생략 하고
+-- values (열 추가값1, 열 추가값2, 열 추가값3 ) 구문만 작성해 새로운 행 데이터를 추가할 수 있다.
+-- 주의할점. 테이블 생성시 작성한 열명 순서에 맞게 추가할 값 들을 작성해야 한다.
+insert into hongong1 values ( 4, '영구', 30 );

@@ -83,9 +83,9 @@ select      열_이름 (or *)
             , 열_이름 별칭
 from        테이블명
 [where      조건식]
-[group by   열_이름]
-[having     조건식]
-[order by   열_이름 ASC/DESC]
+[group by   열_이름
+ having     조건식]
+[order by   열_이름 ASC(기본값, 오름차순)/DESC(내림차순)]
 [limit      숫자];
     
     범위 값을 구할때
@@ -98,8 +98,61 @@ from        테이블명
                                 ex) 우% = 우 뒤에 무슨 글자가 와도 괜찮다 -> 우주 or 우주소녀 등
                                     우_ = 우 뒤에 무슨 글자든 한글자만 와야 한다 -> 우주
 
+    group by 묶을데이터열
+    having 조건식
+        having의 조건에 따라 묶인 결과에 따라 재정렬
+            group by와 주로 사용되는 집계 함수 (aggregate function)
+            함수를쓰고 괄호에 열 명을 쓴다.
+                sum() 합계
+                avg() 평균
+                min() 최소값
+                max() 최대값
+                count() 행의 개수
+                count(distinct) 행의 개수 (중복 데이터는 1개만 인정)
+        where 절은 group by와 쓰지 않지만 order by와 limit은 같이 쓸 수 있다.
+
+    order by 정렬기준열
+        최종 조회 시 특정 열의 값을 기준으로 해서 내림 차순 또는 오름 차순 정렬 해서 조회하는 예약어
+        WHERE 절 다음에 나와야 한다.
+        정렬 조건은 하나 이상 설정이 가능하다
+            ex) order by 정렬기준열1, 정렬기준열2
+    
+    limit 
+        결과의 개수 제한해서 조회하는 예약어
+        limit 시작(숫자 index행 위치), 개수
+            ex) limit 3 = limit 0, 3 = limit 3 offset 0 과 동일 => 0 인덱스행 위치부터 3건
+                limit 3, 2 = limit 2 offset 3 => 3 인덱스행 위치부터 2건
+    
+    distinct
+        중복 데이터 제거
+        조회된 결과에서 중복된 데이터를 1개만 남긴다.
+        중복 데이터를 제거할 열 이름 앞에 DISTINCT를 써주면 된다.
+
 --------------------------------------------------------------------------------------------
 
 서브쿼리 (SubQuery)
     select 안에 또 다른 select 가 들어 갈 수 있다.
     이것을 서브쿼리 혹은 하위쿼리 라고 부른다.
+
+        select  컬럼명1, 컬럼명2 ...
+        from    테이블명
+        where   ( select    (비교할데이터 컬럼명)
+                  from      테이블명
+                  where     조건 );
+
+--------------------------------------------------------------------------------------------
+
+DDL (Data Definition Language): 데이터 정의어
+    테이블 구조를 만들고 지우는 CREATE, ALTER, DROP
+
+--------------------------------------------------------------------------------------------
+
+DML (Data Manipulation Language): 데이터 조작어
+= CRUD (Create = INSERT, Read = SELECT, Update = UPDATE, Delete = DELETE)
+= 액션 쿼리 / 쓰기 작업
+
+    INSERT 문: 테이블에 새로운 행 데이터를 추가(입력)해서 저장할 때 사용되는 SQL문 종류 중 하나
+
+        INSERT문 문법
+            insert into 테이블명 ( 열명1, 열명2, 열명3 )
+                        vlaues  ( 값1,  값2,   값3 );
