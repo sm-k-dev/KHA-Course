@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // function scope - function 으로 선언한 블록
+        // block scope - function 을 제외한 모든 블록
+
+        //블록문       {     }
+        //지역스코프영역에 변수를 선언
+        //b변수를 블록문의 지역변수라 부른다.
+
+        /*
+            결론
+                위 코드를 보면 블록 스코프 외부에 let 키워드로 변수 a를 선언하고,
+                블록 스코프 내부에 let키워드로 변수 b를 선언한 뒤 블록스코프 내부와 외부에서 각각 참조합니다.
+    
+                코드를 실행하면 변수a는 전역스코프영역에 만들어 놓아서
+                블록문 { } 내부나 외부에서 전부 참조할수 있습니다.
+                그러나 변수 b는 블록문 {} 내부에 선언한 지역스코프영역의 변수이므로
+                내부에서는 문제없이 참조하지만, 블록문 {} 외부에서는 참조 할수 없어 오류가 발생합니다.
+    
+        */
+
+        let a = 1;
+
+        {
+            let b = 2;
+
+            document.write("inside of block<br>");
+            document.write("a = " + a + ", b = " + b + "<br>");
+        }
+
+        document.write("==============================")
+
+        document.write("outside of block<br>");
+        document.write("a = " + a + "<br>");
+        document.write("b = " + b + "<br>");
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+
+
+</body>
+</html>

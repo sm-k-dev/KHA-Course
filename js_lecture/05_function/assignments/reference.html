@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        //전역스코프
+
+        //지역스코프
+
+        /*
+        결론 :  let, const키워드로 변수 a,b를 함수 외부에 선언하고, 함수 내부에도 똑같이
+                변수 a,b를 선언했는데 중복 선언 오류가 발생하지 않습니다.
+                전역스코프와 지역스코프에 같은 식별자(변수이름)을 가지는 참조대상이 있다면
+                먼저 같은 지역스코프영역에 만들어 놓은 식별자(변수이름)을 참조 합니다.
+                그리고 같은 지역 스코프에서 참조할 식별자(변수이름)를 찾지 못할때만
+                전역 스코프영역에 만들어 놓은 식별자(변수이름)를 찾습니다.
+        */
+
+        let a = 1;
+        let b = 2;
+
+        function refe1 () {
+            let a = 3;
+            let b = 4;
+
+            document.write("a: ", a, ", b: ", b, "<br>");
+        }
+
+        refe1();
+
+        let c = 1;
+        let d = 2;
+
+        function refe2 () {
+            document.write("c: ", c, ", d: ", d, "<br>");
+        }
+
+        refe2();
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+
+
+
+</body>
+
+</html>

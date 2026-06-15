@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        //function함수 만들고  호출 연습
+
+        //1.  매개변수로 두개의 인수를 전달받아 합을 구해 반환하는  add함수 정의
+        //    add함수 호출시 3과 5를 전달해  8을 반환아 console.log로 출력
+        function add ( a, b ) {
+            return (document.write(a + " + " + b + " = " + (a+b), "<br>"));
+        }
+
+        add( 3, 5 );
+
+        document.write("====================================<br>");
+
+        //2.  매개변수로  두개의 인수를 전달받아  두값중에 큰 값을 반환하는 max함수 정의
+        //	  max함수 호출시 7과 10을 전달해  큰값 10을 반환받아  cnosole.log로 출력
+
+        function max ( a, b ) {
+            return (document.write("max( " , a , ", " , b , " ) = " , ( a > b ? a : b ), "<br>"));
+        }
+
+        max( 7, 10 );
+
+        document.write("====================================<br>");;
+
+        //3.  매개변수로 한개의 숫자를 전달 받아  양수이면  true반환, 음수이면 false반환하는 기능의  isPositive함수 정의
+        //    isPositive함수 호출시  5를 전달해서  true반환 받고 console.log로 출력
+        //    isPositive함수 호출시 -2를 전달해서 false반환 받고 console.log로 출력
+        function isPositive ( a ) {
+            return (document.write( a , " = ", ( a >= 0 ), "<br>"));
+        }
+
+        isPositive(5);
+        document.write("<br>");
+        isPositive(-2);
+        document.write("====================================<br>");
+
+        //4. 매개변수로 한개의 숫자를 전달받아 전달받은 숫자가 짝수라면 true반환 하고 홀수라면 false 반환 기능의 isEven함수 정의
+        //  isEven함수 호출시 4를 전달하면 true반환 받아 console.log로 출력
+        //  isEven함수 호출시 7을 전달하면 false반환 받아 console.log로 출력
+
+        function isEven ( a ) {
+            return (document.write( a , " = ", ( a % 2 === 0 ), "<br>"));
+        }
+
+        isEven(4);
+        document.write("<br>");
+        isEven(7);
+        document.write("====================================<br>");
+
+        //5. 숫자 1부터 매개변수n으로 전달받은 인수의 합을 구하는 기능의 sumUpTo함수 정의
+        //   합을 계산해서 반환합니다.
+        //   1부터 n변수에 저장된 값을 1씩 증가시키면서 누적할 누적변수 sum선언
+
+        //  sumUpTo함수 호출시 5를 전달하면   15(1+2+3+4+5)를 구해 반환 받아 console.log로 출력
+
+        function sumUpTo ( n ) {
+            var sum = 0;
+            var formula = "";
+            for ( let i = 1 ; i <= n ; i++) {
+                sum += i;
+
+                formula += i !== 5 ? i + " + " : i;
+                // if ( i === 5 ) {
+                //     formula += i;
+                // } else {
+                //     formula += i + " + ";
+                // }
+                
+            }
+            return document.write(formula + " = " + sum);
+        }
+
+        sumUpTo(5);
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        //전역변수 a
+
+        //블록문  {   }
+        //var 키워드를 사용하여 변수를 만들었을 경우
+        //지역스코프로 인식 하지 않고 전역스코프영역에 만든 전역변수 b로 만들어짐
+        //전역변수 b
+
+        //오류가 발생하지 않습니다.
+        //이유 : var키워드는 함수 스코프 방식으로만 스코프를 나누기 떄문에
+        //       변수 a, b 모두 전역스코프영역에 선언한 전역변수로 인식하기 떄문이다.
+
+        var a = 1;
+
+        {
+            var b = 2;
+
+            document.write("inside of block<br>");
+            document.write("a = " + a + ", b = " + b + "<br>");
+        }
+
+        document.write("==============================")
+
+        document.write("outside of block<br>");
+        document.write("a = " + a + "<br>");
+        document.write("b = " + b + "<br>");
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            함수를 정의하는 방법(만드는 방법)
+
+            방법1. 함수 선언문 function 키워드로 함수 정의 및 매개변수 처리
+        */
+
+            // 함수 기능: 매개변수 로 전달받은 2개의 숫자 값을 곱해서 반환하는 기능
+
+            function multiply(a, b) {
+                // 함수 실행 코드
+                console.log(`a: ${a}, b: ${b}`);
+                return a * b ;
+            }
+            //-------------------------------------------------------------
+            
+            // multiply();
+            /*
+                multiply(); <- 호출시 a와 b 매개변수는 모두 undefined가 되어
+                            console.log('a: ${a}, b: ${b}'); 출력 결과는
+                                a: undefined, b: undefined 이다.
+                            그리고 return a * b ; 는
+                                return undefined * undefined; 이므로 NaN이 반환된다.
+            */
+            console.log(multiply());
+
+            /*
+                multiyply(7); <- 호출시 a 매개변수에만 7을 전달, b 매개변수에는 값(인수)을 전달하지 않음
+                            a 매개변수에 7 전달, b  매개변수에는 전달된 값이 없으므로 undefined가 할당
+                            console.log('a: ${a}, b: ${b}'); 구문에서 실행결과
+                                a: 7, b: undefined 출력
+                            return 7 * undefined; 가 되므로
+                                return NaN;
+            */
+           console.log(multiply(7));
+    </script>
+</body>
+</html>
