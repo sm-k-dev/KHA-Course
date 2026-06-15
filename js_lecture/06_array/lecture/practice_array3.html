@@ -1,33 +1,84 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 배열 3차시</title>
-<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
-.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
-code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>실습 - 배열 3차시</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7
+    }
+
+    .g {
+      background: #fff7e8;
+      border: 1px solid #f0d999;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #6b4e16
+    }
+
+    code {
+      background: #eee;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace
+    }
+  </style>
+</head>
+
+<body>
   <h1>⌨️ 실습 - 파티원 전체 출력</h1>
   <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
   <script>
-/*
-    주제 : 배열 길이와 순회
+    /*
+        주제 : 배열 길이와 순회
+    
+        - .length : 배열 개수 (값이라 괄호 없음)
+        - 순회 : for 로 0번부터 length 미만까지 돌며 전체 꺼냄
+        - 작성 공식 : for (let i = 0; i < 배열.length; i++) { 배열[i] }
+    */
 
-    - .length : 배열 개수 (값이라 괄호 없음)
-    - 순회 : for 로 0번부터 length 미만까지 돌며 전체 꺼냄
-    - 작성 공식 : for (let i = 0; i < 배열.length; i++) { 배열[i] }
-*/
+    // [1] "기사","마법사","궁수"를 담은 'party' 배열을 만드세요.
+    //     작성 공식: let 배열이름 = [값들];
+    let party = [ "기사", "마법사", "궁수" ];
 
-// [1] "기사","마법사","궁수"를 담은 'party' 배열을 만드세요.
-//     작성 공식: let 배열이름 = [값들];
+    // [2] party 의 개수(길이)를 출력하세요.
+    //     작성 공식: console.log(배열.length);
+    document.write(party.length, "<br>");
 
-// [2] party 의 개수(길이)를 출력하세요.
-//     작성 공식: console.log(배열.length);
+    document.write("======================<br>");
 
-// [3] for 문으로 party 전체를 하나씩 출력하세요.
-//     작성 공식: for (let i=0; i<배열.length; i++) { console.log(배열[i]); }
+    // [3] for 문으로 party 전체를 하나씩 출력하세요.
+    //     작성 공식: for (let i=0; i<배열.length; i++) { console.log(배열[i]); }
+    for ( let i = 0 ; i < party.length ; i++ ) {
+      document.write( party[i] + "<br>");
+    }
+    document.write("======================<br>");
 
-// [4] for 문으로 "OO 합류!" 형태로 전체를 출력하세요.
-//     작성 공식: console.log(배열[i] + " 합류!");
+    // [4] for 문으로 "OO 합류!" 형태로 전체를 출력하세요.
+    //     작성 공식: console.log(배열[i] + " 합류!");
+    for ( let i = 0 ; i < party.length ; i++ ) {
+      document.write( party[i], " 합류!<br>");
+    }
+    document.write("======================<br>");
 
-// [5] 숫자 10,20,30,40 을 담은 'nums' 배열을 만드세요.
+    // [5] 숫자 10,20,30,40 을 담은 'nums' 배열을 만드세요.
+    let nums = [ 10, 20, 30, 40 ];
 
-// [6] 'sum' 에 0을 저장하고, for 로 전체를 더해 누적한 뒤 출력하세요.
-//     작성 공식: 반복 안에서 sum += 배열[i];
-  </script></body></html>
+    // [6] 'sum' 에 0을 저장하고, for 로 전체를 더해 누적한 뒤 출력하세요.
+    //     작성 공식: 반복 안에서 sum += 배열[i];
+    let sum = 0;
+
+    for ( i = 0 ; i < nums.length ; i ++ ) {
+      sum += nums[i];
+    }
+
+    document.write("sum: ", sum, "<br>");
+  </script>
+</body>
+
+</html>

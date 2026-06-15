@@ -1,71 +1,138 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="UTF-8"><title>배열 실습</title>
-<style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;line-height:1.8;font-size:16px}button{padding:8px 16px;font-size:15px;cursor:pointer;margin:4px}input{padding:8px;font-size:15px;width:250px}#out{margin-top:16px;padding:12px;background:#eef1fb;border-radius:8px;min-height:24px}</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>배열 실습</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.8;
+            font-size: 16px
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 4px
+        }
+
+        input {
+            padding: 8px;
+            font-size: 15px;
+            width: 250px
+        }
+
+        #out {
+            margin-top: 16px;
+            padding: 12px;
+            background: #eef1fb;
+            border-radius: 8px;
+            min-height: 24px
+        }
+    </style>
 </head>
+
 <body>
-<h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
-<script>
-/*
-    주제 : [종합 미니 프로젝트] 인벤토리 관리 시스템
+    <h3>출력 결과는 F12 → Console 탭에서 확인하세요. 주석 설명을 보며 직접 코드를 작성하세요.</h3>
+    <script>
+        /*
+            주제 : [종합 미니 프로젝트] 인벤토리 관리 시스템
+        
+            배열 단원에서 배운 모든 것을 사용합니다.
+            - 배열 생성 / push·pop / length / for 순회 / map / filter
+        
+            [완성 목표]
+            아이템을 추가/삭제하고, 전체 목록을 출력하고,
+            가격 배열을 map 으로 가공하고 filter 로 비싼 아이템을 골라냅니다.
+        */
 
-    배열 단원에서 배운 모든 것을 사용합니다.
-    - 배열 생성 / push·pop / length / for 순회 / map / filter
+        // ===== 1단계: 인벤토리 만들기 =====
 
-    [완성 목표]
-    아이템을 추가/삭제하고, 전체 목록을 출력하고,
-    가격 배열을 map 으로 가공하고 filter 로 비싼 아이템을 골라냅니다.
-*/
+        // [1] "칼","방패"를 담은 'inventory' 배열을 만드세요.
+        //     작성 공식: let 배열이름 = [값1, 값2];
+        let inventory = [ "칼", "방패" ];
 
-// ===== 1단계: 인벤토리 만들기 =====
+        // [2] "===== 인벤토리 =====" 를 출력하세요.
+        document.write("===== 인벤토리 =====<br>");
+        document.write(inventory, "<br>");
 
-// [1] "칼","방패"를 담은 'inventory' 배열을 만드세요.
-//     작성 공식: let 배열이름 = [값1, 값2];
+        // ===== 2단계: 아이템 획득/사용 (push/pop) =====
 
-// [2] "===== 인벤토리 =====" 를 출력하세요.
+        // [3] 몬스터를 잡아 "물약"을 획득했습니다! inventory 뒤에 추가하세요.
+        //     작성 공식: 배열.push(값);
+        document.write("몬스터를 잡아 '물약'을 획득했습니다.");
+        inventory.push("물약");
+        document.write("===== 인벤토리 =====<br>");
+        document.write(inventory, "<br>");
 
-// ===== 2단계: 아이템 획득/사용 (push/pop) =====
+        // [4] "갑옷"도 획득했습니다! inventory 뒤에 추가하세요.
+        document.write("'갑옷'도 획득했습니다.");
+        inventory.push("갑옷");
+        document.write("===== 인벤토리 =====<br>");
+        document.write(inventory, "<br>");
 
-// [3] 몬스터를 잡아 "물약"을 획득했습니다! inventory 뒤에 추가하세요.
-//     작성 공식: 배열.push(값);
+        // [5] 현재 인벤토리를 출력하세요.
 
-// [4] "갑옷"도 획득했습니다! inventory 뒤에 추가하세요.
+        // [6] 가장 최근 아이템을 사용(삭제)했습니다! inventory 뒤에서 하나 삭제하세요.
+        //     작성 공식: 배열.pop();
+        inventory.pop();
+        document.write("===== 인벤토리 =====<br>");
+        document.write(inventory, "<br>");
 
-// [5] 현재 인벤토리를 출력하세요.
+        // [7] 현재 인벤토리와 보유 개수(length)를 함께 출력하세요.
+        //     작성 공식: console.log(배열, 배열.length);
+        document.write("inventory.length: ", inventory.length, ", inventory: ", inventory, "<br>");
 
-// [6] 가장 최근 아이템을 사용(삭제)했습니다! inventory 뒤에서 하나 삭제하세요.
-//     작성 공식: 배열.pop();
+        document.write("===== ======= =====<br>");
+        // ===== 3단계: 전체 목록 출력 (for 순회) =====
 
-// [7] 현재 인벤토리와 보유 개수(length)를 함께 출력하세요.
-//     작성 공식: console.log(배열, 배열.length);
+        // [8] for 문으로 "1번: 칼" 형태로 전체 아이템을 출력하세요.
+        //     번호는 i+1 로 (인덱스 0 → 1번)
+        //     작성 공식: for(...){ console.log((i+1) + "번: " + 배열[i]); }
+        for ( i = 0 ; i < inventory.length ; i++ ) {
+            document.write( (i + 1), "번: ", inventory[i], "<br>");
+        }
 
-// ===== 3단계: 전체 목록 출력 (for 순회) =====
+        document.write("===== ======= =====<br>");
+        // ===== 4단계: 가격 가공 (map) =====
 
-// [8] for 문으로 "1번: 칼" 형태로 전체 아이템을 출력하세요.
-//     번호는 i+1 로 (인덱스 0 → 1번)
-//     작성 공식: for(...){ console.log((i+1) + "번: " + 배열[i]); }
+        // [9] 아이템 가격 [100, 200, 50] 을 담은 'prices' 배열을 만드세요.
+        let prices = [100, 200, 50];
 
-// ===== 4단계: 가격 가공 (map) =====
+        // [10] map 으로 모든 가격에 부가세(1.1배)를 적용한 새 배열을 출력하세요.
+        //      작성 공식: 배열.map(p => (p * 11) / 10)
+        document.write("prices.map(*1.1): ", prices.map(n => (n * 11) / 10), "<br>");
 
-// [9] 아이템 가격 [100, 200, 50] 을 담은 'prices' 배열을 만드세요.
+        document.write("===== ======= =====<br>");
+        // ===== 5단계: 비싼 아이템 선별 (filter) =====
 
-// [10] map 으로 모든 가격에 부가세(1.1배)를 적용한 새 배열을 출력하세요.
-//      작성 공식: 배열.map(p => (p * 11) / 10)
+        // [11] filter 로 100 이상인 비싼 가격만 고른 새 배열을 'expensive' 에 저장하세요.
+        //      작성 공식: let 새배열 = 배열.filter(p => p >= 100);
+        let expensive = prices.filter( n => n >= 100 );
 
-// ===== 5단계: 비싼 아이템 선별 (filter) =====
+        // [12] "비싼 아이템 가격: " 과 expensive 를 함께 출력하세요.
+        document.write("비싼 아이템 가격: ", expensive, "<br>");
 
-// [11] filter 로 100 이상인 비싼 가격만 고른 새 배열을 'expensive' 에 저장하세요.
-//      작성 공식: let 새배열 = 배열.filter(p => p >= 100);
+        document.write("===== ======= =====<br>");
+        // [13] 전체 가격의 합을 'total' 에 누적해 출력하세요.
+        //      작성 공식: for 로 total += prices[i];
+        let total = 0;
+        for ( i = 0 ; i < prices.length ; i++ ) {
+            total += prices[i];
+        }
+        document.write("total price: ", total, "<br>");
 
-// [12] "비싼 아이템 가격: " 과 expensive 를 함께 출력하세요.
-
-// [13] 전체 가격의 합을 'total' 에 누적해 출력하세요.
-//      작성 공식: for 로 total += prices[i];
-
-// [14] 보유 아이템이 3개 이상인지 판단해 출력하세요.
-//      작성 공식: console.log(배열.length >= 3);
-
-// 완성! 인벤토리 관리 결과가 콘솔에 나오면 성공입니다.
-</script>
+        document.write("===== ======= =====<br>");
+        // [14] 보유 아이템이 3개 이상인지 판단해 출력하세요.
+        //      작성 공식: console.log(배열.length >= 3);
+        document.write("아이템이 3개 이상인가? ", inventory.length >= 3, "<br>");
+        // 완성! 인벤토리 관리 결과가 콘솔에 나오면 성공입니다.
+    </script>
 </body>
+
 </html>

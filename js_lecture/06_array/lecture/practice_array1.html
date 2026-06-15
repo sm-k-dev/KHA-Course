@@ -1,34 +1,73 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 배열 1차시</title>
-<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
-.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
-code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>실습 - 배열 1차시</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7
+    }
+
+    .g {
+      background: #fff7e8;
+      border: 1px solid #f0d999;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #6b4e16
+    }
+
+    code {
+      background: #eee;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace
+    }
+  </style>
+</head>
+
+<body>
   <h1>⌨️ 실습 - 인벤토리 만들기</h1>
   <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
   <script>
-/*
-    주제 : 배열 만들기와 인덱스
+    /*
+        주제 : 배열 만들기와 인덱스
+    
+        - 배열 : 여러 값을 순서대로 담는 자료. 대괄호 [ ]
+        - 작성 공식 : let 배열이름 = [값1, 값2, 값3];
+        - 인덱스(칸 번호)는 0부터! 꺼내기: 배열[번호]
+    */
 
-    - 배열 : 여러 값을 순서대로 담는 자료. 대괄호 [ ]
-    - 작성 공식 : let 배열이름 = [값1, 값2, 값3];
-    - 인덱스(칸 번호)는 0부터! 꺼내기: 배열[번호]
-*/
+    // [1] "칼","방패","물약" 3개를 담은 'items' 배열을 만드세요.
+    //     작성 공식: let 배열이름 = [값1, 값2, 값3];
+    let items = [ "칼", "방패", "물약" ];
 
-// [1] "칼","방패","물약" 3개를 담은 'items' 배열을 만드세요.
-//     작성 공식: let 배열이름 = [값1, 값2, 값3];
+    // [2] items 전체를 출력하세요.
+    document.write( items, "<br>" );
 
-// [2] items 전체를 출력하세요.
+    // [3] 0번 칸(첫 번째)을 출력하세요.
+    //     작성 공식: console.log(배열[번호]);
+    document.write( items[0], "<br>" );
 
-// [3] 0번 칸(첫 번째)을 출력하세요.
-//     작성 공식: console.log(배열[번호]);
+    // [4] 2번 칸(세 번째)을 출력하세요.
+    document.write( items[2], "<br>" )
 
-// [4] 2번 칸(세 번째)을 출력하세요.
+    // [5] items 의 1번을 "방패막이"로 바꾸세요.
+    //     작성 공식: 배열[번호] = 새값;
+    items[0] = "방패막이";
 
-// [5] items 의 1번을 "방패막이"로 바꾸세요.
-//     작성 공식: 배열[번호] = 새값;
+    // [6] items 전체를 출력하세요.
+    document.write( items, "<br>" );
 
-// [6] items 전체를 출력하세요.
+    // [7] 숫자 90,80,70 을 담은 'scores' 배열을 만들고, 0번과 2번을 더해 출력하세요.
+    //     작성 공식: console.log(배열[0] + 배열[2]);
+    let scores = [ 90, 80, 70 ];
+    document.write( scores[0] + scores[2] );
+  </script>
+</body>
 
-// [7] 숫자 90,80,70 을 담은 'scores' 배열을 만들고, 0번과 2번을 더해 출력하세요.
-//     작성 공식: console.log(배열[0] + 배열[2]);
-  </script></body></html>
+</html>

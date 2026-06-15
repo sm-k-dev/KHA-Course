@@ -1,35 +1,79 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 배열 4차시</title>
-<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
-.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
-code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>실습 - 배열 4차시</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7
+    }
+
+    .g {
+      background: #fff7e8;
+      border: 1px solid #f0d999;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #6b4e16
+    }
+
+    code {
+      background: #eee;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace
+    }
+  </style>
+</head>
+
+<body>
   <h1>⌨️ 실습 - 인벤토리 다루기 (map/filter)</h1>
   <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요.</div>
   <script>
-/*
-    주제 : map 과 filter (배열 가공)
+    /*
+        주제 : map 과 filter (배열 가공)
+    
+        - map(콜백)    : 모든 값을 변환 → 새 배열 (개수 같음)
+        - filter(콜백) : 조건에 맞는 값만 선별 → 새 배열
+        - 원본은 그대로, 새 배열을 돌려줌
+    */
 
-    - map(콜백)    : 모든 값을 변환 → 새 배열 (개수 같음)
-    - filter(콜백) : 조건에 맞는 값만 선별 → 새 배열
-    - 원본은 그대로, 새 배열을 돌려줌
-*/
+    // [1] 가격 [100,200,50,300] 을 담은 'prices' 배열을 만드세요.
+    //     작성 공식: let 배열이름 = [값들];
+    let prices = [ 100, 200, 50, 300 ];
 
-// [1] 가격 [100,200,50,300] 을 담은 'prices' 배열을 만드세요.
-//     작성 공식: let 배열이름 = [값들];
+    // [2] map 으로 모든 가격을 2배로 만든 새 배열을 출력하세요.
+    //     작성 공식: console.log(배열.map(p => p * 2));
+    document.write(prices.map( prices => prices * 2 ), "<br>");
 
-// [2] map 으로 모든 가격을 2배로 만든 새 배열을 출력하세요.
-//     작성 공식: console.log(배열.map(p => p * 2));
+    document.write("================================<br>");
 
-// [3] filter 로 100 이상인 가격만 고른 새 배열을 출력하세요.
-//     작성 공식: console.log(배열.filter(p => p >= 100));
+    // [3] filter 로 100 이상인 가격만 고른 새 배열을 출력하세요.
+    //     작성 공식: console.log(배열.filter(p => p >= 100));
+    document.write(prices.filter( prices => prices >= 100 ), "<br>");
 
-// [4] 몬스터 체력 [30,80,50,100] 을 담은 'hps' 배열을 만드세요.
+    document.write("================================<br>");
 
-// [5] filter 로 50 이상인 체력만 고른 새 배열을 'strong' 에 저장하세요.
-//     작성 공식: let 새배열 = 배열.filter(h => h >= 50);
+    // [4] 몬스터 체력 [30,80,50,100] 을 담은 'hps' 배열을 만드세요.
+    let hps = [ 30, 80, 50, 100 ];
 
-// [6] strong 을 출력하세요.
+    // [5] filter 로 50 이상인 체력만 고른 새 배열을 'strong' 에 저장하세요.
+    //     작성 공식: let 새배열 = 배열.filter(h => h >= 50);
+    let strong = hps.filter( hps => hps >= 50 );
 
-// [7] map 으로 모든 체력에 "HP" 를 붙인 새 배열을 출력하세요.
-//     작성 공식: 배열.map(h => h + "HP")
-  </script></body></html>
+    // [6] strong 을 출력하세요.
+    document.write( strong, "<br>" );
+
+    document.write("================================<br>");
+
+    // [7] map 으로 모든 체력에 "HP" 를 붙인 새 배열을 출력하세요.
+    //     작성 공식: 배열.map(h => h + "HP")
+    document.write( hps.map( hps => hps + " HP") );
+  </script>
+</body>
+
+</html>

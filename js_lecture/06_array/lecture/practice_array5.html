@@ -1,55 +1,106 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>실습 - 배열 5차시</title>
-<style>body{font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px;line-height:1.7}
-.g{background:#fff7e8;border:1px solid #f0d999;border-radius:10px;padding:14px 16px;color:#6b4e16}
-code{background:#eee;border-radius:4px;padding:1px 6px;font-family:monospace}</style></head><body>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>실습 - 배열 5차시</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7
+    }
+
+    .g {
+      background: #fff7e8;
+      border: 1px solid #f0d999;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #6b4e16
+    }
+
+    code {
+      background: #eee;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace
+    }
+  </style>
+</head>
+
+<body>
   <h1>⌨️ 실습 - 인벤토리 관리 시스템 (미니 프로젝트)</h1>
   <div class="g"><b>준비:</b> 브라우저로 열고 <code>F12</code> → <b>콘솔</b> 탭을 켜두세요. 단원 전체를 활용한 종합 도전입니다!</div>
   <script>
-// 주제 : [미니 프로젝트] 인벤토리 관리 시스템
-//   배열 단원 전체 활용: 생성/push·pop/length/for 순회/map/filter
-//   목표 : 아이템 관리 + 목록 출력 + 가격 가공 + 비싼 것 골라내기
+    // 주제 : [미니 프로젝트] 인벤토리 관리 시스템
+    //   배열 단원 전체 활용: 생성/push·pop/length/for 순회/map/filter
+    //   목표 : 아이템 관리 + 목록 출력 + 가격 가공 + 비싼 것 골라내기
 
-// ===== 1단계: 인벤토리 만들기 =====
-// [1] "칼","방패" 를 담은 inventory 배열을 만드세요.
-//     작성 공식: let 배열 = [값1, 값2];  ↓
+    // ===== 1단계: 인벤토리 만들기 =====
+    // [1] "칼","방패" 를 담은 inventory 배열을 만드세요.
+    //     작성 공식: let 배열 = [값1, 값2];  ↓
+    let inventory = [ "칼", "방패" ];
 
-// [2] "===== 인벤토리 =====" 를 출력하세요.  ↓
+    // [2] "===== 인벤토리 =====" 를 출력하세요.  ↓
+    document.write("inventory: " + inventory + "<br>");
 
-// ===== 2단계: 아이템 획득/사용 (push/pop) =====
-// [3] "물약" 을 획득! inventory 뒤에 추가하세요.
-//     작성 공식: 배열.push(값);  ↓
+    // ===== 2단계: 아이템 획득/사용 (push/pop) =====
+    // [3] "물약" 을 획득! inventory 뒤에 추가하세요.
+    //     작성 공식: 배열.push(값);  ↓
+    inventory.push("물약");
 
-// [4] "갑옷" 도 획득! inventory 뒤에 추가하세요.  ↓
+    // [4] "갑옷" 도 획득! inventory 뒤에 추가하세요.  ↓
+    inventory.push("갑옷");
 
-// [5] inventory 를 출력하세요.  ↓
+    // [5] inventory 를 출력하세요.  ↓
+    document.write("inventory: " + inventory + "<br>");
 
-// [6] 최근 아이템을 사용! inventory 뒤에서 하나 삭제하세요.
-//     작성 공식: 배열.pop();  ↓
+    // [6] 최근 아이템을 사용! inventory 뒤에서 하나 삭제하세요.
+    //     작성 공식: 배열.pop();  ↓
+    inventory.pop();
 
-// [7] inventory 와 보유 개수(length)를 함께 출력하세요.
-//     작성 공식: console.log(배열, 배열.length);  ↓
+    // [7] inventory 와 보유 개수(length)를 함께 출력하세요.
+    //     작성 공식: console.log(배열, 배열.length);  ↓
+    document.write("inventory: ", inventory, " => 보유 개수: ", inventory.length, "<br>");
 
-// ===== 3단계: 전체 목록 출력 (for) =====
-// [8] for 문으로 "1번: 칼" 형태로 전체를 출력하세요. (번호는 i+1)
-//     작성 공식: console.log((i+1) + "번: " + 배열[i]);  ↓
+    // ===== 3단계: 전체 목록 출력 (for) =====
+    // [8] for 문으로 "1번: 칼" 형태로 전체를 출력하세요. (번호는 i+1)
+    //     작성 공식: console.log((i+1) + "번: " + 배열[i]);  ↓
+    for ( let i = 0 ; i < inventory.length ; i++ ) {
+      document.write( i+1, " 번째: ", inventory[i], "<br>");
+    }
 
-// ===== 4단계: 가격 가공 (map) =====
-// [9] 가격 [100, 200, 50] 을 담은 prices 배열을 만드세요.  ↓
+    // ===== 4단계: 가격 가공 (map) =====
+    // [9] 가격 [100, 200, 50] 을 담은 prices 배열을 만드세요.  ↓
+    let prices = [100, 200, 50];
 
-// [10] map 으로 모든 가격을 2배로 만든 새 배열을 출력하세요.
-//      작성 공식: 배열.map(p => p * 2)  ↓
+    // [10] map 으로 모든 가격을 2배로 만든 새 배열을 출력하세요.
+    //      작성 공식: 배열.map(p => p * 2)  ↓
+    document.write(prices.map( prices => prices * 2 ), "<br>");
 
-// ===== 5단계: 비싼 아이템 선별 (filter) =====
-// [11] filter 로 100 이상인 가격만 골라 expensive 에 저장하세요.
-//      작성 공식: let 새배열 = 배열.filter(p => p >= 100);  ↓
+    // ===== 5단계: 비싼 아이템 선별 (filter) =====
+    // [11] filter 로 100 이상인 가격만 골라 expensive 에 저장하세요.
+    //      작성 공식: let 새배열 = 배열.filter(p => p >= 100);  ↓
+    let expensive = prices.filter( prices => prices >= 100 );
 
-// [12] "비싼 가격: ", expensive 를 함께 출력하세요.  ↓
+    // [12] "비싼 가격: ", expensive 를 함께 출력하세요.  ↓
+    document.write( expensive, "<br>" );
 
-// [13] 전체 가격의 합을 total 에 누적해 출력하세요. (for 로 total += prices[i])  ↓
+    // [13] 전체 가격의 합을 total 에 누적해 출력하세요. (for 로 total += prices[i])  ↓
+    let total = 0;
+    for ( let i = 0 ; i < prices.length ; i++ ) {
+      total += prices[i];
+    }
+    document.write(total, "<br>");
 
-// [14] 보유 아이템이 3개 이상인지 출력하세요.
-//      작성 공식: console.log(배열.length >= 3);  ↓
+    // [14] 보유 아이템이 3개 이상인지 출력하세요.
+    //      작성 공식: console.log(배열.length >= 3);  ↓
+    document.write( inventory.length >= 3 );
 
-// ✅ 인벤토리 관리 → 목록 → 2배 가격 → 비싼것 → 합계 가 나오면 성공!
-  </script></body></html>
+    // ✅ 인벤토리 관리 → 목록 → 2배 가격 → 비싼것 → 합계 가 나오면 성공!
+  </script>
+</body>
+
+</html>
