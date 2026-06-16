@@ -21,13 +21,15 @@
         //더해서  더한 결괏값을 sum함수를 호출한 코드의 줄로    반환!!!
         function sum1 ( a, b ) {
             if ( typeof a !== "number" || typeof b !== "number" ) {
-                return alert("숫자를 입력해 주세요");
+                return document.write( a, " 또는 ", b, " 가 숫자가 아닙니다. <br>");
             }
 
             return document.write( a, " + ", b, " = ", a + b, "<br>");
         }
 
         sum1(1, 2);
+        sum1("안녕", 2);
+        sum1(1, "하세요");
 
         //-----------------------------------
         //sum이라는 이름의 함수 호출
@@ -50,7 +52,7 @@
 
         const sum2 = ( a, b ) => {
             if ( typeof a !== "number" || typeof b !== "number" ) {
-                return alert("숫자를 입력해 주세요");
+                return document.write( a, "또는 ", b, " 가 숫자가 아닙니다. <br>");
             }
 
             return document.write( a, " + ", b, " = ", a + b, "<br>");

@@ -9,27 +9,31 @@
 <body>
     <script type="text/javascript">
         //두개의 매개변수로 전달받은 값의 합을 구하는 기능의  sum함수 정의
+        function sum ( num1, num2 ) {
+            // return -> 함수를 호출한 줄의 코드 자리로 계산된 값을 반환하는 예약어
+            // 반환? 값을 되돌려 준다.
+            // return 반환값;
+            return num1 + num2 ;
+        }
 
         //return 함수를 호출한 코드 줄로 계산된 반환할 값;
         //  return  30;
 
         //100과 200의 합을 구하기 위해   합을 구해서 반환하는 sum함수 호출! 호출시 ~  100과 200을 전달함.
         //그러면 계산된 합의 값 300을 반환받아 value변수에 저장 시킵니다.
+        let value = sum( 100, 200 );
+
+        console.log(value);
 
         //sum이라는 이름의 함수를 호출!
         //차례 대로 전달할 인수 10 과 20 이다.
         //이렇게 순서대로 전달하면 매개변수num1은 10을 전달받고 매개변수num2은 20을 전달받게 됩니다.
         //30
+        console.log(`sum(10, 20) = ${ sum( 10, 20 )}`);
 
         // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
         // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
         // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
-
-        function sum (num1, num2) {
-            return num1 + num2;
-        }
-        console.log(sum(10, 20));
-        document.write(sum(10,20));
     </script>
 </body>
 
