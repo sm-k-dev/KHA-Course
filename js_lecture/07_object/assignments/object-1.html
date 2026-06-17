@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            주제1. 사용자 정의 객체 만들기
+
+            객체 생성(만들기) 방법2. 리터럴 {} 이용
+
+                let 참조변수명 = {
+                    속성명: 값,
+                    메소드명: function(){ 코드; }
+                };
+        */
+
+        let book1 = {
+            title: "웹 표준의 정석",
+            pages: 648,
+
+        }
+
+        /*
+            주제2. 객체의 "속성명: 값" 한쌍 중에 "값"을 얻거나 변경하는 방법
+
+                방법1. . 표기법
+
+
+                방법2. [] 표기법
+        */
+        
+        // 방법1. .표기법 이용
+        // 객체참조변수명.속성명
+        document.write("book1.title: ", book1.title, "<br>");
+
+        // 방법1. .표기법 이용
+        // 객체참조변수명.속성명 = 변경할값;
+        book1.title = "웹 표준의 정석2"
+        console.log(book1);
+        document.write(JSON.stringify(book1), "<br>");
+        document.write("book1.title: ", book1.title, "<br>");
+
+        // 방법2. []표기법 이용
+        // 객체참조변수명["속성명"] -> 객체 {} 내부에 "속성명: 값" 중에서 "값"을 가져오는 문법
+        document.write('book1[\"title\"]: ', book1["title"], "<br>");
+        
+        // 방법2. []표기법 이용
+        // 객체참조변수명["속성명"] = 변경할값; -> 객체 {} 내부에 "속성명: 값" 중에서 "값"을 변경하는 문법
+        book1["title"] = "웹 표준의 정석";
+        document.write(JSON.stringify(book1), "<br>");
+
+        /*
+            주제3. "속성명: 값" 이 존재하지 않는 비어있는 객체 { }를 생성한 후
+                나중에 "속성명: 값" 한쌍을 추가 할 수 있다.
+        */
+
+        // let book2 = new Object(); 랑 같다
+        let book2 = {}; // 비어있는 객체, 빈 객체
+
+        book2.title = "JavaScript";
+        book2.pages = 500;
+        book2.author = "김개똥";
+
+        document.write("book2: ", JSON.stringify(book2), "<br>");
+
+        /*
+            주제4. 객체 { } 내부에 만들어져 있는 "속성명:값" <- 한 쌍 삭제 하기
+
+            삭제 작성 문법
+                delete 객체잠소변수명.속성명;
+        */
+        delete book2.pages;
+        document.write("book2: ", JSON.stringify(book2), "<br>");
+
+        delete book2.author;
+        document.write("book2: ", JSON.stringify(book2), "<br>");
+
+        /*
+            주제5. 객체 중첩 하기 ( {} 안에 "속성명: 값" 에서 "값" 자리에 {} 객체를 포함시킬 수 있다.)
+                {
+                    속성명1: 값1,
+                    속성명2: {
+                        속성명3: 값3,
+                        속성명4: 값4
+                    }
+                };
+        */
+        let student = {
+            name: "Doremi",
+            score: {
+                history: 85,
+                science: 94,
+                average: function() {
+                    return ( this.history + this.science ) / 2 ;
+                }
+            }
+        }
+        // history 속성명과 함께 저장된 85 점수 가져올때
+        // -> 바깥객체명.바깥속성명.안쪽객체속성명
+        document.write("student.score.history: ", student.score.history, "<br>");
+
+        // history 과목과, science 과목의 평균
+        // average 메소드 호출
+        // 호출 방법. 바깥객체명.바깥속성명.안쪽객체의_메소드명();
+        document.write("average: ", student.score.average(), "<br>");
+    </script>
+</body>
+</html>

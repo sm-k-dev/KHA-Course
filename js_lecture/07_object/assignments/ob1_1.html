@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--
+        사용자 정의 객체 생성 작성 방법2.
+            객체 리터럴 { }; 생성 방법 <-- 자바스크립트 최신버전 작성 방법
+        
+        ---------------------------------------
+            let 객체참조변수명 = {
+                속성명1: "문자열값1",
+                속성명2: 숫자값2,
+                메소드명: function() {
+                    실행할 기능 코드;
+                }
+            };
+        
+        -------------------------------------------
+        
+            사용자 정의 객체 생성 후 "속성명: 값" 중에서 "값"을 얻거나
+                만들어져 있는 메소드 function { 기능코드; }를 호출하는 방법 2가지
+
+        -------------------------------------------
+                방법1 . 표기법으로 값 얻어 사용
+                    객체참조변수명.속성명
+                    객체참조변수명.새속성명 = 값;
+                    객체참조변수명.속성명 = 변경할값;
+
+                    객체참조변수명.메소드명();
+                
+                방법2 [] 표기법으로 값 얻어 사용
+                    하이픈을 포함하는 속성명 or 메소드명이 있다면 [] 표기법으로만 사용 할 수 있다.
+    -->
+    <script>
+        // 소나타 자동차 객체 만들기
+        let sonata = {
+            color: "빨강",
+            model: "소나타",
+            type: "가솔린",
+
+            go: function() { console.log("소나타가 주행합니다."); },
+            stop: function() { console.log("소나타가 정지합니다."); }
+        }
+
+        // 위에서 만든 sonata 객체의 "속성명: 값" 한 쌍 중에 "값" 얻기
+        // 작성방법
+        // 객체참조변수명.속성명
+
+        document.write("sonata.color: ", sonata.color, "<br>");
+        document.write("sonata.model: ", sonata.model, "<br>");
+        document.write("sonata.type: ", sonata.type, "<br>");
+
+        sonata.go();
+        sonata.stop();
+    </script>
+</body>
+</html>
