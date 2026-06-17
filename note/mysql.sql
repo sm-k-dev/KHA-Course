@@ -1484,4 +1484,4 @@ use market_db;
 
 select	*
 from	member as m inner join buy as b
-on		m.mem_name = b.mem_name;
+on		m.mem_id = b.mem_id;
