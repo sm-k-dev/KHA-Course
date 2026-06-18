@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--
+        생성자 함수?
+            - 생성자 함수는 같은 속성 구조를 가진 객체메모리를 여러개 생성하기 위한 함수이다.
+                new 키워드와 함께 호출해서 사용할 수 있다.
+            
+            1. 생성자 함수 생성 문법
+                - 생성자 함수는 일반 함수와 달리 return이 없다.
+                
+                생성자 함수
+                    ---------------------------------------------
+                    function 생성자함수명( 매개변수1, 매개변수2 ) {
+                        this.속성명1 = 매개변수1;
+                        this.속성명2 = 매개변수2;
+
+                        this.메소드명 = function() {
+                            실행할 코드
+                        };
+                    }
+                    ---------------------------------------------
+
+                생성자 함수 호출 (객체 생성)
+                    ---------------------------------------------
+                    let 객체참조변수명 = new 생성자함수명( 인수1, 인수2 );
+    -->
+    <script>
+        /*
+            예제 주제: 생성자 함수로 같은 구조의 객체 메모리 여러개 만들기
+
+                참고. 생성자 함수는 객체 메모리를 만들때 사용하는 함수이다.
+                    같은 속성과 메소드를 가진 여러 객체 메모리를 만들때 사용한다.
+        */
+
+        // member라는 이름의 생성자 함수
+        function Member( id, name, age ) {
+            this.id = id;
+            this.name = name;
+            this.age = age;
+
+            this.introduce = function() {
+                document.write("아이디: ", this.id, "<br>");
+                document.write("이름: ", this.name, "<br>");
+                document.write("나이: ", this.age, "<br>");
+            }
+        }
+
+        // new 키워드를 이용해 Member 생성자 함수 호출해서 객체 메모리 생성
+        let member1 = new Member( "user01", "홍길동", 20 );
+        let member2 = new Member( "user02", "김자바", 25 );
+
+        // 객체 메모리의 메소드 호출
+        member1.introduce();
+        member2.introduce();
+    </script>
+</body>
+</html>

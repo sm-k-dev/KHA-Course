@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/cylinder.css">
+</head>
+<body>
+    <!--
+
+        [1] 작성 문법 - 생성자 함수 작성
+
+            function 생성자함수명(매개변수1, 매개변수2){
+
+                this.속성명1 = 매개변수1;
+                this.속성명2 = 매개변수2;
+
+                this.메소드명 = function(){
+                    실행할 코드
+                };
+            }
+
+            let 객체참조변수 = new 생성자함수명(값1, 값2);
+        ----------------------------------------------------------
+        [2] 작성 문법 - class 작성
+
+            class 클래스명 {
+
+                constructor(매개변수1, 매개변수2){
+                    this.속성명1 = 매개변수1;
+                    this.속성명2 = 매개변수2;
+                }
+
+                메소드명(){
+                    실행할 코드
+                }
+            }
+
+            let 객체참조변수 = new 클래스명(값1, 값2);
+        ---------------------------------------------------------
+
+        [3] 작성 문법 - 계산 기능을 메소드로 작성
+
+            class Cylinder {
+
+                constructor(radius, height){
+                    this.radius = radius;
+                    this.height = height;
+                }
+
+                getVolume(){
+                    return this.radius * this.radius * Math.PI * this.height;
+                }
+            }
+        ============================================================
+    --> 
+    <div id="container">
+        <div id="userInput">
+            <ul>
+                <li>
+                    <label for="radius">반지름</label>
+                    <input type="text" id="radius" value="5">
+                </li>
+                <li>
+                    <label for="height">높이</label>
+                    <input type="text" id="height" value="10">
+                </li>
+                <li>
+                    <!-- 사이트 이용자가 아래 <button>을 클릭하는 동ㅇ작을 등록한다
+                        클릭동작 등록 하는 방법
+                            -> onclick 이라는 속성명을 추가
+                        클릭동작 등록 후 기능을 실행하기 위해 함수 호출 방법
+                            -> onclick = "함수명();"
+                    -->
+                    <button onclick = "calcByConstructor();">생성자 함수로 계산</button>
+                </li>
+                <li>
+                    <button onclick = "calcByClass();">class로 계산</button>
+                </li>
+            </ul>
+        </div>
+        <div id="result">
+            결과 출력 영역
+        </div>
+    </div>
+    <script>
+        /* 참고. 원기둥 부피 구하는 공식 = 반지름 * 반지름 * 원주율 * 높이 = */
+        // 입력창에 사용자가 입력한 값을 받아오는 기능의 함수
+        function getInputValues() {
+            // <input type="text" id="radius" value="5">에 입력된 반지름 값을 얻어 저장 
+                // 순서1. 먼저 <input>태그 선택해서 가져오기 document.querySelector("css선택자문법") (document라는 문서 전체 정보를 저장하고 있는 객체)
+                // 순서2. 선택한 <input>태그에 value="5" 중에서 "5"를 얻는다. .value
+                // document.querySelector("#radius").value;
+            let radius = parseInt(document.querySelector("#radius").value, 10);
+
+            // input에 입력한 높이 값을 얻어 저장
+            let height = Number(document.querySelector("#height").value);
+
+            return radius, height;
+        }
+
+        // 생성자 함수로 계산 button을 클릭했을 때 호출되어 실행되는 일반 함수
+        function calcByConstructor() {
+            // 사이트 사용자가 입력한 반지름과 높이를 가져온다
+            // <input type="text" id="radius" value="5">
+            let input = getInputValues();
+
+            let getVolume = new CylinderConstructor(input.radius, input.height);
+        }
+
+        // 생성자 함수 방식 (생성자 함수로 객체 메모리 만드는 방식)
+        function CylinderConstructor ( radius, height ) {
+            this.radius = radius; // 입력받은 반지름을 객체 메모리의 radius: 에 값으로 저장
+            this.height = height; // 입력받은 높이를 객체 메모리의 height: 에 값으로 저장
+
+            // 부피를 계산하는 기능의 메소드를 객체 메모리에 추가
+            this.getVolume = function () {
+                // 원기둥 부피 계산해서 반환
+                return this.radius * this.radius * this.height * Math.PI;
+            }
+        }
+
+        class CylinderClass {
+            constructor( radius, height ) {
+                this.radius = radius;
+                this.height = height;
+            }
+
+            getVolume() {
+                return this.radius * this.radius * this.height * Math.PI;
+            }
+        }
+    </script>
+</body>
+</html>

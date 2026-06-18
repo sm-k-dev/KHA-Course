@@ -1,38 +1,197 @@
+/* =========================================================
+   원기둥 부피 구하기 - cylinder.css 전체 수정본
+   HTML 구조:
+   #container
+     #userInput
+       ul > li > label/input/button
+     #result
+========================================================= */
+
+/* 전체 기본 설정 */
 * {
   box-sizing: border-box;
 }
-#container{
+
+/* 화면 전체 */
+body {
+  margin: 0;
+  padding: 60px 50px;
+  min-height: 100vh;
+  background: #f3f6fb;
+  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  color: #1f2937;
+}
+
+/* 전체 레이아웃 박스 */
+#container {
+  width: 720px;
+  min-height: 190px;
+  padding: 30px;
+
   display: flex;
-  flex-wrap: wrap;
-  justify-content: left;
-  align-items: center;      
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 50px;
+
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1);
 }
+
+/* 입력 영역 */
 #userInput {
-  width:320px;
-  height:150px;
+  width: 240px;
+  height: auto;
 }
+
+/* ul 기본 점, 여백 제거 */
+#userInput ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 입력 줄 */
+#userInput li {
+  margin: 0 0 16px 0;
+
+  display: flex;
+  align-items: center;
+}
+
+/* 버튼 줄 */
+#userInput li:nth-child(3),
+#userInput li:nth-child(4) {
+  display: block;
+  margin-bottom: 14px;
+}
+
+/* 라벨 */
+#userInput label {
+  display: inline-block;
+  width: 70px;
+  padding: 0;
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e3a8a;
+  white-space: nowrap;
+}
+
+/* 입력창 */
+#userInput input[type="text"] {
+  width: 140px;
+  height: 34px;
+  padding: 6px 10px;
+
+  border: 1px solid #b8c7dc;
+  border-radius: 10px;
+  background: #ffffff;
+
+  font-size: 15px;
+  color: #111827;
+  outline: none;
+
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+}
+
+#userInput input[type="text"]:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+/* 버튼 */
+#userInput button {
+  display: block;
+  width: 190px;
+  height: 44px;
+  margin: 0 0 14px 0;
+  padding: 0;
+
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#userInput button:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+}
+
+#userInput button:active {
+  transform: translateY(0);
+}
+
+/* 결과 출력 영역 */
 #result {
-  width:300px; 
-  height:100px;     
+  width: 330px;
+  height: 120px;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   text-align: center;
-  line-height: 100px;
-  background-color:#fcfcfc;      
-  border:1px solid #ccc;
-  border-radius:12px;
+  line-height: normal;
+
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 18px;
+
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
-ul { list-style: none;}
-ul  li { margin:15px;}
-li > label {
-  float: left;
-  width:50px;
-  padding:5px;      
-}
-input[type="text"] {
-  width:140px;
-  padding:5px;
-}
-button {
-  width:190px;
-  margin-left:5px;
-  padding:5px;
+
+/* 모바일 화면 대응 */
+@media (max-width: 768px) {
+  body {
+    padding: 24px;
+  }
+
+  #container {
+    width: 100%;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  #userInput {
+    width: 100%;
+  }
+
+  #userInput li {
+    width: 100%;
+  }
+
+  #userInput label {
+    width: 70px;
+  }
+
+  #userInput input[type="text"] {
+    width: calc(100% - 80px);
+  }
+
+  #userInput button {
+    width: 100%;
+  }
+
+  #result {
+    width: 100%;
+    height: 110px;
+  }
 }
