@@ -50,6 +50,88 @@ vsCode나 cursor 에서
 
 ------------------------------------------------------------------------------
 
+JAVA
+    객체지향 OOP
+    JAVA Standard Library (Collection Framework, 람다식)
+    설계 패턴 (Design Patterns)
+JavaScript
+    React (컴포넌트 기반 UI 개발)
+    Node.js
+JSON
+    JavaScript와 Spring Boot(RESTful API) 사이의 데이터 교환 데이터 포맷
+표준SQL/RDBMS(DBMS)
+    DML / DDL / DCL
+    트랜잭션 관리와 데이터 정합성을 뜻하는 ACID 원칙
+HTML/CSS
+Spring Boot
+    MyBatis ORM과 데이터 영속성 관리 기술 (Persistence Layer)
+    API를 문서화하는 OpenAPI / Swagger
+    RESTful API: 주소(URL)를 통해 데이터와 기능을 주고받는 설계 규칙
+    Spring Security & OAuth: 로그인, 회원가입, 보안 인증
+JakartaEE 
+    서블릿(Servlet)/JSP: 자바 웹 서버의 기초 동작 원리
+    MVC 아키텍쳐: 웹 어플리케이션의 역할 분담 디자인 패턴 (Model Veiw Controller)
+DevOps
+    Git/GitHub: 소스코드 버전 관리 및 협업 도구
+    Docker / Kubernetes: 컨테이너 기반 가상화 및 통합 관리
+    AWS: 클라우드 가상 서버 (EC2, S3, RDS) 인프라 구축
+    CI/CD (GitHub Actions): 빌드 및 배포 자동화 파이프라인
+    리눅스 환경설정을 위한 리눅스 명령어 및 쉘 스크립팅 (Shell Scripting)
+    코드형 인프라 (IaC: Infrastructure as Code)
+네트워크 기초
+    TCP/IP 소켓 통신
+    HTTP 통신 문법
+    IP/Port 개념
+    VPC, 서브넷, 포트 포워딩
+리눅스
+    Linux 기초 및 파일 시스템
+    리눅스 핵심 명령어
+    패키지 관리 및 서버 설정
+파이썬
+C
+
+------------------------------------------------------------------------------
+
+종합/개념 + DevOps + Cloud + Network + 리눅스
+    생활코딩: https://opentutorials.org/course/1
+    로드맵.sh 가이드: https://roadmap.sh
+
+    프로그래머스: https://school.programmers.co.kr/
+    w3schools: https://www.w3schools.com/sql/
+    인프런(Inflearn)
+
+자바 & 백엔드
+    남궁성의 자바의 정석(유튜브)
+    점프 투 자바 (위키독스): https://wikidocs.net/book/31
+    Codecademy (Java): https://www.codecademy.com/
+    인프런 (김영한 강사): 스프링 입문 무료 강의
+
+JavaScript & 프론트엔드
+    코딩앙마(유튜브)
+    모던 JavaScript 튜토리얼: https://ko.javascript.info/
+    노마드 코더 (Nomad Coders): https://nomadcoders.co/
+
+SQL & 데이터베이스
+    프로그래머스: https://school.programmers.co.kr/learn/challenges?tab=sql_practice_kit
+    solvesql: https://solvesql.com/
+    leetCode: https://leetcode.com/
+    SQLbolt: https://sqlbolt.com/
+    SQLZoo: https://sqlzoo.net/wiki/SQL_Tutorial
+
+DevOps & 네트워크
+    따라하면서 배우는 AWS/Docker (유튜브 - 따배씨/따배도)
+    인프런 (외과 의사식 네트워크): 비전공자 눈높이 네트워크 기초
+
+리눅스
+    Jstern (웹 리눅스 터미널 실습)
+    리눅스 저니 (Linux Journey)
+    뉴렉처(Newlecture) (유튜브)
+
+파이썬
+    점프 투 파이썬 (위키독스): https://wikidocs.net/book/1
+
+------------------------------------------------------------------------------
+
 ① REST API: "어설픈 API"가 아닌 "진짜 RESTful" 요구
 현재 상태: 학원 프로젝트에서는 아마 컨트롤러(Controller)에서 URL을 대충 /board/insert, /board/update 형태로 만들고 있을 확률이 높습니다.
 더 해야 하는 이유: 현업 백엔드는 URL에 행위(insert, delete)를 쓰지 않고, HTTP 메서드(POST, PUT, DELETE)와 자원(Resource)의 명사형(GET /boards/1)을 조합하는 RESTful 가이드라인을 엄격하게 봅니다. 면접에서 "본인이 설계한 API 구조를 설명하고, RESTful 디자인 규칙을 어떻게 적용했는지" 단골로 물어봅니다.
@@ -60,7 +142,7 @@ vsCode나 cursor 에서
 ③ Docker + AWS: "배포할 줄 아는 백엔드"의 차이현재 상태: AWS EC2 인프라 하나에 이것저것 수동으로 설치해서 띄우는 법을 배울 것입니다.
 더 해야 하는 이유: 현업에 가면 "내 컴퓨터에선 잘 되는데 서버에선 안 돼요"라는 상황이 제일 싫어하는 상황입니다. Docker는 이 환경을 똑같이 복사해 주는 치트키입니다. 포트폴리오에 "Docker Compose를 활용해 local 개발 환경(Spring Boot + MySQL)을 1초 만에 셋업할 수 있도록 구축함", "Dockerfile을 작성해 AWS 서버에 컨테이너로 배포함"이라는 문구가 한 줄 들어가는 순간, 다른 신입들과 수준 차이가 확 벌어집니다.
 
-
+------------------------------------------------------------------------------
 
 추천하는 현실적인 공부 전략 (학원 수업과 병행하기)
 
