@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        스마트폰과 태블릿에서도 화면 크기가 알맞게 표시되도록 설정합니다.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 브라우저 탭에 표시되는 제목입니다. -->
+    <title>로또 번호 생성기</title>
+
+    <style>
+        /*
+            body는 웹 페이지 전체 영역을 의미합니다.
+        */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        /*
+            로또 번호가 출력될 영역입니다.
+        */
+        #lottoResult {
+            margin: 30px 0;
+            min-height: 70px;
+        }
+
+        /*
+            각각의 로또 번호를 원 모양으로 표시합니다.
+        */
+        .lotto-ball {
+            display: inline-flex;
+
+            /*
+                가로 방향 가운데 정렬
+            */
+            justify-content: center;
+
+            /*
+                세로 방향 가운데 정렬
+            */
+            align-items: center;
+
+            /*
+                원의 가로 크기
+            */
+            width: 60px;
+
+            /*
+                원의 세로 크기
+            */
+            height: 60px;
+
+            /*
+                모서리를 50% 둥글게 만들어 원 모양으로 표시합니다.
+            */
+            border-radius: 50%;
+
+            /*
+                로또 번호 사이의 간격입니다.
+            */
+            margin: 5px;
+
+            /*
+                번호 글자의 크기입니다.
+            */
+            font-size: 22px;
+
+            /*
+                번호 글자를 굵게 표시합니다.
+            */
+            font-weight: bold;
+
+            /*
+                원의 테두리입니다.
+            */
+            border: 2px solid black;
+        }
+
+        /*
+            로또 번호 생성 버튼의 모양입니다.
+        */
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 페이지의 큰 제목입니다. -->
+    <h1>로또 번호 생성기</h1>
+
+    <!-- 사용자에게 프로그램의 기능을 설명합니다. -->
+    <p>1부터 45까지의 숫자 중에서 중복 없이 6개를 생성합니다.</p>
+
+    <!--
+        생성된 로또 번호가 들어갈 영역입니다.
+
+        JavaScript에서는 id가 lottoResult인 요소를 찾아서
+        이 영역 안에 로또 번호를 출력합니다.
+    -->
+    <div id="lottoResult">
+        번호 생성 버튼을 눌러 주세요.
+    </div>
+
+    <!--
+        버튼을 클릭하면 generateLottoNumbers 함수가 실행됩니다.
+    -->
+    <button type="button" onclick="generateLottoNumbers()">
+        로또 번호 생성
+    </button>
+
+
+    <script>
+
+        /*
+        ==================================================================
+        로또 번호 생성기의 목표
+        ==================================================================
+
+        1부터 45까지의 정수 중에서
+        서로 중복되지 않는 숫자 6개를 무작위로 생성합니다.
+
+        예:
+
+        3, 8, 14, 21, 32, 44
+
+
+        로또 번호 하나를 만드는 공식:
+
+        Math.floor(
+            Math.random() * (최댓값 - 최솟값 + 1)
+        ) + 최솟값;
+
+
+        로또 번호의 범위:
+
+        최솟값: 1
+        최댓값: 45
+
+
+        숫자를 공식에 넣으면:
+
+        Math.floor(
+            Math.random() * (45 - 1 + 1)
+        ) + 1;
+
+
+        괄호 안을 계산하면:
+
+        45 - 1 + 1
+        = 45
+
+
+        따라서 다음과 같이 작성할 수 있습니다.
+
+        Math.floor(Math.random() * 45) + 1;
+
+
+        Math.floor(Math.random() * 45)의 결과:
+
+        0부터 44까지의 정수 중 하나
+
+
+        마지막에 1을 더하면:
+
+        1부터 45까지의 정수 중 하나
+        */
+
+
+        /*
+        ==================================================================
+        로또 번호 하나를 만드는 함수
+        ==================================================================
+
+        함수 이름:
+
+        createRandomNumber
+
+
+        매개변수:
+
+        min: 최솟값
+        max: 최댓값
+
+
+        예:
+
+        createRandomNumber(1, 45)
+
+        위와 같이 실행하면
+        1부터 45까지의 정수 중 하나를 반환합니다.
+        */
+        function createRandomNumber(min, max) {
+
+            /*
+                원하는 구간에서 정수 난수 하나를 만드는 공식입니다.
+
+                Math.random()
+                ----------------------------------------------------------
+                0 이상 1 미만의 무작위 소수를 만듭니다.
+
+                예:
+
+                0
+                0.25
+                0.7
+                0.999999
+
+
+                max - min + 1
+                ----------------------------------------------------------
+                최솟값부터 최댓값까지 정수가 몇 개인지 계산합니다.
+
+                45 - 1 + 1
+                = 45
+
+
+                Math.floor()
+                ----------------------------------------------------------
+                소수점 아래를 버립니다.
+
+                예:
+
+                Math.floor(3.8)
+                → 3
+
+                Math.floor(20.99)
+                → 20
+
+
+                마지막 + min
+                ----------------------------------------------------------
+                0부터 시작한 숫자를
+                원하는 최솟값부터 시작하도록 이동시킵니다.
+            */
+            let randomNumber =
+                Math.floor(Math.random() * (max - min + 1)) + min;
+
+
+            /*
+                return은 함수에서 만들어진 결과를
+                함수를 호출한 위치로 돌려줍니다.
+
+                예:
+
+                let number = createRandomNumber(1, 45);
+
+                createRandomNumber 함수가 만든 난수가
+                number 변수에 저장됩니다.
+            */
+            return randomNumber;
+        }
+
+
+        /*
+        ==================================================================
+        로또 번호 6개를 생성하는 함수
+        ==================================================================
+
+        사용자가 버튼을 클릭하면 이 함수가 실행됩니다.
+        */
+        function generateLottoNumbers() {
+
+            /*
+                로또 번호를 저장할 빈 배열을 만듭니다.
+
+                배열은 여러 개의 값을 하나의 변수에 저장할 수 있는 구조입니다.
+
+                처음 상태:
+
+                lottoNumbers = []
+
+                번호가 추가된 상태의 예:
+
+                lottoNumbers = [3, 15, 21]
+            */
+            let lottoNumbers = [];
+
+
+            /*
+                while 반복문은 괄호 안의 조건이 true인 동안
+                중괄호 안의 코드를 계속 반복합니다.
+
+
+                lottoNumbers.length
+                ----------------------------------------------------------
+                lottoNumbers 배열 안에 저장된 값의 개수입니다.
+
+
+                lottoNumbers.length < 6
+                ----------------------------------------------------------
+                저장된 로또 번호가 6개보다 적은 동안 반복합니다.
+
+
+                배열에 번호가 0개 있으면:
+
+                0 < 6
+                → true
+                → 반복 실행
+
+
+                배열에 번호가 5개 있으면:
+
+                5 < 6
+                → true
+                → 반복 실행
+
+
+                배열에 번호가 6개 있으면:
+
+                6 < 6
+                → false
+                → 반복 종료
+            */
+            while (lottoNumbers.length < 6) {
+
+                /*
+                    1부터 45까지의 정수 중에서
+                    무작위 숫자 하나를 만듭니다.
+
+                    예:
+
+                    randomNumber = 17
+                */
+                let randomNumber = createRandomNumber(1, 45);
+
+
+                /*
+                    includes()는 배열 안에 특정 값이 있는지 검사합니다.
+
+                    배열에 값이 있으면 true를 반환합니다.
+                    배열에 값이 없으면 false를 반환합니다.
+
+
+                    예:
+
+                    let numbers = [3, 10, 25];
+
+                    numbers.includes(10)
+                    → true
+
+                    numbers.includes(20)
+                    → false
+                */
+
+
+                /*
+                    ! 기호는 결과를 반대로 바꾸는 NOT 연산자입니다.
+
+                    lottoNumbers.includes(randomNumber)
+                    ------------------------------------------------------
+                    배열 안에 현재 번호가 있으면 true입니다.
+
+
+                    !lottoNumbers.includes(randomNumber)
+                    ------------------------------------------------------
+                    배열 안에 현재 번호가 없으면 true입니다.
+
+
+                    따라서 아래 조건문은 다음 의미입니다.
+
+                    "현재 만들어진 번호가 배열 안에 없을 때만 실행한다."
+                */
+                if (!lottoNumbers.includes(randomNumber)) {
+
+                    /*
+                        push()는 배열의 마지막 위치에 값을 추가합니다.
+
+                        예:
+
+                        기존 배열:
+
+                        [3, 15, 21]
+
+
+                        randomNumber가 30일 때:
+
+                        lottoNumbers.push(30);
+
+
+                        결과:
+
+                        [3, 15, 21, 30]
+
+
+                        이미 배열 안에 있는 번호는 추가하지 않기 때문에
+                        로또 번호가 중복되지 않습니다.
+                    */
+                    lottoNumbers.push(randomNumber);
+                }
+            }
+
+
+            /*
+                배열 안의 로또 번호를 작은 숫자부터 큰 숫자 순서로 정렬합니다.
+
+                이것을 오름차순 정렬이라고 합니다.
+
+
+                정렬 전:
+
+                [31, 5, 42, 8, 19, 2]
+
+
+                정렬 후:
+
+                [2, 5, 8, 19, 31, 42]
+
+
+                sort()만 작성하면 숫자를 문자처럼 비교할 수 있기 때문에
+                정확한 숫자 정렬을 위해 다음 비교 함수를 넣습니다.
+
+                (a, b) => a - b
+
+
+                a - b의 결과가 음수이면 a가 앞으로 이동합니다.
+                a - b의 결과가 양수이면 b가 앞으로 이동합니다.
+            */
+            lottoNumbers.sort(function(a, b) {
+                return a - b;
+            });
+
+
+            /*
+                생성된 번호를 웹 브라우저 화면에 출력합니다.
+            */
+            displayLottoNumbers(lottoNumbers);
+        }
+
+
+        /*
+        ==================================================================
+        로또 번호를 화면에 출력하는 함수
+        ==================================================================
+
+        매개변수 numbers에는 생성된 로또 번호 배열이 전달됩니다.
+
+        예:
+
+        numbers = [3, 8, 14, 21, 32, 44]
+        */
+        function displayLottoNumbers(numbers) {
+
+            /*
+                document.getElementById("lottoResult")
+                ----------------------------------------------------------
+                HTML에서 id가 lottoResult인 요소를 찾습니다.
+
+                찾는 요소:
+
+                <div id="lottoResult"></div>
+
+
+                찾아낸 HTML 요소를 resultArea 변수에 저장합니다.
+            */
+            let resultArea = document.getElementById("lottoResult");
+
+
+            /*
+                기존에 lottoResult 영역 안에 있던 내용을 모두 지웁니다.
+
+                번호를 다시 생성했을 때
+                이전 번호가 남아 있지 않도록 하기 위한 코드입니다.
+            */
+            resultArea.innerHTML = "";
+
+
+            /*
+                numbers 배열 안에 저장된 로또 번호를
+                처음부터 마지막까지 하나씩 반복합니다.
+
+
+                numbers.length
+                ----------------------------------------------------------
+                numbers 배열 안에 저장된 값의 개수입니다.
+
+                로또 번호는 6개이므로 numbers.length는 6입니다.
+
+
+                let i = 0
+                ----------------------------------------------------------
+                반복문의 시작 번호입니다.
+
+                배열의 첫 번째 위치 번호는 0이기 때문에
+                i를 0부터 시작합니다.
+
+
+                i < numbers.length
+                ----------------------------------------------------------
+                i가 배열의 길이보다 작은 동안 반복합니다.
+
+
+                i++
+                ----------------------------------------------------------
+                반복이 한 번 끝날 때마다 i를 1 증가시킵니다.
+            */
+            for (let i = 0; i < numbers.length; i++) {
+
+                /*
+                    새로운 span HTML 요소를 만듭니다.
+
+                    span은 문자나 숫자의 일부 영역을 묶을 때 사용하는 태그입니다.
+
+                    결과적으로 다음과 같은 요소가 만들어집니다.
+
+                    <span></span>
+                */
+                let ball = document.createElement("span");
+
+
+                /*
+                    생성한 span 요소에 lotto-ball이라는
+                    CSS 클래스 이름을 지정합니다.
+
+                    결과:
+
+                    <span class="lotto-ball"></span>
+
+
+                    위쪽 style에 작성한 .lotto-ball 디자인이 적용됩니다.
+                */
+                ball.className = "lotto-ball";
+
+
+                /*
+                    현재 순서의 로또 번호를 span 요소 안에 넣습니다.
+
+
+                    예:
+
+                    numbers 배열:
+
+                    [3, 8, 14, 21, 32, 44]
+
+
+                    i가 0이면:
+
+                    numbers[0]
+                    → 3
+
+
+                    i가 1이면:
+
+                    numbers[1]
+                    → 8
+                */
+                ball.textContent = numbers[i];
+
+
+                /*
+                    완성된 로또 번호 원을
+                    lottoResult 영역 안에 추가합니다.
+
+                    최종적으로 다음과 비슷한 HTML이 만들어집니다.
+
+                    <div id="lottoResult">
+                        <span class="lotto-ball">3</span>
+                        <span class="lotto-ball">8</span>
+                        <span class="lotto-ball">14</span>
+                        <span class="lotto-ball">21</span>
+                        <span class="lotto-ball">32</span>
+                        <span class="lotto-ball">44</span>
+                    </div>
+                */
+                resultArea.appendChild(ball);
+            }
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        스마트폰과 태블릿에서도 화면 크기가 알맞게 표시되도록 설정합니다.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 브라우저 탭에 표시되는 제목입니다. -->
+    <title>로또 번호 생성기</title>
+
+    <style>
+        /*
+            body는 웹 페이지 전체 영역을 의미합니다.
+        */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        /*
+            로또 번호가 출력될 영역입니다.
+        */
+        #lottoResult {
+            margin: 30px 0;
+            min-height: 70px;
+        }
+
+        /*
+            각각의 로또 번호를 원 모양으로 표시합니다.
+        */
+        .lotto-ball {
+            display: inline-flex;
+
+            /*
+                가로 방향 가운데 정렬
+            */
+            justify-content: center;
+
+            /*
+                세로 방향 가운데 정렬
+            */
+            align-items: center;
+
+            /*
+                원의 가로 크기
+            */
+            width: 60px;
+
+            /*
+                원의 세로 크기
+            */
+            height: 60px;
+
+            /*
+                모서리를 50% 둥글게 만들어 원 모양으로 표시합니다.
+            */
+            border-radius: 50%;
+
+            /*
+                로또 번호 사이의 간격입니다.
+            */
+            margin: 5px;
+
+            /*
+                번호 글자의 크기입니다.
+            */
+            font-size: 22px;
+
+            /*
+                번호 글자를 굵게 표시합니다.
+            */
+            font-weight: bold;
+
+            /*
+                원의 테두리입니다.
+            */
+            border: 2px solid black;
+        }
+
+        /*
+            로또 번호 생성 버튼의 모양입니다.
+        */
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 페이지의 큰 제목입니다. -->
+    <h1>로또 번호 생성기</h1>
+
+    <!-- 사용자에게 프로그램의 기능을 설명합니다. -->
+    <p>1부터 45까지의 숫자 중에서 중복 없이 6개를 생성합니다.</p>
+
+    <!--
+        생성된 로또 번호가 들어갈 영역입니다.
+
+        JavaScript에서는 id가 lottoResult인 요소를 찾아서
+        이 영역 안에 로또 번호를 출력합니다.
+    -->
+    <div id="lottoResult">
+        번호 생성 버튼을 눌러 주세요.
+    </div>
+
+    <!--
+        버튼을 클릭하면 generateLottoNumbers 함수가 실행됩니다.
+    -->
+    <button type="button" onclick="generateLottoNumbers()">
+        로또 번호 생성
+    </button>
+
+
+    <script>
+        function generateLottoNumbers () {
+
+            for ( let i = 0 ; i < 6 ; i++ ) {
+                Math.ceil( Math.randon() * 45 );
+            }
+        }
+    </script>
+
+</body>
+</html>
