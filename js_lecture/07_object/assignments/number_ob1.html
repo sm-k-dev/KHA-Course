@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            Number 객체: 숫자를 보관해서 숫자 표기법을 변경하는 메소드를 제공하는 내장객체
+
+            Number 객체 메모리 생성 방법
+                -> 숫자를 변수에 저장시키면 된다.
+                    예) let num = 3.456;
+        */
+
+        let num1 = 3.456789;
+
+        let num3 = "30.5px";
+
+        let num4 = 40;
+        /*
+            num1 변수에 저장된 3.456789 를 전달한 고정 소숫점 자리만큼만 반올림하여 표기
+            소수점 둘째자리까지 반올림되어 다음과 같이 표기
+            예) 3.456789 를 소수점 셋째 자리에서 반올림하여 3.46으로 만들어 반환
+        */
+        document.write( num1.toFixed(2), "<br>");
+
+        // num1 변수의 Number 객체 메모리 내부의 3.456789 숫자를 문자열 "3.456789"로 변환해서 반환
+        document.write( num1.toString(), "<br>" );
+
+        // num4 변수의 Number 객체 메모리에 저장된 40을 반환 받아 사용, valueOf()는 생략 가능
+        document.write( num4.valueOf(), "<br>" );
+
+        // ------------------------------------------------------------------------------
+        document.write(parseFloat(num3) + num4.valueOf(), "<br>");
+
+        /*
+            참고. parseFloat는 Number 객체 메모리 내부에 만들어져 이쓴 메소드가 아니라서
+                parseFloat 함수 이다. 함수를 호출해서 사용한 것이다.
+        */
+
+        // num3 변수에 저장된 "30.5px" 문자열에서 정수 30 숫자만 추출해서 반환
+        document.write( parseInt(num3), "<br>" );
+
+        // num3 변수에 저장된 "30.5px" 문자열을 parseInt 함수를 호출할때 매개변수로 전달하면
+        // 정수 30 을 숫자로 추출해서 반환한다. 반환된 숫자를 num4 변수에 저장된 40과 더해보자
+        document.write( parseInt(num3) + num4.valueOf(), "<br>" );
+    </script>
+</body>
+</html>

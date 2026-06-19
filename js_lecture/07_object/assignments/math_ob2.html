@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        document.write("<h1>컴퓨터가 랜덤으로 내는 가위, 바위, 보 중 하나 맞추는 게임</h1>");
+
+        // prompt 메소드: 윈도우 메모리 내부에 만들어져있는 메소드
+        // 클라이언트에게 "가위", "바위", "보" 중에 하나의 단어를 입력받아 t 변수에 저장
+        let t = window.prompt("가위, 바위, 보 중에서 하나의 단어만 입력하세요", "가위"); // window 객체는 최 상위 객체라서 생략가능하다.
+
+        // 클라이언트가 "가위" 입력시 -> 1 저장
+        // 클라이언트가 "바위" 입력시 -> 2 저장
+        // 클라이언트가 "보" 입력시 -> 3 저장
+        // 위 처럼 저장할 tNum 생성
+        let tNum;
+
+        switch ( t ) { // 클라이언트가 입력한 값으로 판단할 값
+
+            case "가위":
+                tNum = 1;
+                break;
+            
+            case "바위":
+                tNum = 2;
+                break;
+            
+            case "보":
+                tNum = 3;
+                break;
+        
+            default:
+                window.alert("잘 못 작성하셨습니다."); // window 메모리 내부에 만들어져있는 alert 메소드, 알림창(경고메세지)
+                
+                // F5를 자동으로 누른 기능과 같다.
+                location.reload(); // 새로고침 처럼 현재 보고 있는 math_ob2.html URL을 주소창에 자동으로 입력해 주고 엔터를 눌러 현재 페이지를 재요청하는 기능의 메소드
+                break;
+        }
+    </script>
+</body>
+</html>

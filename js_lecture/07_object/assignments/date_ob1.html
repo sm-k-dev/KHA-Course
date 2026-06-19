@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--
+        =====================================================================
+        자바스크립트 객체 종류 2가지
+            종류1> 사용자 정의 객체
+            종류2> 자바스크립트 문법에서 이미 만들어 놓고 개발자에게 제공하는 객체
+        
+        종류2> 자바스크립트 문법에서 이미 만들어 놓고 개발자에게 제공하는 객체
+            1. 내장객체
+                DATE 내장객체: 날짜와 시간 정보를 처리할 때 사용하는 객체
+                String 내장객체: 문자열을 조작하거나 문자열관리를 하는 객체
+                Array 내장 배열 객체: 배열 메모리를 생성해서 값을 관리하는 객체
+                Math 내장 객체: 수학 연산관련 메소드들을 제공하는 객체
+            
+            2. 브라우저 객체 모델 (BOM: Browser Object Model)
+                Window 브라우저 객체: 웹브라우저 창 하나의 전체 정보를 가지며 관리하는 객체
+                screen 브라우저 객체: 모니터 정보를 제공받거나 모니터 정보를 관리하는 객체
+                location 브라우저 객체: 웹브라우저 주소창에 입력한 URL을 관리하는 객체
+                history 브라우저 객체: 웹브라우저로 요청한 페이지로 이동하는 기능의 메소드 제공 객체
+
+            3. 문서 객체 모델 (DOM: Document Object Model)
+                확장자가 .html 인 문서에 작성된 모든 HTML 태그들을 브라우저가 해석해서 변환후 제공하는 객체
+        
+        내장 객체 중에서
+            -> Date 객체: 날짜와 시간 정보를 관리하고 처리할때 사용되는 메소드들을 제공하는 내장 객체.
+                [1] Date 객체 메모리 생성 방법
+                    let 참조변수명 = new Date(); // new Date()를 쓰는 순간 생성자 함수 호출
+                        참조변수명.getFullYear(); // 현재 컴퓨터에 설정된 년도 반환 기능의 메소드
+                        참조변수명.getMonth(); // 현재 컴퓨터에 설정된 월 반환 기능의 메소드
+    -->
+    <script>
+        /*
+            1. 현재 날짜와 시간정보를 제공해 주는 Date라는 이름의 객체 메모리 생성
+                작성방법
+                    let 참조변수명 = new Date();
+        */
+        let today = new Date();
+        
+        /* 
+            1. 현재 몇월 달인지에 대한 정보를 제공 받으려면? 
+            Date 객체 메모리에 만들어져 있는 getMonth() 메소드를 호출하면
+            반환 받는 값으로 현재 월-1 한 값을 반환 받아 개발자가 사용 할 수 있다.
+        */
+        let nowMonth = today.getMonth() + 1 ;
+        /*
+            2. 현재 몇일인지에 대한 정보를 제공 받으려면?
+            Date 객체 메모리에 만들어져 있는 getDate() 메소드를 호출하면
+            반환 받는 값으로 현재 날짜에 대한 값을 반환 받아 개발자가 사용 할 수 있다.
+        */
+        let nowDate = today.getDate();
+        /*
+            3. 현재 무슨 요일인지에 대한 정보를 제공받으려면?
+            Date 객체 메모리에 만들어져 있는 getDay() 메소드를 호출하면
+            현재 무슨 요일 인지 숫자 하나로 반환 해준다.
+            0 - 일요일
+            1 - 월요일
+            2 - 화요일
+            3 - 수요일
+            4 - 목요일
+            5 - 금요일
+            6 - 토요일
+        */
+        let nowDay = today.getDay();
+        
+        document.write("오늘은 ", nowMonth, " 월 ", nowDate, " 일 ")
+        if ( nowDay === 5 ) {
+            document.write("금요일 입니다.<br>");
+        } else if ( nowDay === 6 ) {
+            document.write("토요일 입니다.<br>");
+        }
+    </script>
+</body>
+</html>

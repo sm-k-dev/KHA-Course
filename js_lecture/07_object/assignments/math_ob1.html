@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            Math 객체: 수학 연산관련 속성과 메소드들을 제공하는 객체
+
+            Math 객체 생성 방법
+                - 따로 new 하지 않고 Math 객체명 만 작성
+
+            Math 객체 내부에 만들어져 있는 속성과 메소드 호출 방법
+                Math.메소드명(); <- 호출해서 사용
+                Math.속성명; <- 속성명에 등록된 값을 얻어 사용
+        */
+
+        // 1. Math 객체의 PI 상수를 호출하면 3.141592653589793...을 반환 받아 사용할 수 있다.
+        let piNum = Math.PI;
+
+        document.write(piNum, "<br>");
+
+        // 2. Math 객체의 random() 메소드를 호출하면
+        //      0.0 ~ 0.9 사이 중 실수값 중에서 랜덤값(난수) 하나만 추출해서 반환
+        let rndNum = Math.random();
+
+        document.write(rndNum, "<br>");
+
+        // 3. Math 객체의 ceil(2.1234) 메소드를 호출하면
+        //    소수점 첫자리의 값 1을 무조건 올림처리하여 정수 3으로 만들어서 반환해준다.
+        let ceilNum = Math.ceil(2.1234);
+        document.write(ceilNum, "<br>");
+
+        // 4. Math 객체의 round(2.1234) 메소드를 호출하면
+        //    값 2.1234에서 소숫점 첫자리를 반올림한다.
+        let roundNum = Math.round(2.1234);
+        document.write(roundNum, "<br>");
+
+        // 5. Math 객체의 floor(2.1234) 메소드를 호출하면
+        //    값 2.1234에서 소숫점 첫자리를 내림한다.
+        let floorNum = Math.floor(2.1234);
+        document.write(floorNum, "<br>");
+
+        // ---------------- 그렇게 중요하지 않지만 알아두면 좋은 메소드 -----------------------
+        // 6. Math 객체의 max(숫자1, 숫자2, 숫자3, 숫자4, 숫자5 ...) 메소드를 호출하면
+        //    전달한 숫자값 중에서 최대값 하나만 반환
+        let maxNum = Math.max(10, 20, 30, 40, 50, 11, 14, 49, 39, 498, 2098, 2193, 14, 19);
+        document.write(maxNum, "<br>");
+
+        // 7. Math 객체의 min(숫자1, 숫자2, 숫자3, 숫자4, 숫자5 ...) 메소드를 호출하면
+        //    전달한 숫자값 중에서 최소값 하나만 반환
+        let minNum = Math.min(10, 20, 30, 40, 50, 11, 14, 49, 39, 498, 2098, 2193, 14, 19);
+        document.write(minNum, "<br>");
+    </script>
+</body>
+</html>

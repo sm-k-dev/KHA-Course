@@ -86,30 +86,76 @@
     </div>
     <script>
         /* 참고. 원기둥 부피 구하는 공식 = 반지름 * 반지름 * 원주율 * 높이 = */
-        // 입력창에 사용자가 입력한 값을 받아오는 기능의 함수
+
+        /*
+            입력창 <input type="text" id="radius" value="5"> 에 사용자가 입력한 값을 받아오는 기능의  ======="일반 함수  getInputValues()"=========
+                기능 : 사용자로 부터 원의 반지름, 원 높이를 입력받아 객체 {....}형태로 값들을 반환(radius: 반지름, height: 높이) 하는 기능
+                참고.  calcByConstructor() { } 생성자 함수 내부에서 호출 되어 코드가 실행되는 "일반 함수"
+        */
+        /*
+            참고.  <input type="text" id="radius" value="5"> 에 입력된 반지름값 얻어 저장 하는 코드 작성 방법법
+
+                순서1. 먼저 <input>태그 선택해서 가져오기  
+                    document.querySelector("css선택자문법")
+
+                순서2. 선택한 <input>태그에 value="5" 중에서 "5"를 얻는다. 
+                    document.querySelector("css선택자문법").value;
+        */  
         function getInputValues() {
-            // <input type="text" id="radius" value="5">에 입력된 반지름 값을 얻어 저장 
-                // 순서1. 먼저 <input>태그 선택해서 가져오기 document.querySelector("css선택자문법") (document라는 문서 전체 정보를 저장하고 있는 객체)
-                // 순서2. 선택한 <input>태그에 value="5" 중에서 "5"를 얻는다. .value
-                // document.querySelector("#radius").value;
+            // 반지름 값(문자 → 숫자)   
             let radius = parseInt(document.querySelector("#radius").value, 10);
 
-            // input에 입력한 높이 값을 얻어 저장
+            // 높이 값(문자 → 숫자)
             let height = Number(document.querySelector("#height").value);
 
-            return radius, height;
+            // 객체 { } 형태로 만들어서 반지름, 높이 저장후 객체 { } 메모리 반환
+            // { 속성명: 값, 속성명: 값 };
+            return { radius: radius, height: height };
         }
 
-        // 생성자 함수로 계산 button을 클릭했을 때 호출되어 실행되는 일반 함수
+        /*
+            ======== "함수 calcByConstructor()" =============
+
+            <button onclick="calcByConstructor();">생성자 함수로 계산</button>을 클릭했을때 호출되어 실행 되는  함수
+                기능 : 사용자  입력값 불러오기,  생상자 함수로 객체 생성, 계산된 부피를 소수 둘째자리까지 표시해서 결과영역에 출력 
+        */
         function calcByConstructor() {
-            // 사이트 사용자가 입력한 반지름과 높이를 가져온다
-            // <input type="text" id="radius" value="5">
-            let input = getInputValues();
+            /*
+                <input type="text" id="radius" value="5">  반지름 입력한 값 얻어 변수에 저장 하기 위해
+                아래에 만들어 놓은 function getInputValues(){....} 호출해서  
+                radius: 반지름, height: 높이 를 {}객체로 반환 받아 input변수에 저장하게됨
+            */
+            let input = getInputValues(); // <- { radius: 5, height: 10 }
 
-            let getVolume = new CylinderConstructor(input.radius, input.height);
+            let cylinder = new CylinderConstructor(input.radius, input.height);
+
+            /* 계산된 부피를 소수 둘째자리까지 표시해서 결과영역에 출력 */
+            /*
+                <div id="result">결과 출력 영역</div> 요소를 선택해서 가져와
+                컨텐츠 영역에 작성된 "결과 출력 영역" 대신 계산된 부피값을 덮어 씌워 보여주자
+            */
+            document.querySelector("#result").textContent = "생성자 함수 부피 계산 결과: " + cylinder.getVolume().toFixed(2);
         }
 
-        // 생성자 함수 방식 (생성자 함수로 객체 메모리 만드는 방식)
+        function calcByClass() {
+            /*
+                <input type="text" id="radius" value="5">  반지름 입력한 값 얻어 변수에 저장 하기 위해
+                아래에 만들어 놓은 function getInputValues(){....} 호출해서  
+                radius: 반지름, height: 높이 를 {}객체로 반환 받아 input변수에 저장하게됨
+            */
+            let input = getInputValues(); // <- { radius: 5, height: 10 }
+
+            let cylinder = new CylinderClass(input.radius, input.height);
+
+            /* 계산된 부피를 소수 둘째자리까지 표시해서 결과영역에 출력 */
+            /*
+                <div id="result">결과 출력 영역</div> 요소를 선택해서 가져와
+                컨텐츠 영역에 작성된 "결과 출력 영역" 대신 계산된 부피값을 덮어 씌워 보여주자
+            */
+            document.querySelector("#result").textContent = "클래스 부피 계산 결과: " + cylinder.getVolume().toFixed(2);
+        }
+
+        //======== "생성자 함수 CylinderConstructor(radius, height)로 객체 메모리생성" ================
         function CylinderConstructor ( radius, height ) {
             this.radius = radius; // 입력받은 반지름을 객체 메모리의 radius: 에 값으로 저장
             this.height = height; // 입력받은 높이를 객체 메모리의 height: 에 값으로 저장
@@ -121,12 +167,16 @@
             }
         }
 
+        //======== "클래스 설계도 정의해서 CylinderClass로 객체 메모리생성 (JS 최신 문법 객체 생성 설계도)" ================
         class CylinderClass {
+            // 생성자: new로 객체 메모리 생성시 호출되는 메소드의 종류 중 하나
+            // 생성자는 return을 적을 수 없다. 초기화의 목적
             constructor( radius, height ) {
                 this.radius = radius;
                 this.height = height;
             }
-
+            
+            // 메소드는 return을 적을 수 있다.
             getVolume() {
                 return this.radius * this.radius * this.height * Math.PI;
             }
