@@ -350,6 +350,10 @@ MySQL의 데이터 형식
 날짜/시간 (Date/Time)    DATE, TIME, TIMESTAMP       DATE, TIME, DATETIME, TIMESTAMP
 순수 이진 데이터          BINARY LARGE OBJECT         BLOB, LONGBLOB
 
+열거형 타입 (enum) - 하나의 값만 저장할 수 있도록
+    사용법
+        열_명 enum('값1', '값2', '값3'...) default '값1'
+
 **************************************************
 
     TINYINT 
@@ -743,6 +747,11 @@ SQL 프로그래밍
         SELECT 문 안에서 단독으로 사용할 수 없으며, 반드시 스토어드 프로시저 안에서만 사용해야 합니다.
         데이터를 단순히 가공하는 것이 아니라, 데이터베이스의 실행 흐름을 제어하고 쿼리문 자체를 실시간으로 만들어 실행하는 순수한 프로그래밍 문법이기 때문
 
+        WHILE 반복문 작성 문법
+            WHILE (조건식) DO
+                반복실행할 SQL문장
+            END WHILE
+
         스토어드 프로시저로 생성
             DROP PROCEDURE IF EXISTS 반복문_프로시저;
 
@@ -767,6 +776,39 @@ SQL 프로그래밍
 
             CALL 반복문_프로시저();
 
+            --------------------------------------------------------------------------
+
+            응용
+                ITERATE [label] - 지정한 레이블로 가서 계속 진행 (자바스크립트의 continue)
+                LEAVE [label] - 지정한 레이블을 빠져나간다. 즉 WHILE 문이 종료 (자바스크립트의 break)
+            
+            DROP PROCEDURE IF EXISTS 프로시저_이름;
+
+            DELIMITER $$
+            CREATE PROCEDURE 프로시저_이름();
+            BEGIN
+                DECLARE i INT;
+                DECLARE sum INT;
+                SET i = 1;
+                SET sum = 0;
+
+                myWhile: -- while 에 label 지정
+                WHILE ( i <= 100 ) DO
+                    IF (조건식) THEN
+                        실행 SQL문;
+                        ITERATE myWhile; -- 지정한 label 문으로 가서 계속 진행
+                    END IF;
+
+                    IF ( sum > 1000 ) THEN
+                        실행 SQL문;
+                        LEAVE myWhile; -- 지정한 label 문을 떠남. 즉 while 종료
+                    END IF;
+                END WHILE;
+
+                SELECT 구문;
+            END $$
+            DELIMITER ;
+
     --------------------------------------------------------------------------
 
     동적 SQL
@@ -775,7 +817,7 @@ SQL 프로그래밍
 
         스토어드 프로시저 안에서의 사용법
             PREPARE: SQL 문자열을 실행할 준비를 합니다.
-            EXECUTE: 준비된 SQL을 실행합니다.
+            EXECUTE: PREPARE를 사용해 준비한 SQL을 실행합니다.
             DEALLOCATE PREPARE: 사용한 SQL 자원을 해제합니다.
 
         스토어드 프로시저로 생성
@@ -800,5 +842,13 @@ SQL 프로그래밍
 
             -- 호출할 때 테이블 이름을 인자값으로 넘겨 실행합니다.
             CALL 동적SQL_프로시저('회원테이블');
+
+        execute using 사용
+            -- 쿼리를 만들때 확정되지 않은 값을 ? 로 둔다.
+            prepare 내쿼리 from 'select * from 테이블 where 컬럼명 = ?';
+            prepate 내쿼리 from 'insert into 테이블 (컬럼명, 컬럼명) value (값, ?)';
+            
+            -- 쿼리를 실행할때 using을 사용해 ? 값에 들어갈 값을 넣는다.
+            execute 내쿼리 using @조건값;
 
     --------------------------------------------------------------------------
