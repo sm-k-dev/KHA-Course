@@ -12,41 +12,52 @@
 
         //fruits라는 배열 참조변수를 선언하고,
         //"Apple","Banana","Cherry"라는 세개의 문자열을 요소로 가지는 배열을 할당합니다
-        //				0         1         2            index
+        //                  0       1           2            index
+        const fruits = [ "Apple", "Banana", "Cherry" ];
 
         //fruits배열의 첫번째 요소인 "Apple" 을 얻어와 출력합니다
+        console.log(`fruits[0]: ${fruits[0]}`);
 
         //fruits배열에 저장된 요소의 총 갯수를 얻어와 출력합니다.
+        console.log(`fruits.length: ${fruits.length}`);
 
         //let fruits = ["Apple", "Banana", "Cherry"];
-        //				0         1         2            index
+        //				  0         1         2            index
 
-        //배열에서 제공해 주는 메소드 이용!!!!!!!
-
+        //배열에서 제공해 주는 메소드 이용
         //배열 메모리의 가장 마지막 index 2 위치 뒤에 "Date"요소 추가
         //							0         1        2       3      index
+        fruits.push("Date");
+
+        console.log(`fruits: ${fruits}`);
 
         //배열 메모리의 가장 마지막 index 3위치에 저장된 "Date"요소를 제거하고 그값을 반환해 오자
         //"Date"
-
         //반환한 "Date"요소를 출력
+        console.log(`fruits.pop(): ${fruits.pop()}`);
 
         //그리고 다시 fruits배열의 변화된 모습 출력!
         //   0        1         2       index
+        console.log(`fruits: ${fruits}`);
 
         //배열 메모리의 가장 첫번째 칸에 저장된 "Apple"요소를 제거하고  제거한 값 "Apple" 추출(반환)
+        console.log(`fruits.shift(): ${fruits.shift()}`);
 
         //그리고 다시 fruits배열의 변화된 모습 출력!
         //     0         1           index
+        console.log(`fruits: ${fruits}`);
 
         //배열 메모리의  0 index위치 앞에 (가장 앞위치에) "Avodcado" 요소를 추가합니다.
         //    0           1          2           index
+        fruits.unshift("Avocado");
 
         //그리고 다시 fruits배열의 변화된 모습 출력!
+        console.log(`fruits: ${fruits}`);
 
         //현재  배열 메모리 모습
         //let fruits = ["Avodcado","Banana", "Cherry"]
         //    				0           1          2           index
+
         //반복 메소드 사용!
         //fruits배열 메모리에 저장된 각 요소(데이터)를 차례대로 반복해서 얻어 출력!
         //단! forEach메소드 사용!
@@ -57,13 +68,23 @@
         //형태2.
         //이 경우 각 요소를 console.log로 출력하므로
         // "Avocado", "Banana", "Cherry"
+        fruits.forEach( function( value, value2 ){
+            console.log(`index ${value2} 번째 아이템: ${value}`);
+        } );
 
         //반복메소드2
-        //map()메소드
-        //- 배열의 각요소에 대해 주어진 콜백함수function(){}를 호출하고,
-        //  그 결과로 새로운 배열메모리를 생성해서 새로운 배열 메모리 자체를 반환하는 메소드
-        //- 이 메소드는 배열에 저장된 원본데이터를 변경하지 않고
-        //  계산에 의해 새로운 배열에 넣어 새로운 배열 메모리 자체의 주소를 반환합니다.
+        /*
+            배열 객체 메모리가 제공하는 map() 메소드
+                - 배열의 각요소에 대해 주어진 콜백함수function(){}를 호출하고,
+                그 결과로 새로운 배열메모리를 생성해서 새로운 배열 메모리 주소번지 자체를 반환하는 메소드
+                - 이 메소드는 배열에 저장된 원본데이터를 변경하지 않고
+                계산에 의해 새로운 배열에 넣어 새로운 배열 메모리 자체의 주소를 반환합니다.
+        */
+        const upperFruits = [];
+
+        fruits.forEach( function( value ){
+            upperFruits.push(value.toUpperCase());
+        } );
 
         //현재  배열 메모리 모습
         //let fruits = ["Avodcado","Banana", "Cherry"]
@@ -75,26 +96,36 @@
         //["AVODCADO", "BANANA", "CHERRY"]
 
         //fruits배열의 요소들을 가공한 새로운 배열upperFriuts 배열 모습 출력
+        fruits.forEach(value => console.log(value));
 
-        //화살표 함수 형태로  map메소드 호출
+        //화살표 함수 형태로 map메소드 호출
+        // const upperFruits = fruits.map( function(fruit) { return fruit.toUpperCase(); });
+        const upperFruits2 = fruits.map( m => m.toUpperCase() );
 
-        //fruits배열의 요소들을 가공한 새로운 배열upperFriuts2 배열 모습 출력
+        //fruits배열의 요소들을 가공한 새로운 배열 upperFriuts2 배열 모습 출력
+        console.log(upperFruits2);
+        console.log(fruits);
 
         //-------------------------------------------------------------------
         //보충. map메소드 사용
-
-        //			    0  1  2  3  4   index
+        const numbers = [ 1, 2, 3, 4, 5 ];
+        //			      0  1  2  3  4   index
 
         //numbers배열 메모리에 저장되어 있는 모든 요소들을 차례대로 반복해서 얻어
-        //		요소 1 -> return   1  *  1  ->  1을 만들어   새로운 배열 자동생성   [ 1 ]
-        //      요소 2 -> return   2  *  2  ->  4를 만들어  새로운 배열에 추가      [  1, 4 ]
-        //		요소 3 -> return   3  *  3  ->  9를 만들어 새로운 배열에 추가      [  1,  4,  9]
-        //  	요소 4 -> return   4 * 4    ->  16                       [1,   4,  9,  16]
-        // 	 요소5 -> return   5 * 5    ->  25                       [1,   4,  9,  16, 25]
-        //[1,   4,  9,  16, 25]
-        // 0     1   2   3   4   index
+        //		요소 1 -> return 1 * 1  ->  1을 만들어 새로운 배열 자동생성 [ 1 ]
+        //      요소 2 -> return 2 * 2  ->  4를 만들어 새로운 배열에 추가   [ 1, 4 ]
+        //		요소 3 -> return 3 * 3  ->  9를 만들어 새로운 배열에 추가   [ 1, 4, 9 ]
+        //  	요소 4 -> return 4 * 4  ->  16                          [ 1, 4, 9, 16 ]
+        // 	    요소 5 -> return 5 * 5  ->  25                          [ 1, 4, 9, 16, 25 ]
+        // [ 1, 4, 9, 16, 25 ]
+        //   0  1  2   3   4   index
+        // const newNumbers = numbers.map( m => m * m );
+        const newNumbers = numbers.map( function(m){ return m * m; } );
 
         //일반 for반복문을 이용해 newNubmers배열에 저장된 요소들을 각각 반복해서 얻어 console.log로 출력
+        for ( let i = 0 ; i < newNumbers.length ; i++ ) {
+            console.log(`newNumbers[${i}]: ${newNumbers[i]}`);
+        }
 
         /*
             참고. map()
