@@ -719,9 +719,13 @@ on	o.customer_id = c.customer_id;
 -- 문제10. 특정 제품이 포함된 모든 주문정보 조회
 -- OrderItems테이블에서 '스마트폰'이 포함된 모든 주문정보를 조회하는 SQL쿼리를 작성하시오.
 select	*
-from	OrderItems o inner join Products p
-on	o.product_id = p.product_id
-where	p.name = '스마트폰';
+from		Orders o 
+inner join 	OrderItems i
+on			o.order_id = i.order_id
+inner join 	products p
+on			i.product_id = p.product_id
+where		p.name = '스마트폰';
+
 -- ----------------------------------------------------------------------------------
 -- 실습5. `InternetMarket` 데이터베이스의 테이블에서 사용할 수 있는 `UPDATE` 문제 5개
 
@@ -731,41 +735,62 @@ update	Customers
 set		email = 'newemail@example.com'
 where	customer_id = 1;
 
-select * from customers;
-
 ### 문제 2: 제품 가격 인상
 -- "스마트폰"의 가격을 50,000원 인상하는 SQL 쿼리를 작성하시오. (예: 현재 가격이 300,000원이면 350,000원으로 수정)
 update	Products
 set		price = price + 50000
 where	name = '스마트폰';
 
-select * from products;
-
 ### 문제 3: 주문 상태 변경
 -- 주문 ID가 2인 주문의 상태를 'Shipped'로 변경하는 SQL 쿼리를 작성하시오.
+update	Orders
+set		status = 'Shipped'
+where	order_id = 2;
 
 ### 문제 4: 고객 전화번호 업데이트
 -- 고객 ID가 3인 고객의 전화번호를 "010-1234-5678"로 수정하는 SQL 쿼리를 작성하시오.
+update	customers
+set		phone = '010-1234-5678'
+where	customer_id = 3;
 
 ### 문제 5: 제품 재고 수량 수정
 -- "노트북" 제품의 재고 수량을 100으로 업데이트하는 SQL 쿼리를 작성하시오.
+update	products
+set		stock = 100
+where	name = '노트북';
 
- -- --------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------
 -- 실습6. `InternetMarket` 데이터베이스의 테이블에서 사용할 수 있는 `DELETE` 문제 5개
 -- 참고. 외래 키 제약 조건으로 인해 삭제가 불가능한 상황을 다루고 있습니다.
 
 ### 문제 1: 고객 삭제
 -- 고객 ID가 4인 고객을 삭제하는 SQL 쿼리를 작성하시오.
+delete from customers
+where	customer_id = 4;
 
 ### 문제 2: 제품 삭제
 -- 제품 ID가 2인 제품을 삭제하는 SQL 쿼리를 작성하시오.
+delete from products
+where	product_id = 2;
+-- 실패 Error Code: 1451. Cannot delete or update a parent row: a foreign key constraint fails (`internetmarket`.`orderitems`, CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`))
+-- orderItems 테이블에서 product_id가 2인 항목을 먼저 삭제
 
 ### 문제 3: 주문 삭제
 -- 주문 ID가 1인 주문을 삭제하는 SQL 쿼리를 작성하시오.
+delete from orders
+where	order_id = 1;
+-- 실패 Error Code: 1451. Cannot delete or update a parent row: a foreign key constraint fails (`internetmarket`.`orderitems`, CONSTRAINT `orderitems_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`))
+-- orderitems 테이블에서 order_id가 1인 항목을 먼저 삭제
 
 ### 문제 4: 주문 항목 삭제
 -- 주문 항목 ID가 3인 주문 항목을 삭제하는 SQL 쿼리를 작성하시오.
+delete from orderitems
+where	order_item_id = 3;
 
 ### 문제 5: 외래 키 제약 조건으로 인한 삭제 실패
  -- 고객 ID가 1인 고객을 삭제하려고 시도하는 SQL 쿼리를 작성하시오. 
  -- 이 고객이 주문을 한 경우, 삭제가 실패하는 이유와 해결 방법을 설명하시오.
+ delete from customers
+ where	customer_id = 1;
+ -- 실패 Error Code: 1451. Cannot delete or update a parent row: a foreign key constraint fails (`internetmarket`.`orders`, CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`))
+ -- orders 테이블에서 customer_id가 1인 항목을 먼저 삭제

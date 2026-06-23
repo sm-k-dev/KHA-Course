@@ -81,7 +81,7 @@ DB 및 테이블 탐색/생성 (DDL 기초)
 DDL (Data Definition Language): 데이터 정의어
     테이블 구조를 만들고 지우는 CREATE, ALTER, DROP
 
-    CREATE 문: 테이블 생성
+    CREATE 문: 테이블 생성 - ./mysql/mysql8_database_and_table 참고
 
         CREATE TABLE 테이블명 (
             컬럼명1 데이터타입 [제약조건],
@@ -95,7 +95,7 @@ DDL (Data Definition Language): 데이터 정의어
             UNIQUE: 테이블 내에서 중복된 값을 허용하지 않음 (NULL은 중복 허용)
             PRIMARY KEY (기본키): 행을 식별하는 고유 키 (NOT NULL + UNIQUE 성격)
             FOREIGN KEY (외래키): 다른 테이블의 기본키를 참조하여 데이터 무결성을 유지
-            CHECK: 입력될 수 있느 ㄴ값의 범위나 조건을 제한 (예: 나이 >= 19)
+            CHECK: 입력될 수 있는 값의 범위나 조건을 제한 (예: 나이 >= 19)
             DEFAULT: 값을 입력하지 않았을 때 자동으로 들어갈 기본값 지정
         
         MySQL 작성 방법
@@ -168,6 +168,8 @@ DDL (Data Definition Language): 데이터 정의어
     
     DROP
         DROP TABLE table명;
+
+    CASCADE 옵션
 
 --------------------------------------------------------------------------------------------
 

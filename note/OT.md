@@ -92,6 +92,26 @@ C
 
 ------------------------------------------------------------------------------
 
+기술 트렌드 및 요구 역량
+    ● 프로그래밍 언어 : JavaScript, Python, Java, TypeScript
+    ● 프레임워크 및 라이브러리 : React, Vue.js, Angular, Node.js
+    ● 클라우드 플랫폼 : AWS, Azure, Google Cloud
+    ● 데이터베이스 : SQL, NoSQL (Mongo DB, Cassandra)
+    ● DevOps : Docker, Kubernetes, Jenkins
+    ● AI/ML : TensorFlow, PyTorch
+    ● 기타 : 보안, 버전 관리, API 개발, 성능 최적화 등
+
+    프로그래밍 활용능력
+    프레임워크 활용능력
+    프로젝트 경험
+    버전 관리 시스템 활용 능력
+    기초 데이터베이스 이해
+    문서화 및 커뮤니케이션 능력
+
+https://drive.google.com/file/d/12gsxQRmt4Iv6N3kLSQg5K5RLGJPMuGU8/view
+
+------------------------------------------------------------------------------
+
 종합/개념 + DevOps + Cloud + Network + 리눅스
     생활코딩: https://opentutorials.org/course/1
     로드맵.sh 가이드: https://roadmap.sh
