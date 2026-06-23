@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*
+            주졔: 문자열 객체메모리의 메소드를 이용해
+                사이트 이용자로 부터 입력받은 이메일의 유효성을 검사하는 예
+            
+            @ 와 . 의 여부
+        */
+
+        // 순서1. 사이트 이용자로 부터 이메일 입력받기
+        let userEmail = prompt("이메일을 입력 해 주세요", "ex@example.com");
+
+        // 순서2. 이메일 작성시 검사할 문자열들이 저장된 배열 메모리 생성
+        let arrUrl = [ ".co.kr", ".com", ".net", ".or.kr", ".go.kr" ];
+
+        // 순서3. 입력한 이메일에 @ 문자가 포함되어 있으면 true 저장,
+        //                             포함되어 있지 않으면 false 저장할 check 조건 변수
+        let check = false;
+
+        // 순서4. 입력한 이메일 문자열과 arrUrl 배열 메모리 각 칸에 저장된 단어를 하나씩 비교해서 일치하면 true 저장
+        //                                                                             모두 일치하지 않으면 false 저장할 check2 조건 변수
+        let check2 = false;
+
+        // 순서5. if 조건문을 이용해서 입력한 이메일 전체 문자열에 '@' 문자가 포함되어 있으면 check 변수에 true 저장
+        if ( userEmail.indexOf("@") > 0 ) {
+        //   userEmail.includes('@') === true
+            check = true;
+        }
+
+        // 순서6. for 반복문을 이용해 arrUrl 배열을 순회하면서 입력한 이메일과 arrUrl 배열의 각 칸에 저장된 문자열들을 차례로 비교
+        //      한개의 단어라도 일치하면 check2 변수에 true 저장
+        arrUrl.forEach( au => {
+            if ( userEmail.indexOf(au) > 0 ) {
+                check2 = true;
+            }
+        });
+
+        // 순서7. check 변수, check2 변수에 저장된 값이 모두 true이면?
+        if ( check && check2 ) {
+            document.write(userEmail);
+        } else {
+            alert("이메일 형식을 잘못 입력하셨습니다.");
+        }
+    </script>
+</body>
+</html>
