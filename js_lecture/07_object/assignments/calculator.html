@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+
+    <style>
+        td {
+            text-align: center;
+        }
+
+        input {
+            /*input태그를 감싸서 작성된 부모<td>의 너비만큼 차지 하게  widht속성을 100%로 설정*/
+            width: 100%;
+        }
+    </style>
+
+    <!-- CDN을 사용한 예시 (웹 환경) Math.js 라이브러리 사용 (가장 안전하고 강력한 방법)  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js">
+        // 다음 주석을 읽고 필요한 코드를 직접 작성하세요.
+    </script>
+
+    <script type="text/javascript">
+        /*방법2.  Math.js 라이브러리 - Function함수 만들어서 사용(가장 안정적이고 강력한 방법)   */
+
+        //기능 : 문자열로 된 수식을 매개변수로 받아서 실제 계산을 수행한 후 결과값을 반환하는 함수
+        //예: '1+2'  ,  '10/2',   '5*6-3'
+        //new Function(...)은 새로운 함수를 만드는 방법입니다.
+        //return ${ experssion  } -> 이부분은 사용자가 입력한 문자열을 함수코드로 변환합니다.
+        //						   만약 experssion매개변수값이  '1+2'라면, 3으로 계산해서 반환
+        //();  -> 생성된 함수를 호출하여 실행시키는 호출 구문
+        // '1+2'
+
+        //아래의 <input type="button">인 버튼들 중에서 하나를 클릭하면
+        //클릭한 버튼의 데이터를 매개변수로 받아서 계산해서
+        // <input type="text" id="data" name="data2" readonly value="">에 보여주는
+        // renew함수 만들기
+
+        //각 버튼을 클릭하면 데이터가 보여질 화면 또는 계산된 결과값을 보여줄 화면 선택해서 얻는다
+        //id속성에 부여된 값이 "data"인  <input>을 선택해서 가져와 data변수에 저장
+        //<input type="text" id="data" name="data2" readonly value="1+3">
+
+        //'clear' 버튼을 클릭했다면?
+
+        //<input id="data" name="data2" readonly> 빈공백을 value속성에 넣어
+        //입력되어 보이는 정보를 없애주자
+
+        //<input readonly value="4"> 가  존재하면
+        //-> <input readonly value=""> 이렇게 ""이 들어가 바뀐다.
+
+        /*방법1.  eval함수 이용  */
+        //예)   eval('1*10'); 처럼 작성되면
+        //		자바스크립트 eval함수는 매개변수로 전달받은 문자열 수식을 계산하여
+        //		계산된 결과값을 숫자타입으로 반환해 주는 함수 힙니다
+        //   			    data.value = eval(data.value);
+        //       eval('1+3'); -> 4
+
+        /*방법2. Math.js 라이브러리 - Function함수 만들어서 사용(가장 안전하고 강력한 방법) */
+        //             = calculate('1+3');  -> 4
+
+        //data.value  = data.value + item;
+        //  ''         +=  '1';
+        // '1'
+        //	'1'		    +=  '+';
+        // '1+'
+        // '1+3'       +=  '3';
+
+        // TODO 1: 문제 설명과 주석을 읽고 필요한 변수/함수/이벤트를 작성하세요.
+        // TODO 2: 화면 또는 콘솔 결과가 원본 실습 목표와 같아지는지 확인하세요.
+        // TODO 3: 완성 후 브라우저 콘솔 오류가 없는지 확인하세요.
+    </script>
+
+</head>
+
+<body>
+    <table border="1">
+        <tr>
+            <td colspan="4"><input id="data" name="data2" readonly value=""></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="1" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="2" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="3" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="+" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="4" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="5" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="6" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="-" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="7" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="8" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="9" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="X" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="button" value="0" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="." data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td><input type="button" value="/" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="button" value="=" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+            <td colspan="2"><input type="button" value="clear" data-event-todo-onclick="이 이벤트 처리 코드는 학생이 직접 작성"></td>
+        </tr>
+    </table>
+</body>
+
+</html>

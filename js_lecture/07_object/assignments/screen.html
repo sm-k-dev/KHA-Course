@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        document.write("<h1>모니터 정보 출력</h1>");
+
+        document.write(`모니터의 전체 너비: ${ screen.width } <br>`); // 웹 브라우저가 아닌 모니터
+        document.write(`모니터의 전체 높이: ${ screen.height } <br>`); // 웹 브라우저가 아닌 모니터
+        document.write(`작업 표시줄을 제외한 모니터의 너비: ${ screen.availWidth } <br>`);
+        document.write(`작업 표시줄을 제외한 모니터의 높이: ${ screen.availHeight } <br>`);
+        document.write(`모니터의 컬러 깊이 비트: ${ screen.colorDepth } <br>`);
+    </script>
+</body>
+</html>
