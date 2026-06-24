@@ -92,10 +92,12 @@ DDL (Data Definition Language): 데이터 정의어
 
         핵심 제약조건 (Constraints) 종류
             NOT NULL: 빈 값 (NULL)을 허용하지 않음
-            UNIQUE: 테이블 내에서 중복된 값을 허용하지 않음 (NULL은 중복 허용)
+                (* NULL은 아무것도 없다는 의미 "" 이나 0과는 다르다)
+            UNIQUE: 테이블 내에서 중복된 값을 허용하지 않음 (NULL은 허용)
             PRIMARY KEY (기본키): 행을 식별하는 고유 키 (NOT NULL + UNIQUE 성격)
             FOREIGN KEY (외래키): 다른 테이블의 기본키를 참조하여 데이터 무결성을 유지
             CHECK: 입력될 수 있는 값의 범위나 조건을 제한 (예: 나이 >= 19)
+                (특전 버전에선 CHECK 제약 조건을 무시한다. MySQL 8 이상부터는 작동한다.)
             DEFAULT: 값을 입력하지 않았을 때 자동으로 들어갈 기본값 지정
         
         MySQL 작성 방법
@@ -187,11 +189,40 @@ DB이름 으로 데이터베이스 만들기
 
 뷰 (View)
     가상 테이블, 보안이나 복잡한 쿼리를 단순화 할 때 사용
+    as 사용 가능, 뷰 조회시 열에 공백이 있으면 백틱 (`)으로 묶어줘야 한다.
+    뷰가 참조하는 테이블을 삭제하면, 참조할 테이블이 없기때문에 조회 할 수 없다는 메세지가 뜬다.
 
-    뷰 생성 문법
-        create view 뷰를만들_테이블명_view
+    뷰 생성 문법 
+        join이나 조건을 넣어서 뷰를 생성 할 수 있다.
+        제약조건도 넣을 수 있다.
+        하나의 테이블로 만든 뷰 = 단순 뷰
+        두개 이상의 테이블로 만든 뷰 = 복합 뷰
+
+        create or replace view 뷰를만들_테이블명_view
         as select *
             from 뷰를만들_테이블명;
+
+    뷰의 수정
+        alter view 뷰이름
+        as
+            select 열이름, concat(열이름, 열이름) as '열 이름'
+            from    테이블명 
+            inner join 테이블명
+            on  열명 = 열명;
+
+        select distinct `열 이름` from 뷰이름;
+    
+    뷰의 삭제
+        drop view 뷰이름;
+    
+    뷰 정보 확인
+        describe 뷰이름; (desc 뷰이름;)
+    
+    뷰의 소스코드 확인
+        show create view 뷰이름;
+    
+    뷰의 상태 확인
+        check table 뷰이름;
 
 스토어드 프로시저 (Stored Procedure)
     SQL 문을 하나로 묶어 프로그램 함수처럼 호출 (Call) 하는 기능

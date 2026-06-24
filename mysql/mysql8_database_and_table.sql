@@ -305,3 +305,203 @@ WHERE mem_id='PINK';
 --          - 위에서 회원이 삭제되었기 때문에, 그와 관련된 구매 정보도 자동으로 사라짐
 --          - 결과는 아무 행도 출력되지 않음 (빈 테이블)
 SELECT * FROM buy;
+
+/*
+	====================================================
+	실습 주제 : 고유 키 제약조건(UNIQUE constraint)
+	 
+	핵심 개념
+	- UNIQUE 제약조건은 해당 열의 값이 중복되지 않도록 막아주는 규칙입니다.
+	- 즉, 중복된 값을 가진 레코드는 입력할수 없습니다.
+	 
+	실습 배경
+	-  회원 테이블에 이메일(email) 열을 추가하고, 이 열에 UNIQUE 제약조건을 설정 합니다.
+	-  이메일 주소는 원래 사용자 마다 다르므로, 일반적으로 이메일 중복 되면 안됩니다.
+	====================================================
+*/
+-- 1단계 :  기존 member, buy 테이블이 만들어져 있다면 삭제
+drop table if exists member,buy;
+
+-- 2단계  : member 테이블 생성
+create table member(
+	mem_id  char(8)         not null primary key,  -- 회원 ID : 중복 불가 , 무조건 열에 값 저장
+	mem_name varchar(10)    not null,
+	height   tinyint  unsigned  null,
+	email    char(30)           null  unique -- 이메일 다른 열에 중복 저장 불가 
+);
+-- 💡 POINT!
+-- email 컬럼에 UNIQUE 제약조건이 걸려 있어서
+-- → '같은 이메일 주소'를 여러 회원이 사용할 수 없습니다.
+-- → 단, NULL(입력 안함)은 중복해도 허용됩니다 (MySQL은 NULL != NULL 로 취급)
+
+
+-- 3단계  : 회원 데이터 삽입
+
+-- 첫번째 회원  -> 정상 입력
+insert into member values('BLK', '블랙핑크', 163, 'pink@gmail.com');
+
+-- 두번째 회원   -> 이메일 입력안함 : UNIQUE 조건 위반은 아님 !
+insert into member values('TWC', '트와이스', 167,  null);
+
+-- 세번쨰 회원   -> 이메일 입력 : 'pink@gmail.com'로 중복됨 -> UNIQUE 조건 위반 -> 오류발생!
+insert into member values('APN', '에이핑크', 164, 'pink@gmail.com');
+
+-- 예상 오류 메시지 예시 (DBMS에 따라 다름):
+-- ERROR 1062 (23000): Duplicate entry 'pink@gmail.com' for key 'member.email'
+
+
+-- 위의 INSERT 중 오류가 발생한 3번째 INSERT는 실행되지 않으므로,
+-- SELECT 결과에는 '에이핑크' 데이터는 보이지 않음.
+select * from member;
+
+/*
+	===========================================================
+	🎯 실습 주제 : CHECK 제약조건 (값의 유효성 검사 조건)
+
+	📌 핵심 개념
+	- CHECK 제약조건은 "이 컬럼(열)에는 반드시 이런 조건을 만족하는 값만 저장할 수 있다!" 는 규칙을 설정하는 것.
+	- 예를 들어 키(height)는 반드시 100 이상이어야 하고,
+	 전화번호 앞자리(phone1)는 특정 지역 번호만 가능하게 제한할 수 있음.
+	===========================================================
+*/ 
+-- 1단계 :  기존 member테이블이 만들어져 있다면 삭제
+drop table if exists member;
+
+-- 2단계  : member 테이블 생성
+create table member(
+	mem_id  char(8)         not null primary key,  -- 회원 ID : 중복 불가 , 무조건 열에 값 저장
+	mem_name varchar(10)    not null,
+	height   tinyint  unsigned  null  check(height >= 100),  -- height열에는 100이상의 키만 저장 
+	phone    char(3)        null
+);
+
+-- 3단계 : check(height >= 100) 체크 제약 조건 테스트 
+
+-- [성공] 키가 163이므로 조건 만족 
+insert into member values('BLK', '블랙핑크', 163, null);
+
+-- [실패] 키가 99이므로 조건 불만족 -> check 제약조건 위반 
+insert into member values('TWC', '트와이스', 99, null);
+-- 오류 메시지 예시 (MySQL 8.0 이상에서만 적용됨)
+-- ERROR 3819 (HY000): Check constraint 'member_chk_1' is violated.
+
+-- 💡 일부 MySQL 버전(특히 5.x)은 CHECK 제약조건을 무시합니다.
+--    MySQL 8.0 이상에서는 체크가 실제 동작합니다.
+
+-- 4단계  :   phone 열에도 check 제약조건 설정을 추가 할수 있음 (특저 지역번호만 허용)
+alter table member
+add constraint
+check( phone IN('02', '031', '032', '054', '055', '061') );
+-- >>>> phone 열에는 반드시 IN 절 안에 작성한 데이터들만 저장할수 있다. 
+
+-- 5단계 : check(phone IN(......)) 조건 테스트 
+delete from member
+where mem_id = 'BLK';
+
+-- [성공] phone 열에 null 이 설정 되어 있어 빈값 허용!
+insert into member(mem_id, mem_name, height, phone) values('BLK', '블랙핑크', 163, null);
+
+-- [성공] phone 열에 추가되는 값이 '02'이므로 허용함 -> check제약조건대로 열에 추가 
+insert into member values('OML', '어린친구', 168, '02');
+
+-- [실패] phone 열에 추가될값이 '010'이므로 허용되지 않음 -> check제약조건 위반 
+insert into member                                  values('OMY', '오마이걸', 167, '010');
+-- 오류 메시지 예시:
+-- ERROR 3819 (HY000): Check constraint 'member_chk_2' is violated.
+
+/*
+	==========================================================
+	🎯 실습 주제 : 기본값 (DEFAULT) 제약 조건 사용법
+
+	📌 핵심 개념
+	- 특정 컬럼에 값을 입력하지 않아도, 미리 정한 기본값이 자동으로 입력되도록 설정하는 방법
+	- 예) 키(height) 값이 입력되지 않으면 자동으로 160이 들어가게 설정
+	- 예) 전화번호 앞자리(phone1)가 입력되지 않으면 자동으로 '02'가 들어가게 설정
+	==========================================================
+*/
+-- 1단계 : 이전에 만든 member 테이블 삭제
+drop table if exists member;
+
+-- 2단계 : member 테이블 새로 생성 (default 디폴트 제약조건을 height열에 160으로 설정)
+create table member(
+
+	mem_id     char(8)          not null  primary key,
+	mem_name   varchar(10)      not null,
+	height     tinyint unsigned     null  default 160, -- 입력이 없으면 기본값 160이 자동으로 insert추가됨
+	phone1     char(3)              null
+);
+-- 🔍 height 컬럼에 DEFAULT 160 지정
+-- ⇒ INSERT 시 height 생략하면 자동으로 160이 입력됨
+
+/*
+==========================================================
+✅ 3단계: ALTER TABLE로 기존 컬럼(phone1)에 기본값 추가
+- phone1이 비어 있으면 자동으로 '02'를 입력하게 설정
+==========================================================
+*/
+alter table member
+alter column phone1  set default '02';
+
+/*
+4단계: 데이터 입력(추가) 실습  
+*/
+-- > 첫번쨰 insert  : 열에 추가할 값 명시적으로 입력
+--  height = 161,  phone1 = '054'  직접 입력 -> 기본값 사용 안함
+insert into member values('RED', '레드벨벳', 161, '054');
+
+-- > 두번째 insert : height과 phone1열에 추가할 값을 생략하고 기본값 사용 
+-- height = default ->  height에 자동으로 160 입력됨 
+-- phone1 = default ->  phone1에 자동으로 '02' 입력됨 
+insert into member values('SPC', '우주소녀', default, default);
+
+insert into member (mem_id, mem_name)   values('BLK', '블랙핑크');
+
+select * from member;
+
+describe member;
+/*
+	==========================================================
+	🎯 실습 주제 : NULL 값과 NOT NULL 제약 조건의 의미와 사용법
+
+	📌 핵심 개념 정리
+
+	🔹 NULL이란?
+	- 아무 값도 입력되지 않은 상태 (공백 ''이나 숫자 0과는 다름)
+	- 예) 전화번호를 아직 모르면 NULL로 입력 가능
+
+	🔹 NOT NULL이란?
+	- 반드시 값을 입력해야 한다는 의미
+	- NULL을 허용하지 않도록 설정
+	- 즉, 비워둘 수 없다 ❌
+
+	🔹 PRIMARY KEY(기본키)는?
+	- 각 행(row)을 유일하게 식별하는 열(column)
+	- 자동으로 NOT NULL이 적용됨 (즉, NULL 입력 불가!)
+
+	==========================================================
+*/
+#  실습으로 확인해보기
+-- 이전에 만든 테이블이 있다면 삭제
+drop table if exists member;
+
+-- 새로운 member 테이블 생성
+create table member(
+
+	mem_id  char(8)  primary key, -- 기본키 : 자동으로 not null 이 적힘 
+								  -- 기본키 의미 :  열에 고유값  +  열에 빈값 허용 X
+	mem_name varchar(10)       not null,
+	height   tinyint unsigned,    -- 키는 열에 입력하지 않아도 됨 (NULL 허용)
+	email   char(30)              -- 이메일도 열에 입력하지 않아도됨 (NULL 허용)
+);
+-- 예제 : 다양한 입력 케이스 
+-- 1. 모든 값을 정상적으로 입력하는 경우 -> 추가됨 
+insert into member values('BLK', '블랙핑크', 163,  'pink@gmail.com');
+
+-- 2. 키와 이메일 생략(NULL 허용) -> 추가됨 
+insert into member values('TWC',  '트와이스', NULL,  NULL);
+
+-- 3. 이름(mem_name)입력을 생략한 경우  -> 오류가 발생함
+insert into member values('APN',  NULL,  160,  'apink@gamil.com');
+
+-- 4. 기본키 제약조건이 설정된 mem_id열값 입력을 생략한 경우 -> 오류가 발생함
+insert into member values(NULL, '아이유', 160, 'iu@gamil.com');
