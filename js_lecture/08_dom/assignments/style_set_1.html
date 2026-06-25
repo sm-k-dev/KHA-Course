@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <p id="text">text</p>
+
+    <script type="text/javascript">
+        // <p id="text">text</p> 요소노드 한쌍 선택해서  pEl 상수에 저장
+        const pEl = document.getElementById("text");
+
+        /*
+            선택한 요소노드에 스타일 정의 문법
+            요소노드선택.style.css속성명=속성값;
+        */
+
+        // 2. <p id="text">text</p> 요소노드 전체 중에 텍스트 노드 색상 빨강으로 설정
+        pEl.style.color = "red";
+
+        // <p id="text">text</p> 요소노드 한쌍 선택해서  pEl2 상수에 저장
+        const pEl2 = document.querySelector("#text");
+        
+        pEl2.style.backgroundColor = "#ff0000";
+
+        // 주의 할점
+        // CSS속성 중에서 background-color속성과 같이
+        // 대시 - 기호를 뺼셈연산자 - 로 인식한다는 점입니다.
+        // 그러므로 backgroundColor처럼 카멜표기법으로 변경해서 작성해야 합니다.
+    </script>
+
+
+
+</body>
+
+</html>

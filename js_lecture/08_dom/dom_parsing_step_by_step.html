@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>브라우저의 HTML 해석 과정 (DOM 파싱 가이드)</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --color-element: #3b82f6; /* 파랑 */
+            --color-attr: #f97316;    /* 주황 */
+            --color-text: #10b981;    /* 초록 */
+            --color-gray: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-bottom: 4px solid #475569;
+        }
+
+        header h1 { font-size: 26px; margin-bottom: 10px; color: #0f172a; }
+        header p { color: var(--color-gray); font-size: 16px; }
+
+        /* 단계 탭 디자인 */
+        .step-tabs {
+            display: flex;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-gray);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #1e293b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 뷰어 영역 */
+        .viewer {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            min-height: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .viewer.active {
+            display: flex;
+        }
+
+        .viewer-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #0f172a;
+            text-align: center;
+        }
+
+        /* 1단계: 순수 텍스트 */
+        .code-string {
+            font-family: monospace;
+            font-size: 32px;
+            color: #d4d4d4;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+
+        /* 2단계: 노드 분리 (둥둥 떠다니는 상자들) */
+        .nodes-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .node-card {
+            padding: 20px 30px;
+            border-radius: 12px;
+            border: 3px solid;
+            background: white;
+            text-align: center;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .node-card:nth-child(1) { animation-delay: 0s; }
+        .node-card:nth-child(2) { animation-delay: 1s; }
+        .node-card:nth-child(3) { animation-delay: 2s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .el-node { border-color: var(--color-element); }
+        .el-node .badge { background: var(--color-element); }
+        
+        .attr-node { border-color: var(--color-attr); }
+        .attr-node .badge { background: var(--color-attr); }
+
+        .txt-node { border-color: var(--color-text); }
+        .txt-node .badge { background: var(--color-text); }
+
+        /* 3단계: 트리 조립 완료 */
+        .tree-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tree-level {
+            display: flex;
+            gap: 80px;
+            z-index: 2;
+        }
+
+        .tree-line {
+            position: absolute;
+            background: #cbd5e1;
+            z-index: 1;
+        }
+
+        /* 하단 설명 패널 */
+        .desc-panel {
+            margin-top: 20px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #1e293b;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚙️ 브라우저의 머릿속: HTML이 DOM이 되는 과정</h1>
+        <p>단순한 텍스트 코드가 어떻게 자바스크립트가 다룰 수 있는 '노드(Node)'로 쪼개지고 연결되는지 단계별로 살펴보세요.</p>
+    </header>
+
+    <div class="step-tabs">
+        <div class="tab active" onclick="showStep(1)" id="tab1">1단계: 코드 읽기</div>
+        <div class="tab" onclick="showStep(2)" id="tab2">2단계: 노드(Node)로 분해</div>
+        <div class="tab" onclick="showStep(3)" id="tab3">3단계: 트리(Tree)로 조립</div>
+    </div>
+
+    <!-- 1단계 화면 -->
+    <div class="viewer active" id="view1">
+        <div class="viewer-title">📝 1단계: 브라우저가 HTML 텍스트 파일을 다운로드합니다.</div>
+        <div class="code-string">
+            &lt;<span style="color:#569cd6">p</span> <span style="color:#9cdcfe">id</span>=<span style="color:#ce9178">"msg"</span>&gt;안녕!&lt;/<span style="color:#569cd6">p</span>&gt;
+        </div>
+    </div>
+
+    <!-- 2단계 화면 -->
+    <div class="viewer" id="view2">
+        <div class="viewer-title">✂️ 2단계: 텍스트를 역할에 따라 부품(노드)으로 쪼갭니다.</div>
+        <div class="nodes-container">
+            <div class="node-card attr-node">
+                <div class="badge">속성 노드 (부가정보)</div>
+                <h3 style="color: var(--color-attr);">id="msg"</h3>
+                <p style="font-size:13px; color:#64748b; margin-top:10px;">태그의 이름표 역할</p>
+            </div>
+            
+            <div class="node-card el-node">
+                <div class="badge">요소 노드 (뼈대/상자)</div>
+                <h3 style="color: var(--color-element); font-size: 24px;">&lt;p&gt;</h3>
+                <p style="font-size:13px; color:#64748b; margin-top:10px;">다른 노드를 담는 몸통</p>
+            </div>
+
+            <div class="node-card txt-node">
+                <div class="badge">텍스트 노드 (내용물)</div>
+                <h3 style="color: var(--color-text);">"안녕!"</h3>
+                <p style="font-size:13px; color:#64748b; margin-top:10px;">화면에 보일 실제 글자</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3단계 화면 -->
+    <div class="viewer" id="view3">
+        <div class="viewer-title">🌲 3단계: 부모와 자식 관계를 맺어 트리(DOM)를 완성합니다.</div>
+        <div class="tree-container">
+            
+            <!-- 부모 (요소) -->
+            <div class="tree-level" style="margin-top: 20px;">
+                <div class="node-card el-node" style="animation: none;">
+                    <div class="badge">부모 (요소 노드)</div>
+                    <h3 style="color: var(--color-element); font-size: 24px;">&lt;p&gt;</h3>
+                </div>
+            </div>
+
+            <!-- 연결 선 -->
+            <div class="tree-line" style="width: 4px; height: 60px; top: 100px; left: 50%; transform: translateX(-50%);"></div>
+            <div class="tree-line" style="width: 350px; height: 4px; top: 160px; left: 50%; transform: translateX(-50%);"></div>
+            
+            <div class="tree-line" style="width: 4px; height: 40px; top: 160px; left: calc(50% - 175px);"></div>
+            <div class="tree-line" style="width: 4px; height: 40px; top: 160px; left: calc(50% + 175px);"></div>
+
+            <!-- 자식 (속성, 텍스트) -->
+            <div class="tree-level" style="margin-top: 100px; gap: 150px;">
+                <div class="node-card attr-node" style="animation: none; width: 200px;">
+                    <div class="badge">자식 (속성 노드)</div>
+                    <h3 style="color: var(--color-attr);">id="msg"</h3>
+                </div>
+                <div class="node-card txt-node" style="animation: none; width: 200px;">
+                    <div class="badge">자식 (텍스트 노드)</div>
+                    <h3 style="color: var(--color-text);">"안녕!"</h3>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 설명 패널 -->
+    <div class="desc-panel" id="descPanel">
+        <strong>💡 1단계 설명:</strong> 웹 브라우저는 처음에 HTML을 의미 없는 긴 글자(텍스트)로만 인식합니다. 아직은 자바스크립트가 이 코드를 건드릴 수 없습니다.
+    </div>
+
+</div>
+
+<script>
+    const descriptions = {
+        1: "<strong>💡 1단계 (코드 읽기):</strong> 웹 브라우저는 처음에 HTML을 알파벳 덩어리(텍스트)로만 인식합니다. 아직은 자바스크립트가 이 코드를 건드릴 수 없습니다.",
+        2: "<strong>💡 2단계 (노드로 분해):</strong> 브라우저가 텍스트를 분석하여 성격이 다른 3가지 부품(노드)으로 쪼갭니다. 뼈대 역할을 하는 <b>요소(&lt;p&gt;)</b>, 설정값인 <b>속성(id)</b>, 실제 내용물인 <b>텍스트('안녕!')</b>가 각각 독립된 부품이 됩니다.",
+        3: "<strong>💡 3단계 (트리 조립 완료 = DOM 완성):</strong> 분리된 부품들을 부모-자식 관계로 엮어 트리를 만듭니다. 요소 노드(&lt;p&gt;)가 부모가 되고, 속성과 텍스트는 그 자식으로 매달립니다. <b>이 완성된 상태를 'DOM'이라고 부르며, 이제 자바스크립트가 이 구조를 마음대로 조작할 수 있습니다!</b>"
+    };
+
+    function showStep(step) {
+        // 탭 UI 변경
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.getElementById('tab' + step).classList.add('active');
+
+        // 뷰어 변경
+        document.querySelectorAll('.viewer').forEach(view => view.classList.remove('active'));
+        document.getElementById('view' + step).classList.add('active');
+
+        // 설명 텍스트 변경
+        document.getElementById('descPanel').innerHTML = descriptions[step];
+    }
+</script>
+
+</body>
+</html>

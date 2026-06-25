@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <p id="title">Hello,<span style="display:none;">javascript!</span></p>
+
+    <script type="text/javascript">
+        /*
+            id 속성값이 title이 부여된 <p>전체 노드요소를 선택해 오고
+            .textContent 속성을 호출해
+            <p>안에 작성된 모든 텍스트노드들 (Hello, javascript!)을
+            최종 선택해서 가져옵니다.
+        */
+        console.log( document.getElementById("title").textContent );
+
+        /*
+            getElementById메소드를 이용해 id속성값이 title이 부여된 <p>전체요소노드를 선택해오고
+            innerHTML속성을 호출해
+
+            <p> 요소노드 내부에 작성된 모든(텍스트노드,요소노드 모두포함) 자식 노드들을 최종 선택해서 가져옵니다.
+            Hello,<span style="display:none;">javascript!</span>     <---- 최종 선택해서 가져옴 (콘텐츠 영역)
+            Hello,<span style="display:none;">javascript!</span>
+        */
+        console.log( document.querySelector("#title").innerHTML );
+
+        /*
+            getElementById메소드를 이용해 id속성값이 title이 부여된 <p>전체요소노드를 선택해오고
+            innerText속성을 호출해
+            <p>안에 작성된 첫 자식 텍스트노드 Hello, 를 최종 선택해서 가져옵니다.
+        */
+        console.log( document.querySelector("#title").innerText );
+
+        /*
+            요소 노드의 콘텐츠 조작 속성
+
+                속성				   설명
+                textContent	 	선택한 요소노드의 하위 모든 텍스노드를 선택해 옵니다.
+                innerText		선택한 요소노드의 하위 첫번째 텍스트노드를 선택해 옵니다.
+                innerHTML		선택한 요소노드의 하위 모든 노드들(HTML+텍스트)을 선택해 옵니다.
+        */
+
+    </script>
+
+</body>
+
+</html>
