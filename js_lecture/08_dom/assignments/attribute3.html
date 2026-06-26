@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <a href="#" class="fz20">link</a>
+
+    <script>
+      const aEl = document.querySelector("a");
+      
+      // 1. a요소의 기존 class속성과 값을 같이 삭제
+      // aEl.removeAttribute("class");
+      // 결과 -> <a href="#">link< /a>
+      aEl.removeAttribute("class");
+
+      // 원복----------------------------------------------------------------------------
+      aEl.setAttribute("class", "fz20");
+      //--------------------------------------------------------------------------------
+
+      // 2. a요소의 기존 class속성은 보존하면서 값만 삭제
+      aEl.classList.remove("fz20");
+      // 결과 ->  <a href="#" class>link< /a>
+      
+      // 원복----------------------------------------------------------------------------
+      aEl.setAttribute("class", "fz20");
+      //--------------------------------------------------------------------------------
+
+      // 3. a태그의 기존 class속성값 fz20을 보존하면서 red-color class속성값 추가
+      aEl.classList.add("red-color");
+      // 결과-> <a href="#" class="fz20 red-color">link< /a>
+      
+      // 원복----------------------------------------------------------------------------
+      aEl.setAttribute("class", "fz20");
+      //--------------------------------------------------------------------------------
+
+      // a태그의 기존 class속성값 fz20을 보존하지 않고 red-color값으로 변경
+      // 결과-> <a href="#" class="red-color">link< /a>
+      aEl.setAttribute("class", "red-color");
+
+      /*
+        classList: 특정 클래스 하나만 콕 집어서 넣고 뺍니다. (나머지는 유지)
+        setAttribute / removeAttribute: 클래스 통째로 갈아끼우거나 통째로 없앱니다.
+
+        1. classList 속성 (정밀 조작)
+          기존 클래스가 box active인 상태를 가정해 보겠습니다.
+            classList.add('blue')
+              결과: box active blue
+              특징: 기존의 box와 active를 보존하면서 blue만 추가합니다.
+            classList.remove('active')
+              결과: box특징: 기존의 box를 보존하면서 active만 삭제합니다.
+        
+        2. setAttribute / removeAttribute 메소드 (통째로 조작)
+          기존 클래스가 box active인 상태를 가정해 보겠습니다.
+            setAttribute('class', 'blue')
+              결과: blue
+              특징: 기존의 box active를 보존하지 않고 싹 지운 뒤, blue로 완전히 덮어씁니다.
+            removeAttribute('class')
+              결과: 클래스 속성 자체가 사라짐 (class="" 조차 없음)
+              특징: 클래스 안에 들어있던 모든 값을 보존하지 않고 통째로 완전히 삭제합니다.
+        
+        classList.remove()는 기존 요소가 가진 다른 클래스 값을 보존하면서 특정 클래스만 삭제하지만, 
+        removeAttribute('class')는 기존 클래스 값을 보존하지 않고 클래스 속성 전체를 통째로 삭제합니다.
+      */
+    </script>
+
+</body>
+
+</html>

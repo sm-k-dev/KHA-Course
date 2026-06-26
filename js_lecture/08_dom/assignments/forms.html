@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <form name="frm1">
+        <input type="text" name="userid">
+    </form>
+
+    <form name="frm2">
+        <input type="text" name="username">
+    </form>
+
+    <form name="frm3">
+        <input type="text" name="usernick">
+    </form>
+
+    <script>
+        /*
+            <form>태그를 선택해서 가져오는 방법1.
+                -> <form>태그에 name속성에 부여된 값을 이용해 <form>을 선택하는 방법
+                문법
+                    document.form태그에_설정된_name속성값;
+
+            <form>태그를 선택해서 가져오는 방법2.
+                -> document객체에서 제공해주는 forms속성을 이용해 선택하는 방법
+                참고. forms속성을 호출하면  현재 forms.html문서에 작성되어 있는 모든 <form></form>들을
+                HTMLCollection객체메모리에 담아 반환합니다.
+        */
+        //------------------------------------------------------------------
+        /*
+            방법1
+        */
+        console.log(`document.frm1:`);
+        console.log(document.frm1);
+        
+        console.log("================================");
+
+        console.log(`document.frm2:`);
+        console.log(document.frm2);
+
+        console.log("================================");
+
+        console.log(`document.frm3:`);
+        console.log(document.frm3);
+
+        console.log("================================");
+
+		/*
+			<form> 태그를 선택해서 가져오는 방법 2.
+			-> document 객체에서 제공해 주는 forms 속성을 이용해 선택하는 방법
+
+			1. forms 속성 정의
+			   - document.forms는 현재 HTML 문서에 작성된 모든 <form></form> 태그를
+			     HTMLCollection 객체에 담아 반환하는 document 객체의 속성입니다.
+			   - HTMLCollection은 배열처럼 인덱스 번호로 접근할 수 있는 객체입니다.
+
+			2. forms 속성 작성 문법
+			   - document.forms
+			     -> 현재 문서의 모든 <form> 태그를 HTMLCollection 객체로 반환
+
+			   - document.forms[인덱스번호]
+			     -> 인덱스 번호에 해당하는 <form> 태그를 선택
+
+			   - document.forms["form태그의 name속성값"]
+			     -> name 속성값에 해당하는 <form> 태그를 선택
+
+			3. forms 속성 필요성
+			   - 문서 안에 <form> 태그가 여러 개 있을 때 한 번에 모아 관리할 수 있습니다.
+			   - 반복문이나 인덱스 번호를 이용해 여러 form 요소를 순서대로 처리할 때 편리합니다.
+			   - 특정 name 속성값을 이용해 원하는 form 요소를 바로 선택할 수도 있습니다.
+
+			참고.
+			forms 속성을 호출하면 현재 forms.html 문서에 작성된 모든 <form></form> 태그를
+			HTMLCollection 객체 메모리에 담아 HTMLCollection 객체 배열 자체를 반환합니다.
+
+			반환 형태 예시
+			[ <form name="frm1"></form>, <form name="frm2"></form>, <form name="frm3"></form> ]
+			             0                         1                         2
+		*/
+        const HTMLCollections = document.forms;
+
+        console.log( HTMLCollections[0] );
+        console.log( HTMLCollections[1] );
+        console.log( HTMLCollections[2] );
+    </script>
+
+</body>
+
+</html>

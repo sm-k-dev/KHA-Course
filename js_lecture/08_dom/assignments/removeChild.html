@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+
+<body>
+    <p>text 1</p>
+    <a href="https://www.gilbut.co.kr">길벗</a>
+    <a href="https://www.google.com">구글</a>
+
+    <script type="text/javascript">
+        // 웹브라우저창(window객체)이 removeChild.html 문서 내부에 작성된
+        // 모든 HTML 요소노드들을 읽어들인 상태가 되었을때
+        // load 이벤트의 처리를 할 function 함수가 자동으로 실행되게 선언
+        // 요약: load 이벤트가 발생 했을 때 callback function 실행되어 기능 처리
+        // body 태그 내의 다른 요소들보다 위에 script를 작성했을때 필요한 이벤트
+        window.onload = function() {
+
+        }
+        // <p>text 1< /p> 요소노드 선택
+        const pEl = document.querySelector("p");
+
+        /*
+            자식요소노드.parentNode
+                => 선택한 자식요소노드 <p>text 1< /p> 를 감싸고 있는
+                    부모요소노드 <body>< /body> 를 최종 선택
+        */
+        // 2. pEl.parentNode속성을 호출하면
+        // <p>text 1< /p>요소를 감싸고 있는 부모요소<body>< /body>를 선택해 옵니다.
+        // -> <body><p>text 1< /p><a>길벗< /a><a>구글< /a>< /body>
+
+        // pEl 상수에 저장된 자식요소노드 <p>text 1< /p>에 접근해서 삭제
+        // 방법. 부모노드선택.removeChild(삭제할자식요소노드선택);
+        pEl.parentNode.removeChild(pEl);
+    </script>
+
+</body>
+
+</html>

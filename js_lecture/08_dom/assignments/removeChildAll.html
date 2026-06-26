@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            // NodeList(객체)유사배열을 실제 배열로 변환해서 작업 해야함
+            const childNodes = document.body.childNodes;
+            /*
+                childNodes속성을 사용하면 <body>의 모든자식노드(텍스트포함)을
+                NodeList(유사배열)에 담아 NodeList(유사배열)을 반환해 준다.
+
+                if(node.nodeName === "a")조건이 항상 거짓이 됩니다.
+                이유는 node.nodeName속성은 대문자 "A"로 반환되므로 조건이 거짓이됨
+
+                Array.from메소드는 유사배열이나 반복가능한 객체를 실제 배열로 변환해서 반환하는 메소드임
+                문법
+                    Array.from(유사배열); -> 실제 [         ] 배열로 변환해서 반환
+            */
+            // 참고 코드
+            // Array.from(childNodes)
+
+            Array.from(childNodes).forEach( function( node ){
+                if ( node.nodeName === "A" ) {
+                    // 부모 <body>를 기준으로 자식 <a> 두 쌍을 차례로 반복해서 삭제
+                    node.parentNode.removeChild(node);
+                }
+            } )
+            //부모<body>를 기준으로 자식<a> 두쌍을 차례대로 반복해서 삭제
+        }
+    </script>
+</head>
+
+<body>
+    <p>text 1</p>
+    <a href="https://www.gilbut.co.kr">길벗</a>
+    <a href="https://www.google.com">구글</a>
+
+</body>
+
+</html>

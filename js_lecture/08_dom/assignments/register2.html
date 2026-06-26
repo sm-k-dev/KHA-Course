@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <form id="signupForm" action="a.jsp" method="post">
+        <table border="1" align="center">
+            <tr>
+                <td colspan="2" align="center">회원가입</td>
+            </tr>
+            <tr>
+                <td>*이름</td>
+                <td>
+                    <input type="text" id="uName" value="" />
+                    <span id="uNameError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*ID</td>
+                <td>
+                    <input type="text" id="uID" />
+                    <span id="uIDError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*비밀번호</td>
+                <td>
+                    <input type="password" id="uPWD" />
+                    <span id="uPWDError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*비밀번호 확인</td>
+                <td>
+                    <input type="password" id="uPWD_Confirm" />
+                    <span id="uPWDConfirmError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*직업</td>
+                <td>
+                    <select id="work">
+                        <option value="">직업명</option>
+                        <option value="기타">기타</option>
+                        <option value="회사원">회사원</option>
+                        <option value="학생">학생</option>
+                    </select>
+                    <span id="workError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*성별</td>
+                <td>
+
+                    남자 <input type="radio" name="sex" value="male" />
+                    여자 <input type="radio" name="sex" value="female" />
+                    <span id="sexError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*취미</td>
+                <td>
+                    <input type="checkbox" name="hobby" value="독서" />독서
+                    <input type="checkbox" name="hobby" value="등산" />등산
+                    <input type="checkbox" name="hobby" value="낚시" />낚시
+                    <span id="hobbyError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>*가입동기</td>
+                <td>
+                    <textarea id="motivation"></textarea>
+                    <span id="motivationError" class="error-message"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button type="submit">가입</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <script>
+        /*
+                선택한 요소에  특정이벤트종류를 등록하고
+                특정이벤트가 발생했을때  이벤트처리함수를 작성하는 문법
+        
+                    요소선택.addEventListener('등록할이벤트종류명중하나', 이벤트를 처리할function(){} );
+        
+            */
+        //<form id="signupForm" action="a.jsp">......</form>.addEventListener('전송이벤트등록',이벤트를 처리할함수);
+        /*
+            <form>태그에
+            전송이벤트가
+            발생했을떄
+            function함수의
+            매개변수 event로
+            <form>태그의 정보를 지닌
+            Event객체가 매개변수로 전달 받는다.
+        */
+
+        //가입(전송)버튼을 클릭했을떄  <form action="a.jsp">  a.jsp전송 차단
+        //유효성 검사를 위해 먼저 <form>에 의한 a.jsp전송 차단 시키기
+
+        //오류 메세지가 이미 표시된 경우 이를 지우기 위해 모든 오류메세지 내용을 초기화 하는 코드 작성
+        //class="error-message"인  모든 <span>요소를 선택해서 배열에 담아 가져옵니다.
+
+        //모든 입력값이 유효한지 체크할 변수(기본값 true, 만약오류가 있으면 false로 바뀌게 됨)
+
+        //참고. String객체의 trim()메소드는 입력 값 앞 뒤에 빈공백을 제거한 문자열을 반환 하는 메소드이다.
+
+        //<form>사이에 있는 각 입력값을 얻어 변수에 저장
+        //이름 입력하는 <input>을 선택해서 입력한 값 얻기
+        //아이디 입력하는 <input>을 선택해서 입력한 아이디 값 얻기
+        //비밀번호 입력하는 <input>을 선택해서 입력한 비밀번호 값 얻기
+        //비밀번호 확인 입력하는 <input>을 선택해서 입력한 비밀번호 확인 값 얻기
+        //직업을 선택하는 <select></select>을 선택해서
+        //선택한 option 하나의  value속성값 얻기
+
+        //input -> html파일에 작성된 모든 input요소들을 배열에 담아서 선택해 오는데....
+        //input[name] -> 배열에 담긴 input요소들 중에서도 name속성이 적혀 있는 input요소들만 최종 선택해 옵니다.
+        //input[name='sex'] -> name속성이 적혀 있고 name속성의 값이 'sex'와 완전히 일치하는 input요소들만 최종 선택
+        //input[name='sex']:checked -> name속성이 적혀 있고 name속성의 값이 'sex'와 완전히 일치하는 input요소들중에서 체크가 되어 있는 <input>만 최종 선택
+
+        //성별 선택하는 라디오버튼들을 모두 선택해서 가져오는데 선택된 라디오 버튼<input type="radio">만 최종 선택
+
+        //취미 를 선택하는 체크박스들을 모두 선택해서 가져오는데 체크가 된 체크박스 만 선택해서 얻기
+
+        //가입 동기 <textArea>에 입력한 여러줄 정보 얻기
+
+        //유효성 검사 실패시 오류 메시지를 출력하는 함수
+
+        //id매개변수로 전달받은  id속성값이 uNameError인 <span>을 선택해서 가져와
+        //message매개변수로 전달받은 "이름을 입력해 주세요" 문자열을 텍스트노드 위치에 설정
+
+        // 오류가 발생하면 isValid를 false로 설정, <form>태그의 전송이벤트를  막기 위해
+
+        //유효성 검사 : 이름이 비어있는지 확인
+
+        //유효성 검사 : 아이디가 비어있는지 확인
+
+        //유효성 검사 : 비밀번호가 비어 있는지, 길이가 올바른지 확인
+        //비밀번호를 입력하지 않았느냐?
+
+        //비밀번호는 4자에서 10자 사이로 입력 했느냐?
+
+        //유효성 검사 :  비밀번호 확인이 비어 있는지, 비밀번호와 일치하는지 확인
+        //비밀번호 확인 <input>입력칸이 비어 있으면?(비밀번호확인를 입력하지 않았다면?)
+
+        //비밀번호 확인을 입력하지 않았기 떄문에
+        //<input>아래에 만들어져 있는 <span>을 선택해서   에러메세지를 보여주기 위해
+        //showError함수호출시 매개변수로 <span>의 id속성값 uPWDConfirmError를 전달하고 , 에러 메세지또한 전달해서 처리
+
+        //비밀번호<input>입력란에 입력한 비밀번호와    비밀번확인<input>입력란에 입력한 비밀번호가 다르냐?
+
+        //유효성 검사 : 직업이 선택 되지 않은 경우
+        //직업을 선택하지 않았으면
+
+        //유효성 검사 : 성별이 선택되지 않을 경우
+        //sex상수는 사용자가 선택한 라디오 <input>을 저장하는데
+        //사용자가 "남자" 또는 "여자" 라디오 버튼을 모두 클릭하지 않으면 sex상수값은 없음(null)상태가 됩니다
+        //if(!sex) 는  "성별이 하나라도 선택되지 않았다면?" 이라는 뜻입니다.
+        //if(!null)
+
+        /*
+            참고.    null은 falsy값
+            자바스크립트에서 null은 false처럼 취급되는 Falsy값입니다.
+            Falsy 값 :  false, 0,  "", null, undefined, NaN
+        */
+        // !null의 의미
+        // !(논리부정연산자,NOT연산자)는 값을 반대로 만들어서 반환 합니다
+        // null은 false처럼 평가 되므로   !null은 true가 됩니다.
+
+        //유효성 검사 : 취미가 하나도 체크(선택)되지 않았을 경우
+        //참고. hobbies상수는 사용자가 체크한 취미 체크박스들을 hobbies상수배열에 저장합니다.
+        //     사용자가 아무것도 체크(선택)하지 않으면 hobbies.length 값은 0이 됩니다.
+
+        //유효성 검사 : 가입 동기가 입력되지 않았을 경우
+
+        //모든 입력한 값들이 유효한지 확인
+
+        //this는 이벤트가 발생한 요소 가리키는 예약어 . 즉 폼(<form id="signupForm">)을 가리킴
+        //우리가 가입을 위해 입력한 값 모두를 전송(전달)합니다.
+        //<form>.submit();
+    </script>
+
+</body>
+
+</html>

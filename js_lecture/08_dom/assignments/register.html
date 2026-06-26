@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(145deg, #eef2f7 0%, #dce4ef 100%);
+            font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+            color: #1a1a2e;
+        }
+
+        .signup-wrap {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .signup-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        .signup-title {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .signup-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .signup-table tr {
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .signup-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .signup-table td {
+            padding: 14px 0;
+            vertical-align: top;
+        }
+
+        .field-label {
+            width: 120px;
+            padding-right: 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+            white-space: nowrap;
+            padding-top: 12px;
+        }
+
+        .field-label::before {
+            content: "*";
+            color: #e53e3e;
+            margin-right: 4px;
+        }
+
+        .field-input input[type="text"],
+        .field-input input[type="password"],
+        .field-input select,
+        .field-input textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #1a1a2e;
+            background: #fafbfc;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        .field-input input[type="text"]:focus,
+        .field-input input[type="password"]:focus,
+        .field-input select:focus,
+        .field-input textarea:focus {
+            border-color: #0a84ff;
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+            background: #ffffff;
+        }
+
+        .field-input select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234a5568' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .field-input textarea {
+            min-height: 90px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 8px;
+        }
+
+        .option-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .option-group input[type="radio"],
+        .option-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #0a84ff;
+            cursor: pointer;
+        }
+
+        .error-message {
+            display: block;
+            color: #e53e3e;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            min-height: 1em;
+        }
+
+        .submit-row td {
+            padding-top: 24px;
+            text-align: center;
+        }
+
+        .submit-row button {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            background: #0a84ff;
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .submit-row button:hover {
+            background: #409cff;
+        }
+
+        .submit-row button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <!--
+============================================================
+[작성 문법 기준]
+Register.html에서 사용하는 작성 문법입니다.
+아래 문법 표현은 객체.html의 작성 문법과 동일하게 통일했습니다.
+============================================================
+[1] 작성 문법 - query 선택 메소드
+document.querySelector("CSS선택자")
+document.querySelectorAll("CSS선택자")
+[2] 작성 문법 - 이벤트 등록과 제출 차단
+요소노드.addEventListener("이벤트종류", function(event){
+    실행할 코드
+});
+
+event.preventDefault();
+[3] 작성 문법 - 입력 요소별 값 확인
+input요소.value
+textarea요소.value
+select요소.value
+checkbox요소.checked
+radio요소.checked
+[4] 작성 문법 - 유효성 검사 기본 구조
+function checkForm(){
+    let id = document.querySelector("#id").value;
+    let pw = document.querySelector("#pw").value;
+
+    if(id === ""){
+        alert("아이디를 입력하세요.");
+        return false;
+    }
+
+    if(pw === ""){
+        alert("비밀번호를 입력하세요.");
+        return false;
+    }
+
+    return true;
+}
+[5] 작성 문법 - 정규 표현식 검사 연결
+let reg = /^[a-zA-Z0-9]+$/;
+
+if(reg.test(id) === false){
+    alert("아이디는 영문과 숫자만 입력할 수 있습니다.");
+    return false;
+}
+============================================================
+-->
+
+
+
+
+    <div class="signup-wrap">
+        <form id="signupForm" action="a.jsp" method="post">
+            <div class="signup-card">
+                <h1 class="signup-title">회원가입</h1>
+                <table class="signup-table">
+                    <tr>
+                        <td class="field-label">이름</td>
+                        <td class="field-input">
+                            <input type="text" id="uName" value="" />
+                            <span id="uNameError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">ID</td>
+                        <td class="field-input">
+                            <input type="text" id="uID" />
+                            <span id="uIDError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">비밀번호</td>
+                        <td class="field-input">
+                            <input type="password" id="uPWD" />
+                            <span id="uPWDError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">비밀번호 확인</td>
+                        <td class="field-input">
+                            <input type="password" id="uPWD_Confirm" />
+                            <span id="uPWDConfirmError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">직업</td>
+                        <td class="field-input">
+                            <select id="work">
+                                <option value="">직업명</option>
+                                <option value="기타">기타</option>
+                                <option value="회사원">회사원</option>
+                                <option value="학생">학생</option>
+                            </select>
+                            <span id="workError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">성별</td>
+                        <td class="field-input">
+                            <div class="option-group">
+                                <label><input type="radio" name="sex" value="male" /> 남자</label>
+                                <label><input type="radio" name="sex" value="female" /> 여자</label>
+                            </div>
+                            <span id="sexError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">취미</td>
+                        <td class="field-input">
+                            <div class="option-group">
+                                <label><input type="checkbox" name="hobby" value="독서" /> 독서</label>
+                                <label><input type="checkbox" name="hobby" value="등산" /> 등산</label>
+                                <label><input type="checkbox" name="hobby" value="낚시" /> 낚시</label>
+                            </div>
+                            <span id="hobbyError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-label">가입동기</td>
+                        <td class="field-input">
+                            <textarea id="motivation"></textarea>
+                            <span id="motivationError" class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="submit-row">
+                        <td colspan="2">
+                            <button type="submit">가입</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+    <script>
+        /*
+            선택한 요소에 특정이벤트종류를 등록하고 
+            특정이벤트가 발생했을때 이벤트처리함수를 작성하는 작성 방식
+        	
+                요소노드.addEventListener("이벤트종류", function(event){ 실행할 코드 });
+                                    	
+        */
+        //요소노드.addEventListener("submit", function(event){ event.preventDefault(); });
+        document.getElementById("signupForm").addEventListener('submit', function (event) {
+            /*
+                <form>태그에
+                전송이벤트가 
+                발생했을떄
+                function 함수의 
+                매개변수 event로 
+                <form>태그의 정보를 지닌
+                Event객체가 매개변수로 전달 받는다.											
+            */
+
+
+            //가입(전송)버튼을 클릭했을떄 <form action="a.jsp"> a.jsp전송 차단
+            //유효성 검사를 위해 먼저 <form>에 의한 a.jsp전송 차단 시키기 
+            event.preventDefault();
+
+            //오류 메세지가 이미 표시된 경우 이를 지우기 위해 모든 오류메세지 내용을 초기화 하는 코드 작성
+            //class="error-message"인 모든 <span>요소를 선택해서 배열에 담아 가져옵니다.
+            document.querySelectorAll(".error-message").forEach(function (el) {
+
+                el.textContent = "";
+
+            });
+
+
+            //모든 입력값이 유효한지 체크할 변수(기본값 true, 만약오류가 있으면 false로 바뀌게 됨)
+            let isValid = true;
+
+            //참고. String 객체의 trim()메소드는 입력 값 앞 뒤에 빈공백을 제거한 문자열을 반환 하는 메소드이다.	
+
+            //<form>사이에 있는 각 입력값을 얻어 변수에 저장		
+            //이름 입력하는 <input>을 선택해서 입력한 값 얻기 
+            const uName = document.getElementById("uName").value.trim();
+            //아이디 입력하는 <input>을 선택해서 입력한 아이디 값 얻기 
+            const uID = document.getElementById("uID").value.trim();
+            //비밀번호 입력하는 <input>을 선택해서 입력한 비밀번호 값 얻기 
+            const uPWD = document.getElementById("uPWD").value.trim();
+            //비밀번호 확인 입력하는 <input>을 선택해서 입력한 비밀번호 확인 값 얻기
+            const uPWDConfirm = document.getElementById("uPWD_Confirm").value.trim();
+            //직업을 선택하는 <select></select>을 선택해서 
+            //선택한 option 하나의 value속성값 얻기 
+            const work = document.getElementById("work").value;
+
+
+            //input -> html파일에 작성된 모든 input요소들을 배열에 담아서 선택해 오는데....
+            //input[name] -> 배열에 담긴 input요소들 중에서도 name속성이 적혀 있는 input요소들만 최종 선택해 옵니다.
+            //input[name='sex'] -> name속성이 적혀 있고 name속성의 값이 'sex'와 완전히 일치하는 input요소들만 최종 선택
+            //input[name='sex']:checked -> name속성이 적혀 있고 name속성의 값이 'sex'와 완전히 일치하는 input요소들중에서 체크가 되어 있는 <input>만 최종 선택		
+
+            //성별 선택하는 라디오버튼들을 모두 선택해서 가져오는데 선택된 라디오 버튼<input type="radio">만 최종 선택 
+            const sex = document.querySelector("input[name='sex']:checked");
+
+            //취미 를 선택하는 체크박스들을 모두 선택해서 가져오는데 체크가 된 체크박스 만 선택해서 얻기
+            const hobbies = document.querySelectorAll("input[name='hobby']:checked");
+
+            //가입 동기 <textArea>에 입력한 여러줄 정보 얻기
+            const motivation = document.getElementById("motivation").value.trim();
+
+            //유효성 검사 실패시 오류 메시지를 출력하는 함수
+            function showError(id, message) {
+
+                //id매개변수로 전달받은 id속성값이 uNameError인 <span>을 선택해서 가져와
+                //message매개변수로 전달받은 "이름을 입력해 주세요" 문자열을 텍스트 노드 위치에 설정
+                document.getElementById(id).textContent = message;
+
+                // 오류가 발생하면 isValid를 false로 설정, <form>태그의 전송이벤트를 막기 위해
+                isValid = false;
+
+            }
+            //유효성 검사 : 이름이 비어있는지 확인
+            if (uName === "") {//이름 입력 <input>의 value속성값이 비어 있으면?(빈공백문자열로 설정되어 있으면?)
+
+                showError("uNameError", "이름을 입력해 주세요");
+            }
+
+            //유효성 검사 : 아이디가 비어있는지 확인
+            if (uID === "") {//아이디 입력 칸에 입력하지 않았다면?
+
+                showError("uIDError", "아이디를 입력해주세요.");	 //오류 메세지 표시 
+
+            } else if (uID.length < 3 || uID.length > 7) { //입력한 아이디의 길이가 3자 미만 또는 7자 초과일 경우 
+
+                showError("uIDError", "아이디는 3 ~ 7자 사이로 입력해 주세요."); //오류 메세지 표시 
+            }
+
+            //유효성 검사 : 비밀번호가 비어 있는지, 길이가 올바른지 확인
+            //비밀번호를 입력하지 않았느냐?
+            if (uPWD === "") {
+
+                showError("uPWDError", "비밀번호를 입력해 주세요");
+
+                //비밀번호는 4자에서 10자 사이로 입력 했느냐?
+            } else if (uPWD.length < 4 || uPWD.length > 10) {
+
+                showError("uPWDError", "비밀번호는 4 ~ 10사이로 입력해주세요. ");
+
+            }
+
+            //유효성 검사 : 비밀번호 확인이 비어 있는지, 비밀번호와 일치하는지 확인
+            //비밀번호 확인 <input>입력칸이 비어 있으면?(비밀번호확인를 입력하지 않았다면?)
+            if (uPWDConfirm === "") {
+
+                //비밀번호 확인을 입력하지 않았기 떄문에
+                //<input>아래에 만들어져 있는 <span>을 선택해서 에러메세지를 보여주기 위해
+                //showError함수호출시 매개변수로 <span>의 id속성값 uPWDConfirmError를 전달하고 , 에러 메세지또한 전달해서 처리
+                showError("uPWDConfirmError", "비밀번호 확인을 입력해 주세요.");
+
+                //비밀번호<input>입력란에 입력한 비밀번호와 비밀번확인<input>입력란에 입력한 비밀번호가 다르냐?
+            } else if (uPWD !== uPWDConfirm) {
+
+                showError("uPWDConfirmError", "두 비밀번호는 일치하지 않습니다.");
+            }
+
+            //유효성 검사 : 직업이 선택 되지 않은 경우 
+            //직업을 선택하지 않았으면
+            if (work === "") {
+                showError("workError", "직업을 선택해 주세요.");
+            }
+
+            //유효성 검사 : 성별이 선택되지 않을 경우
+            //sex상수는 사용자가 선택한 라디오 <input>을 저장하는데
+            //사용자가 "남자" 또는 "여자" 라디오 버튼을 모두 클릭하지 않으면 sex상수값은 없음(null)상태가 됩니다
+            //if(!sex) 는 "성별이 하나라도 선택되지 않았다면?" 이라는 뜻입니다.
+            //if(!null) 
+
+            /*
+                 참고. null은 falsy값 
+                 자바스크립트에서 null은 false처럼 취급되는 Falsy값입니다.
+                 Falsy 값 : false, 0, "", null, undefined, NaN
+            */
+            // !null의 의미 
+            // !(논리부정연산자,NOT연산자)는 값을 반대로 만들어서 반환 합니다
+            // null은 false처럼 평가 되므로 !null은 true가 됩니다.
+            if (!sex) {// 성별 라디오 버튼 2개중 하나도 선택되지 않았다면?
+                showError("sexError", "성별을 선택해 주세요.");
+            }
+
+            //유효성 검사 : 취미가 하나도 체크(선택)되지 않았을 경우 
+            //참고. hobbies상수는 사용자가 체크한 취미 체크박스들을 hobbies상수배열에 저장합니다.
+            // 사용자가 아무것도 체크(선택)하지 않으면 hobbies.length 값은 0이 됩니다.
+            if (hobbies.length === 0) {//취미가 하나라도 체크(선택)되지 않았을 경우 
+
+                showError("hobbyError", "취미를 최소 1개이상 체크(선택)해 주세요.");
+            }
+
+            //유효성 검사 : 가입 동기가 입력되지 않았을 경우 
+            if (motivation === "") { //가입 동기 입력칸이 비어 있으면?
+
+                showError("motivationError", "가입 동기를 입력해 주세요.");
+            }
+
+            //모든 입력한 값들이 유효한지 확인 
+            if (isValid) { //모든 입력검사를 통과하면 
+                alert("회원가입 요청(a.jsp서버페이로 요청)이 정상적으로 처리 됩니다.");
+
+                //this는 이벤트가 발생한 요소 가리키는 예약어 . 즉 폼(<form id="signupForm">)을 가리킴
+                this.submit(); //<form>태그의 action속성에 작성된 a.jsp서버페이지로 
+                //우리가 가입을 위해 입력한 값 모두를 전송(전달)합니다.
+                //<form>.submit(); 	
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

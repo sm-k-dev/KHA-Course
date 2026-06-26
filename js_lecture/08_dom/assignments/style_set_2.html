@@ -90,9 +90,12 @@
             만약 class= red-color속성값이 부여 되어 있으면 삭제
             만약 class= red-color속성값이 부여 안되어 있으면 추가
         */
-        window.setInterval( function(){
-            pEl.classList.toggle("red-color");
-        }, 2000 );
+        /*
+            window.setInterval( function(){
+                pEl.classList.toggle("red-color");
+            }, 2000 );
+        */
+        window.setInterval( () => pEl.classList.toggle("red-color") , 2000 );
     </script>
 
 </body>

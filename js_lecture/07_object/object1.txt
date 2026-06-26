@@ -369,6 +369,14 @@ history.length          전체 방문 기록 개수
    ─────────────────────────────
    - 문법: 요소.style.속성명 = 값;
    -----------------> style_set_1.html
+
+참고. 자바스크립트 구문으로 calss속성을 조작해 스타일을 적용시킬수 있다
+   선택한 요소노드에 class속성을 지정할 때(추가, 삭제, 추가와 삭제 반복 할떄)
+   classList속성의 add(), remove(), toggle()메소드 사용!
+문법
+   요소선택.classList.add("class속성값"); //추가
+   요소선택.classList.remove("삭제할 class속성에 대한값"); //삭제
+   요소선택.classList.toggle("없으면 추가할 class속성값 또는 있으면 삭제할 class속성값");// 추가 또는 삭제
    -----------------> style_set_2.html
 
    (3) 데이터 속성(data-*) 조작
@@ -402,6 +410,7 @@ history.length          전체 방문 기록 개수
       setAttributeNode(속성노드)   생성한 속성노드를 객체에 연결
 
       -----------------> createNode.html
+      -----------------> newCreateNode.html
 
       5-2. 노드 삭제
       ─────────────────────────────

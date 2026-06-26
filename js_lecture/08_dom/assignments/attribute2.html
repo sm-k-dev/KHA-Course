@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+
+    <style>
+        .red-color {
+            color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+    <a href="http://www.naver.com" data-link="네이버">네이버</a>
+
+    <script type="text/javascript">
+        /*
+            getAttribute메소드와 setAttribute메소드는 모든 속성의 상위 메소드라서
+            classList속성이나 dataset속성으로 하는 조작을 모두 할수 있습니다
+
+            보충. getAttribute 메소드와 setAttribute메소드는 HTML의 속성을 속성명 이름으로 직접 읽고 변경할 수 있는 범용 메소드 들이다.
+        */
+
+        // <a href="http://www.naver.com" data-link="네이버2" class="red-color">네이버< /a>
+        const aEl = document.querySelector("a");
+        aEl.setAttribute("data-link", "네이버2");
+        aEl.setAttribute("class", "red-color");
+
+        /*
+            실무에서는 class속성을 조작할때는 classList라는 속성에 포함된 add라는 메소드를 더 많이 쓴다.
+
+            참고. 자바스크립트 구문으로 calss속성을 조작해 스타일을 적용시킬수 있다
+                선택한 요소노드에 class속성을 지정할 때(추가, 삭제, 추가와 삭제 반복 할떄)
+                classList속성의 add(), remove(), toggle()메소드 사용!
+            문법
+                요소선택.classList.add("class속성값"); //추가
+                요소선택.classList.remove("삭제할 class속성에 대한값"); //삭제
+                요소선택.classList.toggle("없으면 추가할 class속성값 또는 있으면 삭제할 class속성값");// 추가 또는 삭제
+        */
+
+        /*
+            하지만 실무에서는 data-* 속성 조작은 보통 dataset을 많이 쓴다.
+
+            data-link = "네이버2" 의 경우 => 요소선택.dataset.link
+            data-cnt = "값" 의 경우 => 요소선택.dataset.cnt
+        */
+        
+        /*
+            정리 - 같은 작업의 3가지 방식 비교
+            
+                1. setAttribute 메소드 방식
+                    요소선택.setAttribute("속성", "값");
+
+                2. classList 방식
+                    요소선택.classList.add("class 속성 값");
+                
+                3. dataset 방식
+                    요소선택.dataset.* = "속성 값";
+        */
+    </script>
+
+</body>
+
+</html>
