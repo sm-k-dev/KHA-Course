@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 
+        선언문 script 작성 위치는 아래의 <h1>안녕< /h1> 위쪽에 작성됨
+        
+        html 문서는 위에서부터 순서대로 코드를 실행하기 때문에
+        h1 태그를 읽기전에 script가 먼저 실행되기 때문에
+        script가 실행될땐 h1이 없는 상태이다.
+    -->
+    <script>
+        /*
+            load 이벤트: 웹브라우저 창이 event-0.html 웹문서 내무에 작성된
+                        모든 HTML 태그들을 읽어들이는 동작(이벤트)을 말한다.
+
+                        참고. load 이벤트는 웹브라우저 창 하나의 정보를 가지고 있는
+                            window 객체에 등록해야 한다.
+                            이유는 <h1>안녕< /h1> 태그를
+                            자바스크립트 코드로 선택하기 위해서이다.
+            
+                load 이벤트를 window객체 (웹브라우저 창)에 등록하는 작성 방법
+
+                    window.onload = load 이벤트가 발생했을때 자동으로 호출되는 function()함수 작성;
+
+                    window.onload = function () {
+                        load 이벤트를 처리하는 코드 작성;
+                    }
+        */
+        // 해석: load 이벤트 window 객체 등록
+        window.onload = function() {
+            // <h1>안녕< /h1> 요소를 선택해서 가져와 "안녕" 글자 색상을 빨강색으로 설정
+            document.querySelector("h1").style.color = "red";
+        }
+    </script>
+</head>
+<body>
+    <h1>안녕</h1>
+    <script>
+        document.querySelector("h1").style.backgroundColor = "aqua";
+    </script>
+</body>
+</html>

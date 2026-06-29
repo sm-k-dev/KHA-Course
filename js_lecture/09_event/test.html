@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="parent" style="padding: 20px; background-color: lightblue;">
+        Parent
+        <div id="child" style="padding: 20px; background-color: lightcoral;">
+            Child
+        </div>
+    </div>
+    <script>
+        document.getElementById("parent").addEventListener("click", function(){
+            alert('Parent capturing');
+        }, true);
+
+        document.getElementById("child").addEventListener("click", function(){
+            alert('Child capturing');
+        }, false);
+        /*
+            캡처링 단계 이벤트 처리
+                - 이벤트 등록 메소드 addEventListener 메소드에 true로 설정되어
+                    캡처링 단계에서 이벤트를 처리 한다.
+                    이벤트가 'Child' <div> 요소에 도달하기 전에 'Parent' <div>요소에 먼저 click 이벤트를 처리 한다.
+        */
+    </script>
+</body>
+</html>

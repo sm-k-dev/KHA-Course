@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .convert{
+            background-color: #222;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <p>버튼을 클릭하면 배경색과 글자색이 바뀝니다.</p>
+    <button>Click</button>
+    <script>
+        // addEventListener 메소드를 사용해 버튼을 클릭 했을때 문서의 배경색과 글자색을 토글하는 코드 작성
+        const button = document.querySelector("button");
+
+        button.addEventListener( 'click', () => {
+            document.body.classList.toggle('convert');
+        });
+
+        /*
+            button.addEventListener( 'click', change );
+            function change() {
+                // 1. document.body                                 => <body>< /body> 요소 선택
+                // 2. document.body.classList.toggle('convert');    => 만약 <body>< /body> 요소에 class='convert'가 작성되어 있지 않으면 추가, 있다면 제거
+                document.body.classList.toggle('convert');
+            }
+        */
+    </script>
+</body>
+</html>
