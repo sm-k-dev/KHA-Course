@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/modal-result.css">
+</head>
+<body>
+    <button>프로필 보기</button>
+
+    <!-- 모달 창 영역 -->
+    <div id="modal-box">
+        <div id="modal-contents">
+            <button id="close">&times;</button>
+            <h1 id="title">My Profile</h1>
+            <div id="profile">
+                <img src="images/pf.png" alt="도레미">
+                <div id="desc">
+                    <p class="user">이름: 도레미</p>
+                    <p class="user">주소: Somewhere</p>
+                    <p class="user">연락처: 010-1234-5678</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+            1. <button>프로필 보기< /button> 선택해서 저장
+        */
+        const open = document.querySelector("button");
+
+        /*
+            2. 모달 창 영역 <div id="modal-box"> ... < /div> 선택해서 저장
+        */
+        const modalBox = document.querySelector("#modal-box");
+
+        /*
+            3. 모달창 영역 내부에 오른쪽 상단 위쪽 x 디자인
+            <button
+        */
+        const close = document.querySelector("#close");
+
+        /*
+            4. 1 에서 선택한 <button>프로필 보기< /button>에 click 이벤트 등록
+        */
+        open.addEventListener("click", () => {
+            /*
+                4.1. 클릭하면 classList 속성에 포함된 add() 메소드를 사용해서
+                    class = active 를 모달창 영역인 <div id="modal-box"> ... < /div> 에 추가
+                    => <div id="modal-box" class="active"> ... < /div>
+            */
+            modalBox.classList.add("active");
+        });
+        /*
+            5. 모달 영역 오른쪽 상단 위쪽 x 디자인 <button> 요소에 click 이벤트 등록
+        */
+        close.addEventListener("click", () => {
+            /*
+                5.1. x 디자인 <button>을 클릭하면 classList 속성에 포함된 remove() 메소드를 사용해서
+                    class = active 를 모달창 영역인 <div id="modal-box" class="active"> ... < /div> 에서 제거
+                    => <div id="modal-box"> ... < /div>
+            */
+            modalBox.classList.remove("active");
+        });
+    </script>
+</body>
+</html>

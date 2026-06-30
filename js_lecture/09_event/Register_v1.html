@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    color: #222;
+  }
+
+  .signup-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 24px;
+  }
+
+  .signup-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+  }
+
+  .signup-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 10px 0;
+  }
+
+  .form-label {
+    width: 120px;
+    font-weight: 600;
+    padding-top: 8px;
+    flex-shrink: 0;
+  }
+
+  .form-inputs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .radio-group,
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 12px;
+    min-height: 14px;
+  }
+
+  .submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  button[type="submit"] {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  button[type="submit"]:hover {
+    background: #1d4ed8;
+  }
+
+  @media (max-width: 600px) {
+    .signup-container {
+      padding: 16px;
+      margin: 20px auto;
+    }
+
+    .signup-card {
+      padding: 16px;
+    }
+
+    .form-row {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      width: 100%;
+      padding-top: 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="signup-container">
+    <form id="signupForm" class="signup-card" action="a.jsp" method="post">
+      <div class="signup-title">회원가입</div>
+
+      <div class="form-row">
+        <div class="form-label">*이름</div>
+        <div class="form-inputs">
+          <input type="text" id="uName" value="" />
+          <span id="uNameError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*ID</div>
+        <div class="form-inputs">
+          <input type="text" id="uID" />
+          <span id="uIDError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*비밀번호</div>
+        <div class="form-inputs">
+          <input type="password" id="uPWD" />
+          <span id="uPWDError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*비밀번호 확인</div>
+        <div class="form-inputs">
+          <input type="password" id="uPWD_Confirm" />
+          <span id="uPWDConfirmError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*직업</div>
+        <div class="form-inputs">
+          <select id="work">
+            <option value="">직업명</option>
+            <option value="기타">기타</option>
+            <option value="회사원">회사원</option>
+            <option value="학생">학생</option>
+          </select>
+          <span id="workError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*성별</div>
+        <div class="form-inputs">
+          <div class="radio-group">
+            <label><input type="radio" name="sex" value="male" /> 남자</label>
+            <label><input type="radio" name="sex" value="female" /> 여자</label>
+          </div>
+          <span id="sexError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*취미</div>
+        <div class="form-inputs">
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="hobby" value="독서" /> 독서</label>
+            <label><input type="checkbox" name="hobby" value="등산" /> 등산</label>
+            <label><input type="checkbox" name="hobby" value="낚시" /> 낚시</label>
+          </div>
+          <span id="hobbyError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">*가입동기</div>
+        <div class="form-inputs">
+          <textarea id="motivation"></textarea>
+          <span id="motivationError" class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit">가입</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    /*
+      이벤트 등록 방법3.
+      선택한 요소에 특정 이벤트 종류를 등록하고
+      특정 이벤트가 발생했을 때 이벤트 처리 함수를 작성하는 문법
+
+      요소선택.addEventListener('등록할이벤트종류명중하나', 이벤트를 처리할 function(){});
+    */
+    
+    /*
+      1. <form id="signupForm" class="signup-card" action="a.jsp" method="post"> ... < /form> 요소를 선택해서
+          submit (전송 요청 이벤트) 등록 하고, 전송 이벤트 처리 함수 작성
+    */
+    document.getElementById("signupForm").addEventListener('submit', function(event){
+      /*
+        <form> 태그에 전송 이벤트가 발생했을 때 function 함수의 매개변수 event로 
+          <form>태그의 정보를 지닌 Event 객체가 매개변수로 전달 받는다.
+      */
+      
+      /* 
+        1.1. <button type="submit">가입< /button> 클릭했을 때
+            <form action="a.jsp"> 태그에 작성된 a.jsp 서버페이지로 가입시 입력한 정보 전송 차단
+            정보 전송 차단 이유: 입력 데이터의 유효성 검사가 모두 끝나면 정보 전송을 하기 위해
+            정보 전송 차단 방법: Event 객체에서 제공해주는 preventDefault(); 메소드 호출
+      */
+      event.preventDefault();
+
+      /*
+        1.1.1. 오류 메세지가 각 <span>< /span>요소 사이에 이미 표시 된 경우 이를 삭제하기 위해
+              모든 오류메세지 내용을 초기화 하기 위해 class="error-message" 라고 작성된 <span>< /span> 요소들을 배열에 담아 선택
+              선택해온 <span>< /span>을 반복해서 텍스트노드 자리에 "" 빈 문자열을 설정
+      */
+      document.querySelectorAll(".error-message").forEach(function(element){
+        element.textContent = "";
+      });
+      
+      /*
+        1.2. 모든 입력값이 유효한지 체크할 변수 선언 (기본값 true, 만약 오류가 있으면 false로 바뀌게 된다.)
+      */
+      let isValid = true;
+
+      /*
+        1.3. <form>< /form> 요소 내부에 작성된 입력할 수 있는 모든 요소들의 입력값을 얻어 저장
+      */
+      const uName         = document.getElementById("uName").value.trim();            // 1. 입력한 이름 
+      const uID           = document.getElementById("uID").value.trim();              // 2. 입력한 ID
+      const uPWD          = document.getElementById("uPWD").value.trim();             // 3. 입력한 비밀번호
+      const uPWD_Confirm  = document.getElementById("uPWD_Confirm").value.trim();     // 4. 입력한 비밀번호 확인
+      const work          = document.getElementById("work").value.trim();             // 5. 선택한 직업
+      const sex           = document.querySelector("input[name='sex']:checked");      // 6. 선택한 성별의 라디오 한쌍 얻기
+            // input                      => 작성된 모든 <input>을 배열에 담아 선택
+            // input[name='sex']          => 모든 <input>들 중에서도 name='sex' 작성된 <input> 2쌍만 선택
+            // input[name='sex']:checked  => 2쌍의 <input> 중에서 체크된 <input type="radio"> 한쌍 만 최종 선택 // 여기서 check는 filter 선택자
+      const hobbies       = document.querySelectorAll("input[name='hobby']:checked"); // 7. 선택한 취미 체크박스 한쌍 얻기
+      const motivation    = document.getElementById("motivation").value.trim();       // 8. 입력한 여러줄의 가입동기 문자열
+
+      /*
+        1.4. 유효성 검사 실패시 오류 메세지를 출력하는 기능의 함수 정의
+      */
+      function showError(id, message){
+        /*
+          이름을 입력하지 않았을 때 상황
+          id 매개변수로 전달 받은 id속성값이 uNameError인 <span>요소를 선택해서 가져와
+          message 매개변수로 전달 받은 "이름을 입력해주세요" 문자열을 <span>텍스트노드자리< /span>의 텍스트 노드 자리에 넣어 보여준다.
+        */
+        document.getElementById(id).textContent = message;
+        
+        /*
+          입력요소를 입력하지 않았을 때 상황
+          false 설정 이유: 전송 이벤트가 <form>에 발생하면 전송 이벤트 차단 하기 위해
+        */
+        isValid = false;
+      } // showError 함수
+
+      /*
+        1.5. 유효성 검사 => 이름, 아이디, 비밀번호, 비밀번호 확인, 직업 선택, 성별 선택, 취미 선택, 가입동기
+      */
+      if ( uName === "" ) { // 이름 입력 확인
+        showError("uNameError", "이름을 입력해 주세요");
+      } 
+      
+      if ( uID === "" ) { // 아이디 입력 확인
+        showError("uIDError", "ID를 입력해 주세요");
+      } else if ( uPWD.length <= 3 || uPWD.length > 7 ) { // 아이디 3 ~ 7 사이로 입력
+        showError("uIDError", "ID는 3 ~ 7 사이로 입력하세요");
+      }
+
+      if ( uPWD === "" ) { // 비밀번호 확인
+        showError("uPWDError", "비밀번호를 입력해 주세요");
+      } else if ( uPWD.length < 4 || uPWD.length > 10 ) {
+        showError("uPWDError", "비밀번호는 4 ~ 10 사이로 입력하세요");
+      }
+
+      if ( uPWD_Confirm === "" ) {
+        showError("uPWDConfirmError", "비밀번호 확인을 해주세요");
+      } else if ( uPWD_Confirm !== uPWD ) {
+        showError("uPWDConfirmError", "비밀번호가 일치하지 않습니다.");
+      }
+
+      if ( work === "" ) { // 직업 option 3개 중 하나라도 선택하지 않았나
+        showError("workError", "직업을 선택해 주세요");
+      }
+
+      if ( !sex ) {
+        showError("sexError", "성별을 선택해 주세요");
+      }
+
+      if ( hobbies.length <= 0 ) {
+        showError("hobbyError", "취미를 최소 하나 이상 선택해 주세요");
+      }
+
+      if ( !motivation ) {
+        showError("motivationError", "가입동기를 써 주세요");
+      }
+
+      // 모든 입력요소에 입력한 값들이 유효한지 확인
+      // 방법: isValid 플래그 변수 값 true인지 확인
+      if ( isValid ) {
+        alert("회원가입 요청(톰캣서버가 실행할 a.jsp 서버페이지)이 정상적으로 처리 됩니다.");
+        // this 예약어. submit 이벤트가 발생한 DOM <form action="a.jsp"> ... < /form> 를 가리키는 예약어
+        this.submit();
+        /*
+          위 작성된 <form action="a.jsp"> 
+                      입력요소들... 
+                      <button type="submit">가입< /button>
+                  < /form> 
+          의 action 속성에 작성된 a.jsp 서버페이지로 입력한 가입 정보들을 request 내장 객체 메모리에 담아 전송시 전달
+        */
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

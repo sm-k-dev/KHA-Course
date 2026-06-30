@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #222;
+        }
+
+        .signup-container {
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .signup-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+        }
+
+        .signup-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .signup-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        .signup-table td {
+            padding: 10px;
+            border: 1px solid #dce4ef;
+            vertical-align: top;
+        }
+
+        .signup-table input[type="text"],
+        .signup-table input[type="password"],
+        .signup-table select,
+        .signup-table textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cfd8e3;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .signup-table textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .signup-table button,
+        .signup-table input[type="button"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .signup-table button:hover,
+        .signup-table input[type="button"]:hover {
+            background: #1d4ed8;
+        }
+
+        span {
+            color: red;
+        }
+
+        @media (max-width: 600px) {
+            .signup-container {
+                padding: 16px;
+                margin: 20px auto;
+            }
+
+            .signup-card {
+                padding: 16px;
+            }
+
+            .signup-table td {
+                display: block;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="signup-title">회원가입</div>
+
+      <table class="signup-table">
+        <tr>
+            <td colspan="2" align="center">회원가입</td>
+        </tr>
+        <tr>
+            <td>*이름</td>
+            <td>
+                <input type="text" name="uName" id="uName" placeholder="김개똥" />
+                <span id="name-error">이름을 입력해주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*ID</td>
+            <td>
+                <input type="text" name="uID" id="uID" placeholder="admin" />
+                <span id="id-error">ID를 입력해주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*비밀번호</td>
+            <td>
+                <input type="password" name="uPWD" id="uPWD" placeholder="1234" />
+                <span id="pwd-error">비밀번호를 입력해주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*비밀번호 확인</td>
+            <td>
+                <input type="password" name="uPWD_Confirm" id="uPWD_Confirm" />
+                <span id="pwd-confirm-error">비밀번호 확인란을 입력해주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*직업</td>
+            <td>
+                <select name="work" id="work">
+                    <option value="직업명" selected>직업명</option>
+                    <option value="기타">기타</option>
+                    <option value="회사원">회사원</option>
+                    <option value="학생">학생</option>
+                </select>
+                <span id="work-error">직업 하나를 선택해 주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*성별</td>
+            <td>
+                남자<input type="radio" name="sex" id="s1" value="male" />
+                여자<input type="radio" name="sex" id="s2" value="female" />
+                <span id="gender-error">성별을 체크해 주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*취미</td>
+            <td>
+                <input type="checkbox" name="hobby" id="h1" value="독서" />독서
+                <input type="checkbox" name="hobby" id="h2" value="등산" />등산
+                <input type="checkbox" name="hobby" id="h3" value="낚시" />낚시
+                <span id="hobby-error">취미를 하나 이상 체크 해 주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td>*가입동기</td>
+            <td>
+                <textarea rows="4" cols="50" name="motivation" id="motivation"
+                    placeholder="가입동기를 두 줄 이상 입력 하시오."></textarea>
+                <span id="motivation-error">가입 동기를 입력해주세요</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <input type="button" value="가입" id="submit-btn" />
+            </td>
+        </tr>
+    </table>
+
+    <script type="text/javascript">
+
+
+    </script>
+</body>
+
+</html>
+
+
