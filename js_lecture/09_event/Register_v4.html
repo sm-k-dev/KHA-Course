@@ -185,7 +185,236 @@
   </div>
 
    <script>
- 
+  // ============================================================
+  // 1️⃣ HTML 요소를 한 번에 관리하는 객체를 만든다.
+  // ============================================================
+  // document.getElementById()는 HTML에서 id값으로 특정 요소를 찾아오는 함수다.
+  // 이렇게 요소를 미리 변수처럼 저장해두면 코드가 더 간단해지고 관리하기 쉽다.
+  const elements = {
+    uName: document.getElementById("uName"), // 이름 입력창 요소를 찾아서 elements.uName에 저장한다.
+    uID: document.getElementById("uID"),    // 아이디 입력창 요소를 찾아서 elements.uID에 저장한다.
+    uPWD: document.getElementById("uPWD"),   // 비밀번호 입력창 요소를 찾아서 elements.uPWD에 저장한다.
+    uPWD_Confirm: document.getElementById("uPWD_Confirm"),  // 비밀번호 확인 입력창 요소를 찾아서 elements.uPWD_Confirm에 저장한다.
+    work: document.getElementById("work"),  // 직업 선택 박스 요소를 찾아서 elements.work에 저장한다.
+    s1: document.getElementById("s1"),  // 남성 라디오 버튼 요소를 찾아서 elements.s1에 저장한다.
+    s2: document.getElementById("s2"),   // 여성 라디오 버튼 요소를 찾아서 elements.s2에 저장한다.
+    hobbies: document.querySelectorAll('input[name="hobby"]'), // name 속성이 hobby인 체크박스들을 모두 찾아서 NodeList 형태로 저장한다
+    motivation: document.getElementById("motivation"),  // 가입동기 입력창 요소를 찾아서 elements.motivation에 저장한다.
+    btn: document.getElementById("submit-btn"),  // 가입 버튼 요소를 찾아서 elements.btn에 저장한다.
+
+    // 에러 메시지를 출력할 span 요소들을 한곳에 묶어둔다.
+    err: { 
+      name: document.getElementById("name-error"),  // 이름 오류 메시지를 출력할 요소를 저장한다.
+      id: document.getElementById("id-error"),   // 아이디 오류 메시지를 출력할 요소를 저장한다.
+      pwd: document.getElementById("pwd-error"),  // 비밀번호 오류 메시지를 출력할 요소를 저장한다.
+      pwdConfirm: document.getElementById("pwd-confirm-error"),  // 비밀번호 확인 오류 메시지를 출력할 요소를 저장한다.
+      work: document.getElementById("work-error"),   // 직업 오류 메시지를 출력할 요소를 저장한다.
+      gender: document.getElementById("gender-error"),   // 성별 오류 메시지를 출력할 요소를 저장한다.
+      hobby: document.getElementById("hobby-error"),  // 취미 오류 메시지를 출력할 요소를 저장한다.
+      motivation: document.getElementById("motivation-error")   // 가입동기 오류 메시지를 출력할 요소를 저장한다.
+    }
+  };
+
+  // ============================================================
+  // 2️⃣ 공통 텍스트 입력 검사 함수
+  // ============================================================
+  // 입력값이 비어 있는지, 길이가 범위를 벗어났는지 확인하는 공통 함수다.
+  // 이 함수는 이름, 아이디, 비밀번호 같은 텍스트 입력에 공통으로 사용된다.
+  function validateField(value, errorElem, min, max, label) {
+
+    // 앞뒤 공백을 제거한 실제 입력값을 저장한다.
+    const val = value.trim();
+
+    // 입력값이 비어 있으면 에러 메시지를 표시하고 false를 반환한다.
+    if (!val) {
+      errorElem.textContent = `${label}를 입력해주세요`;
+      return false;
+    }
+
+    // 입력값이 최소 길이보다 짧거나 최대 길이보다 길면 에러 메시지를 표시한다.
+    if (val.length < min || val.length > max) {
+      errorElem.textContent = `${label}는 ${min}~${max}자 사이여야 합니다`;
+      return false;
+    }
+
+    // 정상 입력이면 에러 메시지를 비우고 true를 반환한다.
+    errorElem.textContent = "";
+    return true;
+  }
+
+  // ============================================================
+  // 3️⃣ 각 항목별 유효성 검사 함수들
+  // ============================================================
+  // -------------------------------------------------------------
+  // 함수: validateName (이름 입력 유효성 검사)
+  // -------------------------------------------------------------
+  // 이름 입력창의 값을 읽어서 공통 검사 함수에 넘겨준다.
+  const validateName = () => validateField(elements.uName.value, elements.err.name, 3, 7, "이름");
+
+  // -------------------------------------------------------------
+  // 함수: validateID (아이디 입력 유효성 검사)
+  // -------------------------------------------------------------
+  // 아이디 입력창의 값을 읽어서 공통 검사 함수에 넘겨준다.
+  const validateID = () => validateField(elements.uID.value, elements.err.id, 3, 7, "ID");
+
+  // -------------------------------------------------------------
+  // 함수: validatePassword (비밀번호 입력 유효성 검사)
+  // -------------------------------------------------------------
+  // 비밀번호 입력창의 값을 읽어서 공통 검사 함수에 넘겨준다.
+  const validatePassword = () => validateField(elements.uPWD.value, elements.err.pwd, 3, 7, "비밀번호");
+
+  // -------------------------------------------------------------
+  // 함수: validatePasswordConfirmation (비밀번호 확인 검사)
+  // -------------------------------------------------------------
+  // 비밀번호와 비밀번호 확인 값이 같은지 비교해서 일치 여부를 검사한다.
+  const validatePasswordConfirmation = () => {
+
+    // 비밀번호 입력값의 앞뒤 공백을 제거해서 pwd에 저장한다.
+    const pwd = elements.uPWD.value.trim();
+
+    // 비밀번호 확인 입력값의 앞뒤 공백을 제거해서 confirm에 저장한다.
+    const confirm = elements.uPWD_Confirm.value.trim();
+
+    // 에러 메시지를 출력할 요소를 error 변수에 저장한다.
+    const error = elements.err.pwdConfirm;
+
+    // 비밀번호 확인란이 비어 있으면 오류 메시지를 출력하고 false를 반환한다.
+    if (!confirm) {
+      error.innerHTML = "<strong>비밀번호 확인 입력바람</strong>";
+      return false;
+    }
+
+    // 두 비밀번호가 다르면 오류 메시지를 출력하고 false를 반환한다.
+    if (pwd !== confirm) {
+      error.innerHTML = "<strong>비밀번호가 일치하지 않습니다</strong>";
+      return false;
+    }
+
+    // 두 값이 같으면 에러 메시지를 비우고 true를 반환한다.
+    error.textContent = "";
+    return true;
+  };
+
+  // -------------------------------------------------------------
+  // 함수: validateWork (직업 선택 유효성 검사)
+  // -------------------------------------------------------------
+  // select 박스에서 실제 직업이 선택되었는지 확인한다.
+  const validateWork = () => {
+
+    // 직업 선택 박스의 값이 기본값인 "직업명"이 아니면 정상 선택으로 판단한다.
+    const valid = elements.work.value !== "직업명";
+
+    // 정상 선택이면 에러 메시지를 비우고, 미선택이면 안내 메시지를 출력한다.
+    elements.err.work.textContent = valid ? "" : "직업을 선택해주세요";
+
+    // 검사 결과를 true 또는 false로 반환한다.
+    return valid;
+  };
+
+  // --------------------------------------------
+  // 함수: validateGender (성별 선택 유효성 검사)
+  // --------------------------------------------
+  // 남성/여성 라디오 버튼 중 하나라도 체크되었는지 확인한다.
+  const validateGender = () => {
+
+    // 두 라디오 버튼 중 하나라도 체크되면 true가 된다.
+    const valid = elements.s1.checked || elements.s2.checked;
+
+    // 선택하지 않았으면 에러 메시지를 표시하고, 선택했으면 메시지를 비운다.
+    elements.err.gender.textContent = valid ? "" : "성별을 선택해주세요";
+
+    // 검사 결과를 반환한다.
+    return valid;
+  };
+
+  // --------------------------------------------
+  // 함수: validateHobby (취미 선택 유효성 검사)
+  // --------------------------------------------
+  // 체크박스 중 하나라도 선택되었는지 확인한다.
+  const validateHobby = () => {
+
+    // 체크박스들을 배열로 바꾼 뒤, checked가 true인 항목이 있는지 확인한다.
+    const checked = Array.from(elements.hobbies).some(h => h.checked);
+
+    // 하나 이상 선택되었으면 에러 메시지를 비우고, 아니면 안내 메시지를 표시한다.
+    elements.err.hobby.textContent = checked ? "" : "취미를 하나 이상 선택해주세요";
+
+    // 검사 결과를 반환한다.
+    return checked;
+  };
+
+  // --------------------------------------------
+  // 함수: validateMotivation (지원동기 입력 유효성 검사)
+  // --------------------------------------------
+  // 가입동기가 두 줄 이상 입력되었는지 확인한다.
+  const validateMotivation = () => {
+    
+    // 텍스트 영역의 입력값을 가져와 앞뒤 공백을 제거한다.
+    const text = elements.motivation.value.trim();
+
+    // 줄바꿈 기준으로 문자열을 나누고, 빈 줄은 제거한다.
+    const lines = text.split("\n").filter(line => line.trim() !== "");
+
+    // 입력값이 있고, 줄 수가 2줄 이상이면 정상으로 판단한다.
+    const valid = text && lines.length >= 2;
+
+    // 조건을 만족하지 않으면 에러 메시지를 표시하고, 만족하면 메시지를 비운다.
+    elements.err.motivation.textContent = valid ? "" : "두 줄 이상 입력해주세요";
+
+    // 검사 결과를 반환한다.
+    return valid;
+  };
+
+  // ============================================================
+  // 4️⃣ 전체 폼 검사
+  // ============================================================
+  // 각 항목의 검사 결과를 모아서 최종적으로 폼이 통과 가능한지 확인한다.
+  function validateForm() {
+    // 모든 검사 함수를 실행한 결과를 배열로 모은다.
+    const valid = [
+      validateName(),
+      validateID(),
+      validatePassword(),
+      validatePasswordConfirmation(),
+      validateWork(),
+      validateGender(),
+      validateHobby(),
+      validateMotivation()
+    ].every(Boolean);
+
+    // 모든 검사에 통과하면 안내 메시지를 띄운다.
+    if (valid) alert("회원가입 요청합니다 ✅");
+  }
+
+  // ============================================================
+  // 5️⃣ 이벤트 등록
+  // ============================================================
+  // 사용자가 입력하거나 클릭할 때마다 검사 함수가 실행되도록 이벤트를 연결한다.
+  function setEventListeners() {
+    // 이름 입력창에 키보드 입력 이벤트를 연결한다.
+    elements.uName.addEventListener("keyup", validateName);
+    // 아이디 입력창에 키보드 입력 이벤트를 연결한다.
+    elements.uID.addEventListener("keyup", validateID);
+    // 비밀번호 입력창에 키보드 입력 이벤트를 연결한다.
+    elements.uPWD.addEventListener("keyup", validatePassword);
+    // 비밀번호 확인 입력창에 키보드 입력 이벤트를 연결한다.
+    elements.uPWD_Confirm.addEventListener("keyup", validatePasswordConfirmation);
+    // 직업 선택 박스에 값 변경 이벤트를 연결한다.
+    elements.work.addEventListener("change", validateWork);
+    // 남성 라디오 버튼에 변경 이벤트를 연결한다.
+    elements.s1.addEventListener("change", validateGender);
+    // 여성 라디오 버튼에 변경 이벤트를 연결한다.
+    elements.s2.addEventListener("change", validateGender);
+    // 취미 체크박스들 각각에 변경 이벤트를 연결한다.
+    elements.hobbies.forEach(h => h.addEventListener("change", validateHobby));
+    // 가입동기 입력창에 키보드 입력 이벤트를 연결한다.
+    elements.motivation.addEventListener("keyup", validateMotivation);
+    // 가입 버튼 클릭 시 전체 검사를 실행한다.
+    elements.btn.addEventListener("click", validateForm);
+  }
+
+  // 페이지가 로드된 뒤 이벤트를 연결한다.
+  setEventListeners();
   </script>
 </body>
 

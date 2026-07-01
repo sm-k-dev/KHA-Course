@@ -183,11 +183,224 @@
     </table>
 
     <script type="text/javascript">
+        /*
+            1) 이벤트 연결 함수 : 웹 브라우저가 Register_v3.html 웹문서의 모든 HTML 태그를 로드하면 호출되는 함수
+                                호출되는 함수로 기능은 다양한 입력요소를 선택해서 이벤트 등록 후 이벤트 핸들러 함수 호출
+        */
+        function setEventListeners() {
+            // 1. 이름 입력요소 선택 후 keyup 이벤트 연결
+            document.getElementById("uName").addEventListener("keyup", validateName);
 
+            // 2. ID 입력요소 선택 후 keyup 이벤트 연결
+            document.getElementById("uID").addEventListener("keyup", validateID);
 
+            // 3. 비밀번호 입력요소 선택 후 keyup 이벤트 연결
+            document.getElementById("uPWD").addEventListener("keyup", validatePassword);
+
+            // 4. 비밀번호 확인 입력요소 선택 후 keyup 이벤트 연결
+            document.getElementById("uPWD_Confirm").addEventListener("keyup", validatePasswordConfirm);
+            // document.getElementById("uPWD_Confirm").onkeyup = validatePasswordConfirm; // 위와 동일한 기능
+
+            // 5. 직업 선택요소 선택 후 change 이벤트 연결
+            document.getElementById("work").addEventListener("change", validateWork);
+
+            // 6. 성별 라디오 버튼 선택 후 change 이벤트 연결
+            document.getElementsByName("sex").forEach(radio => {
+                radio.addEventListener("change", validateGender);
+            });
+
+            // 7. 취미 체크박스 선택 후 change 이벤트 연결
+            document.getElementsByName("hobby").forEach(checkbox => {
+                checkbox.addEventListener("change", validateHobby);
+            });
+
+            // 8. 가입동기 텍스트 영역 선택 후 keyup 이벤트 연결
+            document.getElementById("motivation").addEventListener("keyup", validateMotivation);
+
+            // 9. 가입 버튼 선택 후 click 이벤트 연결
+            document.getElementById("submit-btn").addEventListener("click", validateForm);
+        }
+
+        /*
+            2) 전체 폼 양식 화면의 입력을 검사하는 함수
+                - 각 입력요소의 유효성 검사를 한번에 실행하는 함수를 호출
+                - 모든 입력요소가 유효하면 true를 반환하고, 그렇지 않으면 false를 반환
+                - 모든 함수가 true를 반환받아야 valid가 true 가 되고, 가입 진행 (submit) 가능
+        */
+        function validateForm() {
+            let isFormValid = [
+                validateName(),
+                validateID(),
+                validatePassword(),
+                validatePasswordConfirm(),
+                validateWork(),
+                validateGender(),
+                validateHobby(),
+                validateMotivation()
+            ].every(Boolean);
+
+            if (isFormValid) {
+                alert("회원가입이 완료되었습니다!");
+                // 실제로는 여기서 서버로 데이터를 전송하는 로직이 들어갈 수 있습니다.
+            } else {
+                alert("입력한 정보를 확인해주세요.");
+            }
+        }
+
+        /*
+            3) 각 입력요소의 유효성 검사 함수
+                - 이름, ID, 비밀번호, 비밀번호 확인, 직업, 성별, 취미, 가입동기 각각의 입력요소에 대한 유효성 검사 수행
+                - 유효성 검사 결과에 따라 에러 메시지 표시 여부 결정
+        */
+        // 3-1) 이름 유효성 검사
+        function validateName() {
+            // 공통 검사 함수(validateField)를 재사용:
+            // "uName"입력 값을 검사하고, 오류는 "name-error"에 표시, 허용 길이는 3 ~ 7 자, 화면에 표시되는 이름은 "이름"
+            return validateField("uName", "name-error", 3, 7, "이름");
+        }
+
+        // 3-2) ID 유효성 검사
+        function validateID() {
+            // 공통 검사 함수(validateField)를 재사용:
+            // "uID"입력 값을 검사하고, 오류는 "id-error"에 표시, 허용 길이는 5 ~ 12 자, 화면에 표시되는 이름은 "ID"
+            return validateField("uID", "id-error", 5, 12, "ID");
+        }
+
+        // 3-3) 비밀번호 유효성 검사
+        function validatePassword() {
+            // 공통 검사 함수(validateField)를 재사용:
+            // "uPWD"입력 값을 검사하고, 오류는 "pwd-error"에 표시, 허용 길이는 4 ~ 12 자, 화면에 표시되는 이름은 "비밀번호"
+            return validateField("uPWD", "pwd-error", 4, 12, "비밀번호");
+        }
+
+        // 3-4) 비밀번호 확인 유효성 검사
+        function validatePasswordConfirm() {
+            const passwordInput = document.getElementById("uPWD").value.trim();
+            const passwordConfirmInput = document.getElementById("uPWD_Confirm").value.trim();
+            const passwordConfirmError = document.getElementById("pwd-confirm-error");
+            
+            // 1) 빈 값 검사: 사용자가 아무 것도 입력하지 않았을 때
+            // 2) 비밀번호 일치 검사: 비밀번호와 비밀번호 확인란이 일치하지 않을 때
+            // 3) 유효성 검사 통과: 비밀번호 확인란이 비밀번호와 일치할 때
+            if (passwordConfirmInput === "") {
+                passwordConfirmError.style.display = "inline";
+                passwordConfirmError.textContent = "비밀번호 확인란을 입력해주세요.";
+                return false;
+            } else if (passwordConfirmInput !== passwordInput) {
+                passwordConfirmError.style.display = "inline";
+                passwordConfirmError.textContent = "비밀번호가 일치하지 않습니다.";
+                return false;
+            } else {
+                passwordConfirmError.style.display = "none";
+                return true;
+            }
+        }
+
+        // 3-5) 직업 유효성 검사
+        function validateWork() {
+            const workSelect = document.getElementById("work");
+            const workError = document.getElementById("work-error");
+
+            if (workSelect.value === "직업명") {
+                workError.style.display = "inline";
+                workError.textContent = "직업을 선택해주세요.";
+                return false;
+            } else {
+                workError.style.display = "none";
+                return true;
+            }
+        }
+
+        // 3-6) 성별 유효성 검사
+        function validateGender() {
+            const genderRadios = document.getElementsByName("sex");
+            const genderError = document.getElementById("gender-error");
+            const isGenderSelected = Array.from(genderRadios).some(radio => radio.checked);
+
+            // 삼항 조건 연산자로 표현
+            return isGenderSelected ? (genderError.style.display = "none", true) : (genderError.style.display = "inline", false);
+            /*
+                if (!isGenderSelected) {
+                    genderError.style.display = "inline";
+                    return false;
+                } else {
+                    genderError.style.display = "none";
+                    return true;
+                }
+            */
+        }
+
+        // 3-7) 취미 유효성 검사
+        function validateHobby() {
+            const hobbyCheckboxes = document.getElementsByName("hobby");
+            const hobbyError = document.getElementById("hobby-error");
+            const isHobbySelected = Array.from(hobbyCheckboxes).some(checkbox => checkbox.checked);
+
+            if (!isHobbySelected) {
+                hobbyError.style.display = "inline";
+                hobbyError.textContent = "취미를 하나 이상 선택해주세요.";
+                return false;
+            } else {
+                hobbyError.style.display = "none";
+                return true;
+            }
+        }
+
+        // 3-8) 가입동기 유효성 검사: 2줄 이상 입력해야 함
+        function validateMotivation() {
+            const motivationInput = document.getElementById("motivation").value.trim();
+            const motivationError = document.getElementById("motivation-error");
+
+            const lineCount = motivationInput.split(/\r\n|\r|\n/).length;
+
+            // 1) 빈 값 검사: 사용자가 아무 것도 입력하지 않았을 때
+            // 2) 길이 검사: 줄바꿈 문자를 기준으로 입력값을 나누어 줄 수를 계산
+            // 3) 유효성 검사 통과: 입력값이 유효할 때
+            if (motivationInput === "") {
+                motivationError.style.display = "inline";
+                motivationError.textContent = "가입 동기를 입력해주세요.";
+                return false;
+            } else if (lineCount < 2) {
+                motivationError.style.display = "inline";
+                motivationError.textContent = "가입 동기는 두 줄 이상 입력해주세요.";
+                return false;
+            } else {
+                motivationError.style.display = "none";
+                return true;
+            }
+        }
+
+        /*
+            4) 공통 유효성 검사 함수
+                - 입력요소의 ID, 에러 메시지 요소의 ID, 최소 길이, 최대 길이, 필드 이름을 매개변수로 받아서 유효성 검사 수행
+                - 입력값이 최소 길이보다 짧거나 최대 길이보다 길면 에러 메시지를 표시하고 false 반환
+                - 그렇지 않으면 에러 메시지를 숨기고 true 반환
+        */
+        function validateField(inputId, errorId, minLength, maxLength, fieldName) {
+            const inputElement = document.getElementById(inputId).value.trim();
+            const errorElement = document.getElementById(errorId);
+
+            // 1) 빈 값 검사: 사용자가 아무 것도 입력하지 않았을 때
+            // 2) 길이 검사: 입력값의 길이가 최소 길이보다 짧거나 최대 길이보다 길 때
+            // 3) 유효성 검사 통과: 입력값이 유효할 때
+            if (inputElement === "") {
+                errorElement.style.display = "inline";
+                errorElement.textContent = `${fieldName}을(를) 입력해주세요.`;
+                return false;
+            } else if (inputElement.length < minLength || inputElement.length > maxLength) {
+                errorElement.style.display = "inline";
+                errorElement.textContent = `${fieldName}은(는) ${minLength}자 이상 ${maxLength}자 이하로 입력해주세요.`;
+                return false;
+            } else {
+                errorElement.style.display = "none";
+                return true;
+            }
+        }
+        
+        // 웹브라우저가 Register_v3.html 웹문서의 모든 HTML 태그를 로드하면 함수 호출
+        window.onload = function () {
+            setEventListeners();
+        };
     </script>
 </body>
-
 </html>
-
-
