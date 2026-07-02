@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/bubbling.css">
+    <!--
+        1. 이벤트 버블링 전파
+            - 특정 요소에서 이벤트가 발생했을 때 그 이벤트가 해당 요소뿐만 아니라
+            그 요소의 부모요소, 부모 요소의 부모 요소에도 똑같이 발생한 것으로
+            처리되는 현상을 말한다.
+        
+        2. 이벤트 버블링 전파를 막는 방법
+            - 이벤트 버블링 전파를 막고 싶다면 이벤트리스너의 콜백함수에서 event.stopPropagation() 메서드를 호출하면 된다.
+    -->
+    <script>
+        
+        window.addEventListener('load', () => {
+            const div = document.querySelector('div');
+            const section = document.querySelector('section');
+            const p = document.querySelector('p');
+
+            div.addEventListener('click', (event) => {
+                console.log('div');
+            });
+
+            section.addEventListener('click', (event) => {
+                console.log('section');
+            });
+
+            p.addEventListener('click', (event) => {
+                console.log('p');
+            });
+
+            /* 이벤트 버블링 전파를 막는 방법 */
+            p.addEventListener('click', (event) => {
+                event.stopPropagation(); // 이벤트 버블링 전파를 막는 메서드
+                console.log('p');
+            });
+        });
+    </script>
+</head>
+<body>
+    body
+    <div onclick="console.log('div')">
+        div
+        <section onclick="console.log('section')">
+            section
+            <p onclick="console.log('p')">
+                p
+            </p>
+        </section>
+    </div>
+</body>
+</html>

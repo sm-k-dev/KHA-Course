@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* <div id="box">< /div> 선택 */
+        #box {
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+            background-color: lightblue;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 예제 주제: 마우스로 click 이벤트가 발생하면 클릭한 현재 HTML문서 내의 화면의 x, y 좌표 위치를 알 수 있다 -->
+    <p>마우스로 클릭한 위치의 좌표를 확인해보세요.</p>
+    <div id="box"></div>
+
+    <script>
+        // <div id="box">< /div> 선택
+        const box = document.getElementById('box');
+
+        // 선택한 <div id="box">< /div>에 click 이벤트를 등록
+        box.addEventListener('click', (event) => {
+                                    /*
+                                        event 매개변수로 전달 받는 객체
+                                            - click 이벤트가 발생한 div 요소에 대한 정보를 담고 있는 Event 객체
+                                            - Event 객체의 clientX, clientY 속성을 통해 클릭한 위치의 좌표를 확인할 수 있다
+                                            - Event 객체의 pageX, pageY 속성을 통해 클릭한 위치의 좌표를 확인할 수 있다
+                                    */
+            console.log('클릭한 위치 - X: ' + event.clientX + ', Y: ' + event.clientY);
+            alert(`클릭한 위치 - X: ${event.pageX}, Y: ${event.pageY}`);
+        });
+    </script>
+</body>
+</html>

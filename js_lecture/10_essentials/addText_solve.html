@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+        <h1>상품 설명</h1>
+        <h2>자바스크립트의정석</h2>
+        <p>베스트 셀러 입니다. 잘나갑니다.</p>
+        <button id="order">주문하기</button>
+    </div>
+    <div id="orderInfo"></div>
+    <script>
+            //1. 주문 정보를 보여줄 <div id="orderInfo"></div> 선택 
+            const orderInfo = document.querySelector("#orderInfo");
+
+            //2. <button id="order">주문하기</button> 선택
+            const orderButton = document.querySelector("#order");
+
+            //3. <h2>자바스크립트의정석</h2> 선택
+            const title = document.querySelector("#container > h2");
+
+            //4. <button id="order">주문하기</button>요소에 click이벤트 등록 후 click이벤트가 발생하면 처리 
+            orderButton.addEventListener("click", () => {
+
+                //4.1. 주문정보를 보여줄 <div id="orderInfo">컨텐츠영역</div>요소의 컨텐츠 영역에
+                //     동적으로 새로 생성한  <p>요소 한쌍을 innerHTML속성으로 추가 
+                orderInfo.innerHTML += `<p style="font-size:0.8em; color:blue;">${title.innerText}</p>`;
+
+            });
+
+
+
+
+    </script>
+
+
+
+</body>
+</html>

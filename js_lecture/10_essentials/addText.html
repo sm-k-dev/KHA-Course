@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+        <h1>상품 설명</h1>
+        <h2>자바스크립트의 정석</h2>
+        <p>자바스크립트의 정석은 자바스크립트의 기본 문법과 개념을 체계적으로 설명한 책입니다.</p>
+        <button id="order">주문하기</button>
+    </div>
+    <div id="orderInfo">
+        <h1>주문 정보</h1>
+        <p>주문하신 상품은 3일 이내에 배송됩니다.</p>
+    </div>
+
+    <script>
+        // 1. 주문 정보를 보여줄 id 속성이 orderInfo인 요소를 선택하여 변수 orderInfo에 저장.
+        const orderInfo = document.querySelector('#orderInfo');
+
+        // 2. <button id="order"> 요소를 선택하여 변수 orderBtn에 저장.
+        const orderBtn = document.querySelector('#order');
+
+        // 3. <h2>요소를 선택하여 변수 title에 저장.
+        const title = document.querySelector('#container h2'); 
+        // document.querySelector('#container > h2'); 에서 > 기호는 자식 선택자를 의미하며, #container 요소의 직계 자식인 h2 요소를 선택합니다.
+        // document.querySelector('#container h2'); 에서 공백은 후손 선택자를 의미하며, #container 요소의 모든 후손 중 h2 요소를 선택합니다.
+
+        // 4. <button id="order"> 요소에 클릭 이벤트를 등록.
+        orderBtn.addEventListener('click', () => {
+            // 4.1. 주문정보를 보여줄 <div id="orderInfo">컨텐츠영역< /div>요소의 컨텐츠 영역에
+            //      동적으로 새로 생성한 <p>요소 한쌍을 innerHTML 속성을 사용하여 추가.
+            orderInfo.innerHTML = `<p>${title.textContent}</p>`;
+
+            // 6. 클릭 이벤트가 발생하면, id 속성이 orderInfo인 요소의 display 스타일을 block으로 변경하여 주문 정보를 보여줌.
+            orderInfo.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

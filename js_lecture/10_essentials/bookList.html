@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/bookList.css">
+</head>
+<body>
+    <div id="container">
+        <h1>Book List</h1>
+        <form>
+            <ul id="bookInfo">
+                <li>
+                    <label for="title">제목</label>
+                    <input type="text" id="title" name="title" value="자바스크립트의 정석">
+                </li>
+                <li>
+                    <label for="author">저자</label>
+                    <input type="text" id="author" name="author" value="남궁성">
+                </li>
+            </ul>
+            <button type="submit" id="save">저장</button> <!-- type 속성 안 적으면 submit 버튼이 된다 -->
+            <button type="reset">취소</button>
+
+            <!-- 정보가 표시될 영역 -->
+            <ul id="bookList">
+            </ul>
+        </form>
+    </div>
+    <script type="text/JavaScript"> 
+        // 1. 책 제목을 입력하는 <input type="text" id="title"> 요소를 선택하여 변수 titleInput에 저장.
+        const titleInput = document.querySelector('#title');
+
+        // 2. 책 저자를 입력하는 <input type="text" id="author"> 요소를 선택하여 변수 authorInput에 저장.
+        const authorInput = document.querySelector('#author');
+
+        // 3. <button type="submit" id="save">저장</button> 요소를 선택하여 변수 submitBtn에 저장.
+        // const submitBtn = document.querySelector('button[type="submit"]');
+        const submitBtn = document.querySelector('#save');
+
+        // 4. <ul id="bookList"> 요소를 선택하여 변수 bookList에 저장.
+        const bookList = document.querySelector('#bookList');
+
+        // 5. <button type="submit" id="save">저장</button> 요소에 클릭 이벤트를 등록.
+        submitBtn.addEventListener('click', (event) => {
+            // 5.1. submit 버튼 클릭 시, 페이지가 새로고침되는 기본 동작을 막음.
+            event.preventDefault();
+
+            // 5.2. 입력한 책 제목과 저자를 가져와서 변수 title과 author에 저장.
+            const title = titleInput.value;
+            const author = authorInput.value;
+
+            // 5.3. <ul id="bookList"> 요소에 새로운 <li> 요소를 생성하여 책 제목과 저자를 표시.
+            const li = document.createElement('li');
+            li.innerHTML = `${title} - ${author} <span class="delButton">삭제</span>`;
+            bookList.appendChild(li);
+
+            // 5.4. 입력 필드를 초기화.
+            titleInput.value = '';
+            authorInput.value = '';
+
+            // 동적으로 생성한 <span class="delButton">삭제</span> 요소 모두를 배열에 담아 선택
+            const delBtns = document.querySelectorAll('.delButton');
+            // 동적으로 생성한 <span class="delButton">삭제</span> 요소에 클릭 이벤트를 등록.
+            delBtns.forEach((delBtn) => {
+                delBtn.addEventListener('click', (event) => {
+                    // 클릭 이벤트가 발생한 <span class="delButton">삭제</span> 요소의 부모 노드(<li>)를 선택하여 삭제.
+                    const li = event.target.parentNode;
+                    li.remove();
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>

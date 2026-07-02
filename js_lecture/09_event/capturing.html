@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/event.css">
+</head>
+<body>
+    BODY
+        <div>
+            DIV
+            <section>
+                SECTION
+                    <p>
+                        P
+                    </p>
+            </section>
+        </div>
+    <script>
+        // 1. 현재 capturing.html 파일에 작성된 모든 HTML 요소들을 NodeList 유사 배열 객체로 가져와서 변수 elements에 저장.
+        const elements = document.querySelectorAll('*'); 
+
+        // 2. for of 반복문을 이용해 NodeList 유사 배열 객체에 저장된 선택한 모든 HTML 요소들에 대해 반복문을 사용하여 각각의 요소에 클릭 이벤트를 등록.
+        for (let element of elements) {
+            element.addEventListener('click', (event) => {
+                // 3. 클릭 이벤트가 발생하면, 이벤트 객체의 target 속성과 currentTarget 속성을 호출한 값 출력.
+                console.log('Target TagName:', event.target.tagName);
+                console.log('Current Target TagName:', event.currentTarget.tagName);
+            }, true);
+            /*
+                true (캡처링, 위에서 아래로 ↓)
+                    이벤트가 바깥(부모)에서부터 안쪽(자식)으로 파고들며 실행됩니다.
+                    "부모 요소 이벤트가 먼저 터지고, 그다음에 자식 요소 이벤트가 터집니다."
+
+                false 또는 생략 (버블링, 아래에서 위로 ↑)
+                    물속에서 거품(Bubble)이 위로 보글보글 올라가듯, 안쪽(자식)에서 바깥쪽(부모)으로 퍼지며 실행됩니다.
+                    "내가 직접 클릭한 자식 요소 이벤트가 먼저 터지고, 부모 요소로 전달됩니다.
+                    "대부분의 웹 개발에서는 이 방식을 기본으로 사용합니다.
+            */
+        }
+
+        /*
+            다른 for문의 문법 ( for ... of 문법 ) // JavaScript의 for... in 문법과 헷갈리지 말자
+            1. for ... of 문법은 반복 가능한 객체(이터러블)의 요소를 순차적으로 반복할 수 있는 반복문.
+            2. for ... of 문법은 배열, 문자열, NodeList, Set 집합, Map 집합 등 반복 가능한 객체(이터러블)에서 사용 가능.
+            3. for ... of 문법은 반복문이 한 번 실행될 때마다, 반복되는 값이 순차적으로 저장되는 변수를 사용하여 반복문을 실행.
+            4. for ... of 문법의 기본 구조:
+                for (let 변수 of 이터러블) {
+                    반복할 코드
+                }
+                
+            변수: 
+                for ... of 문법에서 반복문을 돌릴 때, 반복되는 값이 순차적으로 저장되는 변수.
+                반복문이 한 번 실행될 때마다, 이 변수에는 이터러블의 다음 값이 저장됨.
+            이터러블:
+                반복 가능한 객체 (배열, 문자열, NodeList, Set 집합, Map 집합 등)
+        */
+    </script>
+</body>
+</html>

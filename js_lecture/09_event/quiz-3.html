@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>키보드 입력 이벤트</title>
+    <style>
+        body {
+            transition: background-color 0.3s;
+            /* 배경색 변경 시 부드럽게 전환 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+        마무리 문제3. 키보드 입력에 따라 배경색 변경
+
+        문제 설명
+        사용자가 키보드를 입력할 때, 특정 키를 누르면(keydown이벤트) 웹 페이지의 배경색이 변경되도록 만드세요.
+
+        'R' 키를 누르면 배경색이 빨간색(red)으로 변경됩니다.
+        'G' 키를 누르면 배경색이 초록색(green)으로 변경됩니다.
+        'B' 키를 누르면 배경색이 파란색(blue)으로 변경됩니다.
+        다른 키를 누르면 배경색이 원래 색(흰색)으로 돌아갑니다.
+
+        참고. event.key를 사용하여 사용자가 누른 키 값을 가져옴 <--가져온값 console.log로 출력해서 확인 하세요.
+    -->
+    <h1>키보드에서 R, G, B 키를 눌러보세요!</h1>
+
+    <script>
+        //키보드 입력 이벤트(keydown이벤트)등록 및 이벤트 처리 함수 작성
+        document.addEventListener("keydown", (event) => {
+            //사용자가 누른 키 값을 가져오기 위해 event.key를 사용
+            const keyPressed = event.key.toLowerCase(); // 소문자로 변환하여 비교
+
+            //console.log로 눌린 키 값 확인
+            console.log("Pressed Key:", keyPressed);
+
+            //배경색 변경 로직
+            switch ( keyPressed ) {
+                case 'r':
+                    document.body.style.backgroundColor = 'red';
+                    break;
+                case 'g':
+                    document.body.style.backgroundColor = 'green';
+                    break;
+                case 'b':
+                    document.body.style.backgroundColor = 'blue';
+                    break;
+                default:
+                    document.body.style.backgroundColor = 'white'; // 다른 키를 누르면 원래 색으로 복귀
+            }
+        }); 
+    </script>
+
+</body>
+
+</html>

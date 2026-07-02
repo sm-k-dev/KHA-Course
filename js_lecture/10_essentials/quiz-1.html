@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>연습문제 1</title>
+  <link rel="stylesheet" href="css/quiz-1.css" />
+</head>
+
+<body>
+  <div id="container">
+    <h1>참가자 명단</h1>
+    <form>
+      <ul id="userInput">
+        <li>
+          <label for="username">이 름</label>
+          <input type="text" id="username" />
+        </li>
+        <li>
+          <label for="major">전 공</label>
+          <input type="text" id="major" />
+        </li>
+      </ul>
+      <button>등록하기</button>
+    </form>
+
+    <table id="attendant">
+      <thead>
+        <tr>
+          <th>이 름</th>
+          <th>전 공</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // 1. <input type="text" id="username"> 요소를 선택하여 변수 username에 저장.
+    const username = document.querySelector("#username");
+    // 2. <input type="text" id="major"> 요소를 선택하여 변수 major에 저장.
+    const major = document.querySelector("#major");
+    // 3. <button>등록하기</button> 요소를 선택하여 변수 bttn에 저장.
+    const bttn = document.querySelector("form > button");
+
+    // 4. <button>등록하기</button> 요소에 클릭 이벤트를 등록.
+    bttn.addEventListener("click", (e) => {
+
+      // 4.1. submit 버튼 클릭 시, form의 데이터가 서버로 전송되는 것을 차단. 페이지가 새로고침되는 기본 동작을 막음.
+      e.preventDefault();
+
+      // 4.2. <table id="attendant"> 요소의 자식 요소인 <tbody> 요소를 선택하여 변수 tbody에 저장.
+      let tbody = document.querySelector("#attendant > tbody");
+      
+      // 4.3. 동적으로 <tr> 요소를 생성하여 변수 newTr에 저장.
+      let newTr = document.createElement("tr");
+
+      // 4.4. 이름을 나타낼 <td> 요소를 생성하여 변수 nameTd에 저장.
+      let nameTd = document.createElement("td");
+      // 4.5. <td> 요소의 텍스트 영역에 <input type="text" id="username"> 요소에 입력한 값을 저장.
+      nameTd.innerText = username.value;
+      // 4.6. <input type="text" id="username"> 요소의 입력 필드를 초기화.
+      username.value = "";
+
+      // 4.7. 전공을 나타낼 <td> 요소를 생성하여 변수 majorTd에 저장.
+      let majorTd = document.createElement("td");
+      // 4.8. <td> 요소의 텍스트 영역에 <input type="text" id="major"> 요소에 입력한 값을 저장.
+      majorTd.innerText = major.value;
+      // 4.9. <input type="text" id="major"> 요소의 입력 필드를 초기화.
+      major.value = "";
+
+      // 4.10. 동적으로 생성된 <tr> 요소 안에 사이트 이용자가 입력한 이름이 포함된 <td> 요소를 추가.
+      newTr.appendChild(nameTd);
+
+      // 4.11. 동적으로 생성된 <tr> 요소 안에 사이트 이용자가 입력한 전공이 포함된 <td> 요소를 추가.
+      newTr.appendChild(majorTd);
+
+      // 4.12. 이름과 전공을 포함해서 동적으로 생성된 <tr> 요소를 <table id="attendant"> 요소의 자식 요소인 <tbody> 요소 안에 추가.
+      tbody.appendChild(newTr);
+
+    });
+  </script>
+</body>
+
+</html>

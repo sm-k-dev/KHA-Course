@@ -54,23 +54,43 @@ JAVA
     객체지향 OOP
     JAVA Standard Library (Collection Framework, 람다식)
     설계 패턴 (Design Patterns)
-JavaScript
-    React (컴포넌트 기반 UI 개발)
-    Node.js
+
+JavaScript (JS를 다 익힌 후 type 속성을 추가한 TypeScript 학습)
+    Node.js는 '실행 환경(Runtime)'
+        과거에는 자바스크립트가 브라우저(크롬, 사파리 등) 안에서만 움직였습니다. 브라우저 내부에 자바스크립트 해석기(엔진)가 있었기 때문이죠
+        크롬 브라우저의 핵심 엔진(V8 엔진)을 쏙 빼내어, 브라우저 밖(내 컴퓨터, 서버 컴퓨터)에서도 자바스크립트를 실행할 수 있도록 만든 '런타임(Runtime, 실행 환경)'입니다.
+        React와 Vue역시 문법이 독특해서 브라우저가 그대로 읽지 못합니다. 
+        브라우저가 이해할 수 있는 순수한 JavaScript로 바꾸어주는 '번역/조립(빌드)' 과정이 필요한데, 이때 Node.js가 필수입니다.
+        React와 Vue로 만든 완성품은 브라우저에서 그냥 돌아가지만, 개발자가 그 완성품을 만드는 과정(공장 작동)에는 Node.js가 꼭 필요하다!
+    
+    프론트엔드 프레임워크
+        React (컴포넌트 기반 UI 개발)
+        Vue
+
+    백엔드 프레임워크
+        Express
+            역할: Node.js 환경 위에서 "웹 서버를 훨씬 쉽고 빠르게 만들 수 있도록 도와주는 도구 상자"입니다.
+            특징: 주소창에 특정 경로를 입력했을 때 페이지를 보여주는 기능(라우팅), 로그인 체크(미들웨어) 등을 아주 간단하게 구현할 수 있게 해줍니다.
+
 JSON
     JavaScript와 Spring Boot(RESTful API) 사이의 데이터 교환 데이터 포맷
+
 표준SQL/RDBMS(DBMS)
     DML / DDL / DCL
     트랜잭션 관리와 데이터 정합성을 뜻하는 ACID 원칙
+
 HTML/CSS
+
 Spring Boot
     MyBatis ORM과 데이터 영속성 관리 기술 (Persistence Layer)
     API를 문서화하는 OpenAPI / Swagger
     RESTful API: 주소(URL)를 통해 데이터와 기능을 주고받는 설계 규칙
     Spring Security & OAuth: 로그인, 회원가입, 보안 인증
+
 JakartaEE 
     서블릿(Servlet)/JSP: 자바 웹 서버의 기초 동작 원리
     MVC 아키텍쳐: 웹 어플리케이션의 역할 분담 디자인 패턴 (Model Veiw Controller)
+
 DevOps
     Git/GitHub: 소스코드 버전 관리 및 협업 도구
     Docker / Kubernetes: 컨테이너 기반 가상화 및 통합 관리
@@ -78,16 +98,20 @@ DevOps
     CI/CD (GitHub Actions): 빌드 및 배포 자동화 파이프라인
     리눅스 환경설정을 위한 리눅스 명령어 및 쉘 스크립팅 (Shell Scripting)
     코드형 인프라 (IaC: Infrastructure as Code)
+
 네트워크 기초
     TCP/IP 소켓 통신
     HTTP 통신 문법
     IP/Port 개념
     VPC, 서브넷, 포트 포워딩
+
 리눅스
     Linux 기초 및 파일 시스템
     리눅스 핵심 명령어
     패키지 관리 및 서버 설정
+
 파이썬
+
 C
 
 ------------------------------------------------------------------------------

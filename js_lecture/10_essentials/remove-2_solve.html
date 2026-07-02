@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Web Programming</h1>   
+    <ul id="items">
+       <li>HTML</li>
+       <li>CSS</li>
+       <li>Javascript</li>
+    </ul>
+    <script>
+        //[ <li>HTML</li>,  <li>CSS</li>,   <li>Javascript</li>  ];
+        //        0               1                 2                 index
+        const items = document.querySelectorAll("li");
+
+        for(let item  of items){
+
+            item.addEventListener("click", function(){
+
+                //this : 이벤트가 발생한 대상요소를 선택해 오는 예약어.
+                //this.parentNode  : 이벤트가 발생한 대상요소의 부모요소선택 
+                //this.parentNode.removeChild(this);   :  부모요소 사이에 작성된 이벤트가 발생한 자식 요소 삭제 
+                //방법1.
+                //this.parentNode.removeChild(this);
+
+                //방법2.
+                this.remove(this);
+
+            });
+
+        }
+/*
+      for(let item of items){
+
+          item.addEventListener("click", () => {   
+          
+              //화살표 함수 내부에 this예약어를 작성하면
+              //this는 winodw객체를 가리킵니다.
+              //window객체는 DOM의 최상위 객체이므로
+              //클릭한 대상을 this라는 예약어로 사용하려면
+              //화살표 함수가 아닌 익명함수 function형식으로 지정해야 합니다
+              //중요!!!!
+        //console.log(this); //window {} 객체 형태가 출력 됨
+              this.parentNode.removeChild(this); //오류 발생 
+
+          });
+
+
+      }
+*/
+
+    </script>
+
+
+
+</body>
+</html>

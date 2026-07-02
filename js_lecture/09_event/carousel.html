@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/carousel.css">
+</head>
+<body>
+    <p> 좌우 화살표를 눌러보세요 </p>
+
+    <!-- 캐러셀 전체 영역 -->
+    <div id="container">
+        <!-- 왼쪽 화살표 div 영역 -->
+        <div id="left" class="arrow">
+            <!-- &lt; -->
+            &lang;
+        </div>
+
+        <!-- 오른쪽 화살표 div 영역 -->
+        <div id="right" class="arrow">
+            <!-- &gt; -->
+            &rang;
+        </div>
+    </div>
+    <script>
+        /* 캐러셀 전체영역 <div id="container">< /div>요소 선택  */
+        const container = document.querySelector('#container');
+
+        /* 캐러셀 전체 영역 내부에 보여질 이미지명을 문자열 형태로 배열을 생성해서 저장 */
+        const pics = ['pic-1.jpg', 'pic-2.jpg', 'pic-3.jpg', 'pic-4.jpg', 'pic-5.jpg'];
+
+        /* 캐러셀 전체 영역 <div id="container">< /div>에 첫화면으로 보여질 이미지를 pics[0] 배열칸의 이미지로 표시 */
+        container.style.backgroundImage = `url(./images/${pics[0]})`;
+        /*
+            url() 이란
+            - CSS에서 배경 이미지나 외부 리소스를 불러올 때 사용하는 함수
+            - 자바스크립트에서는 CSS의 backgroundImage, listStyleImage, cursor 등의 속성에 url()을 사용하여 이미지를 설정할 수 있다
+            
+            문법
+                url('이미지경로');
+                `url(이미지경로)`;
+                "url(이미지경로)";
+        */
+
+        /* < 화살표 <div class="arrow" id="left"> 와 > 화살표 <div class="arrow" id="right"> 두쌍 모두 새 배열에 담아 선택 */
+        const arrows = document.querySelectorAll('.arrow');
+        /*
+            arrows 배열
+                0: <div class="arrow" id="left"> &lang; </div>
+                1: <div class="arrow" id="right"> &rang; </div>
+        */
+
+        let i = 0; // 현재 보여지고 있는 이미지의 배열 인덱스 번호를 저장할 변수 i 선언 및 초기화
+
+        /* 화살표를 클릭했을 때 실행될 이벤트리스너 등록 */
+        arrows.forEach((arrow) => {
+            arrow.addEventListener('click', (event) => {
+                                            // event.target : click 이벤트가 발생한 요소 자체를 반환
+                                            // event.target.id : click 이벤트가 발생한 요소의 id 속성값을 반환
+
+                /* 클릭한 화살표가 왼쪽 화살표인지 오른쪽 화살표인지 구분 */
+                if (event.target.id === 'left') {
+
+                    /* 왼쪽 화살표 클릭 시 실행될 코드 */
+                    i = (i - 1 + pics.length) % pics.length;
+                    container.style.backgroundImage = `url(./images/${pics[i]})`;
+
+                } else if (event.target.id === 'right') {
+
+                    /* 오른쪽 화살표 클릭 시 실행될 코드 */
+                    i = (i + 1) % pics.length;
+                    container.style.backgroundImage = `url(./images/${pics[i]})`;
+                    
+                }
+            });
+        });
+    </script>
+</body>
+</html>
