@@ -31,7 +31,7 @@ let products = [];
 addBtn.addEventListener("click", () => {
     // 1) 사용자가 입력칸에 적은 값을 꺼내온다.
     const name = nameInput.value.trim(); // 입력한 상품명
-    const price = number(priceInput.value); // 입력한 가격을 숫자로 전환
+    const price = Number(priceInput.value); // 입력한 가격을 숫자로 전환
 
     // 2) 입력값 검사 (하나라도 이상하면 등록을 멈춤)
     // !name 상수에 저장된 값이 비어 있으면 true
@@ -96,10 +96,20 @@ function render() {
         displayList.sort( (a, b) => b.price - a.price );
     } 
 
-    // 5) 화면 표에 상품 한 줄씩 추가하면서, 동시에 가격을 더해서 총합을 구한다.
+    /*
+        5) 삭제 함수 (인자로 상품 id 받도록 구현)
+            - render() 에서 각 행의 삭제 버튼에 이 함수를 연결함
+            - 배열에서 해당 상품객체의 id를 찾아서 제거후 다시 렌더
+    */
+    function deleteProductById( id ){
+        products = products.filter( item => item.id !== id );
+        render(); // 목록이 바뀌었으니 화면을 새로 그림
+    }
+
+    // 6) 화면 표에 상품 한 줄씩 추가하면서, 동시에 가격을 더해서 총합을 구한다.
     let sum = 0; // 가격을 차곡차곡 더해 나갈 '누적통' (0에서 시작)
 
-    displayList.forEach( item => { sum += item.price 
+    displayList.forEach( item => { 
         // a) 표의 한 행 <tr>< /tr> 생성
         const tr = document.createElement("tr");
         // b) 상품명이 들어갈 칸<td>< /td> 생성
@@ -110,6 +120,31 @@ function render() {
         const tdDel = document.createElement("td");
         const btn = document.createElement("button");
         btn.textContent = "삭제"
-        
+
+        btn.addEventListener("click", () => {
+            deleteProductById( item.id );
+        });
+
+        tdDel.appendChild(btn);
+
+        // e) tr안에 td 들을 왼쪽부터 순서대로 추가한다.
+        tr.appendChild(tdName);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdDel);
+
+        // f) 완성된 한 줄 (tr)을 표 본문 (tbody)에 붙여 넣는다
+        productTable.appendChild(tr);
+
+        // g) 상품의 가격을 sum에 누적해서 저장
+        sum += item.price;
     });
+
+    // 7) 모든 상품 가격을 더한 최종 금액을 화면 아래에 표시
+    total.textContent = "총합: " + sum.toLocaleString() + " 원";
 }
+
+/** 
+ *  8) 웹브라우저 주소창에 URL http://ip:port/PMS.html 입력후 엔터 눌러서 서버에 요청하면
+ *      처음 화면을 한번 브라우저에 보여주자
+*/
+render();
