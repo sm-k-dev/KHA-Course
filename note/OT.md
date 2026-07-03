@@ -66,6 +66,9 @@ JavaScript (JS를 다 익힌 후 type 속성을 추가한 TypeScript 학습)
     프론트엔드 프레임워크
         React (컴포넌트 기반 UI 개발)
         Vue
+        jQuery
+            DOM 조작 및 이벤트 처리 라이브러리
+            JavaScript를 더 쉽고 간결하게 쓰기 위해 만들어진 도구
 
     백엔드 프레임워크
         Express
@@ -92,12 +95,16 @@ JakartaEE
     MVC 아키텍쳐: 웹 어플리케이션의 역할 분담 디자인 패턴 (Model Veiw Controller)
 
 DevOps
-    Git/GitHub: 소스코드 버전 관리 및 협업 도구
+    Git/GitHub: 소스코드 버전 관리, 형상관리 및 협업 도구.
+        형상관리(Configuration Management): 쉽게 말해 "프로젝트의 전체 설계도와 부품들을 엉키지 않게 관리하고 기록하는 일"
     Docker / Kubernetes: 컨테이너 기반 가상화 및 통합 관리
     AWS: 클라우드 가상 서버 (EC2, S3, RDS) 인프라 구축
-    CI/CD (GitHub Actions): 빌드 및 배포 자동화 파이프라인
+    CI/CD (GitHub Actions, GitLab CI, Jenkins): 빌드, 테스트 및 배포 자동화 파이프라인
     리눅스 환경설정을 위한 리눅스 명령어 및 쉘 스크립팅 (Shell Scripting)
     코드형 인프라 (IaC: Infrastructure as Code)
+    빌드도구(Maven, Gradle)
+        프로젝트의 라이브러리 다운로드, 컴파일, 테스트, 배포를 자동화해 주는 '빌드 자동화 도구'
+        Docker나 Jenkins 같은 DevOps 도구와 함께 연동되어 사용되지만, Maven 자체는 소스 코드의 빌드 단계를 담당하는 개발 도구에 가깝습니다.
 
 네트워크 기초
     TCP/IP 소켓 통신
@@ -118,12 +125,12 @@ C
 
 기술 트렌드 및 요구 역량
     ● 프로그래밍 언어 : JavaScript, Python, Java, TypeScript
-    ● 프레임워크 및 라이브러리 : React, Vue.js, Angular, Node.js
+    ● 프레임워크 및 라이브러리 : jQuery, React, Vue.js, Angular, Node.js
     ● 클라우드 플랫폼 : AWS, Azure, Google Cloud
     ● 데이터베이스 : SQL, NoSQL (Mongo DB, Cassandra)
     ● DevOps : Docker, Kubernetes, Jenkins
     ● AI/ML : TensorFlow, PyTorch
-    ● 기타 : 보안, 버전 관리, API 개발, 성능 최적화 등
+    ● 기타 : 빌드 도구(Maven, Gradle), 보안, 버전 관리(Git, GitHub), API 개발, 성능 최적화 등
 
     프로그래밍 활용능력
     프레임워크 활용능력
