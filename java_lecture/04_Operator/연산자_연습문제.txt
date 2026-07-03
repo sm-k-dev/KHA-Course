@@ -259,14 +259,15 @@ class Exercise3_8 {
         ch = ch + 2;							=> ch = (char)(ch + 2);
 
         float f = 3 / 2;						=> float f = 3 / 2f; 
+        	// 정수 / 정수 = 정수
         	// 정수 / 실수 = 실수
         	
-        long l = 3000 * 3000 * 3000;			=> long l = ( 3000 * 3000 * 3000 )L ;
+        long l = 3000 * 3000 * 3000;			=> long l = 3000 * 3000 * 3000L ;
 
         float f2 = 0.1f;
         double d = 0.1;
 
-        boolean result = d==f2;					=> d == (double)f2;
+        boolean result = d==f2;					=> (float)d == f2;
 
         System.out.println("c="+c);
         System.out.println("ch="+ch);
@@ -295,7 +296,9 @@ result=true
 class Exercise3_9 {
     public static void main(String[] args) {
         char ch = 'z';
-        boolean b = ( /* (1) */ );
+        boolean b = ( /* (1) */ );			=>  ('a' <= ch && ch <= 'z') ||
+        										('A' <= ch && ch <= 'Z') ||
+        										('0' <= ch && ch <= '9')
 
         System.out.println(b);
     }
