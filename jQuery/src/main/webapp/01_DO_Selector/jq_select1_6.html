@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	</head>
+	<body>
+		<h1>나도 데려가줘</h1>
+		<h1 class="tit">제이쿼리</h1>
+		<h2 id="a">선택자</h2>
+		<h2>선택자2</h2>
+		<h3 class="tit">직접선택자</h3>
+		
+		<script type="text/javascript">
+			/*
+				[종속 선택자로 요소 선택 - class속성값 기준]
+			
+				$("요소명.class값")
+					-> $("요소명") 으로 모든 요소 선택
+					-> 그 중에서 class값이 일치하는 요소만 최종 선택
+					-> 요소명 과 .class값 사이를 띄우면 자식요소를 가져오니 주의
+					
+				=====================================================
+					
+				[종속 선택자로 요소 선택 - class속성값 기준]
+				
+				$("요소명#id값")
+					-> $("요소명") 으로 모든 요소 선택
+					-> 그 중에서 id값이 일치하는 요소만 최종 선택
+					-> 요소명 과 #id값 사이를 띄우면 자식요소를 가져오니 주의
+			*/
+			
+			/*
+				<h1 class="tit">제이쿼리< /h1> 최종선택
+			*/
+			$("h1.tit").css("color", "yellow");
+			
+			/*
+				<h2 id="a">선택자< /h2> 최종선택
+			*/
+			$("h2#a").css("color", "red");
+			/* 위 코드를 순수 JavaScript 코드로 나타내면 */
+			document.getElementsByTagName("h2")[0].style.color = "red";
+		</script>
+	</body>
+</html>

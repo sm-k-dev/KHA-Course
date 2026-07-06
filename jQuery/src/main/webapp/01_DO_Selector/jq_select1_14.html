@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	</head>
+	<body>
+		<!-- 주제: 상위요소 선택자 - parents() 메소드 -->
+		<h1 class="title">선택자</h1>
+		
+		<section>
+			<div>
+				<p class="txt1">내용</p>
+			</div>
+		</section>
+		
+		<section>
+			<div>
+				<p class="txt2">내용</p>
+			</div>
+		</section>
+		
+		<script type="text/javascript">
+			/*
+				[상위요소 선택 - parents() 메소드]
+				
+				-> $("기준요소").parents()
+				   · 기준요소를 감싸는 "모든" 상위요소 선택 (body까지 위로 전부)
+		
+				-> $("기준요소").parents("상위요소 선택문법")
+				   · 상위요소들 중 조건과 일치하는 것만 최종 선택
+			*/
+			/*
+				$(".txt1").parents()
+					<p class="txt1">내용< /p> 선택한 요소를 기준으로 모든 상위요소 (div, section, body...)선택
+			*/	
+			$(".txt1").parents().css("border", "2px dashed red");
+					
+			/*
+				$(".txt2").parents("div")
+					<p class="txt2">내용< /p> 선택한 요소를 기준으로 상위요소 중 <div>만 최종 선택
+			*/
+			$(".txt2").parents("div").css("border", "4px dotted blue"); // 바깥 파랑 점선 설정
+		</script>
+	</body>
+</html>

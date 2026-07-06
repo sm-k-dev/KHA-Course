@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<!--
+			jQuery 문법 사용하기 위한 CDN 주소 작성
+			- CDN: jQuery를 내 PC에 설치하지 않고 인터넷 주소로 .js 불러오는 방식
+		-->
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			/*
+				[선택자로 DOM을 선택해 오는 기본 식]
+				-> $("선택자 종류식")
+					: 브라우저가 HTML태그들을 인식해 만든 문서의 요소 하나하나 선택
+				
+				[직접선택자]
+				-> 주로 멀리 떨어진 요소를 "직접"선택할 때 사용되는 선택자들.
+				
+				[직접선택자 종류]
+					- 전체 선택자:		* 		-> HTML 문서의 모든 요소를 선택
+					- 아이디 선택자: 	# 		-> ID 값이 일치하는 요소 1개 선택
+					- 클래스 선택자: 	. 		-> class 속성 값이 일치하는 요소들 선택
+					- 요소명 선택자:	태그명 	-> 해당 태그를 전부 선택
+					- 그룹 선택자: 	,		-> 여러 선택자를 한꺼번에 이용해서 요소들 선택
+				
+				자바스크립트 코드
+					window.onload = function(){}
+					: HTML 문서 내부의 모든 태그들을 브라우저가 읽어들인 동작을 window에 등록 후 처리
+				
+				jQuery 코드
+					$(function(){});
+					: HTML 문서 내부의 모든 태그들을 브라우저가 읽어들인 동작을 window에 등록 후 처리
+			*/
+			
+			$(function(){
+				/*
+					전체 선택자 * 로 DOM을 선택해 오는 식
+					
+					$("*")
+					-> 전체선택자 "*"를 이용해 해당 HTML파일 내부에 작성된 모든 HTML 태그들을 한번에 선택
+					
+					$("*").css("border", "1px solid blue");
+					-> 전체선택자 * 를 이용해 선택한 모든 HTML 태그에 css 함수를 이용해 바깥 테두리에 style 속성을 준다.
+				*/
+				
+				$("*").css("border", "1px solid blue");
+			});
+		</script>
+	</head>
+	<body>
+		<h1>제이쿼리</h1>
+		<h2>선택자</h2>
+		<h3>직접선택자</h3>
+	</body>
+</html>

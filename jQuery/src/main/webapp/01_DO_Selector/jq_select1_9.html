@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<!-- 주제 : 인접관계 선택자 종류 중에서  자식요소 선택자  >    children()   사용 예   
+
+			
+			자식요소 선택자    >       또는     children()
+			
+			- 의미  : 자식요소 선택자는 선택된 요소를 기준으로  지정한 자식요소만 선택하는 선택자.
+		
+			- 문법
+					1.  $("요소선택 > 자식요소선택문법")
+					해석 : 요소선택자리에서 선택한 요소를 기준으로  >기호 뒤에 적은 자식요소선택문법에서 선택한 자식요소만 최종 선택
+					
+					2.  $("요소선택").children("자식요소선택문법")
+					해석 : 요소선택 자리에서 선택한 요소를 기준으로 children()자식요소선택자문법에 적은
+						  자식요소만 ~ 최종 선택 
+						  
+				    3. $("요소선택").children()
+				        해석 : 요소선택 자리에서 선택한 요소를 기준으로 children()자식요소 선택자를 호출하면
+				              기준으로한 선택한 요소 내부에 작성된 모든 자식요소들을 선택합니다.
+				
+		-->		
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	</head>
+	<body>
+		<div id="wrap">
+			<h1>인접관계 선택자</h1>
+			<p>내용1</p>
+			<section>
+				<h1>하위 요소 선택자</h1>
+				<p>내용2</p>
+			</section>
+		</div>
+		<script type="text/javascript">
+			/*
+				$("요소선택 > 자식요소최종선택문법")
+					요소선택자리에 선택한 요소를 기준으로 > 기호 뒤에 작성한 자식요소최종선택문법에서 선택한 자식요소만 최종 선택
+				
+				$("#wrap")
+					id="wrap" 인 <div id="wrap"> ... < /div> 요소 먼저 선택
+					
+				$("#wrap ")
+					id="wrap" 인 <div id="wrap"> ... < /div> 요소를 기준으로 > 자식요소선택자로 하위 모든 후손 요소를 선택
+				
+				$("#wrap > h1")
+					id="wrap" 인 <div id="wrap"> ... < /div> 요소를 기준으로 " " 자식요소선택자로 하위 모든 후손 요소 중에 h1 요소명을 이용해 div 내부에 작성된 h1 자식 요소들 선택
+			*/
+			$("#wrap > h1").css({ "background-color": "yellow", "border": "2px dashed red" });
+					
+			/*
+				$("요소선택").children("자식요소최종선택문법")
+					요소선택 자리에서 선택한 요소를 기준으로 children(...) 자식요소최종선택문법 에 적은 자식요소만 최종 선택
+				
+				$("#wrap")
+					id="wrap" 인 <div id="wrap"> ... < /div> 요소 먼저 선택
+				
+				$("#wrap").children("p")
+					id="wrap" 인 <div id="wrap"> ... < /div> 요소 안쪽에 작성된 자식 요소들 중에서 <p>내용1< /p>만 최종 선택
+			*/
+			$("#wrap").children("p").css("background-color", "pink");
+			
+			/*
+				$("요소선택").children()
+					"요소선택" 자리에서 선택한 요소를 기준으로 children() 자식요소 최종선택문법의 메소드를 호출하면
+					"요소선택" 자리에서 선택한 요소를 기준으로 요소 내부에 작성된 모든 자식요소를 한번에 최종 선택
+			*/
+			$("#wrap > section").children().css("background-color", "aqua");
+		</script>
+	</body>
+</html>
