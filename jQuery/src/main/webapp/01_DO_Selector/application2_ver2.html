@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할 일 목록 응용편</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 500px; /* 화면이 너무 넓어지지 않게 제한 */
+        }
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #todoList {
+            margin-top: 20px;
+        }
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 5px; /* 모서리를 둥글게 */
+        }
+        
+        /* 텍스트 영역에 마우스를 올렸을 때 클릭 가능하다는 표시 */
+        .todo-text {
+            cursor: pointer;
+            flex-grow: 1; /* 텍스트 영역이 남는 공간을 모두 차지하도록 설정 */
+        }
+        
+        /* 할 일이 완료되었을 때 적용할 CSS 클래스 */
+        .completed .todo-text {
+            text-decoration: line-through; /* 글자 중간에 줄 긋기 */
+            color: #aaa; /* 글자 색상을 옅은 회색으로 변경 */
+        }
+
+        .remove-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+        
+        #clearAllBtn {
+            background-color: #666;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+   
+    <script>
+		$(function(){
+            
+            // 0. 총 할 일 개수를 업데이트하는 함수 (여러 곳에서 쓰이므로 별도 함수로 분리)
+            function updateTaskCount() {
+                // 클래스가 'todo-item'인 요소들의 총 개수를 구해서 #taskCount 영역에 텍스트로 넣음
+                const count = $(".todo-item").length;
+                $("#taskCount").text(count);
+            }
+
+			// 1. 추가 버튼 클릭 이벤트
+			$("#addTodoBtn").click(function(){
+				const todoText = $('#todoInput').val().trim();
+								
+				if(todoText){
+					addTodoToList(todoText);
+					$('#todoInput').val('');
+				} else {
+					window.alert('할 일 내용을 입력하고 추가 버튼을 누르세요.');				
+				}			
+			});
+
+            // [NEW] 1-1. 입력창에서 엔터(Enter)키를 눌렀을 때도 추가되도록 이벤트 등록
+            // keypress 이벤트는 키보드를 눌렀을 때 발생합니다.
+            $('#todoInput').on('keypress', function(event) {
+                // event.which는 눌린 키의 고유 번호를 반환합니다. 13번은 Enter 키를 의미합니다.
+                if(event.which === 13) {
+                    // 엔터키가 눌리면 '추가' 버튼을 강제로 클릭하도록 트리거(Trigger) 발생
+                    $("#addTodoBtn").click();
+                }
+            });
+			
+			// 2. 할 일 목록에 추가하는 함수
+			function addTodoToList(text){
+				
+				// [MODIFIED] span에 class="todo-text"를 추가하여 클릭 이벤트를 쉽게 잡을 수 있도록 수정
+				const todoItem = $('<div class="todo-item"></div>');
+				todoItem.html(`
+						<span class="todo-text">${text}</span>	
+						<button class="remove-btn">삭제</button>
+				`);
+				
+				$("#todoList").append(todoItem);
+                
+                // 항목이 추가되었으므로 카운트 업데이트
+                updateTaskCount();
+                
+                // [NEW] 2-1. 텍스트(할 일 내용)를 클릭했을 때 완료/미완료 토글 처리
+                todoItem.find(".todo-text").click(function(){
+                    // 부모 요소인 <div class="todo-item">에 'completed' 클래스를 넣었다 뺐다(Toggle) 함
+                    todoItem.toggleClass("completed");
+                });
+				
+				// 2-2. 개별 삭제 버튼 이벤트
+				todoItem.find(".remove-btn").click(function(){
+					todoItem.remove();
+                    // 항목이 삭제되었으므로 카운트 다시 업데이트
+                    updateTaskCount();
+				});
+			}
+            
+            // [NEW] 3. 전체 삭제 버튼 클릭 이벤트
+            $("#clearAllBtn").click(function(){
+                // #todoList 내부의 모든 HTML 요소를 비워버림
+                $("#todoList").empty();
+                // 전부 삭제되었으므로 카운트 업데이트 (0개가 됨)
+                updateTaskCount();
+            });
+			
+		});
+
+	/*
+        [새로 추가된 jQuery 메소드 학습 노트]
+		
+		1. .toggleClass("클래스명") 메소드
+		- 선택한 요소에 해당 클래스가 있으면 제거하고, 없으면 추가해주는 스위치 같은 역할의 메소드.
+		- 예: todoItem.toggleClass("completed"); 
+             -> 클릭할 때마다 CSS에 정의된 .completed 스타일이 켜졌다 꺼졌다 합니다.
+
+		2. .empty() 메소드
+		- 선택한 요소의 내부(자식 요소들)를 모두 지우는 메소드. .remove()와 헷갈리기 쉬움!
+		- .remove()는 자기 자신을 포함해서 아예 태그 자체를 날려버리지만,
+          .empty()는 자기 자신(껍데기)은 남겨두고 그 안의 내용물만 싹 비웁니다.
+        - 예: $("#todoList").empty(); -> <div id="todoList"></div> 요소 자체는 남고 안의 할 일만 사라짐.
+
+        3. .text() 메소드
+        - .html()과 비슷하지만, HTML 태그를 인식하지 않고 오직 순수한 '텍스트(글자)'만 가져오거나 변경할 때 사용.
+        - 예: $("#taskCount").text(count); -> <span> 태그 사이에 숫자(count)를 글자로 덮어씌움.
+
+        4. .length 속성
+        - 선택자로 찾은 요소가 총 몇 개인지를 숫자로 반환해 주는 자바스크립트/jQuery 속성.
+        - 예: $(".todo-item").length -> 현재 화면에 있는 할 일 항목의 총 개수를 숫자로 알려줌.
+	*/		
+		
+    </script>
+</head>
+<body>
+    <div class="header-area">
+        <h1>할 일 목록</h1>
+        <button id="clearAllBtn">전체 삭제</button>
+    </div>
+    
+    <p>총 할 일: <strong id="taskCount">0</strong>개</p>
+
+    <input type="text" id="todoInput" placeholder="할 일을 입력하세요">
+    <button id="addTodoBtn">추가</button>
+
+    <div id="todoList"></div>
+
+</body>
+</html>

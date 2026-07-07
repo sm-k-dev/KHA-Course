@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.js"></script>
+   
+   <script type="text/javascript">
+   	/*
+   		$.noConflict() 메소드
+   		- 이 메소드는 jQUery가 다른 라이브러리.js의 다른코드와 충돌 하지 않도록 도와 주는 기능을 합니다
+   		
+   		왜 필요한가?
+   		- 보통 JQUERY 를 사용할떄  $ 기호를 많이 씁니다.
+   		  그런데 JQUERY에서는  $ 기호는 jQUery단어 뿐만아니라 다른코드에서도 사용할수 있습니다.
+   		  
+   		  예를 들어 어떤 웹사이트에서 jQuery와 다른라이브러리를 같이 사용한다고 가정해 보겠습니다
+   		  그런데 두개의 라이브러리가  $ 기호를 동시에 사용하면, 코드가 서로 충돌할수 있습니다
+   		  즉, jQuery문법은 제대로 동작하지 않을수도 있습니다.
+   		  
+   		  이때, $.noConflict()메소드를 호출해서 사용하면 
+   		 jQuery에서  $ 기호를 포기하고, 대신 jQuery라는 긴이름을 사용하도록 바꿉니다.
+   		  이렇게 하면 $ 기호를 사용하는 다른 라이브러리의 코드와 충돌을 피할수 있습니다. 
+   
+   	*/
+   //	$.noConflict();  //  $ 기호를 포기 설정 하고 대신 jQuery단어를 사용합니다
+   
+   //웹브라우저가 html파일 내부에 작성된 모든 HTML요소들을 로딩했을떄 이벤트 핸들러 함수 호출되게 선언 
+   //요약 : load이벤트 등록!
+    jQuery(function(){
+			//요소들 선택해서 가져올수 있다.
+			
+			
+   	}); 
+   </script>
+   
+</head>
+<body>
+	<button>클릭하세요</button>
+	<p>여기에 텍스트가 나타납니다.</p>
+
+</body>
+</html>
+
+

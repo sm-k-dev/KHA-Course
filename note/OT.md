@@ -50,96 +50,109 @@ vsCode나 cursor 에서
 
 ------------------------------------------------------------------------------
 
-JAVA
-    객체지향 OOP
-    JAVA Standard Library (Collection Framework, 람다식)
-    설계 패턴 (Design Patterns)
+백엔드 & DevOps 마스터 학습 로드맵
 
-JavaScript (JS를 다 익힌 후 type 속성을 추가한 TypeScript 학습)
-    Node.js는 '실행 환경(Runtime)'
-        과거에는 자바스크립트가 브라우저(크롬, 사파리 등) 안에서만 움직였습니다. 브라우저 내부에 자바스크립트 해석기(엔진)가 있었기 때문이죠
-        크롬 브라우저의 핵심 엔진(V8 엔진)을 쏙 빼내어, 브라우저 밖(내 컴퓨터, 서버 컴퓨터)에서도 자바스크립트를 실행할 수 있도록 만든 '런타임(Runtime, 실행 환경)'입니다.
-        React와 Vue역시 문법이 독특해서 브라우저가 그대로 읽지 못합니다. 
-        브라우저가 이해할 수 있는 순수한 JavaScript로 바꾸어주는 '번역/조립(빌드)' 과정이 필요한데, 이때 Node.js가 필수입니다.
-        React와 Vue로 만든 완성품은 브라우저에서 그냥 돌아가지만, 개발자가 그 완성품을 만드는 과정(공장 작동)에는 Node.js가 꼭 필요하다!
-    
-    프론트엔드 프레임워크
-        React (컴포넌트 기반 UI 개발)
-        Vue
-        jQuery
-            DOM 조작 및 이벤트 처리 라이브러리
-            JavaScript를 더 쉽고 간결하게 쓰기 위해 만들어진 도구
+    1. 프로그래밍 언어 및 컴퓨터 과학 (CS Fundamentals)
+        Java
+            객체지향 프로그래밍 (OOP) 개념 확립
+            Java Standard Library (Collection Framework, 람다식)
+            설계 패턴 (Design Patterns) 활용
 
-    백엔드 프레임워크
-        Express
-            역할: Node.js 환경 위에서 "웹 서버를 훨씬 쉽고 빠르게 만들 수 있도록 도와주는 도구 상자"입니다.
-            특징: 주소창에 특정 경로를 입력했을 때 페이지를 보여주는 기능(라우팅), 로그인 체크(미들웨어) 등을 아주 간단하게 구현할 수 있게 해줍니다.
+        JavaScript & TypeScript
+            JavaScript: 웹의 기본 동작 기술 및 DOM 조작, 이벤트 처리 학습
+            TypeScript: JavaScript에 Type 속성을 추가하여 안정성을 높인 확장 언어 (JS 숙달 후 학습)
 
-JSON
-    JavaScript와 Spring Boot(RESTful API) 사이의 데이터 교환 데이터 포맷
+        기타 언어 (기초 및 활용)
+            C 언어: 컴퓨터 원리 및 메모리 관리 기초 이해
+            Python: 데이터 처리 및 AI/ML (TensorFlow, PyTorch) 활용 기초
 
-표준SQL/RDBMS(DBMS)
-    DML / DDL / DCL
-    트랜잭션 관리와 데이터 정합성을 뜻하는 ACID 원칙
+        CS 기초 및 알고리즘
+            자료구조 및 알고리즘 (Algorithm)
+            운영체제 핵심 이론
 
-HTML/CSS
+    2. 백엔드 개발 및 시스템 통합 (Backend & System Integration)
+        Java 웹 아키텍처 & Spring Boot
+            - JakartaEE (서블릿/JSP): 자바 웹 서버(WAS)의 기초 동작 원리 이해
+            - MVC 아키텍처: 웹 애플리케이션의 역할 분담 디자인 패턴 (Model-View-Controller)
+            - Spring Boot: 현대 자바 백엔드 표준 프레임워크
+                MyBatis ORM: 데이터 영속성 관리 기술 (Persistence Layer)
+                RESTful API: 주소(URL)를 통해 데이터와 기능을 주고받는 설계 규칙
+                OpenAPI / Swagger: API 문서화 자동화 도구
+                Spring Security & OAuth: 로그인, 회원가입 및 보안 인증 처리
 
-Spring Boot
-    MyBatis ORM과 데이터 영속성 관리 기술 (Persistence Layer)
-    API를 문서화하는 OpenAPI / Swagger
-    RESTful API: 주소(URL)를 통해 데이터와 기능을 주고받는 설계 규칙
-    Spring Security & OAuth: 로그인, 회원가입, 보안 인증
+        Node.js & 백엔드 런타임
+            - Node.js (런타임): 크롬의 V8 엔진을 추출하여 브라우저 밖(서버 등)에서도 JavaScript를 실행할 수 있게 하는 환경. (※ React/Vue 등의 번역 및 조립(빌드) 공장 역할로도 필수)
+            - Express / NestJS: Node.js 환경 위에서 웹 서버를 쉽고 빠르게 만들 수 있도록 돕는 프레임워크 (라우팅, 미들웨어 기능 제공)
 
-JakartaEE 
-    서블릿(Servlet)/JSP: 자바 웹 서버의 기초 동작 원리
-    MVC 아키텍쳐: 웹 어플리케이션의 역할 분담 디자인 패턴 (Model Veiw Controller)
+        API 및 이기종 시스템 연계 (System Integration)
+            - 서로 다른 언어(Java, JavaScript, Python 등)로 만든 프로그램이나 외부 서비스(API, 공공 데이터 등)를 내 프로그램에 매끄럽게 연결(Integration)하는 방법 기술
 
-DevOps
-    Git/GitHub: 소스코드 버전 관리, 형상관리 및 협업 도구.
-        형상관리(Configuration Management): 쉽게 말해 "프로젝트의 전체 설계도와 부품들을 엉키지 않게 관리하고 기록하는 일"
-    Docker / Kubernetes: 컨테이너 기반 가상화 및 통합 관리
-    AWS: 클라우드 가상 서버 (EC2, S3, RDS) 인프라 구축
-    CI/CD (GitHub Actions, GitLab CI, Jenkins): 빌드, 테스트 및 배포 자동화 파이프라인
-    리눅스 환경설정을 위한 리눅스 명령어 및 쉘 스크립팅 (Shell Scripting)
-    코드형 인프라 (IaC: Infrastructure as Code)
-    빌드도구(Maven, Gradle)
-        프로젝트의 라이브러리 다운로드, 컴파일, 테스트, 배포를 자동화해 주는 '빌드 자동화 도구'
-        Docker나 Jenkins 같은 DevOps 도구와 함께 연동되어 사용되지만, Maven 자체는 소스 코드의 빌드 단계를 담당하는 개발 도구에 가깝습니다.
+        엔터프라이즈 통합 아키텍처 (Enterprise Architecture)
+            - EIPs (Enterprise Integration Patterns): 기업용 시스템들이 서로 메시지를 주고받을 때 발생하는 문제들을 해결하기 위한 60여 가지의 검증된 디자인 패턴 (Message Channel, Transformer 등의 표준 가이드라인).
+            - Integration Framework: EIPs 백엔드 연계 프레임워크가 작동하는 이론적 기반이자 설계 도면. 복잡한 내부 시스템 간에 메시지를 주고받거나(Messaging), 이기종 시스템을 하나로 묶어주는 아키텍처 패턴.
+                - Spring Integration / Apache Camel: 이 이론적 패턴(EIPs)을 자바 환경에서 코드로 바로 구현할 수 있게 컴포넌트화해 놓은 결과물.
+            - CIF (Commerce Integration Framework): 이커머스(쇼핑몰) 영역으로 구체화된 아키텍처 패턴. 콘텐츠 관리 시스템(CMS)과 백엔드 쇼핑몰 엔진을 결합할 때 사용 
+                (예: Adobe의 AEM CIF 솔루션 - UI인 AEM과 백엔드인 Adobe Commerce를 GraphQL로 유기적 연동). 화면단과 핵심 비즈니스 로직이 완전히 꼬이지 않도록 중간에서 데이터를 매핑하는 표준 다리 역할.
 
-네트워크 기초
-    TCP/IP 소켓 통신
-    HTTP 통신 문법
-    IP/Port 개념
-    VPC, 서브넷, 포트 포워딩
+    3. 프론트엔드 UI 개발 (Frontend Technologies)
+        - HTML / CSS: 웹 페이지의 구조와 디자인 기본
+        - jQuery: JavaScript를 더 쉽고 간결하게 쓰기 위한 DOM 조작 및 이벤트 처리 라이브러리
+        - 모던 프론트엔드 프레임워크: 컴포넌트 기반 UI 개발 및 MVVM 모델 구현
+            React / Vue.js / Angular
 
-리눅스
-    Linux 기초 및 파일 시스템
-    리눅스 핵심 명령어
-    패키지 관리 및 서버 설정
+    4. 데이터베이스 및 네트워크 (Database & Network)
+        - 표준 SQL & RDBMS
+            - DML, DDL, DCL 명령어 숙달
+            - ACID 원칙: 트랜잭션 관리와 데이터 정합성 보장
 
-파이썬
+        - NoSQL
+            - 대용량 데이터 및 비정형 데이터 처리를 위한 데이터베이스 (MongoDB, Cassandra)
 
-C
+        - 네트워크 기초
+            - IP / Port 개념 및 VPC, 서브넷, 포트 포워딩 인프라 구조
+            - HTTP 통신 문법 및 실시간 양방향 소통을 위한 TCP/IP 소켓 통신
+
+    5. 서버 인프라 구축 및 배포 (Server Infrastructure & Deployment)
+        - 웹 서버 (Web Server)
+            - Apache / Nginx: 정적 파일 서빙 및 로드 밸런싱, 리버스 프록시 설정을 위한 앞단 웹 서버
+
+        - 클라우드 가상 서버 & 호스팅
+            - AWS EC2 (Elastic Compute Cloud): 가상 서버 컴퓨터를 임대하여 실제 서비스를 배포하고 구동하는 핵심 인프라 (서버 배포 시 필수)
+            - Managed Platform Service: 서버 설치나 네트워크 설정을 클라우드가 자동 관리해 주어 편리하게 배포를 돕는 플랫폼 서비스 (예: AWS Elastic Beanstalk 등)
+            - AWS 가상 인프라: 클라우드 가상 서버 인프라 구축 (EC2, S3, RDS 등)
+
+        - 리눅스 (Linux) 환경
+            - AWS 필수 역량: Linux (Ubuntu/CentOS) 환경에서의 서버 운영 및 파일 시스템 이해
+            - 리눅스 핵심 명령어, 패키지 관리 및 서버 설정을 위한 쉘 스크립팅 (Shell Scripting)
+
+    6. DevOps 및 빌드/배포 자동화 (DevOps & CI/CD)
+        - 버전 관리 및 형상 관리, 협업 방법론  (Configuration Management & Collaboration)
+            - Git / GitHub: 소스코드의 버전을 관리하고, 전체 설계도와 부품들이 엉키지 않게 기록하며 협업하는 도구
+            - 협업 방법론 (Collaboration Methodology): * Agile(Scrum / Kanban): 변화에 유연하게 대처하며 짧은 주기로 개발·피드백을 반복하는 현대적 개발 문화
+                - 협업 툴 활용: Jira, Confluence, Slack 등을 활용한 일감(Issue) 배정, 진행 상황 시각화 및 문서화 협업
+
+        - 빌드 도구 (Build Tools)
+            - Maven / Gradle: 라이브러리 다운로드, 컴파일, 테스트를 자동화하는 도구 (DevOps 파이프라인과 연동되어 빌드 단계 담당)
+
+        - 컨테이너 가상화 및 아키텍처 트렌드
+            - Docker / Kubernetes: 컨테이너 기반 가상화 환경 구축 및 통합 관리
+            - Microservice (MSA): 대규모 대기업형 서비스를 잘게 쪼개어 개발하는 마이크로서비스 아키텍처 (위에서 배운 EIPs/Integration Framework와 밀접하게 연동됨)
+            - IaC (Infrastructure as Code): 코드형 인프라 관리를 통한 클라우드 제어
+
+        - CI/CD 파이프라인
+            - GitHub Actions / GitLab CI / Jenkins: 빌드, 테스트 및 배포 자동화 파이프라인 구축
 
 ------------------------------------------------------------------------------
 
-기술 트렌드 및 요구 역량
-    ● 프로그래밍 언어 : JavaScript, Python, Java, TypeScript
-    ● 프레임워크 및 라이브러리 : jQuery, React, Vue.js, Angular, Node.js
-    ● 클라우드 플랫폼 : AWS, Azure, Google Cloud
-    ● 데이터베이스 : SQL, NoSQL (Mongo DB, Cassandra)
-    ● DevOps : Docker, Kubernetes, Jenkins
-    ● AI/ML : TensorFlow, PyTorch
-    ● 기타 : 빌드 도구(Maven, Gradle), 보안, 버전 관리(Git, GitHub), API 개발, 성능 최적화 등
+면접 및 포트폴리오용 핵심 역량 키워드
+    위의 기술들을 바탕으로 본인이 증명해야 하는 6대 핵심 활용능력입니다.
 
-    프로그래밍 활용능력
-    프레임워크 활용능력
-    프로젝트 경험
-    버전 관리 시스템 활용 능력
-    기초 데이터베이스 이해
-    문서화 및 커뮤니케이션 능력
-
-https://drive.google.com/file/d/12gsxQRmt4Iv6N3kLSQg5K5RLGJPMuGU8/view
+    - 프로그래밍 활용능력: Java/JS 언어의 깊이 있는 이해와 알고리즘 해결 능력
+    - 프레임워크 및 시스템 통합 능력: Spring Boot 및 Node.js 기반 개발 역량 + EIPs, Spring Integration, CIF 등 이기종 시스템 간 아키텍처 연계 및 데이터 매핑 이해도
+    - 기초 데이터베이스 이해: ACID 원칙을 준수하는 SQL 설계 및 NoSQL 활용 역량
+    - 서버 인프라 및 DevOps 시스템 활용 능력: Linux(AWS EC2) 인프라 구축, Nginx 연동, Git 협업 및 Docker, CI/CD 배포 자동화 경험
+    - 프로젝트 경험: MSA(마이크로서비스) 및 고도화된 통합 프레임워크 아키텍처 패턴을 반영한 대규모 시스템 설계 경험
+    - 문서화 및 커뮤니케이션 능력: Swagger 등을 통한 API 문서화 역량 및 Agile(Scrum/Kanban) 방법론 기반의 Jira/Confluence 활용, Git-flow 협업 및 코드 리뷰 능력
 
 ------------------------------------------------------------------------------
 

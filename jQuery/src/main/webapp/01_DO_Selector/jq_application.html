@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			//배열
+			const arr1 = [ "apple", "banana", "orange" ];
+			//				0          1          2       index
+			const arr2 = [ "grape", "lemon", "peach" ];
+			//				0          1          2       index
+			
+			/*
+				배열 병합
+				
+				[ "apple", "banana", "orange" ] + [ "grape", "lemon", "peach" ]
+				[ "apple", "banana", "orange", "grape", "lemon", "peach" ]
+					0			1		2			3		4		5
+			*/
+			const mergedArr = $.merge(arr1, arr2);
+			// 					[ "apple", "banana", "orange", "grape", "lemon", "peach" ]
+			
+			/*
+				배열 요소 검색
+				$.inArray("전체배열에서 찾을 요소", 전체배열);
+			*/
+			
+			// mergedArr 전체 배열에서 "lemon" 문자열이 배열에 저장되어 있는지 찾는다
+			// 찾을 요소가 배열에 저장되어 있으면 저장된 "lemon" 문자열의 인덱스 위치 번호를 반환
+			const index = $.inArray("lemon",mergedArr);
+		//      4
+		
+		// 배열에 찾을 요소가 있는지 체크 
+		if(index > -1 ){
+			console.log("lemon is at index " + index);  // 4
+		}
+		
+		
+		// 배열 요소 필터링 
+		// 방법 :  $.grep(전체배열, function(elem){  return 조건식; });
+		/*
+			배열 모습 
+				const mergedArr = ["apple","banana","orange","grape", "lemon", "peach"]
+								0       1         2       3        4        5      index														   		
+		*/		
+		//해야할일 :  mergedArr 배열에 저장된 문자열을들 각각 검사해서  a 문자가 포함된 문자열들만 
+		//          새 배열에 보관후 새 배열을 얻자.
+ 		const filteredArr = $.grep(mergedArr, function(elem){
+													 //"apple"
+													 //"banana"
+													 //"orange"
+													 //"grape"
+													 //"lemon"
+													 //"peach"
+								 
+									return elem.indexOf('a')  > -1;
+								//  return "apple".indexOf('a')  ->  index 위치 번호 0 반환 
+								//          01234					 
+								
+								//  return "banana".indexOf('a') ->  index 위치 번호 1 반환
+								//          01
+								
+								//  return "orange".indexOf('a') ->  index 위치 번호 2 반환 
+								//			012
+								
+								//  return "grape".indexOf('a') ->  index 위치 번호 2 반환 
+								//          012
+								
+								//  return "lemon".indexof('a') ->  없으므로 -1을 반환
+								
+								 						
+								//	return "peach".indexOf('a')  -> index 위치번호 2 반환
+								// 			012
+			//새 배열 
+			//["apple", "banana",  "orange",  "grape",  "peach" ]			
+		});
+		
+		//filteredArr 새 배열 모습 -> ["apple", "banana", "orange", "grape", "peach" ]
+		//							  0         1         2        3        4        index
+		
+		//JSON.stringify(배열 또는 객체) 함수는  자바스크립트 배열 또는 객체를 JSON문자열로 변환해서 반환 하는 함수 
+		//예)  { 속성 : 값 } 객체 를  ->  '{속성 : 값}' 문자열로 변환해서 반환 
+		//예)  [ 값1,  값2] 배열 을  ->  '[값1,  값2]' 문자열로 변환해서 반환
+		console.log( JSON.stringify(filteredArr) );
+		
+		//============================================================================================
+			
+		//filteredArr 새 배열 모습 -> ["apple", "banana", "orange", "grape", "peach" ]
+		//							  0         1         2        3        4        index
+		
+		//5.  filteredArr 원본배열에 저장된 문자열들을 가공(대문자로 변경)해서  새 배열에 담아 새 배열을 얻자
+		const resultArr = $.map(filteredArr, function(elem){
+											
+						   return elem.toUpperCase();
+					//     return "apple".toUpperCase();  ==대문자로 변환후 제공==>  "APPLE"	   
+					//     return "APPLE";
+					
+					//새 배열 => ["APPLE",  "BANANA",  "ORANGE", "GRAPE",  "PEACH"]
+		});
+		
+		
+		console.log( JSON.stringify(resultArr)  ); // '["APPLE",  "BANANA",  "ORANGE", "GRAPE",  "PEACH"]'
+		</script>
+	
+	</head>
+	<body>
+	
+	</body>
+</html>
+
+
+

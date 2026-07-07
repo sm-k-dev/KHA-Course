@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+
+<!-- 주제 : 인접관계 선택자 종류 중에서  전체 형제 요소 선택자  siblings() 사용 예제 
+
+	 
+	 	전체 형제 요소 선택자   siblings()
+	 	- 의미 : 선택한 요소의 모든 형제요소들을 선택하는 선택자  
+		- 문법
+				$("기준요소선택").siblings()
+	 			
+	 
+ -->
+
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script>
+		//웹브라우저 창이 모든 HTML요소들을 로딩 했을때 이벤트 처리 함수 실행되게 선언
+		//요약 : window객체에 load이벤트 등록 후 처리 
+		$(function(){
+
+			//기준요소선택 자리에 <p class="txt">내용2</p>요소를 먼저 선택해 오고 
+			//선택해 온 <p class="txt">내용2</p>요소를 기준으로 
+			//이전 그리고 다음에 작성되어 있는 모든 형제요소들을 선택해 올때 siblings() 전체형제요소 선택자 사용!
+			$(".txt").siblings().css("background-color","aqua");
+		});
+	</script>
+</head>
+<body>
+	<div id="wrap">
+		<h1>인접관계 선택자</h1>
+		<p>내용1</p>
+		<p class="txt">내용2</p>
+		<p>내용3</p>
+		<p>내용4</p>
+	</div>
+	
+
+
+</body>
+</html>
+
+
+
+
+
+
+

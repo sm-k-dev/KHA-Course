@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		
+		<style>
+			#student-list {
+				list-style-type: none;
+				padding: 0;
+			} /*불릿 동그라미 기호 없애서 학생목록 스타일 설정*/
+			
+			.student-item {
+				margin: 5px 0;
+			} /*각 학생 이름 li항목의 바깥 여백(마진 설정)*/
+		</style>
+		
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+	</head>
+	<body>
+		<h1>학생 관리 시스템</h1>
+		<div>
+			<!-- 학생 이름 입력 input -->
+			<input type="text" id="student-name" placeholder="학생이름" value="">
+	
+			<!-- 학생 추가 버튼 -->
+			<button id="add-student">추가</button>
+		</div>
+	
+		<!-- 학생 이름 목록을 표시할 ul요소 영역 -->
+		<ul id="student-list"></ul>
+	
+		<script type="text/javascript">
+			//학생들의 이름들을 문자열로 저장 시킬 비어 있는 배열 생성 후 let students변수에 저장
+			let students = [];
+			//			   ["김길동","김구"]
+			
+			/*입력한 학생이름을 위 students 빈 배열에 추가하고,
+			  renderList() 함수를 호출하여 업데이트된 학생목록을 브라우저 화면에 보여주는 기능의 addStudent함수 정의*/
+			function addStudent(name){ //name매개변수 <- 입력한 학생이름을 전달 받음
+								//"김길동"
+								//"김구"
+								
+				students.push(name);
+				renderList();       
+			}
+		
+			/* <button>삭제</button> 클릭했을때, 동적으로 생성된 <li>요소 한쌍을 삭제 하는 기능의 함수 
+				- 이 함수는 name매개변수로 삭제할 학생이름을 받아 위 stuents배열에서 해당 학생이름을 제거한 후,
+				  renderList() 함수를 호출하여  학생이름이 업데이트된 학생목록을 브라우저 화면에 보여주는 기능의 함수 */
+			function deleteStudent(name){
+								  //"김구"
+				
+				//학생이름 두번 입력받았을때 아래의 배열에는 학생이름 두쌍이 저장되어 있다고 가정하자
+				//let students =  ["김길동","김구"];				  
+								  
+				students = $.grep(students, function(student){
+					
+							  //삭제할 학생이름이 아닌 것만 위 원본students배열에서 남긴 새로운 배열 만들어 반환 
+						return student !== name;
+					//	return "김길동"  !== "김구";
+					//	return     true;
+					//  새 배열 생성 후 추가  ------->  [ "김길동"]
+					//   결론: 새로운 배열은 ? ["김길동"] 으로 만들어지므로 마치 "김구"가 삭제된 새배열을 만들수 있음
+					
+				});
+								  
+				renderList(); //students 배열 ["김길동"] 에 저장된 학생이름을 <ul></ul>사이에 보여주기 위해 함수 호출!	 
+				
+			}//---------------->>>>>>>>>>>>>>>>>> deleteStudent 함수 끝
+			
+			 
+			  
+			/* 학생목록 렌더링(업데이트된 학생목록 UI를 브라우저가 로딩) 하는 함수 
+			   요약 : 입력한 학생 이름 목록을 브라우저 화면에 동적으로 표시 */
+			function renderList(){
+				   
+				   //이전체 추가된 학생목록을 초기화 하여 새로운 목록을 만들어 브라우저에 보여주기 위해 
+				   //<ul id="student-list"></ul> 요소 사이의 데이터를 삭제 하기 위해  JQuery에서 제공하는 empty()메소드 호출!
+				   $("#student-list").empty();	   
+				   
+				   //students ["김길동","김구"]
+				   //			 0      1    index
+				   $.each(students, function(index, student){
+					   						//index 는 0    studnet는 "길김동"
+					   						//index 는 1    student는 "김구"
+					   		
+					   		//학생이름 목록인 <ul id="student-list"></ul> 요소 사이에 가장 끝위치에 append메소드로 
+					   		//새로운 만든 <li> 한쌍 추가 
+					   		$("#student-list").append(`<li class="student-item">     
+					   										${student}								
+					   										<button class="delete-student"
+					   										        data-name="${student}">삭제</button>
+					   								   </li>`);
+					   			   	
+				   });	   
+			}//---------------------->>>>>>>> renderList 함수 끝
+			
+			/*
+				동적으로 생성한 요소에 이벤트 등록하는 방법
+					
+						$("이벤트 등록할_동적요소의 부모요소선택").on("등록할이벤트종류명", "이벤트등록할_동적요소선택", function(){});
+				
+				====================================================================================================
+				동적으로 생성한 요소 <button class="delete-student" data-name="${student}">삭제</button> 에 CLICK이벤트 등록
+				=====================================================================================================
+			*/
+					$("#student-list").on("click", ".delete-student", function(){
+			//<ul id="student-list"></ul>.on("click", "<button>삭제</button>", function(){})	;
+						
+		 				  //1. $(this)              -> click한 <button data-name="김구">삭제</button> 요소 선택
+		 				  //2. $(this).data('name') -> "김구" 얻기 
+		 				  const studentName = $(this).data('name');
+		 				  
+		 				  //click한 <button>을 감싸서 작성된 동적 <li>요소 한쌍 삭제 처리 하기 위해  함수 호출
+		 				  deleteStudent(studentName);
+						
+					});
+			
+			
+			
+			
+			
+			/* <button id="add-student">추가</button> 버튼을 선택해서 "click"이벤트 등록후 처리  */
+			$("#add-student").on("click", function() {
+				
+				/* <input type="text" id="student-name" placeholder="학생이름" value="김길동"> 요소에 입력한 학생이름 얻기  */
+				const studentName = $("#student-name").val().trim();
+				//	   "김길동"		 
+				
+				/* 학생이름을 입력했고, students 배열에 이름이 중복 저장되어 있지 않은 경우 조건식 */
+				if (studentName &&  $.inArray(studentName, students) == -1 ) {
+											  //"김길동"  , ["김개똥"]
+											  
+						/* 즉, 학생이름을 입력했고 students 배열에  입력한 이름이 저장되어 있지 않으면? 이름 추가 */
+						addStudent(studentName);
+											  
+						/* 이름 입력 <input value="김길동"> 요소에서 value속성값을 ""로 설정해서 
+						   사용자가 다음 학생이름 입력을 할수 있도록 하자. 또한 포커스를 강제로 설정해서 바로 입력할수 있게 하자. */				   
+						$("#student-name").val('').focus();						   
+				
+				} else { /* 학생이름을 입력하지 않고 "추가" 버튼을 눌렀거나, 또는  students배열에 이미 이름이 중복으로 저장되어 있다면? */
+					
+						alert('학생이름을 입력하지 않고 "추가" 버튼 클릭했거나, 학생이름 중복 입력 했어요!');
+				}	
+			});
+			
+			
+			//초기 렌더링 appliaction.html파일을 브라우저 주소창에 URL을 입력해서 처음 요청했을때 브라우저에 보여주기 위해 
+			renderList();
+			
+		</script>
+	
+	</body>
+</html>
+
+
+
+
+
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8">
+		<title>선택자</title>
+		
+		
+		<!-- 
+		
+				탐색선택자 중에서  위치탐색 선택자  
+				
+				종류   -> first-of-type 선택자 ,   last-of-type 선택자
+				
+				first-of-type 선택자 
+					- 선택한 요소들의 무리 중 첫번재 요소만 선택합니다.
+					- 문법
+						  $("요소들선택:first-of-type")
+						  
+				last-of-type 선택자
+					- 선택한 요소들의 무리 중 마지막에 위치한 요소만 최종 선택합니다. 
+					- 문법
+						  $("요소들선택:last-of-type")				  
+		 -->
+		
+		
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+				/*
+					$("li")
+						모든 <li>< /li> 요소 6쌍을 선택해서 배열에 담는다
+						
+					$("li:first-of-type")
+						배열에 담긴 6쌍의 li요소들 중에서도
+						각 ul 내부에 적힌 첫번째 <li>내용1-1< /li>, <li>내용2-1< /li> 만 최종 선택
+				*/
+				$("li:first-of-type").css("background-color", "yellow");
+						
+				/*
+					$("li")
+						모든 <li>< /li> 요소 6쌍을 선택해서 배열에 담는다
+						
+					$("li:last-of-type")
+						배열에 담긴 6쌍의 li요소들 중에서도
+						각 ul 내부에 적힌 마지막 <li>내용1-3< /li>, <li>내용2-3< /li> 만 최종 선택
+				*/
+				$("li:last-of-type").css("background-color", "green");
+			});
+		</script>
+	</head>
+	<body>
+		<h1>탐색 선택자</h1>
+		<ul>
+			<li>내용1-1</li>
+			<li>내용1-2</li>
+			<li>내용1-3</li>
+		</ul>
+		<ul>
+			<li>내용2-1</li>
+			<li>내용2-2</li>
+			<li>내용2-3</li>
+		</ul>
+	</body>
+</html>
+
+
+
+
