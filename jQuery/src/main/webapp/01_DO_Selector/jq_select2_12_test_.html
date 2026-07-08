@@ -1,55 +1,115 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 탐색 선택자 </title> 
-
-	<!-- 
-		 속성탐색 선택자 중에서  속성상태에 따른 탐색선택자 
-		   -  선택한 요소 중 속성 상태에 따라 요소를 선택하는 선택자
-		   -  문법
-		   			1.  $("요소들선택:visible 또는 :hidden")
-					        선택한 요소들중에서 숨겨진 상태 또는 보이는 상태의 요소만 최종 선택합니다.
+	<head>
+		<meta charset="UTF-8">
+		<title>탐색 선택자</title>
+		<!-- 
+			 속성탐색 선택자 중에서  속성상태에 따른 탐색선택자 
+				- 선택한 요소 중 속성 상태에 따라 요소를 선택하는 선택자
+				- 문법
+		   			1.	$("요소들선택:visible 또는 :hidden") - 중요
+						선택한 요소들중에서 숨겨진 상태 또는 보이는 상태의 요소만 최종 선택합니다.
 	 			
-	 				2.  $(":selected")
+	 				2.	$(":selected") - 중요
 	 					선택상자 중 현재 선택된 option요소만 선택합니다.
 	 				
-	 				3.  $(":checked")
+	 				3.	$(":checked") - 중요
 	 					체크박스 또는 라디오 버튼 요소중  체크된 상태의 요소만 최종 선택합니다.
-	 -->
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script>
-	$(function(){
-
-		
-	});
-	</script>
-</head>
-<body>
-	<div id="wrap">
-		<p>내용1</p>
-		<p style="display:none;">내용2</p>
-		<p>내용3</p>
-	</div>
-	<form action="#">
-		<p id="zone1">
-			<select name="course" id="course">
+		 -->
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+				/*
+					p 요소들 중에서도 현재 숨겨져서 브라우저에 보이지 않는 상태의
+					<p style="display:none;">내용2< /p> 최종 선택
+					
+					$("#wrap p")
+						<div id="wrap"> 의 모든 후손 <p> 요소들을 모두 선택
+						
+					$("#wrap p:hidden")
+						<div id="wrap"> 의 모든 후손 <p> 요소들을 모두 선택하고 그 중 현재 브라우저에서 숨겨져있는 상태의 <p>요소만 최종 선택
+				*/
+				$("#wrap p:hidden").css({"display":"block", "backgroundColor":"yellow"});
+						
+				/*
+					<select> 사이에 작성된 <option>요소들 중에서 강제로 선택 되어 있는 상태의
+					<option value="opt2" selected>옵션2< /option> 최종 선택 후
+					선택한 옵션에 설정된 value 속성의 값 opt2 를 얻어 사용
+					
+					$("#zone1 ")
+						id=zone1 인 <p> 부모요소 선택 
+					
+					$("#zone1 :selected")
+						부모 <p> 요소 내부에 작성된 후손 select 요소 중에서 selected로 강제 선택된 <option>요소 하나를 최종 선택
+					
+					$("#zone1 :selected").val();
+						강제 선택된 option의 value값을 얻는다.
+				*/
+				let z1 = $("#zone1 :selected").val();
+					
+				console.log(z1);
+				
+				/*
+					모든 checkbox 중에서 checked 속성명을 작성해 강제 체크된 상태의 checkbox 최종 선택 후
+					value='등산' 중에서 값 '등산'을 얻는다.
+					
+					$("#zone2 ")
+						id=zone2 인 <p> 부모요소 선택
+					
+					$("#zone2 :checked")
+						부모 <p> 요소 내부에 작성된 후손 <input type="checkbox"> 요소 중에서 checked로 강제 체크된 요소 하나를 최종 선택
+					
+					$("#zone2 :checked").val();
+						강제 선택된 checkbox의 value값을 얻는다.
+				*/
+				let z2 = $("#zone2 :checked").val();
+				
+				console.log(z2);
+				
+				/*
+					모든 radio 중에서 checked 속성명을 작성해 강제 체크된 상태의 radio 최종 선택 후
+					value='female' 중에서 값 'female'을 얻는다.
+					
+					$("input[type='radio'] ")
+						input 요소를 선택 해 오는데, 그 중에서 type='radio' 와 완벽히 일치하는 요소들만 선택 해 와서
+					
+					$("input[type='radio']:checked")
+						선택해온 input type='radio' 요소중에서 checked로 강제 체크된 요소 하나를 최종 선택
+					
+					$("input[type='radio']:checked").val();
+						강제 선택된 radio의 value값 female을 얻는다.
+				*/
+				let z3 = $("input[type='radio']:checked").val();
+				
+				console.log(z3);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="wrap">
+			<p>내용1</p>
+			<p style="display: none;">내용2</p>
+			<p>내용3</p>
+		</div>
+		<form action="#">
+			<p id="zone1">
+				<select name="course" id="course">
 					<option value="opt1">옵션1</option>
-					<option value="opt2" selected>옵션2</option>
+					<option value="opt2" selected>옵션2</option> <!-- 강제 선택되어 있는 <option>옵션2< /option> -->
 					<option value="opt3">옵션3</option>
-			</select>
-		</p>
-		<p id="zone2">
+				</select>
+			</p>
+			<p id="zone2">
 				<input type="checkbox" name="hobby1" value="독서"> 독서
-				<input type="checkbox" name="hobby2" value="자전거" > 자전거
-				<input type="checkbox" name="hobby3" value="등산" checked> 등산
-		</p>
-		<p id="zone3">
+				<input type="checkbox" name="hobby2" value="자전거"> 자전거 
+				<input type="checkbox" name="hobby3" value="등산" checked> 등산 <!-- 강제 체크되어 있는 checkbox 등산 -->
+			</p>
+			<p id="zone3">
 				<input type="radio" name="gender" value="male"> 남성
-				<input type="radio" name="gender" value="female" checked> 여성
-		</p>
-	</form>
-</body>
+				<input type="radio" name="gender" value="female" checked> 여성 <!-- 강제 체크되어 있는 radio 여성 -->
+			</p>
+		</form>
+	</body>
 </html>
 
 

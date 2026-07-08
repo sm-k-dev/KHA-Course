@@ -194,6 +194,9 @@ DevOps & 네트워크
 파이썬
     점프 투 파이썬 (위키독스): https://wikidocs.net/book/1
 
+기타
+    JSON data 정보 제공 사이트: https://jsonplaceholder.typicode.com
+
 ------------------------------------------------------------------------------
 
 ① REST API: "어설픈 API"가 아닌 "진짜 RESTful" 요구

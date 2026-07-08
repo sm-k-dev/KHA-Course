@@ -1,64 +1,132 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-	<!-- 
-		그외 콘텐츠 탐색 선택자 
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<!-- 
+			그외 콘텐츠 탐색 선택자 
+			
+			contains() - 중요
+			- 선택한 요소 중 지정한 텍스틑 포함하고 있는 요소만 선택하는 선택자 
+			- 문법
+				$("요소들선택:contains(텍스트)")
+			
+			contents()
+			- 선택한 요소의 하위 요소(후손 요소)중에서 1 깊이(자식 요소)의 텍스트와 태그 노드를 선택하는 선택자
+			- 문법
+				$("요소선택").contents()
+			
+			has() - 중요
+			- 선택한 요소 중 지정한 태그를 포함하는 요소만 선택합니다. 
+			- 문법
+				$("요소선택:has(요소명)") / $("요소선택").has("요소명")
+			
+			not() - 중요
+			- 선택한 요소 중 지정한 요소만 제외한 채 요소를 선택하는 선택자.
+			- 문법
+				$("요소선택:not(제외할 요소선택)") / $("요소선택").not(제외할 요소선택) 
+			
+			end()
+			- 필터링 되기 이전의 선택자가 적용되도록 하는 선택자.
+			- 탐색선택자가 적용되기 이전의 상태로 되돌리는 메소드
+			- 문법 
+				$("요소선택").탐색선택자().end()
+		 -->
 		
-		contains()
-		- 선택한 요소 중 지정한 텍스틑 포함하고 있는 요소만 선택하는 선택자 
-		- 문법
-			  $("요소들선택:contains(텍스트)")
-		
-		contents()
-		- 선택한 요소의 하위요소중에서 1 깊이의 텍스트와 태그노드를 선택하는 선택자
-		- 문법
-			  $("요소선택").contents()
-		
-		has()
-		- 선택한 요소 중 지정한 태그를 포함하는 요소만 선택합니다. 
-		- 문법
-			  $("요소선택:has(요소명)")   /  $("요소선택").has("요소명")
-		
-		not()
-		- 선택한 요소 중 지정한 요소만 제외한 채 요소를 선택하는 선택자.
-		- 문법
-			  $("요소선택:not(제외할 요소선택)")   /   $("요소선택").not(제외할 요소선택) 
-		
-
-		end()
-		- 필터링 되기 이전의 선택자가 적용되도록 하는 선택자.
-		- 문법 
-			   $("요소선택").탐색선택자().end()
-	
-	 -->
-
-  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-  <script type="text/javascript">
-  	$(function(){
- 
-  	
-  	});
-  </script>
-</head>
-<body>
-	<div id="outer_wrap">
-		<h1>콘텐츠 탐색 선택자</h1>
-		<section id="inner_1">
-			<h1>contains(), contents(),  has()</h1>
-			<p><span>내용1</span></p>
-			<p><strong>내용2</strong></p>
-			<p><span>내용3</span></p>	
-		</section>
-		<section id="inner_2">
-			<h1>not(), end()</h1>
-			<p>내용4</p>
-			<p>내용5</p>
-			<p>내용6</p>
-		</section>
-	</div>
-</body>
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				/*
+					$("요소들선택:contains(텍스트)")
+					- 선택한 요소 중 지정한 텍스틑 포함하고 있는 요소만 선택하는 선택자 
+					
+					$("#inner_1 p")
+						id="inner_1"인 부모요소 section 안에 있는 모든 후손 요소 중 <p> 요소들을 선택
+						
+					$("#inner_1 p:contains('내용1')")
+						모든 후손 요소 <p> 들 중 '내용1' 이라는 텍스트 노드를 포함하고 있는 <p>요소 한쌍만 최종 선택
+				*/
+				$("#inner_1 p:contains('내용1')").css("backgroundColor", "lightgreen");
+						
+				/*
+					$("요소선택").contents()
+					- 선택한 요소의 하위 요소중에서 1 깊이 (자식 요소)의 텍스트와 태그노드를 선택하는 선택자
+					
+					$("#outer_wrap")
+						id="outer_wrap"인 요소를 선택
+					
+					$("#outer_wrap").contents()
+						id="outer_wrap" 요소 내부의 후손 요소 중 자식 요소들만 선택 (후손 요소는 선택 하지 않는다.)
+				*/
+				$("#outer_wrap").contents().css("border", "1px solid red");
+				
+				/*
+					$("요소선택:has(요소명)") / $("요소선택").has("요소명")
+					- 선택한 요소 중 지정한 태그를 포함하는 요소만 선택합니다.
+					
+					$("#inner_1 p")
+						id="inner_1"인 부모 요소 안의 p 요소들을 선택
+					
+					$("#inner_1 p:has(strong)")
+						그 중 strong 태그를 가지고 있는 p 요소만 최종 선택
+				*/
+				$("#inner_1 p:has(strong)").css("backgroundColor", "pink");
+				// $("#inner_1 p").has("strong").css("backgroundColor", "pink"); // 위의 문장과 같은 뜻
+				
+				/*
+					$("요소선택:not(제외할 요소선택)") / $("요소선택").not(제외할 요소선택)
+					- 선택한 요소 중 지정한 요소만 제외한 채 요소를 선택하는 선택자.
+					
+					$("#inner_2 p")
+						id="inner_2"인 부모 요소 안의 p 요소들을 선택
+						
+					$("#inner_2 p:not(:first)")
+						그 중 첫번째 p 요소를 제외한 나머지 p 요소들을 선택
+				*/
+				$("#inner_2 p:not(:first)").css("backgroundColor", "lightblue");
+				// $("#inner_2 p").not(":first").css("backgroundColor", "lightblue"); // 위의 문장과 같은 뜻
+				
+				/*
+					$("요소선택").탐색선택자().end()
+					- 필터링 되기 이전의 선택자가 적용되도록 하는 선택자.
+					- 탐색선택자가 적용되기 이전의 상태로 되돌리는 메소드
+					
+					$("#inner_2 p")
+						id="inner_2"인 부모 요소 안의 p 요소들을 선택해서 배열에 넣는다
+						
+					$("#inner_2 p").eq(2)
+						그 중 2 인덱스 위치에 있는 p 요소를 선택
+						
+					$("#inner_2 p").eq(2).end()
+						2 인덱스 위치에 있는 p를 선택하기 전의 상태로 돌아간다.
+				*/
+				$("#inner_2 p").eq(2).end().css("color", "green");
+			});
+		</script>
+	</head>
+	<body>
+		<div id="outer_wrap">
+			<h1>콘텐츠 탐색 선택자</h1>
+			<section id="inner_1">
+				<h1>contains(), contents(), has()</h1>
+				<p>
+					<span>내용1</span>
+				</p>
+				<p>
+					<strong>내용2</strong>
+				</p>
+				<p>
+					<span>내용3</span>
+				</p>
+			</section>
+			<section id="inner_2">
+				<h1>not(), end()</h1>
+				<p>내용4</p>
+				<p>내용5</p>
+				<p>내용6</p>
+			</section>
+		</div>
+	</body>
 </html>
 
 
