@@ -1,61 +1,89 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 객체 조작 및 생성 </title>  
-	
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	
-	<script>
-	$(function( ){
-	
-		//addClass()
-		//- 요소를 선택하여 설정한 class속성과 값을 추가시키는 메소드
-		//- 문법
+	<head>
+		<meta charset="UTF-8">
+		<title>객체 조작 및 생성</title>
 		
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		
+		<script>
+			$(function() {
+		
+				//addClass()
+				//- 요소를 선택하여 설정한 class속성과 값을 추가시키는 메소드
+				//- 문법
+				//		$("요소선택").addClass("class속성에 새로 추가할 값");
+				$("#p1").addClass("aqua");
+		
+				/*
+					설명. <p id="p1">내용1</p> 요소를 선택해서 
+						 class="aqua" 추가 할때  addClass("aqua"); 형태로 호출합니다.
+						 
+						 	<p id="p1">내용1</p>  			   <- 변경 전 
+							<p id="p1" class="aqua">내용1</p>   <- 변경 후 class="aqua" 추가 	
+				 */
+		
+				//removeClass()
+				//- 요소를 선택하여 설정되어 있는 class속성과 값을 삭제시키는 메소드
+				//- 문법
+				//      $("요소선택").removeClass("class=값 중에서  삭제할 값");
+				$("#p2").removeClass("red");
+				/*	
+				<p id="p1" class="aqua">내용1</p>
+				<p id="p2" class   >내용2</p> <------------------------- class속성에 설정된 red값 자체를 제거 
+				<p id="p3" class="green">내용3</p>
+				<p id="p4" class="green">내용4</p>
+				<p id="p5" class="yellow">내용5</p>
+				<p id="p6"></p>
+				 */
+		
+				//toggleClass()
+				//- 요소를 선택하여 설정한 class속성에 대한 값이 있으면 class속성에 대한 값을 삭제하고,
+				//  없으면 class속성에 대한 값을 새로 추가 하는 기능의 메소드 
+				//- 문법
+				//		$("요소선택").toggleClass("추가 또는 삭제할 class속성값")
+				//설명. class="green" 이 설정 되어 있으면 green 제거 하고,
+				//     class="green" 이 없으면? 새로 추가 
+				$("#p3").toggleClass("green");
+				/*
+				<p id="p3">내용3</p>  <---- 변경 전  
 				
+				<p id="p3" class="green">내용3</p>  <---- 변경 후  class="green"이 추가됨 
+				 */
 		
-		//removeClass()
-		//- 요소를 선택하여 설정되어 있는 class속성과 값을 삭제시키는 메소드
-		//- 문법
-	
+				//hasClass()
+				//- 선택한 요소에 설정한 class속성에대한 값이 있으면 true반환, 없으면 false를 반환 하는 메소드
+				//- 문법
+				//     			$("요소선택").hasClass("class속성값");
+				let result = $("#p5").hasClass("yellow");
+				console.log(result); //"true"
 		
-		
-		
-		
-		//toggleClass()
-		//- 요소를 선택하여 설정한 class속성에 대한 값이 있으면 class속성에 대한 값을 삭제하고,
-		//  없으면 class속성에 대한 값을 새로 추가 하는 기능의 메소드 
-		//- 문법
-		//		$("요소선택").toggleClass("추가 또는 삭제할 class속성값")
-
-
-	
+			});
+		</script>
+		<style>
+			.aqua {
+				background-color: #0ff;
+			}
 			
-		//hasClass()
-		//- 선택한 요소에 설정한 class속성에대한 값이 있으면 true반환, 없으면 false를 반환 하는 메소드
-		//- 문법
-		//     $("요소선택").hasClass("class속성값");
+			.red {
+				background-color: #f00;
+			}
 			
-
-	});
-	</script>
-	<style>
-		.aqua{background-color:#0ff;}
-		.red{background-color:#f00;}
-		.green{background-color:#0f0;}
-		.yellow{background-color:#ff0;}
-	</style>
-</head>
-<body>
-	<p id="p1">내용1</p>
-	<p id="p2" class="red">내용2</p>
-	<p id="p3">내용3</p>
-	<p id="p4" class="green">내용4</p>
-	<p id="p5" class="yellow">내용5</p>
-	<p id="p6"></p>
-</body>
+			.green {
+				background-color: #0f0;
+			}
+			
+			.yellow {
+				background-color: #ff0;
+			}
+		</style>
+	</head>
+	<body>
+		<p id="p1">내용1</p> <!--  <p id="p1" class="aqua">내용1</p>   바뀜   -->
+		<p id="p2" class="red">내용2</p> <!--  <p id="p2" class  >내용2</p>        바뀜   -->
+		<p id="p3">내용3</p> <!--  <p id="p3 class="green">내용3</p>   바뀜   -->
+		<p id="p4" class="green">내용4</p>
+		<p id="p5" class="yellow">내용5</p>
+		<p id="p6"></p>
+	</body>
 </html>
-
-
-

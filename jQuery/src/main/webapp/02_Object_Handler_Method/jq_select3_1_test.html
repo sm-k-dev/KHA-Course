@@ -1,48 +1,119 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-	<!-- 
-		 객체 조작 메소드 종류 중에서 속성조작메소드
-		 	 
-		 	html()
-		 	- 1.선택한 요소의 하위요소를 가져와 문자열로 변환을 시켜 얻을 떄 사용하는 메소드 
-		 	- 문법
-		 		  $("요소선택").html();
-			- 2. 선택한 요소의 하위요소를 전부제거하고 대신에 동적으로 생성한 html요소를 추가시키는 메소드
-			- 문법
-				  $("요소선택").html("동적으로 새 요소생성해서 넣자");
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<!-- 
+			 객체 조작 메소드 종류 중에서 속성조작메소드
+			 	 
+			 	html() - 중요
+			 	- 1.선택한 요소의 하위요소를 가져와 문자열로 변환을 시켜 얻을 때 사용하는 메소드 
+			 	- 문법
+			 		  $("요소선택").html();
+				- 2. 선택한 요소의 하위요소를 전부제거하고 대신에 동적으로 생성한 html요소를 추가시키는 메소드
+				- 문법
+					  $("요소선택").html("동적으로 새 요소생성해서 넣자");
+					
+				text()
+				- 1. 선택한 요소의 하위텍스트만 가져와 문자열로 변환을 시켜 얻을때 사용하는 메소드
+				- 문법
+					 $("요소선택").text();
+				- 2. 선택한 요소의 하위요소를 전부제거하고 대신에 동적으로 생성한 텍스트노드를 추가시키는 메소드 
+				- 문법
+					 $("요소선택").text("동적으로 새 텍스트 생성");
+				 	
+		 -->
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				/*
+					id="sec_1" 로 작성된 <section> 요소 한쌍을 먼저 선택하고
+					.html(); 메소드를 호출하면 하위 요소들을 한쌍의 문자열로 얻을 수 있다.
+				*/
+				let result_1 = $("#sec_1").html();
 				
-			text()
-			- 1. 선택한 요소의 하위텍스트만 가져와 문자열로 변환을 시켜 얻을때 사용하는 메소드
-			- 문법
-				 $("요소선택").text();
-			- 2. 선택한 요소의 하위요소를 전부제거하고 대신에 동적으로 생성한 텍스트노드를 추가시키는 메소드 
-			- 문법
-				 $("요소선택").text("동적으로 새 텍스트 생성");
-			 	
-	 -->
-  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-  <script type="text/javascript">
-  	$(function(){
-
-		
-		
-  	}); 
-  </script> 
-</head>
-<body>
-	<h1><strong>객체 조작 및 생성</strong></h1>
-	<section id="sec_1">
-		<h2><em>html()</em></h2>
-		<p>내용1</p>
-	</section>
-	<section id="sec_2">
-		<h2><em>텍스트()</em></h2>
-		<p>내용2</p>
-	</section>
-</body>
+				console.log(result_1);
+				/*
+					<h2>
+						<em>html()</em>
+					</h2>
+					<p>내용1</p>
+				*/
+				
+				//========================================================
+					
+				// <section id="sec_1">..</section>부모요소의 하위에 작성된 <p>내용1</p>요소 선택해서 
+				// 내용1 자리를 수정해서 새요소 즉! <a href="#">Text1</a>요소를 생성 해서 넣자.
+				$("#sec_1 > p").html("<a href='#'>Text1</a>")
+				
+				// text() ========================================================
+				
+				/*
+					수정전 
+						 <section id="sec_1">
+							<h2><em>html()</em></h2>
+							<p>내용1</p>   
+						 </section>
+				
+					수정후 
+						 <section id="sec_1">
+							<h2><em>html()</em></h2>
+							<p><a href='#'>Text1</a></p>  <------ 이영역 수정되었음 
+					 	</section>					
+				*/
+				//--------------------------------------------------------------------
+				/*
+						<section id="sec_2">
+							<h2><em>텍스트()</em></h2>
+							<p>내용2</p>
+						</section>
+						요소를 선택해서 .text()메소드를 호출하면 
+						위 "텍스트() 내용2" 문자열 형태로 반환 받습니다.
+				*/
+				let result_2 = $("#sec_2").text();
+				console.log(result_2);
+				/*         
+							"텍스트()
+							 내용2"
+				*/
+				//------------------------------------------------------------------
+				
+				//<h2><em>텍스트()</em></h2> 요소를 선택해서 가져와
+				//<em>텍스트()</em>요소를 제거하고  text("설정할텍스트"); 메소드를 호출해서 동적으로 "설정할텍스트"를 생성 해서 넣자.
+				$("#sec_2 h2").text("설정할텍스트");
+				/*
+				  수정 전 
+					<section id="sec_2">
+						<h2><em>텍스트()</em></h2>  <----- 수정전 <em>텍스트()</em>은 작성 되어 있음 
+						<p>내용2</p>
+					</section>
+				  
+				  수정 후
+					<section id="sec_2">
+						<h2>설정할텍스트</h2>  <----- 수정후 <em>텍스트()</em> 제거 하고 "설정할텍스트" 추가됨  
+						<p>내용2</p>
+					</section>		  
+				*/
+			});
+		</script>
+	</head>
+	<body>
+		<h1>
+			<strong>객체 조작 및 생성</strong>
+		</h1>
+		<section id="sec_1">
+			<h2>
+				<em>html()</em>
+			</h2>
+			<p>내용1</p>
+		</section>
+		<section id="sec_2">
+			<h2>
+				<em>텍스트()</em>
+			</h2>
+			<p>내용2</p>
+		</section>
+	</body>
 </html>
 
 

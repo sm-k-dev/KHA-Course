@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 객체 조작 및 생성 </title>  
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-
-	<script>
-	$(function(){
+	<head>
+		<meta charset="UTF-8">
+		<title>객체 조작 및 생성</title>
+		<style>
+			* {
+				padding: 0;
+			}
+			
+			#p1, #p2 {
+				width: 100px;
+				height: 50px;
+				padding: 20px;
+				border: 5px solid #000;
+				background-color: #ff0;
+			}
+		</style>
 		
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 		
-	});
-	</script>
-	<style>
-		*{padding: 0;}
-		#p1, #p2{
-			width: 100px;
-			height: 50px;
-			padding:20px;
-			border: 5px solid #000;
-			background-color: #ff0;
-		}
-	</style>
-</head>
-<body>
-	<h1>수치 조작 메서드</h1>
-	<p id="p1">내용1</p>
-	<p id="p2">내용2</p>
-</body>
+		<script>
+			$(function() {
+				//1. <p id="p1">내용1</p> 요소를 선택해서 .height() 메소드 호출!
+				//  결과 -> 콘텐츠 영역에 설정된 높이 값 50px 반환 
+				let h1 = $("#p1").height();
+				console.log(h1); // 50
+		
+				//2. <p id="p1">내용1</p> 요소를 선택해서 .width() 메소드 호출!
+				// 결과  -> 콘텐츠 영역에 설정된 너비 값 100px 반환
+				let w1 = $("#p1").width();
+				console.log(w1); // 100
+		
+				//3. <p id="p2">내용2</p> 요소를 선택해서 .innerHeight() 메소드 호출!
+				// 결과  -> padding영역과 콘텐츠영역을 포함한 높이 값 90px 반환
+				let h2 = $("#p2").innerHeight();
+				console.log(h2); //90
+		
+				//4. <p id="p2">내용2</p> 요소를 선택해서 .innerWidth() 메소드 호출!
+				// 결과  -> padding영역과 콘텐츠영역을 포함한 너비 값 140px 반환
+				let w2 = $("#p2").innerWidth();
+				console.log(w2); //140 
+		
+				//5.<p id="p1">내용1</p> 요소를 선택해서 .outerHeight()메소드 호출!	
+				let h3 = $("#p1").outerHeight(); //padding영역  +  콘텐츠영역 + border테두리선영역을 모두 포함한 요소의 높이 값 반환받자
+				console.log(h3);//100
+		
+				//6. <p id="p1">내용1</p> 요소를 선택해서 .outerWidth()메소드 호출!	
+				let w3 = $("#p1").outerWidth(); //padding영역  +  콘텐츠영역 + border테두리선영역을 모두 포함한 요소의 너비 값 반환받자
+				console.log(w3);//150		
+		
+				//7. <p id="p2">내용2</p> 요소를 선택해 
+				// padding여백 및  border두께영역을 포함한 요소의 너비값을 100px로 변경
+				// padding여백 및  border두께영역을 포함한 전체 높이값을 110px로 변경
+				$("#p2").outerWidth(100).outerHeight(110);
+		
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1>수치 조작 메서드</h1>
+		<p id="p1">내용1</p>
+		<p id="p2">내용2</p>
+	</body>
 </html>
 
 
