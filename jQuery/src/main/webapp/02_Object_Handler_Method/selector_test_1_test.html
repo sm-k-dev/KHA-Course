@@ -2,29 +2,36 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title> 객체 조작 및 생성 </title>
+<title>객체 조작 및 생성</title>
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
 <script type="text/javascript">
-//<![CDATA[
-$(function(){	
-
-	
-});
-//]]>
+	//<![CDATA[
+	$(function() {
+		/*
+			도전 미션.
+			모든 li들을 배열에 담아 선택
+			li 중에서도 ul 부모요소의 첫번째 li 요소를 제외한
+			두번째, 세번재, 네번째 모든 li 요소들에 배경색 노란색
+		*/
+		// 방법 1
+		// $("li").not(":eq(0)").css("backgroundColor", "yellow");
+		
+		// 방법 2
+		$("#myList li:not(:first)").css("backgroundColor", "yellow");
+	});
+	//]]>
 </script>
 </head>
 <body>
- 	<ul id="myList">
- 		<li>내용1</li>  <!--  0 index -->
- 		<li>내용2</li>  <!--  1 index -->
- 		<li>내용3</li>  <!--  2 index -->
- 		<li>내용4</li>  <!--  3 index -->
- 	</ul>
- 
- 
- 
+	<ul id="myList">
+		<li>내용1</li>	<!--  0 index -->
+		<li>내용2</li>	<!--  1 index -->
+		<li>내용3</li>	<!--  2 index -->
+		<li>내용4</li>	<!--  3 index -->
+	</ul>
+
 </body>
 </html>
 

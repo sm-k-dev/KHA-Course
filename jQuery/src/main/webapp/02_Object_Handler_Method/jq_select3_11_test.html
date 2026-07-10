@@ -1,36 +1,84 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 객체 조작 및 생성 </title>  
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script>
-	$(function( ){
-
-	});
-	</script>
-</head>
-<body>
-	<div class="box1">
-		<p>내용1</p>
-		<p>내용2</p>
-	</div>
-	<div class="box2">
-		<p>내용3</p>
-		<p>내용4</p>
-	</div>
-	<div class="box3">
-		<p>내용5</p>
-		<p>내용6</p>
-	</div>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>객체 조작 및 생성</title>
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+		
+				/*
+					<div class="box1">
+						<p>내용1</p>
+						<p>내용2</p>
+					</div>
+					부모 요소 한쌍을 먼저 선택 하고
+					
+					children() 메소드를 호출하여 
+					자식 요소 p 두쌍을 배열에 담아 배열을 선택해 옵니다.
+					[ <p>내용1</p>,   <p>내용2</p>]
+					
+					이렇게 선택해 온 위 배열을 복제 할때 clone()메소드를 사용한다.
+				 */
+				let copyPs = $(".box1").children().clone();
+				console.log(copyPs); //복제한 배열 -> [ <p>내용1</p>,   <p>내용2</p>]
+		
+				/*
+					append() 메소드를 이용해 copyPs배열에 저장된 <p>내용1</p>, </p>내용2</p> 요소들을
+					class="box3" 작성된 세번째 <div class="box3"></div>부모요소 사이의 가장 끝위치에 추가!
+				 */
+				$(".box3").append(copyPs)
+				/*
+				결과 
+				<div class="box3">
+					<p>내용5</p>
+					<p>내용6</p>
+					<p>내용1</p>   <------  $(".box3").append(copyPs)
+					<p>내용2</p>   <------  $(".box3").append(copyPs)
+				</div>
+				 */
+		
+				/*
+					<div class="box2">
+						<p>내용3</p>
+						<p>내용4</p>
+					</div>
+					두번쨰 요소를 선택해서 가져와서  .remove() 메소드를 사용하면 
+					선택한 <div>요소 자체 제거
+				 */
+				$(".box2").remove();
+		
+				/*	
+				<div class="box3">
+					<p>내용5</p>
+					<p>내용6</p>
+					<p>내용1</p>
+					<p>내용2</p>
+				</div>  
+				부모 요소를 선택해서 가져와서  .empty()메소드를 사용하면 
+				<div> 내부에 작성된 <p>자식요소들을 모두 제거(비운다).		
+				 */
+				$(".box3").empty();
+				/*
+					결과
+						<div class="box3"></div>
+				 */
+		
+			});
+		</script>
+	</head>
+	<body>
+		<div class="box1">
+			<p>내용1</p>
+			<p>내용2</p>
+		</div>
+		<div class="box2">
+			<p>내용3</p>
+			<p>내용4</p>
+		</div>
+		<div class="box3">
+			<p>내용5</p>
+			<p>내용6</p>
+		</div>
+	</body>
 </html>
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title> 이벤트 </title>  
+
+	<style>
+		body{
+			height:10000px;
+			width:5000px;
+		}
+		#wrap{
+			position: fixed;
+			left: 10px; top: 10px;
+		}
+	</style>
+	
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+	<div id="wrap">
+		<p>scrollTop: <span class="top">0</span>px</p>
+		<p>scrollLeft: <span class="left">0</span>px</p>
+	</div> 
+	<script type="text/javascript">		 
+	/*
+	scroll()
+	- 이벤트 대상요소를 선택해 대상요소에서 스크롤 막대바를 이동시키는 동작(이벤트)을 등록 하는 메소드.
+	- 문법
+		 $(window).scroll(function(){ 이벤트처리코드;  });
+
+		 $(window).on("scroll", function(){ 이벤트처리코드; }   );
+
+	- 스크롤 막대바를 강제로 이동 시키는 이벤트 방법 의 문법
+		 $(window).scroll();
+*/
+		
+		//스크롤 막대바를 이동시키는 동작(scroll이벤트)를 윈도우창(window객체)에 등록
+		$(window).on("scroll",function(){
+
+			
+		
+		});
+		
+		
+		
+	
+	</script>
+	
+	
+</body>
+</html>
+
+
+
+
+

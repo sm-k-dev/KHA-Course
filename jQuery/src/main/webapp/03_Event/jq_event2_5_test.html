@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title> 이벤트 </title>  
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script>
+	$(function(){
+		//[  <a href="#">메뉴1</a>, <a href="#">메뉴2</a>, <a href="#">메뉴3</a> ]  배열에 담아 선택해 오기 
+		//           0                        1                     2 
+		$(".menuWrap_1 a").on("click",function(event){
+
+
+		});
+		
+		//[  <a href="#">메뉴4</a>, <a href="#">메뉴5</a>, <a href="#">메뉴6</a> ]
+		//           0                        1                     2 
+		//두번째 <ul class="menuWrap_2">내부에 있는 모든 <a>요소들을 배열에 담아 선택해 let as에 저장
+		let as = $(".menuWrap_2 a");
+		
+
+		
+		
+	});
+	</script>
+</head>
+<body>
+	<h2>$(this)</h2>
+	<ul class="menuWrap_1">
+		<li><a href="#">메뉴1</a></li>
+		<li><a href="#">메뉴2</a></li>
+		<li><a href="#">메뉴3</a></li>
+	</ul>
+	<h2>Index( )</h2>   
+	<ul class="menuWrap_2">
+		<li><a href="#">메뉴4</a></li>
+		<li><a href="#">메뉴5</a></li>
+		<li><a href="#">메뉴6</a></li>
+	</ul>
+	<p class="idxNum"></p>
+</body>
+</html>

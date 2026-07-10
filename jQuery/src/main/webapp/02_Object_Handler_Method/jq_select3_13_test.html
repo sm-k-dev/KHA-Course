@@ -1,61 +1,95 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 객체 조작 및 생성 </title>  
-	<!-- 
-		객체 편집 메소드 종류
+	<head>
+		<meta charset="UTF-8">
+		<title>객체 조작 및 생성</title>
+		<!-- 
+				객체 편집 메소드 종류
+				
+				unwrap()
+				- 선택한 요소의 부모요소를 삭제 시키는  메소드
+				- 문법
+					 $("요소선택").unwrap();
+				
+				wrap()
+				- 선택한 요소를 각각 새 요소를 생성하여 감싸는 기능의 메소드 
+				- 문법
+					 $("요소선택").wrap("새요소생성");
+				
+				
+				wrapAll()
+				- 선택한 요소를 한꺼번에 새요소를 생성하여 감싸는 기능의 메소드 
+				- 문법
+					 $("요소선택").wrapAll("새요소생성");
+				
+				
+				wrapInner()
+				- 선택한 요소의 모든 하위 요소를 새요소를 생성하여 감싸는 기능의 메소드
+				- 문법
+					 $("요소선택").wrapInner("새요소 생성");
+			
+			 -->
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+				//1. <strong>객체 조작 및 생성</strong> 요소를 선택해서 
+				//   .unwrap() 메소드를 호출하면 <strong></strong>요소를 감싸고 있는
+				//   부모 <h1 id="tit_1"></h1> 태그 삭제 시킴
+				$("strong").unwrap();
+				//결과 =>   <strong>객체 조작 및 생성</strong> 만 남음 
 		
-		unwrap()
-		- 선택한 요소의 부모요소를 삭제하는 메소드
-		- 문법
-			 $("요소선택").unwrap();
+				//2. <p class="ct1">내용1</p> 과 <p class="ct1">내용2</p> 두쌍을 한번에 선택해서 
+				//	 .wrap("<div></div>"); 메소드를 호출하면 
+				//   앞에서 선택한 <p>요소들 하나하나 각각  <div>로 감싸서 표현함.
+				$(".ct1").wrap("<div></div>");
+				/*
+					<div>
+						<p class="ct1">내용1</p>
+					</div>
+					<div>
+						<p class="ct1">내용2</p>
+					</div>
+				 */
 		
-		wrap()
-		- 선택한 요소를 각각 새 요소를 생성하여 감싸는 기능의 메소드 
-		- 문법
-			 $("요소선택").wrap("새요소생성");
+				//3. <p class="ct2">내용3</p> 과  <p class="ct2">내용4</p> 두 쌍을 한번에 선택해
+				//	 .wrapAll("<div></div>"); 메소드를 호출하면
+				//    새로 생성되는 <div></div> 요소로   앞에서 선택한 <p> 두쌍 전체를 한번에 감싸서 표현  
+				$(".ct2").wrapAll("<div></div>");
+				/*
+				 <div>
+					<p class="ct2">내용3</p>
+					<p class="ct2">내용4</p>
+				 </div>
+				 */
 		
+				//4. <li>내용3</li> 과 <li>내용4</li> 를 다중 선택해서
+				//  <h3></h3> 새 요소를 생성해서  $("li")로 선택한 <li> 사이의 텍스트를 각각 감싸서 넣는다.
+				$("li").wrapInner("<h3></h3>");
 		
-		wrapAll()
-		- 선택한 요소를 한꺼번에 새요소를 생성하여 감싸는 기능의 메소드 
-		- 문법
-			 $("요소선택").wrapAll("새요소생성");
+				//  <ul>
+				//		<li><h3>내용3</h3></li>
+				//		<li><h3>내용4</h3></li>
+				//	</ul>	
 		
-		
-		wrapInner()
-		- 선택한 요소의 모든 하위 요소를 새요소를 생성하여 감싸는 기능의 메소드
-		- 문법
-			 $("요소선택").wrapInner("새요소 생성");
-	
-	 -->
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script>
-	$(function( ){
-
-		
-		
-	});
-	</script>
-	<style>
-		div{background-color:aqua;}
-	</style>
-</head>
-<body>
-	<h1 id="tit_1">
-		<strong>객체 조작 및 생성</strong>
-	</h1>
-	<p class="ct1">내용1</p>
-	<p class="ct1">내용2</p>
-	<p class="ct2">내용3</p>
-	<p class="ct2">내용4</p>
-	<ul>
-		<li>내용3</li>
-		<li>내용4</li>
-	</ul>
-</body>
+			});
+		</script>
+		<style>
+			div {
+				background-color: aqua;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 id="tit_1">
+			<strong>객체 조작 및 생성</strong>
+		</h1>
+		<p class="ct1">내용1</p>
+		<p class="ct1">내용2</p>
+		<p class="ct2">내용3</p>
+		<p class="ct2">내용4</p>
+		<ul>
+			<li>내용3</li>
+			<li>내용4</li>
+		</ul>
+	</body>
 </html>
-
-
-
-

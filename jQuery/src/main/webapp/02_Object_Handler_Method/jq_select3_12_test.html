@@ -1,42 +1,50 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 객체 조작 및 생성 </title>
-	<!-- 
-		 객체 편집 메소드 종류
-		 
-		 replaceAll()  , replaceWith()
-		 
-		 - 선택한 요소를  다른 새로생성한 요소로 바꿀 때 사용합니다. 
-		   선택한 모든 요소를 한꺼번에 바꿀때 사용 합니다. 
-	
-		 - 문법
-		 		$("새요소").replaceAll("요소선택");
-		 		
-		 		$("요소선택").replaceWith("새요소");	
-	 -->
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script>
-	$(function(){
-
-	});
-	</script>
-</head>
-<body>
-	<section class="box1">
-		<h2>제목1</h2>
-		<div>내용1</div>
-		<div>내용2</div>
-	</section>
-	<section class="box2">
-		<h2>제목2</h2>    
-		<div>내용3</div>
-		<div>내용4</div>
-	</section>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>객체 조작 및 생성</title>
+		<!-- 
+				 DOM 객체(HTML태그) 편집 메소드 종류
+				 
+				 replaceAll()  , replaceWith()
+				 
+				 - 선택한 요소를  다른 새로생성한 요소로 바꿀(변경,치환) 때 사용합니다. 
+				   선택한 모든 요소를 한꺼번에 바꿀때 사용 합니다. 
+			
+				 - 문법
+				 		$("새요소").replaceAll("요소선택");
+				 		
+				 		$("요소선택").replaceWith("새요소");	
+			 -->
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+		
+				//1. h2 요소 2쌍을 한번에 선택해서  "<h3>replaceWith</h3>" 으로 변경(치환)
+				$("h2").replaceWith("<h3>replaceWith</h3>");
+		
+				//2. 모두 변경시킬 "<p>Change</p>" 를 작성해 $()로 선택한 후 
+				//   .replaceAll() 메소드를 호출할때 div 요소 4쌍을 한번에 선택해서 최종 변경(치환)
+				$("<p>Change</p>").replaceAll("div");
+			});
+		</script>
+	</head>
+	<body>
+		<section class="box1">
+			<h2>제목1</h2>
+			<!--  <-  <h3>replaceWith</h3> 으로 변경 될것임    -->
+			<div>내용1</div>
+			<!--  <-  <p>Change</p> 으로 변경 될것임 -->
+			<div>내용2</div>
+			<!--  <-  <p>Change</p> 으로 변경 될것임 -->
+		</section>
+		<section class="box2">
+			<h2>제목2</h2>
+			<!--  <-  <h3>replaceWith</h3> 으로 변경 될것임    -->
+			<div>내용3</div>
+			<!--  <-  <p>Change</p> 으로 변경 될것임 -->
+			<div>내용4</div>
+			<!--  <-  <p>Change</p> 으로 변경 될것임 -->
+		</section>
+	</body>
 </html>
-
-
-
-

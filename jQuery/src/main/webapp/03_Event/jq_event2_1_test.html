@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title> 이벤트 </title>  
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script>
+		$(function(){
+		/*
+			focus()
+			- 요소를 선택해서  선택한 요소에 포커스를 이동시키는 동작(이벤트)을 등록하는 메소드.
+		
+			blur()
+			- 선택한 요소에서 포커스가 존재하다가 다른 요소로 이동시키는 동작(이벤트)을 등록하는 메소드.
+					
+			focusin()
+			- 선택한 요소의 하위요소 중에서 입력요소로 포커스를 이동시키는 동작(이벤트)을 등록하는 메소드.			
+			
+			focusout()
+			- 선택한 요소의 하위요소 중에서 입력요소에 포커스가 존재하다가  외부요소로 이동시키는 동작(이벤트)을 등록하는 메소드.
+			
+			
+			 ============ 위 이벤트 등록 메소드들 전체 작성 문법 ======================
+			
+			 $("이벤트대상요소선택").focus 또는 blur 또는  focusin 또는 focusout(function(){ 이벤트처리코드;  });
+	
+			 $("이벤트대상요소선택").on("focus 또는 blur 또는  focusin 또는 focusout", function(){ 이벤트처리코드; }   );
+	
+			 
+			============ 스크롤 막대바를 강제로 이동 시키는 이벤트 등록 방법 작성 문법 ============
+			
+			 $("이벤트대상요소선택").focus 또는 blur 또는  focusin 또는 focusout();
+		*/
+
+
+
+
+		});//$(function(){});
+	</script>
+</head>
+<body>
+	<h1>focus / blur</h1>
+	<form action="#">
+		<p>
+			<label for="user_id_1">ID</label>
+			<input type="text" name="user_id_1" id="user_id_1">
+		</p>
+		<p>
+			<label for="user_pw_1">PW</label>
+			<input type="password" name="user_pw_1" id="user_pw_1">
+		</p>
+	</form>
+	<h1>focusin / focusout</h1>
+	<form action="#" id="frm_2">
+		<p>
+			<label for="user_id_2">ID</label>
+			<input type="text" name="user_id_2" id="user_id_2">
+		</p>
+		<p>
+			<label for="user_pw_2">PW</label>
+			<input type="password" name="user_pw_2" id="user_pw_2">
+		</p>
+	</form>
+</body>
+
+</html>

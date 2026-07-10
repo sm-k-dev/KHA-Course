@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+	<!-- 제이쿼리 설치 -->
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script>
+		$(function(){
+			/*
+				단독 이벤트 등록 메소드 - click 메소드 사용
+				
+				작성 방법
+					$("이벤트 등록대상요소 선택").click(function(){
+						사이트 이용자가 click 이벤트를 발생시키면 처리할 코드;
+					});
+			*/
+			// 1. <button class="btn1">버튼1</button> 요소 선택 후
+			//		click 단독 이벤트 등록메소드로 click이벤트 (동작)를 등록
+			$(".btn1").click(function(){
+				$("p:eq(1)").css("color", "red");
+			});
+			
+			//=============================================================
+				
+			/*
+				그룹 이벤트 등록 메소드 - on() 사용
+					- on() 메소드를 이용해 하나이상의 이벤트를 선택한 요소에 이벤트 다중 등록 기본 문법 3
+					
+					$("등록한 이벤트 대상 요소 선택").on({
+						"등록할_이벤트_종류명1 등록할_이벤트_종류명2": function(){ 처리코드 }, 
+						"등록할_이벤트_종류명3 등록할_이벤트_종류명4" : function(){ 처리코드 }
+					});
+			*/
+			
+			/*
+				<button class="btn2">버튼2</button> 요소를 선택해
+				
+				mouseover 이벤트	: 마우스 포인터를 요소에 올리는 이벤트
+				focus 이벤트		: 포커스를 강제로 가하는 이벤트
+				// == 둘중 하나의 이벤트가 발생하면 => 이벤트 핸들러 함수 focus(){}
+				
+				mouseout 이벤트	: 마우스 포인터가 요소에 올라가 있다가 내려가는 동작
+				blur 이벤트		: 포커스를 다른요소로 이동시키는 동작
+				// == 둘중 하나의 이벤트가 발생하면 => 이벤트 핸들러 함수 function(){}
+			*/
+			$("[class=btn2]").on({
+				"mouseover focus":	function(){
+					// 위 등록한 두개의 이벤트중 하나가 발생하면 처리할 코드 작성
+					$("p:eq(3)").css("color", "blue");
+				},
+				
+				"mouseout blur":	function(){
+					// 위 등록한 두개의 이벤트중 하나가 발생하면 처리할 코드 작성
+					$("p:eq(3)").css("color", "aqua");
+				}
+			});
+			
+			
+		});//$(function(){         }); <----닫는 기호를 말함
+			
+	</script>
+</head>
+<body>
+	<p> <button class="btn1">버튼1</button> </p>
+	<p>내용1</p>
+	
+	<p> <button class="btn2">버튼2</button> </p>
+	<p>내용2</p>
+	
+	<p> <button class="btn3">버튼3</button> </p>
+	<p>내용3</p>	
+</body>
+</html>
+
+
+
