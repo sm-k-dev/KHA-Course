@@ -1,69 +1,83 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전체 선택 체크박스 예제</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        table {
-            margin: 0 auto;
-            border-collapse: collapse;
-            width: 50%;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
-</head>
-<body>
-	<h1>학생 목록</h1>
-	<table>
-	    <thead>
-	        <tr>
-	            <th><input type="checkbox" id="selectAll"> 전체 선택</th>
-	            <th>학생 이름</th>
-	        </tr>
-	    </thead>
-	    <tbody>
-	        <tr>
-	            <td><input type="checkbox" class="studentCheckbox"></td>
-	            <td>학생 1</td>
-	        </tr>
-	        <tr>
-	            <td><input type="checkbox" class="studentCheckbox"></td>
-	            <td>학생 2</td>
-	        </tr>
-	        <tr>
-	            <td><input type="checkbox" class="studentCheckbox"></td>
-	            <td>학생 3</td>
-	        </tr>
-	        <tr>
-	            <td><input type="checkbox" class="studentCheckbox"></td>
-	            <td>학생 4</td>
-	        </tr>
-	    </tbody>
-	</table>
-
-	<script>
-		
-		
-		
-		
-		
-	</script>
-
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>전체 선택 체크박스 예제</title>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				text-align: center;
+				margin-top: 50px;
+			}
+			
+			table {
+				margin: 0 auto;
+				border-collapse: collapse;
+				width: 50%;
+			}
+			
+			th, td {
+				border: 1px solid #ddd;
+				padding: 8px;
+				text-align: center;
+			}
+			
+			th {
+				background-color: #f4f4f4;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>학생 목록</h1>
+		<table>
+			<thead>
+				<tr>
+					<th><input type="checkbox" id="selectAll"> 전체 선택</th>
+					<th>학생 이름</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><input type="checkbox" class="studentCheckbox"></td>
+					<td>학생 1</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="studentCheckbox"></td>
+					<td>학생 2</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="studentCheckbox"></td>
+					<td>학생 3</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" class="studentCheckbox"></td>
+					<td>학생 4</td>
+				</tr>
+			</tbody>
+		</table>
+	
+		<script>
+			/*
+				순서1. 각 학생의 <input type="checkbox"> 모두 다중 선택해서 가져와 change 이벤트 등록
+						change 이벤트가 발생할때마다 이벤트 핸들러 함수가 실행되어 change이벤트 처리
+			*/
+			$(".studentCheckbox").on("change", function(){
+				// 체크박스 상태(체크된 상태 또는 미체크된 상태)에 따라 다른 작업을 수행하게 이벤트 처리
+				console.log( $(this).parent().next().text() + ( this.checked ? " 체크됨" : " 체크 해제됨") );
+			});
+			
+			// 1. <input type="checkbox" id="selectAll"> 전체 선택 요소를 선택해서 "click"이벤트 등록
+			$("#selectAll").on("click", function(){
+				/*
+					순서2. 전체 선택 체크박스의 상태 (checked 속성값이 적용되어 있느냐 안되어 있느냐의 상태)에 따라
+							모든 학생 체크박스를 강제로 체크되게 하거나 미체크 된 상태로 변경
+				*/
+				$(".studentCheckbox").prop('checked', this.checked).trigger("change");
+			});
+		</script>
+	</body>
 </html>
 
 

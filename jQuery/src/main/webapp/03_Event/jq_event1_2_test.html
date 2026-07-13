@@ -1,41 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-
+	<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	
 	<!-- 제이쿼리 설치 -->
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script type="text/javascript">
-		$(function(){	
-		/*
-			trigger()메소드?  선택한요소에  강제로 이벤트 발생시키는 기능의 메소드  
-		
-				단독 이벤트 등록 메소드와 trigger()메소드를 사용해 강제로 이벤트를 발생시키는 메소드 사용 문법
+		$(function() {
+			/*
+				trigger()메소드?  선택한요소에  강제로 이벤트 발생시키는 기능의 메소드  
 			
-					순서1. $("이벤트대상요소선택").단독이벤트등록메소드(function(){ 이벤트 처리코드작성;  });
-					
-					순서2. $("이벤트대상요소선택").trigger("등록한단독이벤트메소드명"); 
-					
-					      -> trigger메소드를 호출하면 강제로 등록한 단독이벤트가 발생하게 됩니다.
-		*/
-		
-
+					단독 이벤트 등록 메소드와 trigger()메소드를 사용해 강제로 이벤트를 발생시키는 메소드 사용 문법
+				
+						순서1. $("이벤트대상요소선택").단독이벤트등록메소드(function(){ 이벤트 처리코드작성;  });
+						
+						순서2. $("이벤트대상요소선택").trigger("등록한단독이벤트메소드명"); 
+						
+						      -> trigger메소드를 호출하면 강제로 등록한 단독이벤트가 발생하게 됩니다.
+			 */
+			// 주제: 버튼을 강제로 클릭되게 하여 이벤트 처리 하는 방법
+			// 순서1. <button class="btn1">버튼1</button> 요소를 선택해서 click 단독 이벤트 등록하기 위해 click() 메소드 사용
+			$(".btn1").click(function() {
+				// <p>내용1</p> 요소를 선택해 내용1 글자 색상을 빨강으로 설정
+				$("p:eq(1)").css("color", "red");
+			});
 			
+			// 순서2. trigger("click") 형태로 작성해 메소드를 호출하여
+			// 		순서1 에서 <button class="btn1">버튼1</button> 요소에 사이트 이용자가 클릭 동작(이벤트)을 하지 않아도
+			//		자동으로 강제로 한번 클릭동작(이벤트)가 발생하게 하자.
+			// $(".btn1").trigger("click");
+			
+			// 참고. 버튼1 을 클릭하지 않아도 강제 클릭되게 click() 형태로 메소드 호출 구문만 작성하는 방법도 있다.
+			// $(".btn1").click();
+			
+			// ==================================================================================================
+				
+			// 순서1. <button class="btn2">버튼2</button> 요소를 선택해서, btn2 변수 선언하고 저장
+			let btn2 = $(".btn2");
+			
+			// 순서1-1. btn2 변수에 저장된 버튼2 요소에 마우스 포인터를 올리는 이벤트(mouseover), 포커스를 가하는 이벤트(focus) 를 다중 등록
+			//		참고. on() 메소드를 사용하여 이벤트 1개 이상 다중 등록 "기본문법1"사용
+			btn2.on("mouseover focus", function(){
+				/*
+					등록한 이벤트들 중 하나라도 <button class="btn2">버튼2</button> 요소에 이벤트가 발생하면 이벤트 처리 코드 작성
+				*/
+				// <p>내용2</p> 를 최종 선택
+				btn2.parent().next().css("color", "blue");
+			});
+			
+			// 순서2. trigger 메소드를 이용하여 "mouseover" 또는 "focus"이벤트를 btn2변수에 저장된 요소에 강제로 설정
+			btn2.trigger("mouseover");
+			btn2.mouseover();
+		
+			btn2.trigger("focus");
+			btn2.focus();	
 		});
 	</script>
-</head>
-<body>
-	<p>
-		<button class="btn1">버튼1</button>
-	</p>
-	<p>내용1</p>
-	<p>
-		<button class="btn2">버튼2</button>
-	</p>
-	<p>내용2</p>
-
-
-</body>
+	</head>
+	<body>
+		<p><button class="btn1">버튼1</button></p>
+		<p>내용1</p>
+		<p><button class="btn2">버튼2</button></p>
+		<p>내용2</p>
+	</body>
 </html>
 
