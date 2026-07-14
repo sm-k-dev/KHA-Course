@@ -12,7 +12,7 @@
 ->속성(데이터) + 동작(기능,행동)
 */
 
-//과일장수 이야기  스토리~
+//과일장수 이야기 스토리~
 /*
 	[ 현실 세계 상황 재연 1 ]
 	"나는 과일장수에게 두개의 사과를 구매했다!"
@@ -59,13 +59,13 @@
 
 //(2단계) 클래스(설계도) 정의 : 변수 + 메소드
 //과일장수 FruitSeller라는 이름의 틀(클래스)을 정의합니다.
-class FruitSeller{ 
+class FruitSeller { 
 	
 	/*변수*/
 	int appleQuantity = 20;
-	int applePrice = 500;
+	int applePrice = 1000;
 	int orangeQuantity = 10;
-	int orangePrice = 1000;
+	int orangePrice = 2000;
 	int todayTotal = 0;
 
 	/*메소드*/
@@ -124,8 +124,8 @@ public class Ex1 {
 		FruitBuyer buyer = new FruitBuyer();
 		
 		//과일구매자는 과일판매자에게 2000원어치 사과 구매하기
-		buyer.buyFruit("apple", 2000/seller.applePrice, seller.applePrice);
-		seller.sellFruit("apple", 2000/seller.applePrice);
+		buyer.buyFruit("apple", 2, 1000);
+		seller.sellFruit("apple", 2);
 		
 		//과일 판매자의 현재상황
 		System.out.println("--과일 판매자의 현재상황--");
