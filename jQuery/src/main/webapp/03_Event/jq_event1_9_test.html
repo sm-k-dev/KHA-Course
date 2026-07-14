@@ -1,57 +1,66 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 이벤트 </title>  
-
-	<style>
-		body{
-			height:10000px;
-			width:5000px;
-		}
-		#wrap{
-			position: fixed;
-			left: 10px; top: 10px;
-		}
-	</style>
-	
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-</head>
-<body>
-	<div id="wrap">
-		<p>scrollTop: <span class="top">0</span>px</p>
-		<p>scrollLeft: <span class="left">0</span>px</p>
-	</div> 
-	<script type="text/javascript">		 
-	/*
-	scroll()
-	- 이벤트 대상요소를 선택해 대상요소에서 스크롤 막대바를 이동시키는 동작(이벤트)을 등록 하는 메소드.
-	- 문법
-		 $(window).scroll(function(){ 이벤트처리코드;  });
-
-		 $(window).on("scroll", function(){ 이벤트처리코드; }   );
-
-	- 스크롤 막대바를 강제로 이동 시키는 이벤트 방법 의 문법
-		 $(window).scroll();
-*/
+	<head>
+		<meta charset="UTF-8">
+		<title>이벤트</title>
 		
-		//스크롤 막대바를 이동시키는 동작(scroll이벤트)를 윈도우창(window객체)에 등록
-		$(window).on("scroll",function(){
-
+		<style>
+			body {
+				height: 10000px;
+				width: 5000px;
+			}
 			
+			#wrap {
+				position: fixed;
+				left: 10px;
+				top: 10px;
+			}
+		</style>
 		
-		});
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	</head>
+	<body>
+		<div id="wrap">
+			<p>
+				scrollTop: <span class="top">0</span>px
+			</p>
+			<p>
+				scrollLeft: <span class="left">0</span>px
+			</p>
+		</div>
+		<script type="text/javascript">
+			/*
+				scroll()
+				- 이벤트 대상요소를 선택해 대상요소에서 스크롤 막대바를 이동시키는 동작(이벤트)을 등록 하는 메소드.
+				- 문법
+					 $(window).scroll(function(){ 이벤트처리코드;  });
 		
+					 $(window).on("scroll", function(){ 이벤트처리코드; }   );
 		
-		
+				- 스크롤 막대바를 강제로 이동 시키는 이벤트 방법 의 문법
+					 $(window).scroll();
+			 */
 	
-	</script>
-	
-	
-</body>
+			//스크롤 막대바를 이동시키는 동작(scroll이벤트)를 윈도우창(window객체)에 등록
+			$(window).on("scroll", function() {
+				// 스크롤 이벤트가 발생한 윈도우 창(window객체)을 선택
+				// scrollTop() 메소드를 호출하여 스크롤 막대바가 세로(수직) 방향으로 
+				// 이동된 거리값(현재위치하고 있는 y축의 값)을 얻을 수 있다
+				let sc_top = $(window).scrollTop();
+				
+				// <span class="top">0</span> 선택, 0 대신 sc_top 변수에 저장된 y 축의 값으로 설정
+				$(".top").text(sc_top);
+				
+				// ------------------------------------------------------------------------
+				
+				// 스크롤 이벤트가 발생한 윈도우 창(window객체)을 선택
+				// scrollLeft() 메소드를 호출하여 스크롤 막대바가 가로(수평) 방향으로 
+				// 이동된 거리값(현재위치하고 있는 x축의 값)을 얻을 수 있다
+				let sc_left = $(window).scrollLeft();
+				
+				// <span class="left">0</span> 선택, 0 대신 sc_left 변수에 저장된 x 축의 값으로 설정
+				$(".left").text(sc_left);
+			});
+		</script>
+	</body>
 </html>
-
-
-
-
-

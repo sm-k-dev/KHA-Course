@@ -1,42 +1,66 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 이벤트 </title>  
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script>
-	$(function(){
-		//[  <a href="#">메뉴1</a>, <a href="#">메뉴2</a>, <a href="#">메뉴3</a> ]  배열에 담아 선택해 오기 
-		//           0                        1                     2 
-		$(".menuWrap_1 a").on("click",function(event){
-
-
-		});
+	<head>
+		<meta charset="UTF-8">
+		<title>이벤트</title>
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			$(function() {
+				//[  <a href="#">메뉴1</a>, <a href="#">메뉴2</a>, <a href="#">메뉴3</a> ]  배열에 담아 선택해 오기 
+				//           0                        1                     2 
+				$(".menuWrap_1 a").on("click", function(event) {
+					//<a>태그는 href속성에 적힌 사이트주소로 이동하는 기본이벤트가 적용되어 있기떄문에
+					//차단 하여 click했을때의 이벤트 처리코드가 실행되게 하기 위해서는
+					//매개변수 event객체의 preventDefault()메소드를 호출하여 먼저 href속성의 기본이벤트 동작 차단
+					event.preventDefault();
+					
+					//click 이벤트를 처리할 코드 작성
+					//앞에서 선택한 전체 <a>요소들에  배경색을 분홍색으로 설정
+					$(".menuWrap_1 a").css("backgroundColor", "pink");
+					
+					//$(this)  구문을 작성하여 선택한 <a>요소들 중에서도 click이벤트가 발생한 <a>요소만 선택해서 배경을 aqua로 설정
+					$(this).css("backgroundColor", "aqua");
+					
+					// $(event.target).css("backgroundColor", "aqua");
+				});
 		
-		//[  <a href="#">메뉴4</a>, <a href="#">메뉴5</a>, <a href="#">메뉴6</a> ]
-		//           0                        1                     2 
-		//두번째 <ul class="menuWrap_2">내부에 있는 모든 <a>요소들을 배열에 담아 선택해 let as에 저장
-		let as = $(".menuWrap_2 a");
-		
-
-		
-		
-	});
-	</script>
-</head>
-<body>
-	<h2>$(this)</h2>
-	<ul class="menuWrap_1">
-		<li><a href="#">메뉴1</a></li>
-		<li><a href="#">메뉴2</a></li>
-		<li><a href="#">메뉴3</a></li>
-	</ul>
-	<h2>Index( )</h2>   
-	<ul class="menuWrap_2">
-		<li><a href="#">메뉴4</a></li>
-		<li><a href="#">메뉴5</a></li>
-		<li><a href="#">메뉴6</a></li>
-	</ul>
-	<p class="idxNum"></p>
-</body>
+				//[  <a href="#">메뉴4</a>, <a href="#">메뉴5</a>, <a href="#">메뉴6</a> ]
+				//           0                        1                     2 
+				//두번째 <ul class="menuWrap_2">내부에 있는 모든 <a>요소들을 배열에 담아 선택해 let as에 저장
+				let as = $(".menuWrap_2 a");
+				
+				as.click(function(e){
+					//<a>들의 href기본이벤트 차단
+					e.preventDefault();
+					
+					as.css({"backgroundColor": "green", "color":"blue"});
+					//click이벤트가 등록되어 있는 <a>요소들을 모두 선택해서
+					//click이벤트가 발생한 하나의 <a>요소의 index위치 번호를 얻자.-> index(this); 메소드 활용 
+					let idx = as.index(this);
+					
+					//click이벤트가 등록되어 있는 <a>요소들을 모두 선택해서
+					//click이벤트가 발생한 <a>요소만!~ 최종 선택해서 배경색을 파란색으로 설정	
+					as.eq(idx).css({"backgroundColor": "blue", "color": "white"});
+					
+					//<p class="idxNum"></p> 요소를 선택해서  콘텐츠영역에 idx변수에 저장된 click이벤트가 발생한 <a>요소의 index위치 투입
+					$(".idxNum").text(as.eq(idx).text());
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<h2>$(this)</h2>
+		<ul class="menuWrap_1">
+			<li><a href="#">메뉴1</a></li>
+			<li><a href="#">메뉴2</a></li>
+			<li><a href="#">메뉴3</a></li>
+		</ul>
+		<h2>Index( )</h2>
+		<ul class="menuWrap_2">
+			<li><a href="#">메뉴4</a></li>
+			<li><a href="#">메뉴5</a></li>
+			<li><a href="#">메뉴6</a></li>
+		</ul>
+		<p class="idxNum"></p>
+	</body>
 </html>
