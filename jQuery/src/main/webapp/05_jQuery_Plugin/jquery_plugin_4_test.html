@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title> Plugin </title>
+
+<!-- 
+	 jquery-cookie 플러그인 이란?
+	  웹브라우저에 접속하는 클라이언트의 정보가 저장되는 쿠키 메모리를 생성하고 
+	  생성 된 쿠키 메모리가 웹브라우저에서 제거되는 만료일을 설정 할수 있게 하는 플러그인
+	 
+	  쿠키 저장소란?
+	   - 웹브라우저를 이용해 사이트에 접속하는 클라이언트의 소량의 정보를 저장하는 저장소 
+	   - 쿠키 는 하나의 웹사이트 당  최대 20개를 생성할수 있고, 최대 4KB까지 생성하여 저장할수 있습니다.
+	   
+	 jquery-cookie 플러그인 사용법
+	 1. https://cdnjs.com/ 사이트에 접속 하여  jquery-cookie 단어를 입력하고 검색합니다. 
+	 2. 검색한 목록중에    jquery-cookie 목록 옆에  copy 버튼을 눌러 설치 주소를 복사 합니다.
+	 3. 복사한 https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js 주소를
+	        웹브라우저 주소창에 붙여 넣고  ctrl + s 키를 눌러  jquery.cookie.min.js 파일로 저장하여 다운로드 시킵니다. 
+	 4. jquery 설치 주소를 <script src="js/jquery.js"></script> 작성 해 설치 해놓고
+	 5. jquery-cookie 플러그인 파일이 저장된 주소를 <script src="js/jquery.cookie.js"></script> 작성해 설치 해 놓습니다.
+ 	 6. jquery-cookie 플러그인 문법
+ 	 	
+ 	 	 6.1 쿠키 저장소를 웹브라우저에 생성하는 문법
+ 	 	 	
+ 	 	 	$.cookie("쿠키명","쿠키값",{expires:만료일});
+ 			설명 : 쿠키명은 나중에 저장된 쿠키값을 불러올떄 구분하기 위한 이름 
+ 			      생성된 쿠키는 현재 부터 몇일 동안 클라이언트의 웹브라우저에 보관할것인지 만료일을 설정 할수 있다.
+ 			예  
+			$.cookie("pop","no",{expires:1});
+			설명 : 웹브라우저에는 "pop"이라는 이름으로 쿠키 저장소를 만드는데  이 저장소에 "no"라는 값이 
+			      1일 동안 쿠키저장소가 보관됩니다.
+ 				            
+ 	     6.2 쿠키 저장소에 저장된 쿠키값을 불러오는 문법
+ 	     	 	$.cookie("쿠키명");
+ 	     	 예
+ 	     	 	$.cookie("pop");  ->  쿠키값인 "no"을 얻을수 있다. 
+ 	
+ 		6.3  쿠키 저장소에 있는 쿠키값 삭제 하는 문법
+ 				$.cookie("쿠키명",null);
+ 			예
+ 				$.cookie("pop",null);
+
+ 
+ 
+ -->
+ 
+ 
+ 
+	<script src="js/jquery.js"></script>   <!--  jquery 라이브러리 설치  -->
+		
+	<script src="js/jquery-ui-1.10.4.custom.min.js"></script>  <!--  <- jquery-ui 플러그인   -->
+	
+	<script src="js/jquery.cookie.js"></script>  <!--  <- jquery-cookie 플러그인   -->
+	<script>
+	$(function() {
+		
+
+		  
+		
+	});
+	</script>
+</head>
+<body>
+	<p id="pop_wrap">
+		<img src="images/popup.jpg" alt="검색이 잘되는 키워드는 따로 있다!" usemap="#pop" />
+		<map name="pop" id="pop">
+			<area  shape="rect"  coords="255,332,290,345" href="#" alt="창닫기" />
+			<area  shape="rect"  coords="95,332,215,345"  href="#"  alt="하루동안 이창열지 않기" />
+		</map>
+	</p>  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,30 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title> 이벤트 </title>  
-<style>
-	body{font: 14px Malgun Gothic, "맑은고딕",sans-serif;}
-	.zoomBtnZone{font-size: 14px;}
-</style>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script>
-$(function(){ // event_last.html 문서의 내용을 웹브라우저로 로딩해서 읽어 들였을떄 실행되는 function함수 
-	
-	
-	
-});
-</script>
-</head>
-<body>
-	<p class="zoomBtnZone">
-		<button class="zoomOutBtn">-</button>
-		<button class="originBtn">100%</button>
-		<button class="zoomInBtn">+</button>
-	</p>
-	<p class="fontSize">14px</p>
-	<div id="wrap">
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas feugiat consectetur nibh, ut luctus urna placerat non. Phasellus consectetur nunc nec mi feugiat egestas. Pellentesque et consectetur mauris, sed rutrum est. Etiam odio nunc, ornare quis urna sed, fermentum fermentum augue. Nam imperdiet vestibulum ipsum quis feugiat. Nunc non pellentesque diam, nec tempor nibh. Ut consequat sem sit amet ullamcorper sodales.
-	</div>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>이벤트</title>
+		<style>
+			body {
+				font: 14px Malgun Gothic, "맑은고딕", sans-serif;
+			}
+			
+			.zoomBtnZone {
+				font-size: 14px;
+			}
+		</style>
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		<script>
+			//event_last.html 문서의 내용을 웹브라우저로 로딩해서 읽어 들였을떄 실행되는 function함수
+			$(function() {  
+				// 1. 초기 기본 글꼴 크기를 14px로 설정
+				let baseFontSize = 14;
+				
+				// 2. 아래 작성한 <button> - 100% + 세쌍을 선택해서 click 이벤트 등록
+				$(".zoomBtnZone button").on("click", function(){
+					// 참고.
+					// $(this) => 3개의 button 요소 중에서 "click" 이벤트가 발생한 button 요소 선택
+					
+					if( $(this).hasClass("zoomOutBtn") ) { // 조건1. click한 button 요소가 - button 요소
+						
+						// 조건1-1. 만약 현재 글꼴 크기가 8px 이하라면, 더이상 baseFontSize 변수값을 -- 하지 않도록 이벤트 핸들러 함수 종료
+						if( baseFontSize <= 8 ) { return false; }
+						// 현재 글꼴 크기를 14px 에서 1 감소
+						baseFontSize--;
+						
+					} else if ( $(this).hasClass("zoomInBtn") ) { // 조건2. click 한 button 요소가 + button요소
+						
+						// 조건2-1. 만약 현재 글꼴 크기가 20px 이상이 되면 더이상 baseFontSize 변수값을 ++ 하지 않도록 이벤트 핸들러 함수 종료
+						if ( baseFontSize >= 20 ) { return false; }
+						// 현재 글꼴 크기를 14px에서 1 증가해 다시 baseFontSize 변수에 저장
+						baseFontSize++;
+					
+					} else { // 조건3. click 한 button 요소가 100% button 요소
+						// 글꼴 크기를 기본 크기인 14px로 baseFontSize변수에 저장해서 원래 글꼴 크기로 보여주자
+						baseFontSize = 14;
+					}
+					
+					// 3. <p class="fontSize">14px</p> 요소 영역을 선택해서
+					//		14px 자리에 들어갈 글자크기 값을 baseFontSize변수에 저장된 px 값으로 설정
+					$(".fontSize").text(baseFontSize + "px");
+					
+					// 4. <body></body> 요소(전체 웹브라우저 창에 보이는 화면 영역)를 선택해서
+					//		전체 글꼴 크기를 현재 baseFontSize 변수에 저장된 px값으로 설정
+					$("body").css("fontSize", baseFontSize + "px");
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<p class="zoomBtnZone">
+			<button class="zoomOutBtn">-</button>
+			<button class="originBtn">100%</button>
+			<button class="zoomInBtn">+</button>
+		</p>
+		<p class="fontSize">14px</p>
+		<div id="wrap">Lorem ipsum dolor sit amet, consectetur adipiscing
+			elit. Maecenas feugiat consectetur nibh, ut luctus urna placerat non.
+			Phasellus consectetur nunc nec mi feugiat egestas. Pellentesque et
+			consectetur mauris, sed rutrum est. Etiam odio nunc, ornare quis urna
+			sed, fermentum fermentum augue. Nam imperdiet vestibulum ipsum quis
+			feugiat. Nunc non pellentesque diam, nec tempor nibh. Ut consequat sem
+			sit amet ullamcorper sodales.</div>
+	</body>
 </html>

@@ -202,16 +202,16 @@ JQuery라이브러리 사용하기 위한 설치 방법 2가지
 	        2-3. 객체 편집 메소드 - 선택한 요소를 복제 하거나,새요소를 생성하거나,
 	                            복제 하거나 새로 생성된 요소를 의도한 위치에 삽입 시키는 메소드 
 	        
-			2-1. 속성조작 메소드 실습
-				------------------jq_select3_1_test.html 파일 실습	html() , text() 메소드
-				------------------jq_select3_2_test.html 파일 실습	attr() , removeAttr() 메소드	
+			2-1. 속성조작 메소드 실습 
+				------------------jq_select3_1_test.html 파일 실습	html() , text() 메소드 - 중요
+				------------------jq_select3_2_test.html 파일 실습	attr() , removeAttr() 메소드 - 중요
 				
-				------------------jq_select3_3_test.html 223page 파일 실습	addClass(),  
+				------------------jq_select3_3_test.html 223page 파일 실습	addClass(), - 중요
 																			removeClass(),  
 																			toggleClass(),
 																			hasClass() 메소드 	
 
-				------------------jq_select3_4_test.html 파일 실습	val() 메소드
+				------------------jq_select3_4_test.html 파일 실습	val() 메소드 - 중요
 				------------------jq_select3_5_test.html 파일 실습	prop() 메소드
 		
 			2-2. 수치조작 메소드 실습
@@ -225,13 +225,13 @@ JQuery라이브러리 사용하기 위한 설치 방법 2가지
 			
 
 			2-3. 객체 편집 메소드 실습
-				------------------jq_select3_9_test.html 파일 실습	before(), insertBefore(), after(), insertAfter() 메소드
+				------------------jq_select3_9_test.html 파일 실습	before(), insertBefore(), after(), insertAfter() 메소드 - 중요
 				
-				------------------jq_select3_10_test.html 파일 실습	append(), appendTo(), prepend(), predpendTo() 메소드
+				------------------jq_select3_10_test.html 파일 실습	append(), appendTo(), prepend(), predpendTo() 메소드 - 중요
 			
-				------------------jq_select3_11_test.html 파일 실습	clone(), empty(), remove() 메소드
+				------------------jq_select3_11_test.html 파일 실습	clone(), empty(), remove() 메소드 - 중요
 			
-				------------------jq_select3_12_test.html 파일 실습	replaceAll(), replaceWith() 메소드
+				------------------jq_select3_12_test.html 파일 실습	replaceAll(), replaceWith() 메소드 - 중요
 			
 				------------------jq_select3_13_test.html 파일 실습	unwrap(), wrap(), wrapAll(), wrapInner() 메소드
 
@@ -361,7 +361,7 @@ JQuery라이브러리 사용하기 위한 설치 방법 2가지
 			show() : 숨겨져 있던 요소를 노출 시킵니다.
 			------------------ jquery_effect_1.html 파일 실습
 		
-			toggle() : 숨겨져 있던 요소는 노출시키고, 노출되어 있던 요소는 숨깁니다.
+			toggle() : 숨겨져 있던 요소는 노출시키고, 노출되어 있던 요소는 숨깁니다. (효과 모습은 hide(), show()와 같다)
 			------------------ jquery_effect_2.html 파일 실습
 		
 			fadeln() : 숨겨져 있던 요소가 점점 선명해지면서 노출 됩니다.
@@ -385,7 +385,6 @@ JQuery라이브러리 사용하기 위한 설치 방법 2가지
 		[효과 제어 메서드] : 
 			효과 또는 애니메이션이 적용된 요소에 동작을 정지시키거나 
 			동작 초기 실행을 지연시키는 등의 제어를 할수 있는 메서드 
-		
 		
 		[효과 제어 메서드 종류]
 			stop() : 현재 실행 중인 효과를 모두 정지 시킵니다.

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title> Plugin </title>
+	<!-- 
+		주제 : bxSlider 플러그인을 활용하여 자동 슬라이드 배너 (사진첩 기능)을 만듭니다. 
+	
+		bxSlider 플러그인이란?
+			여러개의 배너에 슬라이드 기능을 간편하게 적용할수 있는 플러그인.
+			
+		bxSlider 플러그 사용 문법
+			참조변수  = $("요소선택").bxSlider({옵션들 설정 });	
+	 -->
+	 
+	 <!-- 1. jQuery 설치 파일 연동  -->
+	<script src="js/jquery.js"></script>
+	
+	<!--  2. bxSlider 플러그인 파일 연동  -->
+	<script src="js/jquery.bxslider.min.js"></script>
+	<link rel="stylesheet" href="css/jquery.bxslider.min.css">
+	
+	<style>
+		*{margin: 0;padding: 0;}
+		#gallery_wrap{
+			margin: 0 auto;
+			width: 640px;
+		}
+	</style>
+	<script>
+	$(function() {
+		
+	
+	});
+	</script>
+</head>
+<body>
+	<div id="gallery_wrap">
+		<ul class="slide_gallery">
+			<li><img src="images/pic_1.jpg" alt="사진1"></li>
+			<li><img src="images/pic_2.jpg" alt="사진2"></li>
+			<li><img src="images/pic_3.jpg" alt="사진3"></li>
+			<li><img src="images/pic_4.jpg" alt="사진4"></li>
+			<li><img src="images/pic_5.jpg" alt="사진5"></li>
+			<li><img src="images/pic_6.jpg" alt="사진6"></li>
+			<li><img src="images/pic_7.jpg" alt="사진7"></li>
+			<li><img src="images/pic_8.jpg" alt="사진8"></li>
+		</ul>
+		<button id="prev">이전</button> &nbsp;&nbsp; <button id="next">다음</button>
+		
+	</div>
+</body>
+</html>
+
+
+
+
+
+

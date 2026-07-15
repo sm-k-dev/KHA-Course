@@ -1,48 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-
-	<style>
-		 h1{ width: 50px;   height: 30px;   background-color: red;  font-size: 100%; }
-	</style>
-	
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	
-	<script type="text/javascript">
-		/*
-			fadeTo() 메소드
-			- 선택한 요소가 노출되어 있으면 요소에 투명도를 설정해서 지정한 만큼 숨김니다.
-			  투명도값은   0.0 ~ 1.0 사이의 값을 입력할수 있으며
-			  숫자가 1에 가까울수록 선명하게 보입니다.
-			  가령, 50%만큼 투명도를 적용하려면 0.5를 입력하면 됩니다.
-			- 문법
-				$("요소선택").fadeTo("효과속도",투명도값);
-		*/
-		$(function(){
-
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
 		
-			
-
-		});
-	</script>
-</head>
-<body>
-	<button id="btn1">투명도(30%)</button>
-	<button id="btn2">투명도(100%)</button>
-	<h1>내용</h1>
-	
-	
-</body>
+		<style>
+			h1 {
+				width: 50px;
+				height: 30px;
+				background-color: red;
+				font-size: 100%;
+			}
+		</style>
+		
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		
+		<script type="text/javascript">
+			/*
+				fadeTo() 메소드
+				- 선택한 요소가 노출되어 있으면 요소에 투명도를 설정해서 지정한 만큼 숨김니다.
+				  투명도값은   0.0 ~ 1.0 사이의 값을 입력할수 있으며
+				  숫자가 1에 가까울수록 선명하게 보입니다.
+				  가령, 50%만큼 투명도를 적용하려면 0.5를 입력하면 됩니다.
+				- 문법
+					$("요소선택").fadeTo("효과속도",투명도값);
+			 */
+			$(function() {
+				// 1. <button id="btn1">투명도(30%)</button> 요소를 선택 해서 'click' 이벤트 등록
+				// 		사이트 이용자가 이 버튼을 클릭하면 'click'이벤트가 발생해서 이벤트 핸들러가 실행되게 작성
+				// $("#btn1").click( () => $("h1").fadeTo(1000, 0.3) );
+				
+				// 2.
+				// $("#btn2").on( "click", () => $("h1").fadeTo(1000, 1.0) );
+				
+				// ========================================================================
+				/*
+					화살표 함수(() => {}) 안에서 this를 사용하면, this는 클릭 이벤트를 발생시킨 버튼(#btn1 또는 #btn2)을 가리키지 않고, 상위 스코프(여기서는 window 객체)를 가리키게 됩니다.
+					따라서 $(this).attr("id")는 언제나 undefined를 반환하게 되어, 버튼을 누를 때마다 무조건 else 문(fadeTo(1000, 1.0))만 실행됩니다. (즉, 30% 버튼이 작동하지 않습니다.)
+					
+					방법 1. 일반 함수(function() {})로 변경하기
+					방법 2. 화살표 함수를 유지하고 이벤트 객체(e.target) 사용하기
+				*/
+				$("#btn1, #btn2").on( "click", function(){
+					
+					let value = ( $(this).attr("id") === "btn1" ) ? 0.3 : 1;
+					
+					$("h1").fadeTo(1000, value);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<button id="btn1">투명도(30%)</button>
+		<button id="btn2">투명도(100%)</button>
+		<h1>내용</h1>
+	</body>
 </html>
-
-
-
-
-
-
-
-
-
-
