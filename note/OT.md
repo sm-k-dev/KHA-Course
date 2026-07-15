@@ -75,7 +75,8 @@ vsCode나 cursor 에서
             - JakartaEE (서블릿/JSP): 자바 웹 서버(WAS)의 기초 동작 원리 이해
             - MVC 아키텍처: 웹 애플리케이션의 역할 분담 디자인 패턴 (Model-View-Controller)
             - Spring Boot: 현대 자바 백엔드 표준 프레임워크
-                MyBatis ORM: 데이터 영속성 관리 기술 (Persistence Layer)
+                MyBatis ORM: 데이터 영속성 관리 기술 (Persistence Layer) / Spring Data JPA (영속성 컨텍스트 및 N+1 최적화) 및 Querydsl. 
+                JUnit5 / Mockito: 단위 테스트 (Unit Test) 작성법
                 RESTful API: 주소(URL)를 통해 데이터와 기능을 주고받는 설계 규칙
                 OpenAPI / Swagger: API 문서화 자동화 도구
                 Spring Security & OAuth: 로그인, 회원가입 및 보안 인증 처리
@@ -106,7 +107,7 @@ vsCode나 cursor 에서
             - ACID 원칙: 트랜잭션 관리와 데이터 정합성 보장
 
         - NoSQL
-            - 대용량 데이터 및 비정형 데이터 처리를 위한 데이터베이스 (MongoDB, Cassandra)
+            - 대용량 데이터 및 비정형 데이터 처리를 위한 데이터베이스 (Redis를 활용한 캐시 전략 및 성능 최적화 (In-Memory 캐시 서버 활용), MongoDB, Cassandra)
 
         - 네트워크 기초
             - IP / Port 개념 및 VPC, 서브넷, 포트 포워딩 인프라 구조
@@ -137,10 +138,11 @@ vsCode나 cursor 에서
         - 컨테이너 가상화 및 아키텍처 트렌드
             - Docker / Kubernetes: 컨테이너 기반 가상화 환경 구축 및 통합 관리
             - Microservice (MSA): 대규모 대기업형 서비스를 잘게 쪼개어 개발하는 마이크로서비스 아키텍처 (위에서 배운 EIPs/Integration Framework와 밀접하게 연동됨)
-            - IaC (Infrastructure as Code): 코드형 인프라 관리를 통한 클라우드 제어
+            - IaC/Terraform 기초 (Infrastructure as Code): 코드형 인프라 관리를 통한 클라우드 제어. 시스템 모니터링 구축 (Prometheus, Grafana 기초)
 
         - CI/CD 파이프라인
             - GitHub Actions / GitLab CI / Jenkins: 빌드, 테스트 및 배포 자동화 파이프라인 구축
+            - 모니터링 시스템 구축 (Prometheus & Grafana 또는 ELK Stack 기초)
 
 ------------------------------------------------------------------------------
 
@@ -169,6 +171,7 @@ vsCode나 cursor 에서
     점프 투 자바 (위키독스): https://wikidocs.net/book/31
     Codecademy (Java): https://www.codecademy.com/
     인프런 (김영한 강사): 스프링 입문 무료 강의
+    김영한 강사: JPA 관련 강의
 
 JavaScript & 프론트엔드
     코딩앙마(유튜브)
@@ -223,6 +226,7 @@ Step 2: 인프런, 유튜브 가성비 강의 활용
 Step 3: AWS 배포 방식 바꾸기학원에서 가르쳐 준 대로 수동 배포를 한 번 성공해 본 뒤에, 그 똑같은 서버를 Docker 이미지로 빌드해서 Docker 컨테이너로 AWS 위에 다시 올려보세요. 이 과정을 블로그나 포트폴리오에 트러블슈팅 과정으로 기록해 두면 면접관들이 아주 좋아합니다.
 
 ------------------------------------------------------------------------------
+전공자 따라잡기 인강 챕터 목록
 
 컴퓨터공학과의 핵심 기본 과목
     1. 프로그래밍 및 기초
@@ -504,7 +508,7 @@ Step 3: AWS 배포 방식 바꾸기학원에서 가르쳐 준 대로 수동 배�
         손코딩 관련 주요 문항 및 단계별 답변 팁
             손코딩 문항 예시
         
-    10. (보너스) 자료구조 이론
+    10. (보너스) 자료구조 이론 - 파이썬 기반
         자료구조와 알고리즘이란
         파이썬, 주피터 노트북 설치 - MAC/Window
         주피터 노트북 사용법
@@ -521,7 +525,7 @@ Step 3: AWS 배포 방식 바꾸기학원에서 가르쳐 준 대로 수동 배�
             힙 구조 파이썬 구현
             힙에 데이터 삭제 구현
 
-    11. (보너스) 알고리즘 이론
+    11. (보너스) 알고리즘 이론 - 파이썬 기반
         기본 정렬 알고리즘
             정렬 알고리즘 개요
             버블 정렬
@@ -568,3 +572,9 @@ Step 3: AWS 배포 방식 바꾸기학원에서 가르쳐 준 대로 수동 배�
             N Queen 문제 파이썬 코드 작성
         자료구조와 알고리즘 정리
             필수 자료구조와 알고리즘 정리
+    
+    파이썬으로 큐(Queue)나 스택(Stack), 정렬을 이해한 뒤에는 "이걸 자바의 Collection Framework(ArrayList, LinkedList, HashMap)로는 어떻게 쓰지?"
+
+    컴퓨터 구조 / 시스템 프로그래밍: 요리사(CPU)와 도마(RAM)가 쉘(Shell)과 시스템콜이라는 대화 수단을 통해 직접 소통하는 법을 배웁니다.
+    데이터베이스 설계 / 모델링: 단순한 철제 서랍장을 넘어서, 서랍 칸을 어떻게 짜야 물건이 안 꼬이고(정규화), 어떻게 해야 물건을 $1$초 만에 찾을지(인덱스 설계) 배우는 과정입니다.
+    알고리즘 이론: 숲을 탐색하는 법(DFS/BFS), 가장 빠른 길 찾기(다익스트라) 등 보물을 찾는 최고의 공식들을 마스터하는 단계입니다.
