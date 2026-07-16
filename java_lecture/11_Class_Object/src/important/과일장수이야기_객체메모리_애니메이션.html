@@ -1,0 +1,395 @@
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>객체 메모리 애니메이션 - 과일장수와 구매자</title>
+<style>
+  :root{
+    --bg:#eaeef5; --panel:#ffffff; --ink:#1f2733; --sub:#5b6472; --line:#d6dce6;
+    --seller:#159a5b; --seller-tint:#e8f8ef; --seller-edge:#9fe0bd;
+    --buyer:#e8600c; --buyer-tint:#fff2e8; --buyer-edge:#f5c39a;
+    --data:#2563eb; --data-tint:#e5edff;
+    --flash:#ffe066; --code:#111827;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Malgun Gothic","맑은 고딕",-apple-system,system-ui,sans-serif;
+    line-height:1.55; padding:14px;
+  }
+  .wrap{max-width:820px; margin:0 auto;}
+
+  header h1{font-size:19px; margin:0 0 2px; letter-spacing:-0.3px;}
+  header p{margin:0; font-size:12.5px; color:var(--sub);}
+
+  /* 진행바 */
+  .bar-row{display:flex; align-items:center; gap:8px; margin:12px 0 8px;}
+  .bar{flex:1; height:8px; background:#d3dae6; border-radius:99px; overflow:hidden;}
+  .bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--seller),var(--buyer)); transition:width .35s ease;}
+  .step-no{font-size:12px; font-weight:700; color:var(--sub); white-space:nowrap;}
+
+  /* 코드 라인 + 설명 */
+  .code{
+    background:var(--code); color:#e8ffe8; font-family:Consolas,"D2Coding",monospace;
+    font-size:13px; padding:9px 12px; border-radius:9px; overflow-x:auto;
+    white-space:pre; min-height:20px;
+  }
+  .code .dim{color:#7a8b7a;}
+  .desc{
+    background:var(--panel); border:1px solid var(--line); border-radius:11px;
+    padding:12px 13px; margin-top:8px; font-size:14px; min-height:76px;
+  }
+  .desc b{color:var(--data);}
+  .desc .tip{display:block; margin-top:6px; font-size:12.5px; color:var(--sub);}
+  .desc .tip::before{content:"🍎 쉽게 말하면 · "; color:var(--buyer); font-weight:700;}
+  .desc .calc{display:inline-block; margin-top:6px; background:var(--data-tint); color:var(--data);
+    font-family:Consolas,monospace; font-size:13px; padding:2px 8px; border-radius:6px; font-weight:700;}
+
+  /* 메모리 무대 */
+  .stage-scroll{overflow-x:auto; margin-top:12px; padding:4px 2px 6px;}
+  .stage{
+    display:flex; align-items:stretch; justify-content:center; gap:10px;
+    min-width:560px;
+  }
+  .obj{
+    flex:1 1 0; min-width:170px; background:var(--panel);
+    border:2px solid var(--line); border-radius:14px; padding:0;
+    opacity:0; transform:translateY(8px) scale(.97); transition:opacity .35s, transform .35s;
+    overflow:hidden;
+  }
+  .obj.on{opacity:1; transform:none;}
+  .obj.seller{border-color:var(--seller-edge);}
+  .obj.buyer{border-color:var(--buyer-edge);}
+  .obj-head{padding:8px 11px; font-size:13px; font-weight:800; display:flex; justify-content:space-between; align-items:center;}
+  .obj.seller .obj-head{background:var(--seller-tint); color:var(--seller);}
+  .obj.buyer  .obj-head{background:var(--buyer-tint); color:var(--buyer);}
+  .addr{font-family:Consolas,monospace; font-size:11px; font-weight:700; opacity:.75;}
+  .obj-body{padding:9px 10px;}
+  .var{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    padding:6px 8px; border-radius:8px; background:#f6f8fb; margin-bottom:6px; font-size:12.5px;
+  }
+  .var:last-child{margin-bottom:0;}
+  .var .k{color:var(--sub); font-family:Consolas,monospace; font-size:11.5px;}
+  .var .v{
+    font-weight:800; font-family:Consolas,monospace; font-size:14px;
+    min-width:52px; text-align:right; padding:1px 6px; border-radius:6px; background:#fff; border:1px solid var(--line);
+  }
+  .obj.seller .v{color:var(--seller);}
+  .obj.buyer  .v{color:var(--buyer);}
+  .meth{margin-top:7px; padding:6px 8px; border-radius:8px; border:1px dashed var(--line);
+    font-size:11px; color:var(--sub); font-family:Consolas,monospace;}
+  .obj.seller .meth{border-color:var(--seller-edge);}
+  .obj.buyer  .meth{border-color:var(--buyer-edge);}
+
+  /* 값 변경 반짝임 */
+  @keyframes flashv{0%{background:var(--flash); transform:scale(1.18);}100%{background:#fff; transform:scale(1);}}
+  .flash{animation:flashv .8s ease;}
+  @keyframes pop{0%{transform:scale(.9);}60%{transform:scale(1.04);}100%{transform:scale(1);}}
+  .pop{animation:pop .5s ease;}
+
+  /* 가운데 통신 채널 */
+  .channel{
+    flex:0 0 92px; position:relative; align-self:center; height:120px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .track{position:absolute; left:6px; right:6px; top:50%; height:2px; background:var(--line);}
+  .chip{
+    position:relative; z-index:2; background:var(--data); color:#fff;
+    font-family:Consolas,monospace; font-size:11px; font-weight:800;
+    padding:5px 8px; border-radius:8px; box-shadow:0 3px 8px rgba(37,99,235,.35);
+    opacity:0; white-space:nowrap;
+  }
+  .arrowlabel{position:absolute; top:8px; left:0; right:0; text-align:center; font-size:10.5px; color:var(--data); font-weight:800;}
+  /* 오른쪽(구매자)→왼쪽(판매자) 이동 : 호출 */
+  @keyframes flyL{0%{opacity:0; transform:translateX(34px);}15%{opacity:1;}85%{opacity:1;}100%{opacity:1; transform:translateX(-34px);}}
+  /* 왼쪽(판매자)→오른쪽(구매자) 이동 : 반환 */
+  @keyframes flyR{0%{opacity:0; transform:translateX(-34px);}15%{opacity:1;}85%{opacity:1;}100%{opacity:1; transform:translateX(34px);}}
+  .chip.toSeller{animation:flyL 1s ease forwards;}
+  .chip.toBuyer{animation:flyR 1s ease forwards;}
+  .track.toSeller{background:linear-gradient(90deg,var(--data),var(--seller));}
+  .track.toBuyer{background:linear-gradient(90deg,var(--buyer),var(--data));}
+
+  /* 콘솔 */
+  .console{
+    margin-top:12px; background:#0e1116; color:#9ff7b0; border-radius:11px;
+    padding:11px 13px; font-family:Consolas,"D2Coding",monospace; font-size:12.5px;
+    min-height:44px; white-space:pre-wrap; word-break:break-all;
+  }
+  .console .lbl{color:#5b6472; font-size:11px;}
+  .console .sep{color:#6b7280;}
+
+  /* 컨트롤 */
+  .controls{display:flex; gap:8px; margin-top:14px;}
+  button{
+    flex:1; border:none; border-radius:12px; padding:13px 10px; font-size:15px; font-weight:800;
+    cursor:pointer; font-family:inherit; transition:transform .08s, filter .15s;
+  }
+  button:active{transform:translateY(1px);}
+  .prev{background:#e2e8f2; color:var(--ink);}
+  .next{background:var(--ink); color:#fff;}
+  button:disabled{opacity:.4; cursor:default;}
+  .mini{display:flex; gap:8px; margin-top:8px;}
+  .mini button{flex:1; padding:9px; font-size:12.5px; border-radius:10px; background:#fff; border:1px solid var(--line); color:var(--sub); font-weight:700;}
+
+  footer{margin-top:14px; text-align:center; font-size:11px; color:var(--sub);}
+  @media (max-width:560px){
+    .obj{min-width:150px;}
+    .channel{flex-basis:70px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍎 객체 메모리 애니메이션</h1>
+    <p>과일장수와 구매자 — 메소드를 호출해 데이터를 주고받는 과정을 한 단계씩 봅니다.</p>
+  </header>
+
+  <div class="bar-row">
+    <div class="bar"><i id="prog" style="width: 100%;"></i></div>
+    <span class="step-no" id="stepno">15 / 15</span>
+  </div>
+
+  <div class="code" id="code">buyer.showBuyResult();</div>
+  <div class="desc" id="desc">구매자의 현재 상태를 출력합니다. 현금 3000원, 사과 2개. <b>거래 완료!</b><span class="tip">두 객체가 메소드로 데이터를 주고받아 결과가 딱 맞습니다.</span></div>
+
+  <div class="stage-scroll">
+    <div class="stage">
+      <!-- 판매자(왼쪽) -->
+      <div class="obj seller on pop" id="obj-seller">
+        <div class="obj-head"><span>과일장수 (seller)</span><span class="addr">0x120</span></div>
+        <div class="obj-body">
+          <div class="var"><span class="k">APPLE_PRICE</span><span class="v flash" id="v_s_price">1000</span></div>
+          <div class="var"><span class="k">numofApple</span><span class="v flash" id="v_s_num">18</span></div>
+          <div class="var"><span class="k">myMoney</span><span class="v flash" id="v_s_money">2000</span></div>
+          <div class="meth">📦 saleApple( )<br>📦 showSaleResult( )</div>
+        </div>
+      </div>
+
+      <!-- 통신 채널 -->
+      <div class="channel" id="channel">
+        <div class="track" id="track"></div>
+        <div class="arrowlabel" id="alabel"></div>
+        <div class="chip" id="chip"></div>
+      </div>
+
+      <!-- 구매자(오른쪽) -->
+      <div class="obj buyer on pop" id="obj-buyer">
+        <div class="obj-head"><span>구매자 (buyer)</span><span class="addr">0x123</span></div>
+        <div class="obj-body">
+          <div class="var"><span class="k">myMoney</span><span class="v flash" id="v_b_money">3000</span></div>
+          <div class="var"><span class="k">numOfApple</span><span class="v flash" id="v_b_num">2</span></div>
+          <div class="meth">📦 buyApple( )<br>📦 showBuyResult( )</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="console" id="console"><span class="sep">----------과일장수(판매자)객체의 현재 남은돈과 사과 수---------</span>
+과일장수객체의 남은 사과 갯수 : 18
+과일장수객체의 현재 잔고 : 2000
+<span class="sep">----------과일구매자객체의 현재 남은돈과 사과 수--------</span>
+현재 잔액 : 3000
+보유 사과 수 : 2</div>
+
+  <div class="controls">
+    <button class="prev" id="btnPrev">◀ 이전</button>
+    <button class="next" id="btnNext" disabled="">다음 ▶</button>
+  </div>
+  <div class="mini">
+    <button id="btnReset">↺ 처음부터</button>
+    <button id="btnDownload">⬇ 이 파일 저장</button>
+  </div>
+
+  <footer>이전 / 다음 버튼(또는 키보드 ← →)으로 이동 · 노란 반짝임 = 값이 바뀐 곳</footer>
+</div>
+
+<script>
+/* ===== 단계 데이터 =====
+   seller/buyer 가 null 이면 아직 객체가 생성되지 않은 상태.
+   changed: 반짝임 줄 값 칸 id 목록.
+   channel: {dir, label, sub} 있으면 데이터가 날아가는 애니메이션 실행.
+   console: 이 단계까지 콘솔에 쌓인 줄들.
+*/
+const S = [
+  { // 0
+    line:'프로그램 시작',
+    desc:'컴퓨터의 <b>메모리</b>(기억 공간)는 아직 비어 있습니다. 이제 설계도(class)로 객체를 하나씩 만들어 봅니다.<span class="tip">메모리는 "빈 창고", 곧 물건(객체)을 넣습니다.</span>',
+    seller:null, buyer:null, changed:[], channel:null, console:[]
+  },
+  { // 1
+    line:'FruitSeller seller = new FruitSeller();',
+    desc:'설계도 <b>FruitSeller</b>로 과일장수 객체를 메모리 <b>0x120</b>에 새로 만들었습니다. 사과 0개, 수익 0원으로 시작.<span class="tip">new = 붕어빵 틀로 붕어빵 하나 찍어내기.</span>',
+    seller:{price:1000,num:0,money:0}, buyer:null, changed:['obj-seller'], channel:null, console:[]
+  },
+  { // 2
+    line:'seller.numofApple = 20;',
+    desc:'과일장수의 사과 개수를 <b>20개</b>로 채웁니다. 0 → 20으로 바뀌었죠.',
+    seller:{price:1000,num:20,money:0}, buyer:null, changed:['v_s_num'], channel:null, console:[]
+  },
+  { // 3
+    line:'seller.myMoney = 0;',
+    desc:'과일장수의 수익을 <b>0원</b>으로 둡니다. (원래 0이라 그대로지만, "장사 시작 전"이라는 뜻)',
+    seller:{price:1000,num:20,money:0}, buyer:null, changed:['v_s_money'], channel:null, console:[]
+  },
+  { // 4
+    line:'FruitBuyer buyer = new FruitBuyer();',
+    desc:'이번엔 구매자 객체를 메모리 <b>0x123</b>에 만들었습니다. 현금 <b>5000원</b>, 사과 0개로 시작.<span class="tip">이제 창고에 인물이 두 명(장수·구매자) 생겼습니다.</span>',
+    seller:{price:1000,num:20,money:0}, buyer:{money:5000,num:0}, changed:['obj-buyer'], channel:null, console:[]
+  },
+  { // 5
+    line:'buyer.buyApple(seller, 2000);',
+    desc:'구매자의 <b>buyApple</b> 메소드가 실행됩니다. "<b>2000원</b> 낼게요"라는 돈 정보와, 누구에게 살지(seller)를 함께 넘겨받습니다.<span class="tip">구매자가 지갑에서 2000원을 꺼내 든 순간.</span>',
+    seller:{price:1000,num:20,money:0}, buyer:{money:5000,num:0}, changed:['obj-buyer'],
+    channel:null, console:[]
+  },
+  { // 6
+    line:'    numOfApple += seller.saleApple(2000);',
+    desc:'구매자가 판매자의 <b>saleApple</b> 메소드를 호출합니다. money=<b>2000</b>이 판매자에게 날아갑니다.<span class="tip">구매자 → 판매자 : "2000원어치 사과 주세요!"</span>',
+    seller:{price:1000,num:20,money:0}, buyer:{money:5000,num:0}, changed:[],
+    channel:{dir:'toSeller', label:'메소드 호출', sub:'money=2000'}, console:[]
+  },
+  { // 7
+    line:'        int num = money / APPLE_PRICE;',
+    desc:'판매자가 계산합니다. 받은 돈 ÷ 사과 한 개 값 = 팔 개수.<span class="calc">2000 ÷ 1000 = 2개</span>',
+    seller:{price:1000,num:20,money:0}, buyer:{money:5000,num:0}, changed:['v_s_price'],
+    channel:null, console:[]
+  },
+  { // 8
+    line:'        numofApple -= num;',
+    desc:'판매한 만큼 판매자의 사과가 줄어듭니다.<span class="calc">20 - 2 = 18개</span>',
+    seller:{price:1000,num:18,money:0}, buyer:{money:5000,num:0}, changed:['v_s_num'],
+    channel:null, console:[]
+  },
+  { // 9
+    line:'        myMoney += money;',
+    desc:'받은 2000원이 판매자의 수익으로 쌓입니다.<span class="calc">0 + 2000 = 2000원</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:5000,num:0}, changed:['v_s_money'],
+    channel:null, console:[]
+  },
+  { // 10
+    line:'        return num;',
+    desc:'판매자가 "사과 <b>2개</b> 팔았어요"라며 개수 2를 구매자에게 <b>돌려줍니다(return)</b>.<span class="tip">판매자 → 구매자 : 사과 2개 전달.</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:5000,num:0}, changed:[],
+    channel:{dir:'toBuyer', label:'값 반환(return)', sub:'2'}, console:[]
+  },
+  { // 11
+    line:'    numOfApple += 2;   // 반환값 2를 더함',
+    desc:'구매자가 돌려받은 사과 2개를 자기 사과 수에 더합니다.<span class="calc">0 + 2 = 2개</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:5000,num:2}, changed:['v_b_num'],
+    channel:null, console:[]
+  },
+  { // 12
+    line:'    myMoney -= money;',
+    desc:'구매자 현금에서 낸 돈 2000원이 빠집니다.<span class="calc">5000 - 2000 = 3000원</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:3000,num:2}, changed:['v_b_money'],
+    channel:null, console:[]
+  },
+  { // 13
+    line:'seller.showSaleResult();',
+    desc:'판매자의 현재 상태를 출력합니다. 사과 18개, 수익 2000원.<span class="tip">거래가 끝난 판매자의 최종 장부.</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:3000,num:2}, changed:['v_s_num','v_s_money'],
+    channel:null,
+    console:[
+      {t:'sep',v:'----------과일장수(판매자)객체의 현재 남은돈과 사과 수---------'},
+      {t:'',v:'과일장수객체의 남은 사과 갯수 : 18'},
+      {t:'',v:'과일장수객체의 현재 잔고 : 2000'}
+    ]
+  },
+  { // 14
+    line:'buyer.showBuyResult();',
+    desc:'구매자의 현재 상태를 출력합니다. 현금 3000원, 사과 2개. <b>거래 완료!</b><span class="tip">두 객체가 메소드로 데이터를 주고받아 결과가 딱 맞습니다.</span>',
+    seller:{price:1000,num:18,money:2000}, buyer:{money:3000,num:2}, changed:['v_b_money','v_b_num'],
+    channel:null,
+    console:[
+      {t:'sep',v:'----------과일장수(판매자)객체의 현재 남은돈과 사과 수---------'},
+      {t:'',v:'과일장수객체의 남은 사과 갯수 : 18'},
+      {t:'',v:'과일장수객체의 현재 잔고 : 2000'},
+      {t:'sep',v:'----------과일구매자객체의 현재 남은돈과 사과 수--------'},
+      {t:'',v:'현재 잔액 : 3000'},
+      {t:'',v:'보유 사과 수 : 2'}
+    ]
+  }
+];
+
+let cur = 0;
+const $ = id => document.getElementById(id);
+
+function render(i){
+  const s = S[i];
+  // 진행바 / 번호
+  $('prog').style.width = ((i)/(S.length-1)*100) + '%';
+  $('stepno').textContent = (i+1) + ' / ' + S.length;
+  // 코드 라인
+  $('code').textContent = s.line;
+  // 설명
+  $('desc').innerHTML = s.desc;
+
+  // 객체 표시 여부 + 값
+  const sBox = $('obj-seller'), bBox = $('obj-buyer');
+  if(s.seller){ sBox.classList.add('on');
+    $('v_s_price').textContent = s.seller.price;
+    $('v_s_num').textContent   = s.seller.num;
+    $('v_s_money').textContent = s.seller.money;
+  } else sBox.classList.remove('on');
+
+  if(s.buyer){ bBox.classList.add('on');
+    $('v_b_money').textContent = s.buyer.money;
+    $('v_b_num').textContent   = s.buyer.num;
+  } else bBox.classList.remove('on');
+
+  // 반짝임
+  (s.changed||[]).forEach(id=>{
+    const el = $(id); if(!el) return;
+    if(id.startsWith('obj')){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+    else { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+  });
+
+  // 통신 채널(데이터 이동)
+  const chip=$('chip'), track=$('track'), alabel=$('alabel');
+  chip.className='chip'; track.className='track'; chip.textContent=''; alabel.textContent='';
+  if(s.channel){
+    void chip.offsetWidth;
+    chip.textContent = s.channel.sub;
+    chip.classList.add(s.channel.dir);
+    track.classList.add(s.channel.dir);
+    alabel.textContent = s.channel.label;
+  }
+
+  // 콘솔
+  const c=$('console');
+  if(!s.console || s.console.length===0){
+    c.innerHTML='<span class="lbl">// 콘솔 출력 (실행 결과가 여기 나옵니다)</span>';
+  } else {
+    c.innerHTML = s.console.map(l=> l.t==='sep'
+      ? '<span class="sep">'+l.v+'</span>' : l.v ).join('\n');
+  }
+
+  // 버튼 상태
+  $('btnPrev').disabled = (i===0);
+  $('btnNext').disabled = (i===S.length-1);
+}
+
+function go(n){ cur=Math.max(0,Math.min(S.length-1,n)); render(cur); }
+
+$('btnPrev').onclick=()=>go(cur-1);
+$('btnNext').onclick=()=>go(cur+1);
+$('btnReset').onclick=()=>go(0);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight') go(cur+1);
+  if(e.key==='ArrowLeft')  go(cur-1);
+});
+
+// 파일 저장(다운로드)
+$('btnDownload').onclick=()=>{
+  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='객체메모리_애니메이션.html';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+render(0);
+</script>
+
+
+</body></html>

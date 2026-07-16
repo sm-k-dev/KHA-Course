@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!-- 배열 객체 메모리 애니메이션 · v1 · 2026-07-15 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>객체 메모리 애니메이션 - 배열</title>
+<style>
+  :root{
+    --bg:#eef1f6; --panel:#ffffff; --ink:#1e2130; --sub:#5c6272; --line:#d8dbe6;
+    --ref:#2563eb; --ref-tint:#e7edff; --ref-edge:#a9c1f7;
+    --int:#0d9488; --int-tint:#d9f5f0;
+    --obj:#7c3aed; --obj-tint:#f1e9ff; --obj-edge:#cbb2f4;
+    --null:#94a0b0; --null-tint:#eef1f5;
+    --hot:#f59e0b; --flash:#ffe066; --code:#111827;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Malgun Gothic","맑은 고딕",-apple-system,system-ui,sans-serif; line-height:1.55; padding:14px;}
+  .wrap{max-width:880px; margin:0 auto;}
+  header h1{font-size:19px; margin:0 0 2px; letter-spacing:-0.3px;}
+  header p{margin:0; font-size:12.5px; color:var(--sub);}
+
+  .bar-row{display:flex; align-items:center; gap:8px; margin:12px 0 8px;}
+  .bar{flex:1; height:8px; background:#d3d6e6; border-radius:99px; overflow:hidden;}
+  .bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--int),var(--obj)); transition:width .35s ease;}
+  .step-no{font-size:12px; font-weight:700; color:var(--sub); white-space:nowrap;}
+
+  .scene-tag{display:inline-block; font-size:11px; font-weight:800; padding:2px 10px; border-radius:99px; margin-bottom:6px;}
+  .scene-tag.A{background:var(--int-tint); color:var(--int);}
+  .scene-tag.B{background:var(--obj-tint); color:var(--obj);}
+
+  .code{background:var(--code); color:#dbeafe; font-family:Consolas,"D2Coding",monospace;
+    font-size:13px; padding:9px 12px; border-radius:9px; overflow-x:auto; white-space:pre; min-height:20px;}
+  .desc{background:var(--panel); border:1px solid var(--line); border-radius:11px;
+    padding:12px 13px; margin-top:8px; font-size:14px; min-height:82px;}
+  .desc b{color:var(--obj);}
+  .desc .tip{display:block; margin-top:6px; font-size:12.5px; color:var(--sub);}
+  .desc .tip::before{content:"📦 쉽게 말하면 · "; color:var(--int); font-weight:700;}
+  .desc .link{display:block; margin-top:6px; font-size:12.5px; color:var(--obj); font-weight:700;}
+
+  /* 참조변수 */
+  .refbar{margin-top:12px; min-height:26px;}
+  .ref{display:inline-flex; align-items:center; gap:6px; background:var(--ref-tint); border:1px solid var(--ref-edge);
+    border-radius:9px; padding:5px 10px; font-family:Consolas,monospace; font-size:12.5px; font-weight:800; color:var(--ref);}
+  .ref .arw{opacity:.7;}
+
+  /* 배열 스트립 */
+  .arrwrap{margin-top:10px; overflow-x:auto; padding:4px 2px 8px;}
+  .arrhead{font-size:12px; color:var(--sub); font-family:Consolas,monospace; margin-bottom:5px;}
+  .arrhead b{color:var(--ink);}
+  .strip{display:flex; gap:6px; min-width:min-content;}
+  .cell{flex:0 0 auto; width:56px; border-radius:10px; overflow:hidden; border:2px solid var(--line); background:var(--panel);}
+  .cell .idx{font-size:10px; text-align:center; color:var(--sub); font-family:Consolas,monospace; padding:2px 0; background:#f5f7fb;}
+  .cell .cval{text-align:center; font-family:Consolas,monospace; font-weight:800; font-size:14px; padding:9px 2px;}
+  .cell.zero .cval{color:var(--sub);}
+  .cell.intv{border-color:var(--int); } .cell.intv .cval{color:var(--int);}
+  .cell.nullc{border-color:var(--null);} .cell.nullc .cval{color:var(--null); font-size:12px;}
+  .cell.addr{border-color:var(--obj);} .cell.addr .cval{color:var(--obj);}
+  .cell.hot{box-shadow:0 0 0 3px rgba(245,158,11,.4); border-color:var(--hot);}
+  @keyframes flashc{0%{background:var(--flash);}100%{background:var(--panel);}}
+  .cell.hot .cval{animation:flashc .8s ease;}
+
+  /* 화살표 안내 */
+  .pointnote{display:none; margin:8px 0 4px; text-align:center; font-size:12px; color:var(--obj); font-weight:800;}
+  .pointnote.show{display:block;}
+
+  /* 객체 영역 */
+  .objwrap{display:none; overflow-x:auto; padding:2px 2px 6px;}
+  .objwrap.show{display:block;}
+  .objrow{display:flex; gap:7px; min-width:min-content;}
+  .pchip{flex:0 0 auto; border:2px solid var(--obj-edge); border-radius:11px; background:var(--panel); min-width:74px; overflow:hidden;}
+  .pchip .ph{background:var(--obj-tint); color:var(--obj); font-family:Consolas,monospace; font-size:11px; font-weight:800; text-align:center; padding:3px 4px;}
+  .pchip .pb{text-align:center; font-family:Consolas,monospace; font-size:12.5px; padding:6px 4px;}
+  .pchip .pb b{color:var(--obj);}
+  .pchip.on{box-shadow:0 0 0 3px rgba(245,158,11,.4); border-color:var(--hot);}
+
+  .console{margin-top:12px; background:#0e1116; color:#9ff7b0; border-radius:11px; padding:11px 13px;
+    font-family:Consolas,"D2Coding",monospace; font-size:12.5px; min-height:44px; white-space:pre-wrap; word-break:break-all; max-height:120px; overflow-y:auto;}
+  .console .lbl{color:#5b6472; font-size:11px;}
+
+  .controls{display:flex; gap:8px; margin-top:14px;}
+  button{flex:1; border:none; border-radius:12px; padding:13px 10px; font-size:15px; font-weight:800; cursor:pointer; font-family:inherit; transition:transform .08s;}
+  button:active{transform:translateY(1px);}
+  .prev{background:#e2e6f2; color:var(--ink);} .next{background:var(--ink); color:#fff;}
+  button:disabled{opacity:.4; cursor:default;}
+  .mini{display:flex; gap:8px; margin-top:8px;}
+  .mini button{flex:1; padding:9px; font-size:12.5px; border-radius:10px; background:#fff; border:1px solid var(--line); color:var(--sub); font-weight:700;}
+  footer{margin-top:14px; text-align:center; font-size:11px; color:var(--sub);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📦 배열 객체 메모리 애니메이션</h1>
+    <p>배열의 각 칸에 "값"을 넣는 것과 "객체 주소"를 넣는 것의 차이를 한 단계씩 봅니다.</p>
+  </header>
+
+  <div class="bar-row">
+    <div class="bar"><i id="prog"></i></div>
+    <span class="step-no" id="stepno">1 / 15</span>
+  </div>
+
+  <div id="sceneTag"></div>
+  <div class="code" id="code"></div>
+  <div class="desc" id="desc"></div>
+
+  <div class="refbar" id="refbar"></div>
+
+  <div class="arrwrap">
+    <div class="arrhead" id="arrhead"></div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="pointnote" id="pointnote">🔗 위 칸에 적힌 주소가 → 아래 실제 객체를 가리킵니다</div>
+
+  <div class="objwrap" id="objwrap">
+    <div class="arrhead">실제로 생성된 Person 객체들 (주소마다 하나씩)</div>
+    <div class="objrow" id="objrow"></div>
+  </div>
+
+  <div class="console" id="console"><span class="lbl">// 콘솔 출력 (실행 결과가 여기 나옵니다)</span></div>
+
+  <div class="controls">
+    <button class="prev" id="btnPrev">◀ 이전</button>
+    <button class="next" id="btnNext">다음 ▶</button>
+  </div>
+  <div class="mini">
+    <button id="btnReset">↺ 처음부터</button>
+    <button id="btnDownload">⬇ 이 파일 저장</button>
+  </div>
+
+  <footer>이전 / 다음 버튼(또는 키보드 ← →)으로 이동 · 주황 테두리 = 지금 바뀌는 칸</footer>
+</div>
+
+<script>
+"use strict";
+var ADDR = ['0x12','0x13','0x14','0x15','0x16','0x17','0x18','0x19','0x20','0x21'];
+
+function intCells(vals, hotIdx){
+  return vals.map(function(v,i){ return {idx:i, val:String(v), cls:(v===0?'zero':'intv'), hot:(i===hotIdx)}; });
+}
+function personCells(filled, hotIdx, allNew){
+  var a=[];
+  for(var i=0;i<10;i++){
+    if(i<filled) a.push({idx:i, val:ADDR[i], cls:'addr', hot:(i===hotIdx)});
+    else a.push({idx:i, val:'null', cls:'nullc', hot:!!allNew});
+  }
+  return a;
+}
+function persons(count, hotAddr){
+  var a=[]; for(var i=0;i<count;i++) a.push({addr:ADDR[i], age:30+i, on:(ADDR[i]===hotAddr)}); return a;
+}
+function ages(count){ var a=[]; for(var i=0;i<count;i++) a.push(String(30+i)); return a; }
+
+var S = [
+  { scene:'A', line:'프로그램 시작',
+    desc:'배열이란 <b>칸이 여러 개 붙어 있는 상자</b>입니다. 먼저 정수(숫자)를 담는 배열부터 봅니다.<span class="tip">배열 = 계란판. 칸(index)마다 하나씩 넣습니다.</span>',
+    ref:null, arrhead:'', cells:[], point:false, objs:null, console:[] },
+
+  { scene:'A', line:'int[] array;',
+    desc:'정수 배열의 <b>참조변수 array</b>를 선언했습니다. 아직 실제 배열(칸)은 없습니다. "배열을 담을 리모컨"만 준비한 상태.',
+    ref:{name:'array', addr:'(빈 상태)'}, arrhead:'', cells:[], point:false, objs:null, console:[] },
+
+  { scene:'A', line:'array = new int[3];',
+    desc:'칸 <b>3개</b>짜리 정수 배열을 메모리 <b>0x16</b>에 만들었습니다. 처음 값은 모두 <b>0</b>. array가 이 배열을 가리킵니다.',
+    ref:{name:'array', addr:'0x16'}, arrhead:'array (int[3]) @ <b>0x16</b>',
+    cells:intCells([0,0,0], -3), point:false, objs:null, console:[] },
+
+  { scene:'A', line:'array[0] = 10;',
+    desc:'0번 칸에 <b>10</b>을 <b>직접</b> 저장합니다. 0 → 10.',
+    ref:{name:'array', addr:'0x16'}, arrhead:'array (int[3]) @ <b>0x16</b>',
+    cells:intCells([10,0,0], 0), point:false, objs:null, console:[] },
+
+  { scene:'A', line:'array[1] = 20;',
+    desc:'1번 칸에 <b>20</b>을 저장합니다.',
+    ref:{name:'array', addr:'0x16'}, arrhead:'array (int[3]) @ <b>0x16</b>',
+    cells:intCells([10,20,0], 1), point:false, objs:null, console:[] },
+
+  { scene:'A', line:'array[2] = 30;',
+    desc:'2번 칸에 <b>30</b>을 저장합니다. 정수 배열은 이렇게 <b>값 자체</b>를 칸에 바로 넣습니다.<span class="tip">여기까지가 "값을 담는 배열". 이제 진짜 주제로 넘어갑니다.</span>',
+    ref:{name:'array', addr:'0x16'}, arrhead:'array (int[3]) @ <b>0x16</b>',
+    cells:intCells([10,20,30], 2), point:false, objs:null, console:[] },
+
+  { scene:'B', line:'Person[] persons;',
+    desc:'이번엔 <b>객체 배열</b>입니다. 참조변수 <b>persons</b>를 선언했습니다. 여기서 중요한 차이: 칸에 객체를 통째로 넣는 게 아니라 <b>객체의 주소</b>를 넣습니다.<span class="tip">칸 = 사물함. 사물함엔 사람이 아니라 "사람이 있는 방 번호(주소)"를 붙여둡니다.</span>',
+    ref:{name:'persons', addr:'(빈 상태)'}, arrhead:'', cells:[], point:false, objs:persons(0,null), console:[] },
+
+  { scene:'B', line:'persons = new Person[10];',
+    desc:'칸 <b>10개</b>짜리 객체 배열을 <b>0x11</b>에 만들었습니다. 아직 객체가 없어서 모든 칸이 <b>null</b>(비어 있음).',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(0, -1, true), point:false, objs:persons(0,null), console:[] },
+
+  { scene:'B', line:'persons[0] = new Person();  // i=0',
+    desc:'반복문 시작(i=0). Person 객체를 새로 만들어(주소 <b>0x12</b>) 0번 칸에 <b>그 주소</b>를 저장합니다.<span class="link">🔗 persons[0] 칸 = 0x12 → 0x12 객체를 가리킴</span>',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(1, 0), point:true, objs:persons(1,'0x12'), console:[] },
+
+  { scene:'B', line:'persons[0].age = 30;',
+    desc:'0x12 객체의 <b>age</b>에 30(=30+0)을 저장합니다. 주소를 따라가 객체를 찾은 뒤 값을 넣는 것입니다.',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(1, 0), point:true, objs:persons(1,'0x12'), console:[] },
+
+  { scene:'B', line:'System.out.println(persons[0].age);',
+    desc:'0번 객체의 나이 <b>30</b>을 출력합니다.',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(1, 0), point:true, objs:persons(1,'0x12'), console:ages(1) },
+
+  { scene:'B', line:'i=1 : persons[1] = new Person();  age=31',
+    desc:'i=1. 또 새 객체(0x13)를 만들어 1번 칸에 주소 저장, age=31, 출력.<span class="link">🔗 persons[1] 칸 = 0x13 → 0x13 객체를 가리킴</span>',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(2, 1), point:true, objs:persons(2,'0x13'), console:ages(2) },
+
+  { scene:'B', line:'i=2 : persons[2] = new Person();  age=32',
+    desc:'i=2. 새 객체(0x14) 생성 → 2번 칸에 주소 저장, age=32, 출력. 규칙이 반복됩니다.',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(3, 2), point:true, objs:persons(3,'0x14'), console:ages(3) },
+
+  { scene:'B', line:'i=3 ~ 9 : 반복 계속...',
+    desc:'같은 방식으로 나머지 칸(3~9)도 새 객체를 만들어 주소를 채우고 age(33~39)를 저장·출력합니다.<span class="tip">for 반복문은 이 "만들고 담고 채우기"를 10번 자동 반복해 줍니다.</span>',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(10, 9), point:true, objs:persons(10,'0x21'), console:ages(10) },
+
+  { scene:'B', line:'반복 종료',
+    desc:'완성! 10칸 모두 <b>객체 주소</b>로 채워졌고, 각 주소가 가리키는 객체는 age 30~39를 가집니다.<span class="tip">핵심: 객체 배열의 칸은 "객체 자체"가 아니라 "객체가 있는 주소". 그 주소를 따라가 객체를 사용합니다.</span>',
+    ref:{name:'persons', addr:'0x11'}, arrhead:'persons (Person[10]) @ <b>0x11</b>',
+    cells:personCells(10, -1), point:true, objs:persons(10,null), console:ages(10) }
+];
+
+var cur = 0;
+function $(id){ return document.getElementById(id); }
+
+function render(i){
+  var s = S[i];
+  $('prog').style.width = (i/(S.length-1)*100) + '%';
+  $('stepno').textContent = (i+1) + ' / ' + S.length;
+  $('sceneTag').innerHTML = s.scene==='A'
+    ? '<span class="scene-tag A">장면 A · 정수 배열 (값을 담음)</span>'
+    : '<span class="scene-tag B">장면 B · 객체 배열 (주소를 담음)</span>';
+  $('code').textContent = s.line;
+  $('desc').innerHTML = s.desc;
+
+  // 참조변수
+  $('refbar').innerHTML = s.ref
+    ? '<span class="ref">'+s.ref.name+' <span class="arw">→</span> '+s.ref.addr+'</span>' : '';
+
+  // 배열 스트립
+  $('arrhead').innerHTML = s.arrhead || '';
+  var strip = $('strip'); strip.innerHTML='';
+  (s.cells||[]).forEach(function(c){
+    var d=document.createElement('div');
+    d.className='cell '+c.cls+(c.hot?' hot':'');
+    d.innerHTML='<div class="idx">['+c.idx+']</div><div class="cval">'+c.val+'</div>';
+    strip.appendChild(d);
+  });
+
+  // 화살표 안내 + 객체 영역
+  $('pointnote').classList.toggle('show', !!s.point);
+  var ow=$('objwrap');
+  if(s.objs){ ow.classList.add('show');
+    var row=$('objrow'); row.innerHTML='';
+    s.objs.forEach(function(o){
+      var d=document.createElement('div');
+      d.className='pchip'+(o.on?' on':'');
+      d.innerHTML='<div class="ph">'+o.addr+'</div><div class="pb">age: <b>'+o.age+'</b></div>';
+      row.appendChild(d);
+    });
+    if(s.objs.length===0) row.innerHTML='<div style="font-size:12px;color:var(--sub);padding:6px;">아직 생성된 객체 없음</div>';
+  } else ow.classList.remove('show');
+
+  // 콘솔
+  var c=$('console');
+  if(!s.console || s.console.length===0){ c.innerHTML='<span class="lbl">// 콘솔 출력 (실행 결과가 여기 나옵니다)</span>'; }
+  else { c.textContent = s.console.join('\n'); c.scrollTop = c.scrollHeight; }
+
+  $('btnPrev').disabled = (i===0);
+  $('btnNext').disabled = (i===S.length-1);
+}
+
+function go(n){ cur=Math.max(0,Math.min(S.length-1,n)); render(cur); }
+$('btnPrev').onclick=function(){ go(cur-1); };
+$('btnNext').onclick=function(){ go(cur+1); };
+$('btnReset').onclick=function(){ go(0); };
+document.addEventListener('keydown', function(e){
+  if(e.key==='ArrowRight') go(cur+1);
+  if(e.key==='ArrowLeft')  go(cur-1);
+});
+$('btnDownload').onclick=function(){
+  var blob=new Blob([document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='배열_객체메모리_애니메이션.html'; a.click(); URL.revokeObjectURL(a.href);
+};
+
+render(0);
+</script>
+</body>
+</html>
