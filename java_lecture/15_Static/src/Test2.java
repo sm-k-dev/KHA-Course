@@ -24,7 +24,6 @@ class BankAccount {
 	int accountNumber;   // 이 계좌만의 고유번호 - 계좌마다 값이 다를수 있음
 	String owner;		 // 예금주 이름  - 계좌마다 값이 다를수 있음
 	int balance;		 // 현재 잔액  - 계좌마다 값이 다를수 있음
-	
 
 	//[2] 클래스 변수 선언 (모든 계좌가 공유하는 값)
 	//    static int accountCount = 0  - 지금까지 생성된 계좌 총 개수
@@ -43,17 +42,14 @@ class BankAccount {
 	//    몇 개를 생성하든 그 계좌들이 전부 이 변수 하나를 함께 사용한다.
 	//----------------------------------------------------------------
 
-
 	//[3] 생성자 ① - 예금주 이름만 매개변수로 받는 생성자 (초기잔액 0)
 	//    ★ this() 생성자 호출구문으로 아래 생성자 ②에게 위임하세요.
 
 	//>>> 여기에 생성자 ①을 작성하세요.
 	public BankAccount(String owner) {
 						// "김철수"     
-		
 		this(owner, 0);
 	}
-
 	
 	//----------------------------------------------------------------
 	//[풀이] ★계좌번호 자동생성의 핵심★
@@ -69,7 +65,6 @@ class BankAccount {
 	//       "같이" 더해준다. (계좌 개별 balance와 전체 totalAsset을
 	//        동시에 갱신하는 것이 포인트)
 	//----------------------------------------------------------------
-	
 	
 	//[4] 생성자 ② - 예금주 이름 + 초기잔액을 매개변수로 받는 생성자
 	//    기능 순서:
@@ -98,8 +93,6 @@ class BankAccount {
 		
 	}
 
-
-
 	//[5] 인스턴스메소드 - deposit (입금)
 	//    매개변수: int amount
 	//    반환타입: void
@@ -123,7 +116,6 @@ class BankAccount {
 		// 예) 			   "[1002]에 20000원 입금 완료 (잔액: 70000원)"
 		
 	}
-
 
 	//[6] 인스턴스메소드 - withdraw (출금)   ★boolean을 반환하는 메소드★
 	//    매개변수: int amount
@@ -158,7 +150,6 @@ class BankAccount {
 		 return true; //정상적으로 출금이 끝났으므로  true를 호출한 쪽으로 돌려준다.		
 	}
 
-
 	//[7] 인스턴스메소드 - showInfo (계좌 정보 출력)
 	//    출력형식: "계좌번호: XXXX / 예금주: OOO / 잔액: XXXX원"
 
@@ -167,7 +158,6 @@ class BankAccount {
 		System.out.println("계좌번호: " + this.accountNumber + " / 예금주: " 
 									  + this.owner + " / 잔액: " + this.balance + "원");
 	}
-
 
 	//[8] 클래스메소드(static) - showBankStatus (은행 전체 현황 출력)
 	//    ★static 메소드이므로 this 사용 불가 - accountCount/totalAsset만 접근 가능★
@@ -190,7 +180,6 @@ class BankAccount {
 	}
 
 }  //=========>  class BankAccount
-
 
 public class Test2 {
 	public static void main(String[] args) {
@@ -217,9 +206,6 @@ public class Test2 {
 						// 생성자② 바로 호출
 						// -> accountCount 2에서 3으로 증가, accountNumber = 1003, balance = 30000
 						// -> totalAsset 50000에서 80000으로 증가
-					   
-
-
 
 		//[10] for 반복문으로 배열을 처음부터 끝까지 돌며 각 계좌의 showInfo() 호출
 					   
@@ -234,8 +220,7 @@ public class Test2 {
 			// i=2일 때 accounts[2](박민수) 정보 출력			
 			
 		}
-					   
-					 
+		
 		System.out.println();
 
 		//[11] accounts[1] (이영희) 계좌가 20000원 입금
@@ -245,7 +230,6 @@ public class Test2 {
 		// accounts[1] = 이영희 계좌를 꺼내서 그 객체의 deposit 메소드 호출
 		// -> 이영희의 balance: 50000 -> 70000
 		// -> totalAsset: 80000 -> 100000
-
 
 		//[12] accounts[2] (박민수) 계좌가 50000원 출금 시도
 		//     (박민수 잔액은 30000원뿐이라 50000원 출금은 실패해야 정상!)
