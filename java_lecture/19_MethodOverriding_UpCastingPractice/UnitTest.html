@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>업캐스팅 · 다운캐스팅 메모리 구조</title>
+<style>
+:root{
+  --bg:#0E1420;
+  --panel:#17202F;
+  --panel2:#1E2A3D;
+  --line:#2C3A50;
+  --text:#E6EDF7;
+  --dim:#8A9AB4;
+  --amber:#F2A93B;
+  --teal:#4FD1C5;
+  --red:#FF5D5D;
+  --mono:"D2Coding","Consolas","Menlo","Courier New",monospace;
+  --sans:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;padding:14px 12px 90px;
+  background:var(--bg);color:var(--text);
+  font-family:var(--sans);font-size:14px;line-height:1.6;
+}
+header{margin-bottom:14px}
+h1{
+  font-family:var(--mono);font-size:17px;font-weight:700;
+  margin:0 0 4px;letter-spacing:-0.3px;
+}
+h1 span{color:var(--amber)}
+.sub{color:var(--dim);font-size:12px;margin:0}
+
+/* 진행 표시 */
+.progress{display:flex;gap:4px;margin:12px 0 10px}
+.progress i{
+  flex:1;height:4px;border-radius:2px;background:var(--line);
+  transition:background .25s ease;
+}
+.progress i.on{background:var(--amber)}
+
+/* 코드 패널 */
+.code{
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:10px 8px;font-family:var(--mono);font-size:12px;line-height:1.75;
+  overflow-x:auto;white-space:pre;
+}
+.code .ln{
+  display:block;padding:1px 8px;border-left:3px solid transparent;
+  color:var(--dim);border-radius:3px;transition:all .22s ease;
+}
+.code .ln.active{
+  border-left-color:var(--amber);background:rgba(242,169,59,.12);color:var(--text);
+}
+.code .ln.err{
+  border-left-color:var(--red);background:rgba(255,93,93,.12);color:#FFC9C9;
+}
+
+/* 메모리 영역 */
+.memory{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.zone{
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;
+}
+.zone-title{
+  font-family:var(--mono);font-size:11px;letter-spacing:.5px;
+  color:var(--dim);margin-bottom:8px;display:flex;justify-content:space-between;
+}
+.zone-title b{color:var(--teal);font-weight:600}
+
+/* 스택 변수 */
+.var{
+  border:1px solid var(--line);border-radius:6px;padding:8px 10px;
+  font-family:var(--mono);font-size:12px;background:var(--panel2);
+  transition:all .25s ease;
+}
+.var.pulse{border-color:var(--amber);box-shadow:0 0 0 2px rgba(242,169,59,.18)}
+.var .vtype{color:var(--teal)}
+.var .vval{color:var(--amber)}
+.var .vnull{color:var(--dim)}
+
+/* 참조 화살표 */
+.arrow{
+  height:26px;display:flex;align-items:center;justify-content:center;
+  color:var(--line);font-family:var(--mono);font-size:12px;
+  transition:color .25s ease;
+}
+.arrow.on{color:var(--teal)}
+.arrow.on::after{content:" 0x1A2B (주소 참조)";font-size:11px;color:var(--dim)}
+
+/* 힙 객체 */
+.obj{
+  border:1px dashed var(--line);border-radius:8px;padding:8px;
+  opacity:.25;transition:opacity .3s ease;
+}
+.obj.on{opacity:1}
+.obj-tag{
+  font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:6px;
+}
+.obj-tag b{color:var(--text)}
+
+.area{
+  border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-bottom:6px;
+  background:var(--panel2);position:relative;transition:all .3s ease;
+}
+.area:last-child{margin-bottom:0}
+.area-name{
+  font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:6px;
+}
+.field{
+  font-family:var(--mono);font-size:12px;display:flex;justify-content:space-between;
+  padding:2px 0;
+}
+.field .fv{color:var(--amber);transition:color .2s ease}
+.field .fv.changed{color:#7CFFB2;font-weight:700}
+.method{
+  font-family:var(--mono);font-size:12px;color:var(--teal);padding:2px 0;
+}
+
+/* 접근 차단 표시 */
+.area.blocked{opacity:.32;border-style:dashed}
+.area.blocked::after{
+  content:"참조변수 자료형 Unit 으로는 접근 불가";
+  position:absolute;inset:auto 0 0 0;
+  font-family:var(--sans);font-size:10px;color:var(--red);
+  text-align:center;padding-bottom:4px;
+}
+.area.blocked{padding-bottom:20px}
+.area.open{border-color:var(--amber);box-shadow:0 0 0 2px rgba(242,169,59,.15)}
+
+/* 설명 */
+.note{
+  margin-top:12px;background:var(--panel);border:1px solid var(--line);
+  border-left:3px solid var(--teal);border-radius:6px;padding:10px 12px;
+}
+.note h2{font-size:13px;margin:0 0 6px;color:var(--teal)}
+.note p{margin:0;font-size:13px}
+.note.error{border-left-color:var(--red)}
+.note.error h2{color:var(--red)}
+.note pre{
+  margin:8px 0 0;padding:8px;background:#111826;border-radius:5px;
+  font-family:var(--mono);font-size:11px;color:#FFC9C9;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-all;
+}
+
+/* 하단 조작 */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;
+  background:rgba(14,20,32,.96);border-top:1px solid var(--line);
+  padding:10px 12px;display:flex;gap:8px;align-items:center;
+  backdrop-filter:blur(6px);
+}
+button{
+  font-family:var(--sans);font-size:14px;font-weight:600;
+  border:1px solid var(--line);background:var(--panel2);color:var(--text);
+  border-radius:8px;padding:11px 14px;cursor:pointer;transition:all .18s ease;
+}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.35;cursor:default}
+button.main{background:var(--amber);border-color:var(--amber);color:#1A1200;flex:1}
+button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.step-no{
+  font-family:var(--mono);font-size:12px;color:var(--dim);min-width:44px;text-align:center;
+}
+.dl{
+  width:100%;margin-top:16px;background:var(--panel2);border:1px solid var(--teal);
+  color:var(--teal);
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (min-width:720px){
+  body{max-width:680px;margin:0 auto}
+  .memory{flex-direction:row;align-items:flex-start}
+  .zone{flex:1}
+  .arrow{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>업캐스팅 · <span>다운캐스팅</span> 메모리 구조</h1>
+  <p class="sub">Unit marin = new Marin("마린"); 한 줄이 메모리에서 어떻게 처리되는지 단계별로 확인한다.</p>
+</header>
+
+<div class="progress" id="progress"></div>
+
+<div class="code" id="code"></div>
+
+<div class="memory">
+  <div class="zone">
+    <div class="zone-title"><span>스택(Stack) 영역</span><b>참조변수</b></div>
+    <div class="var" id="varBox">
+      <span class="vtype">Unit</span> marin = <span class="vnull" id="varVal">null</span>;
+    </div>
+  </div>
+
+  <div class="arrow" id="arrow">▼</div>
+
+  <div class="zone">
+    <div class="zone-title"><span>힙(Heap) 영역</span><b>객체</b></div>
+    <div class="obj" id="obj">
+      <div class="obj-tag">실제 생성된 객체 : <b>Marin</b></div>
+
+      <div class="area" id="areaUnit">
+        <div class="area-name">Unit 부모 영역</div>
+        <div class="field"><span>String name</span><span class="fv" id="fName">null</span></div>
+        <div class="field"><span>int hp</span><span class="fv" id="fHp">0</span></div>
+        <div class="field"><span>int damage</span><span class="fv" id="fDmg">0</span></div>
+        <div class="method">attack(Unit) / status()</div>
+      </div>
+
+      <div class="area" id="areaMarin">
+        <div class="area-name">Marin 자식 영역</div>
+        <div class="method">stimPack()</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note" id="note">
+  <h2 id="noteTitle"></h2>
+  <p id="noteBody"></p>
+  <pre id="noteCode" hidden></pre>
+</div>
+
+<button class="dl" id="dlBtn">이 파일 다운로드</button>
+
+<div class="bar">
+  <button id="prevBtn">이전</button>
+  <span class="step-no" id="stepNo">1 / 9</span>
+  <button class="main" id="nextBtn">다음</button>
+</div>
+
+<script>
+var CODE = [
+  'Unit marin;',
+  'marin = new Marin("마린");',
+  '',
+  'marin.status();',
+  'marin.stimPack();',
+  '((Marin)marin).stimPack();',
+  '((Tank)marin).siegeMode();'
+];
+
+var STEPS = [
+  {
+    line: 0, errLine: -1,
+    varVal: null, arrow: false, obj: false,
+    name: 'null', hp: '0', dmg: '0', changed: [],
+    unit: 'plain', marin: 'plain',
+    title: '1. 참조변수 선언',
+    body: '스택 영역에 marin 이라는 이름의 자리가 만들어진다. 이 자리에는 객체가 아니라 객체의 주소만 저장된다. 아직 대입한 값이 없으므로 null 이다. 자료형은 Unit 으로 고정되었고, 이 자료형이 앞으로 무엇을 호출할 수 있는지를 결정한다.',
+    code: null
+  },
+  {
+    line: 1, errLine: -1,
+    varVal: null, arrow: false, obj: true,
+    name: 'null', hp: '0', dmg: '0', changed: [],
+    unit: 'plain', marin: 'plain',
+    title: '2. new Marin("마린") — 객체 생성',
+    body: 'new 연산자가 힙 영역에 Marin 객체를 만든다. 이때 Marin 자식 영역만 만들어지는 것이 아니라, 부모인 Unit 영역이 함께 만들어져 하나의 객체 안에 포함된다. 상속받은 name, hp, damage 와 attack(), status() 는 이 Unit 영역에 존재한다.',
+    code: null
+  },
+  {
+    line: 1, errLine: -1,
+    varVal: null, arrow: false, obj: true,
+    name: '"마린"', hp: '100', dmg: '10', changed: ['fName','fHp','fDmg'],
+    unit: 'open', marin: 'plain',
+    title: '3. 생성자 실행 — 부모부터 초기화',
+    body: 'Marin(String name) 생성자가 실행되면 첫 줄의 super(name) 이 부모 Unit(String name) 생성자를 호출한다. 부모 생성자가 name 에 "마린", hp 에 기본값 100, damage 에 기본값 10 을 저장한다. 부모 영역의 초기화가 끝난 뒤에 자식 생성자의 나머지 코드가 실행된다.',
+    code: null
+  },
+  {
+    line: 1, errLine: -1,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '100', dmg: '10', changed: [],
+    unit: 'plain', marin: 'plain',
+    title: '4. 대입 — 여기서 업캐스팅이 일어난다',
+    body: '완성된 객체의 주소가 marin 에 저장된다. 저장되는 순간 Marin 객체가 Unit 자료형으로 취급되는데, 이것이 업캐스팅이다. 자식 객체는 부모의 멤버를 모두 가지고 있어 부족한 것이 생길 수 없으므로 (Unit) 같은 형변환 연산자를 쓰지 않아도 자동으로 처리된다.',
+    code: null
+  },
+  {
+    line: 1, errLine: -1,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '100', dmg: '10', changed: [],
+    unit: 'open', marin: 'blocked',
+    title: '5. 접근 가능 범위는 참조변수 자료형이 정한다',
+    body: '힙에 있는 객체는 Marin 이지만, marin 의 자료형은 Unit 이다. 컴파일러는 참조변수의 자료형만 보고 무엇을 호출할 수 있는지 판단하므로 Unit 영역까지만 접근이 허용된다. Marin 자식 영역의 stimPack() 은 객체 안에 분명히 존재하지만 이 참조변수로는 보이지 않는다.',
+    code: null
+  },
+  {
+    line: 3, errLine: -1,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '100', dmg: '10', changed: [],
+    unit: 'open', marin: 'blocked',
+    title: '6. marin.status() — 호출 성공',
+    body: 'status() 는 Unit 영역에 선언된 메소드이므로 Unit 자료형 참조변수로 호출할 수 있다. 실행 결과는 [유닛 상태] 마린 - 체력 : 100, 공격력 : 10 이다.',
+    code: null
+  },
+  {
+    line: -1, errLine: 4,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '100', dmg: '10', changed: [],
+    unit: 'open', marin: 'blocked',
+    title: '7. marin.stimPack() — 컴파일 오류',
+    body: '객체 안에 stimPack() 이 있어도 컴파일러는 참조변수 자료형 Unit 만 확인한다. Unit 에는 stimPack() 이 선언되어 있지 않으므로 실행되기 전, 컴파일 단계에서 다음 오류가 발생한다.',
+    code: 'error: cannot find symbol\n        marin.stimPack();\n             ^\n  symbol:   method stimPack()\n  location: variable marin of type Unit'
+  },
+  {
+    line: 5, errLine: -1,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '90', dmg: '15', changed: ['fHp','fDmg'],
+    unit: 'open', marin: 'open',
+    title: '8. ((Marin)marin).stimPack() — 다운캐스팅',
+    body: '(Marin) 을 붙이면 이 참조를 Marin 자료형으로 다시 취급하라는 지시가 된다. 접근 가능 범위가 Marin 자식 영역까지 넓어져 stimPack() 을 호출할 수 있다. 실행되면 hp 는 100 에서 90 으로, damage 는 10 에서 15 로 바뀐다. 객체 자체가 바뀐 것이 아니라, 원래 있던 영역이 보이게 된 것이다.',
+    code: null
+  },
+  {
+    line: -1, errLine: 6,
+    varVal: '0x1A2B', arrow: true, obj: true,
+    name: '"마린"', hp: '90', dmg: '15', changed: [],
+    unit: 'open', marin: 'open',
+    title: '9. ((Tank)marin) — 실행 중 예외',
+    body: '힙에 있는 실제 객체는 Marin 이고 Tank 영역은 존재하지 않는다. 그러나 Tank 도 Unit 의 자식이므로 컴파일은 통과하고, 실행하는 순간 예외가 발생한다. 그래서 다운캐스팅 전에는 if (marin instanceof Tank) 로 실제 객체를 먼저 확인해야 한다.',
+    code: 'Exception in thread "main" java.lang.ClassCastException:\nclass Marin cannot be cast to class Tank\n        at UnitTest.main(UnitTest.java:7)'
+  }
+];
+
+var cur = 0;
+var codeEl = document.getElementById('code');
+var progEl = document.getElementById('progress');
+
+// 코드 줄 생성
+for (var i = 0; i < CODE.length; i++) {
+  var ln = document.createElement('span');
+  ln.className = 'ln';
+  ln.id = 'ln' + i;
+  ln.textContent = CODE[i] === '' ? ' ' : CODE[i];
+  codeEl.appendChild(ln);
+}
+// 진행 표시 생성
+for (var j = 0; j < STEPS.length; j++) {
+  progEl.appendChild(document.createElement('i'));
+}
+
+function setArea(el, mode) {
+  el.className = 'area' + (mode === 'blocked' ? ' blocked' : mode === 'open' ? ' open' : '');
+}
+
+function render() {
+  var s = STEPS[cur];
+
+  // 코드 하이라이트
+  for (var i = 0; i < CODE.length; i++) {
+    var el = document.getElementById('ln' + i);
+    el.className = 'ln' + (i === s.line ? ' active' : i === s.errLine ? ' err' : '');
+  }
+
+  // 진행 표시
+  var bars = progEl.children;
+  for (var k = 0; k < bars.length; k++) {
+    bars[k].className = k <= cur ? 'on' : '';
+  }
+
+  // 스택 변수
+  var vv = document.getElementById('varVal');
+  if (s.varVal === null) {
+    vv.textContent = 'null';
+    vv.className = 'vnull';
+  } else {
+    vv.textContent = s.varVal;
+    vv.className = 'vval';
+  }
+  document.getElementById('varBox').className = 'var' + (s.varVal ? ' pulse' : '');
+
+  // 화살표 · 객체
+  document.getElementById('arrow').className = 'arrow' + (s.arrow ? ' on' : '');
+  document.getElementById('obj').className = 'obj' + (s.obj ? ' on' : '');
+
+  // 필드 값
+  document.getElementById('fName').textContent = s.name;
+  document.getElementById('fHp').textContent = s.hp;
+  document.getElementById('fDmg').textContent = s.dmg;
+  var ids = ['fName', 'fHp', 'fDmg'];
+  for (var m = 0; m < ids.length; m++) {
+    var f = document.getElementById(ids[m]);
+    f.className = 'fv' + (s.changed.indexOf(ids[m]) >= 0 ? ' changed' : '');
+  }
+
+  // 영역 접근 상태
+  setArea(document.getElementById('areaUnit'), s.unit);
+  setArea(document.getElementById('areaMarin'), s.marin);
+
+  // 설명
+  document.getElementById('noteTitle').textContent = s.title;
+  document.getElementById('noteBody').textContent = s.body;
+  var nc = document.getElementById('noteCode');
+  if (s.code) {
+    nc.textContent = s.code;
+    nc.hidden = false;
+  } else {
+    nc.hidden = true;
+  }
+  document.getElementById('note').className = 'note' + (s.errLine >= 0 ? ' error' : '');
+
+  // 버튼
+  document.getElementById('stepNo').textContent = (cur + 1) + ' / ' + STEPS.length;
+  document.getElementById('prevBtn').disabled = (cur === 0);
+  document.getElementById('nextBtn').textContent = (cur === STEPS.length - 1) ? '처음으로' : '다음';
+}
+
+document.getElementById('nextBtn').addEventListener('click', function () {
+  cur = (cur === STEPS.length - 1) ? 0 : cur + 1;
+  render();
+});
+document.getElementById('prevBtn').addEventListener('click', function () {
+  if (cur > 0) { cur--; render(); }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') { document.getElementById('nextBtn').click(); }
+  if (e.key === 'ArrowLeft') { document.getElementById('prevBtn').click(); }
+});
+
+// 다운로드 버튼
+document.getElementById('dlBtn').addEventListener('click', function () {
+  var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '캐스팅_메모리_구조.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+render();
+</script>
+</body>
+</html>
