@@ -1,4 +1,4 @@
-package Ex3;
+package EX3;
 /*
 ===============================================================
  RemoteControl 인터페이스
@@ -21,11 +21,3 @@ public interface RemoteControl {
 						void turnOff(); //전원을 끄는 기능 
 	
 }
-
-
-
-
-
-
-
-

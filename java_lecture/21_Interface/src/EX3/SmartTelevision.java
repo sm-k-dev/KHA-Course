@@ -1,4 +1,4 @@
-package Ex3;
+package EX3;
 
 /*
 ===============================================================
@@ -47,11 +47,3 @@ public class SmartTelevision implements RemoteControl, Searchable {
 	}
 
 }
-
-
-
-
-
-
-
-

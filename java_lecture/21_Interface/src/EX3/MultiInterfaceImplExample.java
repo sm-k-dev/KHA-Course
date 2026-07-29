@@ -1,4 +1,4 @@
-package Ex3;
+package EX3;
 /*
 ===============================================================
  MultiInterfaceImplExample 클래스 (실행 시작점)
@@ -89,14 +89,3 @@ public class MultiInterfaceImplExample {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
