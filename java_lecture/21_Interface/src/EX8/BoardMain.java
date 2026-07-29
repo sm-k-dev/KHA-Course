@@ -1,117 +1,130 @@
 package EX8;
+/*
+===============================================================
+ 게시판 예제 : 실무 구조 응용 버전 (주석 상단 배치판)
+---------------------------------------------------------------
+ 구조 : Controller -> Service -> Repository
+ 저장 : 데이터베이스 대신 배열 사용
+ 문법 : 클래스, 인터페이스(추상/default/static/private),
+        업캐스팅, HAS-A 관계, 배열
+---------------------------------------------------------------
 
-// [1] Board 클래스
-//		- 게시글 한 건의 정보를 담는 설계도, 실무에서는 DTO 또는 VO 역할을 하는 클래스라 부른다
-class Board {
-	private int id;			// 게시글 글번호
-	private String title;	// 게시글 제목
-	private String content;	// 게시글 내용
-	private String writer;	// 작성자 이름
-	
-	// 게시글 한 건의 정보를 초기화 시키는 생성자
-	public Board(int id, String title, String content, String writer) {
-		super();
-		this.id = id;
-		this.title = title;
-		this.content = content;
-		this.writer = writer;
-	}
+[1] 실무에서 게시판을 만들 때 나누는 3단계
 
-	// Getter 역할을 하는 메소드: private 으로 만든 변수의 값을 외부로 제공하는 메소드
-	public int getId() {
-		return id;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public String getContent() {
-		return content;
-	}
-	public String getWriter() {
-		return writer;
-	}
-	
-	// Setter 역할을 하는 메소드: private 으로 만든 변수를 외부에서 매개변수를 전달 받은 새 값으로 변경하는 메소드
-	public void setId(int id) {
-		this.id = id;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	// 기능: 글 내용 변경
-	public void setContent(String content) {
-		this.content = content;
-	}
-	public void setWriter(String writer) {
-		this.writer = writer;
-	}
-}
+  Controller  요청을 받아서 어느 기능을 실행할지 정한다.
+              (실무에서는 웹브라우저의 요청을 받는 자리다.
+               여기서는 main 에서 직접 호출하는 방식으로 대신한다.)
 
-// [2] BoardRepository 인터페이스
-//		- 저장소가 지켜야 할 규칙만 정한다. 실무에서 DAO 라고 부른다.
-interface BoardRepository {
-	
-	// 상수. public static final 이 자동으로 붙는다.
-	int MAX_SIZE = 100;
-	
-	// 추상메소드. 글 추가 기능
-	//		반환타입 boolean의 의미: 글 추가 성공 - true 반환, 글 추가 실패 - false 반환
-	boolean insert(Board board);
-	
-	// 추상메소드. 모든 글 조회 기능
-	//		반환타입 Board[]의 의미: 저장된 글 전체를 Board 배열로 반환 
-	Board[] selectAll();
-	
-	// 추상메소드. 글 번호를 이용해서 글 한건의 정보를 조회 하는 기능
-	Board selectOne(int boardId);
-	
-	// 추상메소드. 글 번호를 이용해서 글 한건의 정보를 수정 하는 기능
-	boolean updateOne(int boardId, String newContent);
-	
-	// 추상메소드. 글 번호를 이용해서 글 한건의 정보를 삭제하는 기능
-	boolean deleteOne(int boardId);
-}
+  Service     업무 규칙을 처리한다.
+              제목이 비었는지 검사하고, 결과 메시지를 정한다.
 
-// [3] MemoryBoardRepository 클래스
-//		- 배열(DB 공간으로 사용)에 저장하는 저장소. 추상메소드 5개를 오버라이딩 한다.
-class MemoryBoardRepository implements BoardRepository {
-	
-	// 글을 여러 건을 담아 둘 배열. 크기는 인터페이스의 상수값 100을 사용
-	private Board[] boards = new Board[MemoryBoardRepository.MAX_SIZE];
-	
-	// 실제로 채워진 칸의 갯수 저장할 변수 만들기
-	private int count = 0;
-	
-	@Override
-	public boolean insert(Board board) {
-		return false;
-	}
+  Repository  데이터를 실제로 저장하고 꺼낸다.
+              (실무에서는 데이터베이스를 다루는 자리다.
+               여기서는 배열에 저장하는 방식으로 대신한다.)
 
-	@Override
-	public Board[] selectAll() {
-		return null;
-	}
+  호출 순서 : 클라이언트 → Controller → Service → Repository → DB
 
-	@Override
-	public Board selectOne(int boardId) {
-		return null;
-	}
+---------------------------------------------------------------
+[2] 왜 인터페이스를 쓰는가
 
-	@Override
-	public boolean updateOne(int boardId, String newContent) {
-		return false;
-	}
+  Service 는 Repository 를 "인터페이스 자료형" 으로 가지고 있다.
 
-	@Override
-	public boolean deleteOne(int boardId) {
-		return false;
-	}
-}
+      private BoardRepository repository;
 
+  이렇게 하면 저장 방식이 배열에서 데이터베이스로 바뀌어도
+  BoardRepository 를 구현한 새 클래스를 만들어 넣어 주기만 하면 된다.
+  Service 와 Controller 코드는 한 줄도 고치지 않아도 된다.
+
+  반대로 자료형을 MemoryBoardRepository 로 적어 두면
+  저장 방식을 바꿀 때마다 Service 코드를 고쳐야 한다.
+
+---------------------------------------------------------------
+[3] 이 파일에 들어 있는 인터페이스 문법
+
+  추상메소드        BoardRepository, BoardService 의 기능 목록
+  상수              BoardRepository.MAX_SIZE
+  default 메소드    BoardService.printTitle()
+  private 메소드    BoardService.line()      (default 메소드 안에서만 사용)
+  static 메소드     BoardService.isValidTitle()
+  업캐스팅          BoardRepository repository = new MemoryBoardRepository();
+  HAS-A 관계        Service 가 Repository 를 필드로 가진다
+
+===============================================================
+*/
+
+//===============================================================
+//7. 실행 클래스
+// 파일명과 클래스명이 같아야 한다.
+//===============================================================
 public class BoardMain {
 
+	//main 메소드 :  자바 프로그램의 시작 지점 
 	public static void main(String[] args) {
+		//---------------------------------------
+		//[1] 조립 단계
+		//---------------------------------------
+			
+		//저장소 객체를 만들어 부모 인터페이스 자료형의 참조변수에 담는다.  (업캐스팅)
+			BoardRepository   repository = new MemoryBoardRepository();  //<---- 사원
+			
+		//Service를 만들면서 위에서 만든 저장소를 생성자로 전달 한다.
+			// 이 순간  Service 와 Repository 가 연결 된다.
+			BoardService     service =  new BoardServiceImpl(repository); //<---- 부장 
+			
+		//Controller 를 만들면서 바로 위에서 만든 Service를 생성자로 전달 한다.
+			//Controller -> Service -> Repository 연결이 완성 된다.
+			BoardController  controller = new BoardController(service);  //<----- 사장 
+			
+		//----------------------------------------------------------
+		// [2] 사장인 Controller가 클라이언트에게 새글 등록 요청을 받았다. 
+		//---------------------------------------------------------			
+			//첫번째 - 새 글 객체를 만들면서 바로 Controller 에게 등록 요청을 한다.
+			//참고.  첫번째 글 등록에 성공한다! 이유 : "첫 글" 제목이 정상이기떄문  
+			controller.requestRegister( new Board(1, "첫 글", "내용 입니다", "홍길동" ) );
+						  
+			//두번째 - 새 글 객체를 만들면서 바로 Controller 에게 등록 요청을 한다. 
+			//참고.  두번째 글 등록에 성공한다! 이유 : "인터페이스 질문" 제목이 정상이기떄문 
+			controller.requestRegister( new Board(2, "인터페이스 질문", "default 메소드가 궁금합니다", "김철수") );
+			
+			//세번째 - 새 글 객체를 만들면서 바로 Controller 에게 등록 요청을 한다.
+			//       단!  글제목을 입력하지 않고(글제목은 빈공백문자열로 사용) 새글 등록 요청을 한다
+			//참고.  세번째 글 등록에 실패한다! 이유 : "    "빈공백을 전달 하여 글제목이 정상적이지 않기 떄문 
+			controller.requestRegister( new Board(3, "    ", "제목이 공백뿐입니다", "이영희") );
+			
+		//------------------------------------------
+		// [3]  글목록 조회  요청을 받았을떄
+		//------------------------------------------
+			
+			// 추가에 성공한 글 2개 의 정보를 출력(조회)하자 
+			controller.requestList();
 		
-	}
+		//--------------------------------------------
+		// [4] 글한건 정보(글 상세) 조회  : 있는 글과 없는 글 
+		//---------------------------------------------
+			
+			// 2번 글번호의 글은 존재하므로 정상 출력된다
+			controller.requestDetail(2);
+			
+			// 99번 글번호의 글은 없으므로 안내 문구가 출력된다
+			controller.requestDetail(99);
+			
+		//-------------------------------------------	
+		// [5] 특정 글번호에 해당하는 글의 글내용 수정 
+		//------------------------------------------
+		
+			// 1번 글번호의 글 내용을 수정(변경)
+			controller.requestModify(1,  "수정된 내용입니다");
+			
+			// 바로 윗줄에서 요청했던  글 내용이 실제로 바뀌었는지 확인하기 위해  다시 출력한다
+			controller.requestDetail(1);
+		
+		//---------------------------------------------
+		//[6] 특정 글번호에 해당하는 글 삭제 
+		//--------------------------------------------
+			
+			//1번 글번호의 글 한건 전체 삭제 
+			controller.requestRemove(1);
+			
+	}// main() 메소드 끝
 
 }
