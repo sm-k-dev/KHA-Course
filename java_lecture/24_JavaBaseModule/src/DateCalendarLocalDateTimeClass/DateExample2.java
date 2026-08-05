@@ -101,14 +101,3 @@ public class DateExample2 {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
