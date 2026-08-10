@@ -144,29 +144,158 @@ public class BoardCommentTest {
 	public static void main(String[] args) {
 
 		//1단계 : selectBoard 메소드 호출해서 (글번호 2 전달) 글 1개 HashMap 주소 저장
-
+		HashMap<String, Object> board = selectBoard(2);
 
 
 		//2단계 : board 에서 글 정보 꺼내 상세보기 출력 (다운캐스팅 필수)
-
+		
+		//board.get("no") → Object 타입으로 new Integer(2) 반환
+		//→ (Integer) 다운캐스팅 → int 변수 저장(오토언박싱)
+		int no = (Integer)board.get("no");			// 글 번호 
+		
+		//board.get("title") → Object 타입으로 "과제 제출" String 객체 반환
+		//→ (String) 다운캐스팅 해야 String 변수에 저장 가능
+		//※ 다운캐스팅 없이  String title = board.get("title");  → 컴파일 에러!
+		String title = (String)board.get("title");   // 글제목 
+		String writer = (String)board.get("writer"); // 작성자
+		String content = (String)board.get("content"); //글 내용
+		int hit = (Integer)board.get("hit");		   //글 조회수 
+		
+		System.out.println("================== 글 상세보기 ================");
+		System.out.println("글번호 : " + no);   //글번호 : 2
+		System.out.println("제목 : " + title); //제목 : 과제 제출
+		System.out.println("작성자 : " + writer);//작성자 : 이학생
+		System.out.println("내용 : " + content);//내용 : 3장 과제 제출합니다
+		System.out.println("조회수 : " + hit);   //조회수 : 42
+		
 
 
 		//3단계 : selectCommentList 메소드 호출해서 (글번호 2 전달) 댓글 목록 ArrayList 주소 저장
+		List<HashMap<String, Object>> commentList = selectCommentList(2);
+		/*
+		selectCommentList(2)
+		→ "2번 글에 달린 댓글만 조회해 달라" 는 의미로 글번호 2 를 전달
+		→ 댓글 3개(HashMap 3개)가 담긴 ArrayList 배열 주소를 반환 받음
 
+		 [Stack]                     [Heap]
+		┌──────────────┐    ┌─────────────────────────┐
+		│ commentList  │───▶│ ArrayList (댓글 3개)      │
+		└──────────────┘    │  0번 ─▶ 댓글1 HashMap    │
+		                    │  1번 ─▶ 댓글2 HashMap    │
+		                    │  2번 ─▶ 댓글3 HashMap    │
+		                    └─────────────────────────┘
+		*/		
 
 
 		//4단계 : [실무 포인트] board 안에 "commentList" key 로 댓글 목록 통째로 저장
+		/*
+		왜 이렇게 하는가? (효율적인 데이터 관리)
 
+		board 변수와 commentList 변수를 따로따로 2개 들고 다니면
+		→ 다른 메소드에 전달할 때마다 2개를 같이 전달해야 하고
+		→ 글은 전달했는데 댓글 전달을 깜빡하는 실수가 생긴다.
 
+		글 HashMap 안에 댓글 ArrayList "주소"를 value 로 저장해 두면
+		→ board 하나만 전달해도 글과 댓글이 전부 따라간다!
+		→ 『글 + 댓글』이 하나의 데이터 묶음이 된다.
+		*/
+		board.put("commentList", commentList);
+		/*
+		put 이 가능한 이유
+		→ board 의 value 타입은 Object 로 정해져 있다.
+		→ ArrayList 객체도 결국 Object 의 자식이므로
+		  ArrayList 배열의 "주소"가 Object 타입 value 자리에 업캐스팅되어 저장된다.
+		※ 댓글 데이터가 복사되어 들어가는 것이 아니라 주소만 저장된다!
+
+		[Heap]  4단계 실행 후 완성된 전체 구조 (실무 핵심 그림!)
+		┌──────────────────────────────┐
+		│ 글 HashMap (board)            │
+		│──────────────────────────────│
+		│ "no"          : 2            │
+		│ "title"       : "과제 제출"    │
+		│ "writer"      : "이학생"      │
+		│ "content"     : "3장 과제..."  │
+		│ "hit"         : 42           │
+		│ "commentList" : 주소 ────────┼────┐
+		└──────────────────────────────┘    │
+		                                    ▼
+		                     ┌─────────────────────────┐
+		                     │ ArrayList (댓글 목록)      │
+		                     │  0번 ─▶ 댓글1 HashMap     │
+		                     │         {commentNo:1,   │
+		                     │          writer:김학생,   │
+		                     │          content:저도... }│
+		                     │  1번 ─▶ 댓글2 HashMap     │
+		                     │         {commentNo:2,   │
+		                     │          writer:박학생,   │
+		                     │          content:기한... }│
+		                     │  2번 ─▶ 댓글3 HashMap     │
+		                     │         {commentNo:3,   │
+		                     │          writer:선생님,   │
+		                     │          content:확인... }│
+		                     └─────────────────────────┘
+		- 글 HashMap 이 댓글 ArrayList 를 품고 있는 구조
+		- board 주소 하나만 있으면 글도 꺼내고 댓글도 전부 꺼낼 수 있다!
+		*/		
+		
 
 		//5단계 : board 에서 "commentList" key 로 댓글 목록 다시 꺼내 댓글 갯수 출력
+		List<HashMap<String, Object>>  list  = (List<HashMap<String,Object>>)board.get("commentList");
+		/*
+		실행 순서
+		1. board.get("commentList")
+		   → key "commentList" 와 연결되어 저장된 value 반환
+		   → 저장할 때 Object 타입으로 업캐스팅되어 저장했으므로
+		     Object 타입으로 ArrayList 배열 "주소"가 반환된다.
+		2. (List<HashMap<String, Object>>) 다운캐스팅
+		   → Object 타입을 원래 타입인 List<HashMap<String, Object>> 로 되돌림
+		   → 문자열은 (String), 정수는 (Integer) 로 되돌렸듯이
+		     ArrayList 는 (List<HashMap<String, Object>>) 로 되돌린다. (원리는 똑같다!)
+		3. list 참조변수에 ArrayList 배열 주소 저장
+
+		※ 새로운 ArrayList 가 만들어지는 것이 아니다!
+		  3단계의 commentList 와 5단계의 list 는
+		  Heap 에 있는 "같은" ArrayList 배열 주소를 가리킨다.
+
+		※ 이클립스에서 이 줄에 노란 밑줄(unchecked 경고)이 표시될 수 있다.
+		  → 에러가 아니라 "다운캐스팅한 타입이 정말 맞는지 자바가 100% 확인할 수 없다" 는 알림일 뿐이다.
+		  → 우리가 4단계에서 직접 ArrayList 를 저장했으므로 타입이 맞다는 것을 알고 있다. 무시하고 진행해도 된다.
+		*/
 
 
-
+		System.out.println("==================== 댓글 (3개) ======================");
+		
 		//6단계 : for 반복문으로 댓글 전체 출력
-
-
-
+		//list.size() → 3 반환 → i 는 0, 1, 2 까지만 반복
+		for(int i=0;   i<list.size();   i++) {
+			
+			//1. ArrayList 배열의 i번 index 칸에 저장된 댓글(HashMap) 주소를 꺼내 저장
+			HashMap<String, Object>  comment = list.get(i);
+			//i=0 → 댓글1 HashMap {commentNo=1, boardNo=2, writer=김학생, content=저도 방금 제출했어요}
+			//i=1 → 댓글2 HashMap {commentNo=2, boardNo=2, writer=박학생, content=기한이 언제까지인가요?}
+			//i=2 → 댓글3 HashMap {commentNo=3, boardNo=2, writer=선생님, content=확인했습니다 수고했어요}
+			
+			//2. 댓글(HashMap)에서 컬럼이름(key)으로 데이터(value) 꺼내기 (다운캐스팅 필수)
+		 	int commentNo = (Integer)comment.get("commentNo");
+		 	//i=0 → 1     i=1 → 2     i=2 → 3
+		 	
+		 	String commentWriter = (String)comment.get("writer");
+		 	//i=0 → "김학생"     i=1 → "박학생"     i=2 → "선생님"
+		 	
+		 	String commentContent = (String)comment.get("content");
+			//i=0 → "저도 방금 제출했어요"
+			//i=1 → "기한이 언제까지인가요?"
+			//i=2 → "확인했습니다 수고했어요"
+		 	
+		 	//3. 꺼낸 데이터들을 댓글 한 줄 형태로 출력
+		 	System.out.println(commentNo + " | " + commentWriter + " | " + commentContent);
+		 	/*
+		 	1 | 김학생 : 저도 방금 제출했어요        <- 반복 1 (i=0)
+		 	2 | 박학생 : 기한이 언제까지인가요?      <-  반복 2 (i=1)
+		 	3 | 선생님 : 확인했습니다 수고했어요      <-  반복 3 (i=2)
+			*/
+		
+		} //for
 	}//----- main
 }//--- class
 
