@@ -111,8 +111,17 @@ public class Exercise02_Student {
         //   저장 방향 : [Heap 의 String] ==(통로: Files 가 자동 관리)==> [디스크]
         //
         // TODO: content 문자열을 만들고 Files.writeString 으로 저장
+        String content = "홍길동,90,85,95\n"
+        				+"김철수,70,65,80\n" 
+        				+"이영희,100,95,90\n";
 
-
+        //score.txt 파일에  위 학생 문자열들을 한번에 기록 
+        Files.writeString(scorePath, content, StandardCharsets.UTF_8);
+      /*  
+        홍길동,90,85,95
+        김철수,70,65,80
+        이영희,100,95,90
+      */
         // ---------- (2) 줄 단위로 읽기 ----------
         //
         //   읽기 방향 : [디스크] ==(통로)==> [Heap 의 ArrayList]
@@ -124,6 +133,7 @@ public class Exercise02_Student {
         //   줄바꿈 \n 은 자르는 기준으로만 쓰이고 List 에는 안 들어간다
         //
         // TODO: List<String> lines = ?
+        List<String> lines = Files.readAllLines(scorePath, StandardCharsets.UTF_8);
 
 
         // ---------- (3)(4) 계산하고 출력하기 ----------
@@ -131,8 +141,12 @@ public class Exercise02_Student {
 
         // 결과를 담을 목록 (첫 줄에 제목부터 넣어 둔다)
         List<String> resultList = new ArrayList<>();
+        
         // TODO: resultList 에 "이름,총점,평균" 제목 줄 추가
         //       (반복문 밖에서 딱 1번만. 안에 넣으면 매 줄마다 제목이 들어간다)
+        resultList.add("이름,총점,평균");
+ 
+
 
         //   1회차 처리 절차 모델 (이 순서를 그대로 코드로 옮기면 된다)
         //
@@ -162,7 +176,36 @@ public class Exercise02_Student {
         //       Integer.parseInt() 로 점수 3개를 숫자로 바꾸고
         //       총점과 평균을 구해 화면에 출력하고
         //       resultList 에 "이름,총점,평균" 형식으로 추가
-
+        //for (String line : lines) {  분해  (향상된 for 문)
+        //  lines 목록의 칸을 0번부터 하나씩 꺼내 String line 변수에 담고,
+        //  담을 때마다 중괄호 안을 1회 실행한다. 꺼낼 칸이 없으면 반복 종료.
+        //  회차 예 : 1회차 line = "홍길동,90,85,95", 2회차 line = "김철수,70,65,80" ...]
+        
+        for(String line  : lines) {
+        	
+            //String[] arr = line.split(",");  분해
+            //  String[]        : String 을 여러 칸에 담는 "배열" 자료형
+            //  line.split(",") : line 문자열을 쉼표 위치에서 잘라 배열로 돌려준다
+            //                    (쉼표 자체는 버려진다)
+            //  실행 결과       : "홍길동,90,85,95" --> 길이 4짜리 배열
+            //                    [0]"홍길동" [1]"90" [2]"85" [3]"95"
+            //                    배열의 칸 번호(인덱스)는 0 부터 시작한다
+        	String[]  arr  = line.split(",");
+        	
+        	String name = arr[0];  //"홍길동"
+        	
+        	int kor = Integer.parseInt(arr[1]);    // 국어 점수 90
+        	int eng = Integer.parseInt(arr[2]);    // 영어 점수 85
+        	int mat = Integer.parseInt(arr[3]);    // 수학 점수 95
+        	
+        	int total = kor + eng + mat; //총점 
+        	
+        	int  avg = total / 3;        //평균
+        	
+        	System.out.println(name + " / 총점:" + total + " / 평균:" + avg);
+        	
+        	resultList.add(name + "," + total + "," + avg);
+        }
 
         System.out.println();
 
@@ -170,6 +213,8 @@ public class Exercise02_Student {
         //   저장 방향 : [Heap resultList] ==(통로)==> [디스크 result.txt]
         //   요소마다 줄바꿈이 자동으로 붙는다 (add 할 때 \n 을 넣지 말 것)
         // TODO: Files.write 로 resultList 저장
+        Files.write(resultPath, resultList, StandardCharsets.UTF_8);
+        
 
         System.out.println("===== result.txt 저장 완료 =====");
         System.out.println();
@@ -180,6 +225,23 @@ public class Exercise02_Student {
         //     i = 0 부터 saved.size() 직전까지 / 화면에는 (i + 1) 로 출력
         // TODO: result.txt 를 readAllLines 로 읽고
         //       인덱스 for 문으로 (i+1)행 형식으로 출력
+        
+        List<String> saved = Files.readAllLines(resultPath, StandardCharsets.UTF_8);
+        
+        for(int i = 0;  i < saved.size();   i++) {
+        	
+        	System.out.println((i + 1) + "행 : " + saved.get(i));
+        }
+        
+        
 
     }
 }
+
+
+
+
+
+
+
+
