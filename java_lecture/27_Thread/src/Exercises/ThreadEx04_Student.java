@@ -70,7 +70,8 @@ class LikeService {
     //----------------------------------------------------------
 
     //여기에 TODO 1 을 작성하시오
-
+	int like = 0;
+	
 
     //----------------------------------------------------------
     // TODO 2 : 좋아요 수를 1 올리는 메소드를 완성하시오
@@ -88,9 +89,9 @@ class LikeService {
     //----------------------------------------------------------
 
     //여기에 TODO 2 의 메소드를 작성하시오
-
-
-
+	public void increase() {
+		like++;
+	}
 
 }   //LikeService 클래스의 끝
 
@@ -105,6 +106,7 @@ class LikeTask implements Runnable {
     //----------------------------------------------------------
 
     //여기에 TODO 3 을 작성하시오
+	LikeService service;
 
 
     //----------------------------------------------------------
@@ -119,9 +121,9 @@ class LikeTask implements Runnable {
     //----------------------------------------------------------
 
     //여기에 TODO 4 의 생성자를 작성하시오
-
-
-
+	public LikeTask(LikeService service) {		
+		this.service = service;
+	}
 
     //----------------------------------------------------------
     // TODO 5 : run 메소드의 몸통을 완성하시오
@@ -136,6 +138,11 @@ class LikeTask implements Runnable {
     public void run() {
 
         //여기에 TODO 5 를 작성하시오
+    	for(int i=0;  i<1000000;  i++) {  //100만번 반복
+    		
+    		service.increase(); //공유 서비스의 increase() 호출  -> like 멤버변수 값 1증가 시도 
+    	}
+    	
 
     }   //run 메소드의 끝
 
@@ -156,6 +163,7 @@ public class ThreadEx04_Student {
         //------------------------------------------------------
 
         //여기에 TODO 6 을 작성하시오
+    	LikeService service = new LikeService();
 
 
         //------------------------------------------------------
@@ -164,8 +172,9 @@ public class ThreadEx04_Student {
         //------------------------------------------------------
 
         //여기에 TODO 7 을 작성하시오
-
-
+    	LikeTask task = new LikeTask(service);
+    	
+    	
         //------------------------------------------------------
         // TODO 8 : 스레드 2개를 만들고 시작한 뒤, 끝날 때까지 기다리시오
         //   줄 1 : Thread t1 = new Thread(task, "사용자A");
@@ -177,13 +186,16 @@ public class ThreadEx04_Student {
         //------------------------------------------------------
 
         //여기에 TODO 8 의 여섯 줄을 작성하시오
+    	Thread t1  = new Thread(task, "사용자A");
+    	Thread t2 = new Thread(task, "사용자B");
+    	
+    	//두 스레드를 동시에 일 시작 시키기 
+    	t1.start();  t2.start();
 
+    	//위 두 스레드가 작업이 모두 끝날떄 까지 main스레드를 대기 시킨다
+    	t1.join();   t1.join();
 
-
-
-
-
-
+   
         //------------------------------------------------------
         // TODO 9 : 기대값과 실제값을 출력하시오
         //   --> System.out.println("기대값 : 2000000");
@@ -192,6 +204,8 @@ public class ThreadEx04_Student {
         //------------------------------------------------------
 
         //여기에 TODO 9 의 두 줄을 작성하시오
+    	System.out.println("기대값 : 2000000");
+    	System.out.println("실제값 : " + service.like);
 
     }   //main 의 끝
 

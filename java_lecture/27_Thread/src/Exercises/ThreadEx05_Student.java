@@ -80,7 +80,9 @@ class SafeLikeService {
     //----------------------------------------------------------
 
     //여기에 TODO 1 의 메소드를 작성하시오
-
+    public synchronized void increase() {
+		like++;
+	}
 
 
 
@@ -105,11 +107,18 @@ class SafeLikeService {
     //----------------------------------------------------------
 
     //여기에 TODO 2 의 메소드를 작성하시오
-
-
-
-
-
+    public void increaseBlock() {
+    	
+    	//지역변수 : 메소드가 호출될 때 마다 스레드의 Stack에 새로 만들어진다
+    	//         스레드마다 자기 것을 따로 가지므로 안전하다 ---> 보호 불필요
+    	String name = Thread.currentThread().getName();
+    	
+    	synchronized (this) {
+    		like++;
+		}
+    
+    }
+    
 
 }   //SafeLikeService 클래스의 끝
 
@@ -151,6 +160,22 @@ class SafeLikeTask implements Runnable {
     public void run() {
 
         //여기에 TODO 3 을 작성하시오
+        //100만 번 반복 (0 부터 999999 까지)
+        for (int i = 0; i < 1000000; i++) {
+
+            //if (useBlock) : 괄호 안이 true 면 아래 줄을 실행한다.
+            //  boolean 변수는 == true 를 붙이지 않고 그대로 쓰는 것이 보통이다
+            if (useBlock) {
+
+                service.increaseBlock();   //블록 방식 호출
+
+            } else {
+
+                service.increase();        //메소드 방식 호출
+
+            }   //if ~ else 의 끝
+
+        }   //for 반복의 끝
 
     }   //run 메소드의 끝
 
@@ -182,16 +207,16 @@ public class ThreadEx05_Student {
         //------------------------------------------------------
 
         //여기에 TODO 4 의 아홉 줄을 작성하시오
+        SafeLikeService s1 = new SafeLikeService();
+        SafeLikeTask task1 = new SafeLikeTask(s1, false);
 
 
+        Thread a1 = new Thread(task1, "사용자A");
+        Thread a2 = new Thread(task1, "사용자B");
 
+        a1.start();  a2.start();
 
-
-
-
-
-
-
+        a1.join();   a2.join();
         //------------------------------------------------------
         // TODO 5 : 블록 방식(형태 2)을 같은 순서로 실험하시오
         //
@@ -204,7 +229,28 @@ public class ThreadEx05_Student {
         //------------------------------------------------------
 
         //여기에 TODO 5 의 아홉 줄을 작성하시오
+        //서비스 객체를 "새로" 만든다.
+        //  s1 을 재사용하면 like 가 200만에서 이어져 400만이 되어 버린다
+        SafeLikeService s2 = new SafeLikeService();
 
+        //두 번째 재료 true = 블록 방식 선택
+        SafeLikeTask task2 = new SafeLikeTask(s2, true);
+
+        //스레드 이름 변수도 새로 지어야 한다 (같은 이름은 중복 오류)
+        Thread b1 = new Thread(task2, "사용자C");
+        Thread b2 = new Thread(task2, "사용자D");
+        b1.start();
+        b2.start();
+
+        b1.join();
+        b2.join();
+
+        //블록 방식도 결과가 같다
+        System.out.println("블록   방식 결과 : " + s2.like);
     }   //main 의 끝
 
 }   //ThreadEx05_Student 클래스의 끝
+
+
+
+

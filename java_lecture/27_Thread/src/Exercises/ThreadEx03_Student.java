@@ -81,9 +81,9 @@ class ViewCountTask implements Runnable {
     //----------------------------------------------------------
 
     //여기에 TODO 1 의 멤버 변수 2개를 선언하시오
-
-
-
+	int max;
+	long result = 0;
+	
     //----------------------------------------------------------
     // TODO 2 : 생성자를 완성하시오
     //
@@ -99,8 +99,9 @@ class ViewCountTask implements Runnable {
     //----------------------------------------------------------
 
     //여기에 TODO 2 의 생성자를 작성하시오
-
-
+	public ViewCountTask(int max) {
+		this.max = max;
+	}
 
 
     //----------------------------------------------------------
@@ -117,9 +118,14 @@ class ViewCountTask implements Runnable {
 
     @Override
     public void run() {
-
+    	
         //여기에 TODO 3 을 작성하시오
-
+    	for(int i=1;  i<=max;  i++) {
+    		result += i;
+    	}
+    	
+    	System.out.println(Thread.currentThread().getName() + " 계산 완료");
+    	
     }   //run 메소드의 끝
 
 }   //ViewCountTask 클래스의 끝
@@ -142,11 +148,11 @@ public class ThreadEx03_Student {
         //   반드시 2개를 만들어야 한다. 1개를 두 스레드가 쓰면
         //   result 가 뒤섞여 엉뚱한 값이 나온다
         //------------------------------------------------------
-
         //여기에 TODO 4 의 두 줄을 작성하시오
-
-
-
+    	ViewCountTask  task1 = new ViewCountTask(100);  //1~100 까지 합계 구하기 담당 
+    	ViewCountTask  task2 = new ViewCountTask(200);  //1~200 까지 합계 구하기 담당 
+    	
+    	
         //------------------------------------------------------
         // TODO 5 : 각 작업을 실행할 스레드 2개를 만들고 시작하시오
         //   --> Thread t1 = new Thread(task1, "계산기-1");
@@ -154,11 +160,14 @@ public class ThreadEx03_Student {
         //   --> t1.start();
         //   --> t2.start();
         //------------------------------------------------------
-
         //여기에 TODO 5 의 네 줄을 작성하시오
-
-
-
+    	Thread t1 = new Thread(task1, "계산기-1");
+    	Thread t2 = new Thread(task2);
+    		   t2.setName("계산기-2");
+    	
+    	//두 스레드를 동시에 실행 시작 시키기  start() -> run() 작업 시작	   
+    		   t1.start();	   	
+    		   t2.start();
 
 
         //------------------------------------------------------
@@ -171,8 +180,13 @@ public class ThreadEx03_Student {
         //------------------------------------------------------
 
         //여기에 TODO 6 의 두 줄을 작성하시오
+        //t1.join();
+        //  계산기-1 스레드가 작업 끝날 때까지 main 스레드를 여기서 대기시킨다.
+        //  이 줄이 없으면 아래 출력이 계산 전에 실행되어 0 이 나올 수 있다
+        t1.join();
 
-
+        //계산기-2 도 같은 방식으로 종료를 기다린다
+        t2.join();
 
         //------------------------------------------------------
         // TODO 7 : 결과 3줄을 출력하시오
@@ -186,7 +200,13 @@ public class ThreadEx03_Student {
         //------------------------------------------------------
 
         //여기에 TODO 7 의 세 줄을 작성하시오
-
+	   System.out.println("공지사항 조회수   : " + task1.result);
+	   System.out.println("자유게시판 조회수 : " + task2.result);
+	   System.out.println("전체 합계         : " + (task1.result + task2.result));
     }   //main 의 끝
 
 }   //ThreadEx03_Student 클래스의 끝
+
+
+
+
