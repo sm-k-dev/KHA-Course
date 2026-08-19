@@ -2,3 +2,140 @@ Servlet(서블릿) - 주문받고 요리하는 '주방장' - 사용자의 요청
 JSP - 음식을 예쁘게 담아내는 '접시/차림표' - 주방장(Servlet)이 만든 결과 데이터를 화면(HTML)에 예쁘게 보여주는 역할
 JakartaEE - 식당 운영 표준 규격 (본사 매뉴얼) - Servlet, JSP 등을 포함해 자바 기반으로 기업용 웹 애플리케이션을 만들 때 피룡한 규격과 기술들의 모음집
 
+📦 DAO와 DTO, 누가 뭘 할까요?
+DTO (Data Transfer Object): 데이터 그 자체를 담는 '택배 상자(바구니)'
+DAO (Data Access Object): DB에 직접 접근해서 쿼리를 날리는 '택배 기사(일꾼)'
+
+🔄 완벽한 요청/응답 전체 흐름 (요청 => 응답)
+말씀해주신 순서에 DAO와 DTO의 위치를 딱 넣어보면 이렇게 움직입니다!
+
+[1. 브라우저/사용자]
+       │
+       ▼ (HTTP 요청: 예를 들어 "1번 주문 정보 주세요!")
+[2. Controller (Servlet)]
+       │
+       ▼ (Service에 업무 지시)
+[3. Service (비즈니스 로직)]
+       │
+       ▼ (DAO야, DB에서 1번 주문 가져와라!)
+[4. DAO (DB 전담 일꾼)] ──(SELECT 쿼리 실행)──► [5. DB]
+       │                                         │
+       │ ◄──────────(1번 주문 결과 데이터)──────────┘
+       │
+       ├─► 💡 [DTO 생성 파트!]
+       │   DAO가 DB에서 나온 1줄/여러 줄의 데이터를 가져와
+       │   'new OrderDTO(...)' 객체(택배 상자)에 착착 담아줍니다.
+       │
+       ▼ (OrderDTO 객체 반환)
+[3. Service (비즈니스 로직)]
+       │  (DTO에 담긴 데이터를 가공하거나 검증 로직 수행)
+       ▼ (가공 완료된 DTO 반환)
+[2. Controller (Servlet)]
+       │  (request.setAttribute("order", orderDTO)로 DTO를 담음)
+       ▼ (Forwarding)
+[6. View (JSP)]
+       │  (DTO 상자에서 데이터를 꺼내서 HTML 화면을 예쁘게 꾸밈)
+       ▼
+[7. 브라우저로 최종 HTML 전송!]
+
+💡 한눈에 정리하는 DAO vs DTO 역할
+    DB에서 데이터 가져올 때DAO가 DB에 SELECT 쿼리를 날려 데이터를 뽑아옵니다.
+    DAO 내부에서 그 데이터를 자바에서 쓰기 편하게 DTO 객체로 만들어서(new) 리턴합니다.
+    서비스 & 컨트롤러 거칠 때데이터는 이제 깔끔하게 포장된 DTO 형태로 이동해요.
+    Service는 DTO 안의 데이터를 계산하거나 가공합니다.
+    Controller는 이 가공된 DTO를 request 상자에 담아서 JSP로 넘깁니다.
+    JSP 화면에서JSP는 컨트롤러가 넘겨준 DTO를 열어서 dto.getProductName()처럼 값을 꺼내 화면에 뿌려줍니다!
+📌 한 줄 핵심!"DAO(일꾼)가 DB에서 데이터를 캐내어 DTO(상자)에 담고, 그 DTO가 Service => Controller => JSP로 이동하면서 화면까지 전달된다!"
+
+백엔드 개발의 계층형 구조(Layered Architecture) 핵심
+🧱 3대장 역할 한눈에 마스터하기
+구분    비유                    주요 역할 및 코드 형태
+DTO     서류 / 택배 상자        데이터 그 자체 (멤버변수 + Getter/Setter)   
+DAO     DB 전담 일꾼            DB와 직접 대화하며 쿼리 실행 (INSERT, SELECT, UPDATE, DELETE)
+Service 총괄 매니저 / 총지배인      DTO와 DAO를 조립하고 비즈니스 로직(조건 검사, 계산, 트랜잭션 등) 수행
+
+💡 예를 들어 "주문 결제" 요청이 들어왔을 때!
+    DTO: 결제할 정보(orderId, price, memberId)를 예쁘게 상자에 담아둡니다.
+    Service (총지배인):"어, 주문 들어왔네?"
+        "1단계: 사용자의 잔액이 부족하지 않은지 체크하자."
+        "2단계: DAO 불러서 DB 결제 테이블에 주문 내역 저장해! (dao.insertOrder(dto))"
+        "3단계: DAO 또 불러서 회원 포인트 10% 적립해 줘! (dao.updatePoint(memberId))"
+        "4단계: 만약 중간에 에러 나면 결제 취소(Rollback) 처리하자!"
+    DAO (일꾼): Service가 시키는 대로 DB에 들어가서 딱 쿼리만 깔끔하게 날리고 결과를 보고합니다.
+    
+즉, DAO는 DB 작업 하나하나만 묵묵히 처리하는 순수한 일꾼이고, 
+Service는 그 DAO 메소드 여럿을 가져다가 순서를 맞추고, 조건을 따지고, 조합해서 하나의 완벽한 기능(비즈니스 로직)으로 완성하는 곳이에요!
+
+VO(Value Object)는 쉽게 말해서 "값 그 자체를 나타내는 읽기 전용(Read-Only) 포장 상자"라고 생각하시면 돼요!
+방금 배우신 DTO랑 아주 유사하게 생겨서 제일 많이 헷갈려하는 부분인데요, 두 개의 차이점만 딱 명확하게 정리해 드릴게요.
+
+📦 DTO vs VO (핵심 차이)
+구분                DTO (Data Transfer Object)                  VO (Value Object)
+핵심                목적계층 간에 데이터를 **이동(전송)**시키기 위함    값(Value) 그 자체를 표현하기 위함
+데이터 변경         가능 (Read / Write)(Setter가 존재함)            불가능 (Read-Only)(Setter가 없고 Getter만 존재)
+비유                내용을 언제든 넣고 뺄 수 있는 택배 상자            도장이 찍혀서 수정할 수 없는 주민등록증 / 수표
+
+1. 두 객체가 '동일하다'고 판단하는 기준이 달라요 (가장 큰 차이!)
+    DTO (Data Transfer Object):
+        데이터 이동이 목적이라 "내용물이 같은지"는 관심이 없어요.
+        new OrderDTO(1, "노트북") 객체 A와 new OrderDTO(1, "노트북") 객체 B가 있어도, 메모리 주소가 다르면 그냥 서로 다른 두 개의 상자일 뿐이에요.
+    VO (Value Object):
+        "값 그 자체"를 나타내기 때문에, 내용물(값)이 같으면 무조건 '같은 객체'로 취급해요!
+        1만원짜리 지폐 2장이 있을 때, 일련번호가 달라도 둘 다  똑같은 1만원의 가치를 지니는 것과 같아요.
+
+💡 코드에서의 차이!
+VO는 내부적으로 .equals()와 .hashCode()라는 메소드를 오버라이딩해서, 주소가 달라도 안의 값이 같으면 true(같다)가 나오도록 설정해 둡니다.
+    // VO인 경우
+    Money m1 = new Money(10000);
+    Money m2 = new Money(10000);
+    m1.equals(m2); // ⭕ true! (둘 다 '10,000원'이라는 동일한 가치니까!)
+
+2. '도메인 로직(계산/검증)'을 품을 수 있느냐의 차이
+    DTO (완전 순수한 택배 상자):
+        데이터를 이쪽 계층에서 저쪽 계층으로 이동시키는 것이 오직 유일한 목적이에요.
+        그래서 어떤 계산 로직이나 검증 로직도 넣지 않는 것이 원칙입니다. (그냥 텅 빈 상자)
+    VO (자기만의 규칙을 가진 값):
+        단순히 데이터만 품는 게 아니라, 그 데이터에 관한 '자체 검증이나 계산 로직'을 가질 수 있어요.
+
+        예시: '이메일 주소'라는 개념을 VO로 만들 때
+        public class EmailVO {
+            private final String email;
+
+            public EmailVO(String email) {
+                // 💡 생성자에서 스스로 값의 유효성을 검증하는 로직을 가짐!
+                if (!email.contains("@")) {
+                    throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다.");
+                }
+                this.email = email;
+            }
+        }
+        이렇게 만들어두면 시스템 어디서든 new EmailVO("abc")를 하려고 할 때 알아서 에러를 튕겨내니, 
+        잘못된 이메일 값이 시스템 내부로 들어오는 것을 VO 차원에서 완벽히 방어할 수 있죠!
+    
+    📌 깔끔 정리!
+    DTO: 계층 간(Controller <=> Service <=> DAO)에 데이터를 주고받기 위한 단순 데이터 전달용 통(Carrier).
+    VO: 시스템에서 쓰이는 특정 '값(Money, Address, Color 등)'을 안전하게 표현하기 위해 검증 로직 + 값 비교 기능(equals)까지 갖춘 완벽한 값 객체.
+    
+    그리고 현실적인 꿀팁을 하나 더 드리자면, Java 14버전부터 record라는 기능이 도입되면서 이런 불변 객체(VO/불변 DTO)들을 아주 쉽게 만들 수 있게 되었답니다!
+
+1. 브라우저의 역할 (HTML 해석 및 HTTP 요청 생성)
+    HTML 파일에 <form action="/main" method="POST"> 같은 코드가 있죠?
+    사용자가 Submit(제출) 버튼을 누르면, 웹 브라우저(크롬, 엣지 등)가 이를 감지합니다.
+    브라우저는 form 안에 있는 action 경로와 method 방식(GET/POST), 그리고 <input> 태그에 적힌 데이터들을 모아서 HTTP 요청 메세지(Request Text)라는 표준 텍스트 문서로 예쁘게 포장합니다.
+    그리고 이 포장된 텍스트 메세지를 네트워크를 통해 서버로 슝 보냅니다!
+    💡 여기서 핵심: 브라우저가 보낸 건 자바 객체(HttpServletRequest)가 아니라, 그냥 글자로 된 HTTP 메세지 데이터입니다.
+    
+2. Web Application Server (WAS - 예: 톰캣/Tomcat)의 역할서버 쪽에서 네트워크를 통해 이 글자 데이터를 딱 받았습니다!
+    WAS(Tomcat)가 수신된 HTTP 텍스트 메세지를 받아서 읽어봅니다.
+    "어? /main 경로로 POST 요청이 들어왔네? 이 요청을 처리해 줄 서블릿을 찾아야겠다!"
+    WAS는 자바 프로그램이니까, 글자로 된 메세지를 자바 코드로 다루기 쉽게 HttpServletRequest라는 자바 객체로 변환(인스턴스화)해서 생성해 줍니다.
+    동시에 응답을 보낼 빈 상자인 HttpServletResponse 객체도 같이 만듭니다.
+
+3. Servlet의 역할 (우리가 짜는 자바 코드!)
+    WAS는 방금 만든 request와 response 객체 두 개를 들고, 해당하는 서블릿의 doPost() 또는 doGet() 메소드를 호출하면서 매개변수로 쏙 던져줍니다!
+    그러면 우리가 서블릿 안에서 request.getParameter("username") 같은 코드로 브라우저가 보낸 값들을 편하게 꺼내 쓸 수 있게 되는 거예요.
+
+💡 한 줄 요약!
+    브라우저가 버튼 클릭을 인식해서 **HTTP 메세지(텍스트)**를 보냄 => 
+    **WAS(Tomcat)**가 그걸 받아서 자바에서 쓸 수 있는 HttpServletRequest 객체로 만들어서 => 
+    우리가 작성한 Servlet 메소드로 넘겨줌!
