@@ -1,4 +1,4 @@
-package sec01.ex01;
+package sec01.ex02;
 
 /*
 ================================================================
@@ -66,21 +66,25 @@ public class MemberDAO {
 	// 아래 3개 변수는 인스턴스변수이므로 JVM의 [HEAP] 영역의 new MemberDAO 객체 안에 만들어지고,
 	// 초기 값은 null 이다. connDB() 가 실행 되어야 실제 객체 주소가 저장된다.
 	
-	// Connection : DB "서버 자체"와의 연결 통로를 관리하는 객체를 참조할 변수.
-	// - 특정 테이블과 연결되는 것이 아니라 DB 서버와의 접속 상태를 관리한다.
-	// - Connection은 인터페이스이고, 오라클 thin 드라이버 사용 시
-	//   실제로 생성되는 구현 객체의 클래스명은 T4CConnection 이다.
 	private Connection con;
 	
-	// Statement : 개발자가 작성한 SQL 문장을 DB 서버로 전송해서
-	// 실행을 "요청"하는 역할의 객체를 참조할 변수.
-	// - SQL을 실제로 실행하는 곳은 자바가 아니라 DB 서버 쪽이다.
-	private Statement stmt;
+	// ============================================================
+	// [핵심] PreparedStatement 를 참조할 변수
+	// ============================================================
+	// PreparedStatement 란? ("Prepared" = 미리 준비된)
+	// - SQL 문장을 "실행 전에 미리" 객체 안에 저장해 두고 사용하는 SQL 실행 객체.
+	// - Statement 의 자식 인터페이스이며, 오라클 thin 드라이버 사용 시
+	//   실제 생성되는 구현 객체의 클래스명은 OraclePreparedStatementWrapper 이다.
+	//
+	// Statement 와의 결정적 차이 3가지
+	// 1) SQL을 미리 저장 : prepareStatement(SQL) 호출 시점에 SQL이 객체에 담기고,
+	//    DB 서버가 이 SQL의 실행 계획을 미리 분석(파싱)해 둔다.
+	// 2) ? (물음표, 위치홀더) 사용 가능 : 값이 들어갈 자리를 ?로 비워 두고,
+	//    setString(순번, 값) 등으로 나중에 채울 수 있다.
+	// 3) 값과 문장을 분리 처리 : ?에 들어간 값은 "SQL 문법"이 아니라
+	//    "순수한 값"으로만 취급된다. -> SQL 인젝션 공격이 차단되는 이유.
+	private PreparedStatement pstmt;
 	
-	// ResultSet : SELECT 실행 결과를 "한 행씩 읽어오는 커서" 객체를 참조할 변수.
-	// - 조회 결과 전체를 이 객체가 통째로 담고 있는 것이 아니라,
-	//   DB 서버의 결과를 next() 호출 시마다 읽어오는 통로 역할을 한다.
-	//   (오라클은 기본적으로 10행씩 나눠서 가져온다 : fetch size)
 	private ResultSet rs;
 	
 	// 순서 2~4를 처리하는 connDB() 메소드: (드라이버 로딩 → 접속 → 실행 객체)
@@ -119,13 +123,6 @@ public class MemberDAO {
 			// 실패 시(서버 꺼짐, 계정 오류 등) SQLException이 발생한다.
 			con = DriverManager.getConnection(URL, USER, PWD);
 			
-			// ============================================================
-			// 순서4. SQL 실행 객체 (Statement) 얻기
-			// ============================================================
-			// con에 저장된 연결 통로를 관리하는 객체의 createStatement() 메소드를 호출하면
-			// "이 연결을 통해" SQL을 전송할 수 있는 Statement 객체가 생성되어 반환된다.
-			//	→ Statement 객체는 반드시 살아 있는 Connection객체를 통해서만 만들 수 있다.
-			stmt = con.createStatement();
 		} catch ( ClassNotFoundException e ) {
 			// Class.forName()이 해당 이름의 클래스를 못 찾으면 발생.
 			// 원인 예 : ojdbc6 라이브러리(jar)를 프로젝트에 추가하지 않은 경우, 오타.
@@ -146,7 +143,7 @@ public class MemberDAO {
 		ArrayList<MemberVO> list = new ArrayList<MemberVO>(); // 조회 결과를 담을 비어 있는 ArrayList 를 생성
 		
 		try {
-			// 순서2 ~ 4를 한번에 처리: 드라이버 로딩 + DB 접속 + Statement 얻기
+			// 순서2 ~ 3을 한번에 처리: 드라이버 로딩 + DB 접속
 			connDB();
 			
 			// ==========================================================
@@ -155,17 +152,57 @@ public class MemberDAO {
 			// ==========================================================
 			String query = "select * from t_member";
 			
-			// ==========================================================
-			// 순서6. SQL을 DB로 전송·실행하고 결과 커서(ResultSet) 받기
-			// ==========================================================
-			// executeQuery(SQL) : SELECT 전용 실행 메소드.
-			// 1) SQL 문자열이 Connection을 통해 오라클 서버로 전송된다.
-			// 2) 오라클 서버가 t_member에서 조회를 실행한다.
-			// 3) 그 결과를 읽을 수 있는 ResultSet(커서) 객체가 반환된다.
-			// 중요 : ResultSet 객체 반환 직후 커서(화살표)는 첫 번째 데이터 행의 "직전" 위치에 있다.
-			//        아직 어떤 행도 가리키고 있지 않다.
-			// (참고 : INSERT/UPDATE/DELETE는 executeUpdate()로 실행한다.)
-			rs = stmt.executeQuery(query);
+			//----------------------------------------------------------------------------
+			//순서4. 대신 순서5.1. 추가  [핵심] SQL을 미리전달하며 PreparedStatement 부모인터페이스의 자식 구현 실행 객체 얻기
+			//-------------------------------------------------------------------------
+			// con.prepareStatement(query) 의 내부 동작
+			// 1) query 의 SQL 문장이 실행 객체 안에 미리 저장된다.
+			// 2) SQL이 DB 서버로 먼저 전송되어 문법 검사와 실행 계획 분석이 이 시점에 미리 끝난다. (사전 컴파일)
+			// 3) 준비를 마친 OraclePreparedStatementWrapper 객체 주소가 반환된다.
+			// -> 같은 SQL을 반복 실행할 때 분석을 다시 안 하므로 Statement 보다 빠르다.
+			pstmt = con.prepareStatement(query);
+			
+			/*
+			    OraclePreparedStatementWrapper 실행 객체 메모리 안에 저장된 모습
+			    +--------------------------------+
+			    | select * from t_member         |
+			    +--------------------------------+
+			    
+			    [? 위치홀더를 쓰는 경우 예시] (이번 SQL엔 조건이 없어 사용 안 함)
+			    
+			    pstmt = con.prepareStatement("select * from t_member where id = ?");
+			    
+			    +----------------------------------------+
+			    | select * from t_member where id = ?    |  <- ?는 값이 들어올 빈 자리
+			    +----------------------------------------+
+			    
+			    pstmt.setString(1, "hong");  // 1 = 첫 번째 ? 에 "hong"을 채워라
+			    
+			    +----------------------------------------+
+			    | select * from t_member where id='hong' |  <- 값이 채워진 상태로 실행됨
+			    +----------------------------------------+
+			    - setString의 첫 매개변수는 ?의 순번(1부터 시작), 두 번째는 넣을 값.
+			    - 자료형별 메소드 : setString(문자), setInt(정수), setDate(날짜) 등.
+	
+			    [SQL 인젝션이 차단되는 이유]
+			    
+			    - Statement 로 문자열을 + 연결하면 입력값이 SQL "문장의 일부"가 된다.
+			      예) "... where id='" + 입력값 + "'" 에 입력값으로  ' or '1'='1  이 들어오면
+			          -> where id='' or '1'='1'  이 되어 조건이 항상 참 = 전체 조회됨 (공격 성공)
+			          
+			    - PreparedStatement의 ?에 같은 값을 setString으로 넣으면
+			      그 문자열 전체가 "id 값 하나"로만 취급된다.
+			          -> where id = ''' or ''1''=''1'  (일치하는 id 없음 = 공격 실패)
+			          
+			    - 즉 ?에 들어온 값은 절대 SQL 문법으로 해석되지 않는다.
+			*/
+			//-----------------------------------------------------------------------------------------
+			//순서6. SQL실행 : 	OraclePreparedStatementWrapper 실행객체의 executeQuery(); 에 매개변수가 없다!	
+			//-----------------------------------------------------------------------------------------
+			// SQL은 순서5.1에서 이미 OraclePreparedStatementWrapper 실행객체객체 안에 select 문장이  저장·분석되어 있으므로
+			// 실행 명령만 내리면 된다. (ex01은 executeQuery(query)로 SQL을 이때 전달했음)
+			// 반환된 ResultSet의 커서는 첫 데이터 행 "직전" 위치에서 시작한다.
+			rs = pstmt.executeQuery();
 			
 			// ==========================================================
 			// 순서7. 커서(결과 한 행을 가리키는 화살표)를 한 행씩 이동시키며 데이터 읽기
@@ -232,7 +269,7 @@ public class MemberDAO {
 			// if(변수 != null) : connDB() 실패로 객체가 안 만들어졌을 수 있으므로
 			//                    null 검사 후 닫아야 NullPointerException을 막는다.
 			if ( rs != null ) rs.close();		// 1) 조회 결과 임시 공간 반납
-			if ( stmt != null ) stmt.close();	// 2) SQL 실행 객체 반납
+			if ( pstmt != null ) pstmt.close();	// 2) SQL 실행 객체 반납
 			if ( con != null ) con.close();		// 3) DB 연결 통로 객체 반납
 		} catch (SQLException e) {
 			e.printStackTrace();

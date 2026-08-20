@@ -1,4 +1,4 @@
-package sec01.ex01;
+package sec01.ex02;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 // 사장
-@WebServlet("/member")
+// @WebServlet("/member2")
 public class MemberServlet extends HttpServlet{
 	
 	// doGet 메소드 오버라이딩(alt shift s v): GET 방식 요청이 오면 톰캣이 자동 호출하는 메소드
