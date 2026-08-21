@@ -186,6 +186,150 @@ public class MemberDAO {
 			
 		}	
 	}
+	
+	//=============================================================================
+	// updateMember() 메소드 정의 : 회원 수정 기능
+	//
+	// - memberModForm.html(회원 수정 화면)에서 수정한 값들이 저장된 MemberVO객체를 매개변수로 전달 받아
+	//	UPDATE SQL문을 완성한 후 DB의 t_member테이블에 저장된 하나의 회원레코드 정보를 수정 시키는 기능의 메소드
+	// - 아이디(PK)는 수정 대상이 아니라 "어떤 회원을 수정할지 찾는 조건(where)"으로만 사용한다.
+	// 요약: 수정한 회원 정보를 DB의 테이블에 UPDATE
+	//=============================================================================
+	public int updateMember(MemberVO vo) {
+		
+		int result = 0; // 회원 수정(update) 결과를 저장할 변수
+		
+		try {
+			
+			// 순서1. 커넥션풀(DataSource)에서 미리 DB와 연결을 맺은 Connection 객체 빌려오기
+			con = dataSource.getConnection();
+			
+			// 순서2. 수정 UPDATE SQL문 만들기
+			String query = "update t_member set pwd=?, name=?, email=? where id=?";
+			
+			// 순서3. query 변수의 update 문자열을 미리 로드한 PreparedStatement 실행 객체 얻기
+			pstmt = con.prepareStatement(query);
+			
+			// 순서3-1. ? 기호 4개를 왼쪽부터 순서대로 (1, 2, 3, 4) 수정값과 조건값으로 설정
+			pstmt.setString(1, vo.getPwd());
+			pstmt.setString(2, vo.getName());
+			pstmt.setString(3, vo.getEmail()); 
+			pstmt.setString(4, vo.getId());		
+			
+			// 순서4. 완성된 update 문장을 DB의 t_member 테이블에 전송해서 실행 후 결과값을 result 변수에 저장
+			
+			result = pstmt.executeUpdate(); // executeUpdate()가 반환하는 값은 영향받은 행(row)의 개수
+			
+		}catch(Exception e) {
+			System.out.println("MemberDAO의 updateMember메소드 내부의 코드에서 update문 실행 오류: " + e);
+		}finally {
+			// 순서5. 사용한 메모리들(PreparedStatement 객체, Connection객체) 자원해제
+			ResourceClose();
+		}
+	
+		// 순서6. 수정 성공 1 또는 실패 0을 MemberServlet으로 반환
+		return result;
+	}
+	
+	//=============================================================================
+	// modMember() 메소드 정의 : 수정할 회원아이디를 매개변수로 전달 받아 회원 조회 하는 기능의 메소드
+	//=============================================================================
+	public MemberVO modMember(String modId) {
+		
+		MemberVO vo = null;
+		
+		try {
+			
+			// 순서1. 커넥션풀 공간에서 커넥션 객체 하나 얻기
+			// 요약: DB 연결
+			con = dataSource.getConnection();
+			
+			// 순서2. 위 String modId 매개변수로 전달받은 수정할 회원 아이디에 해당하는 회원레코드 조회 SELECT문 작성해서 query변수에 저장
+			String query = "select * from t_member where id=?";
+			
+			// 순서3. query 변수에 저장된 전체 select 문자열을 미리 로드한
+			//		PreparedStatement 실행 객체 얻어 pstmt변수에 저장
+			pstmt = con.prepareStatement(query);
+			
+			// 순서3-1. String modId 매개변수로 받은 수정을 위해 조회할 아이디를 ? 대신 설정
+			pstmt.setString(1, modId);
+			
+			// 순서4. PreparedStatement 실행 객체에 완성된 select 전체 문장을 DB의 t_member 테이블에서 전송해
+			//		조회한 후 ResultSet 임시 메모리에 담아 반환 받아 rs 변수에 저장
+			rs = pstmt.executeQuery();
+			
+			// 순서5. 조회된 회원레코드가 ResultSet에 저장되어 있으면?
+			//		회원 레코드(행) 단위의 조회된 열(컬럼)값을 차례대로 얻어 MemberVO객체를 생성해서 인스턴스변수에 각각 저장
+			if ( rs.next() ) {
+				// MemberVO 객체의 각 인스턴스변수에 조회된 열 값들을 차례대로 저장
+				vo = new MemberVO();
+				
+				vo.setId(rs.getString("id"));
+				vo.setName(rs.getString("name"));
+				vo.setPwd(rs.getString("pwd"));
+				vo.setEmail(rs.getString("email"));
+				vo.setJoinDate(rs.getDate("joindate"));
+			}
+			
+		} catch ( Exception e ) {
+			
+			System.out.println("MemberDAO의 modMember메소드 내부의 코드에서 select문 실행 오류: " + e);
+			
+		} finally {
+			
+			// 순서6. 사용한 메모리들 (PreparedStatement, Connection, ResultSet 객체) 자원 해제
+			ResourceClose();
+			
+		}
+		
+		// 순서7. 수정할 회원 조회 정보를 MemberServlet으로 반환
+		return vo;
+	}
+	
+	
+	//=============================================================================
+	// delMember() 메소드 정의 : t_member 테이블에 저장된 회원 한사람의 정보 삭제 하는 기능의 메소드
+	// - 삭제 <a> 링크를 클릭했을때... MemberServlet서블릿으로 전송요청한 삭제할 회원아이디를
+	//   현재 보고 있는 delMember메소드의 매개변수 String id로 전달받아
+	//   delete SQL문을 완성한 후 ~~  DB의 t_member테이블에 저장된 하나의 회원레코드 정보 삭제 시킨다.
+	//==============================================================================
+	public void delMember(String id) {
+		
+		try {
+			//순서1. 커넥션 풀 공간에서 커넥션 객체 하나 얻기 
+			//요약 :  ( DB와의 연결 )
+			con = dataSource.getConnection();
+			
+			//순서2. 위 String id 매개변수로 전달받은 삭제할 회원 아이디에 해당하는 회원레코드(행) 삭제시키는 DELETE 문 작성
+			//요약 : 실행할 SQL문 작성 
+			String query = "delete from t_member where id=?";
+			
+			//순서3. query 변수에 저장된 전체 "delete" 문자열을 미리 로드한 PreparedStatement 실행 객체 얻기
+			pstmt = con.prepareStatement(query);
+			//"delete from t_member where id=?"
+			
+			//순서3-1. PreparedStatement 실행객체 메모리에 미리 로드한  전체 delete 문자열 중에서
+			//		  ? 기호 대신 String id 매개변수로 받은 삭제할 회원 아이디로 설정 해서 delete 전체 문장 완성 시킨다.
+			//요약 : ? 설정
+			pstmt.setString(1, id);  //"delete from t_member where id='hong'"
+  			
+			//순서4. PreparedStatement 실행객체 메모리에 완성된 위 delete 전체 문장을 DB의 t_member테이블에 전송해서 실행!
+			pstmt.executeUpdate();
+			
+			//참고  executeUpdate(); <-- INSERT, UPDATE, DELETE 구문 실행시 사용
+			//                      <-- SQL문 실행시 성공하면 성공한 레코드 갯수 1반환 실패하면 0반환
+			
+			//     executeQuery();  <-- SELECT 구문 실행시 사용
+			//						<-- SQL문 실행시 조회된 결과 데이터들을 ReusltSet임시메모리객체에 담아 반환				
+			
+		} catch (Exception e) {
+			System.out.println("MemberDAO의 delMember 메소드 내부 코드에서 delete문 실행 오류 : " + e);
+		} finally {
+			//순서5. 사용한 메모리들(PreparedStatemement,  Connection 객체) 자원 해제(반납)
+			ResourceClose();
+		}
+	}
+	
 	//========================================================================
 	//addMember() 메소드 정의  :  t_member 테이블에 새 회원 정보 하나를 추가 하는 기능의 메소드 
 	//
@@ -194,7 +338,7 @@ public class MemberDAO {
 	//	MemberServlet 내부에서 addMember메소드 호출시~ 매개변수로 MemberVO객체를 전달 받아 INSERT SQL문을 만들고
 	//  만든 INSERT SQL문을  DB의 t_member테이블에 전송해서 실행시키는 기능의 메소드.
 	//=========================================================================
-	public  int addMember(MemberVO  vo) {
+	public int addMember(MemberVO  vo) {
 		
 		int result = 0; //회원가입(insert)에 성공하면 1을 저장시키고, 회원가입(insert)에 실패하면 0을 저장시킬 변수 선언
 		
@@ -247,30 +391,11 @@ public class MemberDAO {
 		//순서6.  새회원 추가(회원 가입 성공) 1 또는  (실패) 0을  MemberServlet 사장에게 보고(반환)
 		return result;
 	}
-
-	public void delMember(String id) {
-		
-		try {
-			
-			con = dataSource.getConnection();
-			
-			String query = "delete from t_member where id=?";
-			
-			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, id);
-			pstmt.executeUpdate();
-			
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		} finally {
-			ResourceClose();
-		}
-	}
-
+	
 	//=========================================================================
 	// listMembers() 메소드 정의  :  t_member 테이블의 전체 회원을 조회해 반환하는 메소드
 	//=========================================================================
-	public ArrayList<MemberVO>  listMembers(){		
+	public ArrayList<MemberVO> listMembers(){		
 		
 		ArrayList<MemberVO> list = new ArrayList<MemberVO>(); //조회 결과를 담을 비어 있는 ArrayList 를 생성		
 		
@@ -375,7 +500,6 @@ public class MemberDAO {
 	}
 
 } //<==== class MemberDAO
-
 
 /*
     ================================================================
