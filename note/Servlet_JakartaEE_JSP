@@ -139,3 +139,509 @@ VO는 내부적으로 .equals()와 .hashCode()라는 메소드를 오버라이�
     브라우저가 버튼 클릭을 인식해서 **HTTP 메세지(텍스트)**를 보냄 => 
     **WAS(Tomcat)**가 그걸 받아서 자바에서 쓸 수 있는 HttpServletRequest 객체로 만들어서 => 
     우리가 작성한 Servlet 메소드로 넘겨줌!
+
+==============================================================================================
+
+응. 지금까지 이야기한 걸 전부 반영해서 **최종본**으로 깔끔하게 정리해줄게.
+이번에는 네가 만든 **은행/고객/서류 비유**를 중심으로 갈게. 이걸 기준으로 기억하면 돼.
+
+# Servlet 포워딩 / 바인딩 최종 정리
+
+## 0. 등장인물부터 고정
+
+```text
+고객 = 브라우저
+은행 직원 A = Servlet A
+담당 부서 B = Servlet B 또는 JSP
+서류 = Request
+```
+
+고객이 은행 A에게 일을 맡긴다고 생각하자.
+
+```text
+고객(브라우저)
+       │
+       │ 요청(Request)
+       ▼
+    Servlet A
+```
+
+---
+
+# 1. 바인딩 = 서류에 정보를 넣는 것
+
+Servlet A가 DB에서 회원 정보를 가져왔다고 하자.
+
+```java
+MemberVO vo = dao.getMember();
+
+request.setAttribute("member", vo);
+```
+
+여기서:
+
+```java
+request.setAttribute("member", vo);
+```
+
+가 **바인딩**이야.
+
+쉽게 말하면:
+
+> **현재 요청이라는 서류 봉투에 `member`라는 이름으로 `vo`를 넣는 것.**
+
+```text
+Request
+┌────────────────────┐
+│ member → MemberVO  │
+└────────────────────┘
+```
+
+즉:
+
+```text
+setAttribute()
+      ↓
+데이터 저장
+      ↓
+바인딩
+```
+
+### 중요한 것
+
+**바인딩 ≠ forward**
+
+둘은 다른 행동이야.
+
+```text
+setAttribute() → 데이터를 저장하는 것 = 바인딩
+forward()      → request를 전달하는 것
+```
+
+---
+
+# 2. Forward = 서류를 그대로 다른 담당자에게 전달
+
+Servlet A가 B에게 일을 넘긴다고 하자.
+
+```java
+RequestDispatcher dispatcher =
+        request.getRequestDispatcher("second");
+
+dispatcher.forward(request, response);
+```
+
+두 단계야.
+
+### ① `getRequestDispatcher()`
+
+```java
+request.getRequestDispatcher("second");
+```
+
+> **"서버 안에서 second라는 담당자가 어디 있는지 확인하고, 전달 준비를 한다."**
+
+### ② `forward()`
+
+```java
+dispatcher.forward(request, response);
+```
+
+> **"좋아. 기존 서류(request)를 그대로 B에게 전달한다."**
+
+그래서:
+
+```text
+고객
+ │
+ │ 요청 ①
+ ▼
+Servlet A
+ │
+ │ forward()
+ ▼
+Servlet B
+```
+
+**브라우저는 중간에 다시 움직이지 않아.**
+
+그리고 B가 받는 것은 **A가 받은 바로 그 request**야.
+
+```text
+Request ①
+┌──────────────────┐
+│ member → vo      │
+└──────────────────┘
+        │
+        │ forward
+        ▼
+       B
+        │
+        ↓
+같은 Request ①
+```
+
+따라서 A에서:
+
+```java
+request.setAttribute("member", vo);
+```
+
+해놨다면 B에서:
+
+```java
+request.getAttribute("member");
+```
+
+로 사용할 수 있어.
+
+### Forward 핵심
+
+> **A → B에게 서버 내부에서 직접 전달**
+> **Request 1개**
+> **기존 request 데이터 유지 ⭕**
+
+---
+
+# 3. Redirect = 고객에게 주소를 알려주고 다시 가게 함
+
+이번에는 A가 B에게 직접 서류를 넘기는 게 아니야.
+
+A가 고객에게:
+
+> **"저는 이 업무를 처리하지 않습니다. B에게 다시 요청하세요."**
+
+라고 알려주는 거야.
+
+그래서:
+
+```java
+response.sendRedirect("second");
+```
+
+하면:
+
+```text
+고객
+ │
+ │ 요청 ①
+ ▼
+Servlet A
+ │
+ │ "second로 가세요!"
+ ▼
+고객
+ │
+ │ 새로운 요청 ②
+ ▼
+Servlet B
+```
+
+여기서는 **브라우저가 실제로 다시 움직여.**
+
+따라서 Request도 새로 만들어져.
+
+```text
+Request ①
+┌──────────────────┐
+│ member → vo      │
+└──────────────────┘
+        ↓
+     Redirect
+        ↓
+Request ②
+┌──────────────────┐
+│                  │
+│      새 request  │
+│                  │
+└──────────────────┘
+```
+
+그래서 Request ①에:
+
+```java
+request.setAttribute("member", vo);
+```
+
+해놨더라도 Request ②에서는 자동으로 없어.
+
+### Redirect 핵심
+
+> **A → 고객에게 B 주소를 알려줌 → 고객이 B에게 다시 요청**
+> **Request 2개**
+> **기존 request 데이터 유지 ❌**
+
+---
+
+# 4. Redirect 방법 3가지
+
+네가 배우고 있는 방법들을 보면:
+
+### ① `sendRedirect()`
+
+```java
+response.sendRedirect("second");
+```
+
+A가 고객에게:
+
+> "second로 가세요."
+
+라고 알려줌.
+
+```text
+A → 고객 → B
+```
+
+---
+
+### ② `Refresh` Header
+
+```java
+response.addHeader("Refresh", "3; url=second");
+```
+
+A가 고객에게:
+
+> "3초 후에 second로 가세요."
+
+라고 알려줌.
+
+```text
+A → 고객
+     ↓
+   3초 대기
+     ↓
+     B
+```
+
+이것도 결국 **새 요청**이 발생해.
+
+---
+
+### ③ JavaScript `location.href`
+
+Servlet에서:
+
+```java
+out.print("<script>");
+out.print("location.href='second';");
+out.print("</script>");
+```
+
+Servlet이 직접 B로 이동시키는 게 아니야.
+
+Servlet이 **JavaScript를 브라우저에게 보내고**, 브라우저가:
+
+```javascript
+location.href = "second";
+```
+
+를 실행해서 B에게 다시 요청하는 거야.
+
+```text
+Servlet A
+   ↓
+HTML + JavaScript
+   ↓
+브라우저
+   ↓
+location.href 실행
+   ↓
+Servlet B
+```
+
+이것도 **새 요청**.
+
+---
+
+# 5. `getRequestDispatcher("second?name=lee")`의 `?name=lee`
+
+이것도 중요한 부분이야.
+
+```java
+RequestDispatcher dispatcher =
+        request.getRequestDispatcher("second?name=lee");
+```
+
+여기서:
+
+```text
+second
+  ↓
+이동할 대상
+
+?name=lee
+  ↓
+전달할 파라미터
+```
+
+즉 서버 내부에서:
+
+> **"second 담당자에게 `name=lee`라는 정보를 포함해서 전달할 준비를 한다."**
+
+라고 볼 수 있어.
+
+그리고:
+
+```java
+dispatcher.forward(request, response);
+```
+
+하면 실제 전달이 이루어져.
+
+---
+
+# 6. 네가 만든 "은행" 비유로 전부 연결
+
+## 🏦 Forward
+
+고객이 A은행에 대출 신청.
+
+```text
+고객
+ ↓
+A은행
+```
+
+A가:
+
+> "이 업무는 B부서가 담당하네."
+
+하고 **고객을 돌려보내지 않고 서류를 B에게 그대로 넘김.**
+
+```text
+고객
+ ↓
+A은행
+ ↓
+B부서
+```
+
+**서류 그대로 전달.**
+
+→ 같은 Request
+
+---
+
+## 🏃 Redirect
+
+고객이 A은행에 신청.
+
+A가:
+
+> "이건 우리 은행에서 처리하지 않습니다. 저기 B캐피탈로 가세요."
+
+라고 고객에게 알려줌.
+
+```text
+고객
+ ↓
+A은행
+ ↓
+"고객님, B캐피탈로 가세요."
+ ↓
+고객
+ ↓
+B캐피탈
+```
+
+고객이 **B에게 새로 신청**함.
+
+→ 새로운 Request
+
+---
+
+# 7. 그래서 가장 중요한 차이
+
+```text
+┌──────────────────────────────────────┐
+│             FORWARD                  │
+├──────────────────────────────────────┤
+│ 브라우저 → A → B                     │
+│                                      │
+│ A가 B에게 직접 전달                  │
+│ 서버 내부 이동                       │
+│ Request 1개                          │
+│ 기존 request 유지                    │
+│ request 바인딩 데이터 사용 가능 ⭕   │
+└──────────────────────────────────────┘
+
+
+┌──────────────────────────────────────┐
+│             REDIRECT                 │
+├──────────────────────────────────────┤
+│ 브라우저 → A                         │
+│ 브라우저 → B                         │
+│                                      │
+│ A가 브라우저에게 B 주소를 알려줌     │
+│ 브라우저가 다시 요청                 │
+│ Request 2개                          │
+│ 새로운 request 생성                  │
+│ 기존 request 바인딩 데이터 ❌        │
+└──────────────────────────────────────┘
+```
+
+---
+
+# ⭐ 마지막으로 이것만 기억하면 된다
+
+### `setAttribute()`
+
+> **서류에 정보를 넣는다.**
+
+```java
+request.setAttribute("member", vo);
+```
+
+→ **바인딩**
+
+---
+
+### `getRequestDispatcher()`
+
+> **서버 내부에서 누구에게 넘길지 찾는다.**
+
+```java
+request.getRequestDispatcher("second");
+```
+
+→ **전달 준비**
+
+---
+
+### `forward()`
+
+> **기존 서류를 그대로 담당자에게 넘긴다.**
+
+```java
+dispatcher.forward(request, response);
+```
+
+→ **기존 Request 유지**
+
+---
+
+### `sendRedirect()`
+
+> **고객에게 다른 곳으로 다시 가라고 한다.**
+
+```java
+response.sendRedirect("second");
+```
+
+→ **새로운 Request**
+
+---
+
+### 한 줄 암기
+
+> 📝 **`setAttribute()` = 서류에 정보 넣기**
+> 📦 **`forward()` = 서류를 그대로 내부 담당자에게 넘기기**
+> 📍 **`sendRedirect()` = 고객에게 주소를 알려서 다시 가게 하기**
+
+그리고 네가 계속 헷갈렸던 **"바인딩을 포워딩이 해주는 건가?"**의 최종 답은:
+
+> **아니야. `setAttribute()`가 바인딩을 하고, `forward()`는 그 바인딩이 들어 있는 기존 request를 그대로 전달해주는 거야.**
+
+이제 이 구조를 기준으로 Servlet 코드를 읽으면 돼.
