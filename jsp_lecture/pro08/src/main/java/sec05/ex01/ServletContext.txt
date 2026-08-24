@@ -1,0 +1,103 @@
+1. ServletContext란?
+ - ServletContext는 웹 애플리케이션 전체에서 공유되는 정보를 저장하고 관리하는 객체입니다.
+ - 서블릿 컨테이너(Tomcat, Jetty 등)가 애플리케이션을 시작할 때 자동으로 생성하고, 
+   애플리케이션이 종료될 때 소멸됩니다.
+ - 하나의 ServletContext 객체는 웹 애플리케이션 전체에서 공유되므로, 
+   서블릿, JSP, 필터 등이 정보를 공유하는 데 사용할 수 있습니다.
+
+📌 ServletContext의 주요 역할
+✅ 웹 애플리케이션 전역 설정 관리
+✅ 서블릿 간 데이터 공유
+✅ 웹 애플리케이션의 환경 정보 제공
+✅ 웹 애플리케이션 내 리소스(파일) 접근
+✅ 로그 기록 기능 제공
+
+2. ServletContext 객체 생성 및 얻는 방법
+
+- ServletContext 객체는 서블릿 컨테이너가 자동으로 생성하므로, 직접 인스턴스를 생성할 필요가 없습니다. 
+  서블릿 내부에서 다음과 같이 얻을 수 있습니다.
+
+  	1) getServletContext() 사용 해 얻기
+  	
+  		ServletContext context = getServletContext();
+  		
+  	2) HttpServletRequest를 통해 얻기
+  	
+  		ServletContext context = request.getServletContext();
+  		
+    3) ServletConfig 객체를 통해 얻기
+    
+        ServletContext context = getServletConfig().getServletContext();
+    
+ 3. ServletContext의 주요 메서드 정리   
+    
+    1) 애플리케이션 초기화 매개변수 관리 (getInitParameter())
+	   웹 애플리케이션 전역 설정값을 web.xml에 정의하고 가져올 수 있습니다.
+    
+  	📌 web.xml 설정 예제
+  	
+  		<context-param>
+		    <param-name>adminEmail</param-name>
+		    <param-value>admin@example.com</param-value>
+		</context-param>
+  		
+  	📌 초기화 매개변수 가져오기
+  	
+  		ServletContext context = getServletContext();
+		String adminEmail = context.getInitParameter("adminEmail");
+		
+  		✔ 애플리케이션 설정값(예: DB URL, 관리자 이메일 등)을 저장하는 데 유용합니다.
+  	
+  	2) 서블릿 간 데이터 공유 (setAttribute() & getAttribute())
+  	   - 서블릿 간 데이터를 공유할 수 있습니다.
+  	
+  	📌 서블릿 A: 데이터 저장
+  	
+	  	ServletContext context = getServletContext();
+		context.setAttribute("message", "Hello from ServletContext!");
+
+	📌 서블릿 B: 데이터 가져오기  	
+  	
+		ServletContext context = getServletContext();
+		String message = (String) context.getAttribute("message");
+		✔ 서블릿 간 데이터를 공유하는 데 사용됩니다.
+		
+	3) 웹 애플리케이션 내 파일 접근 (getResourceAsStream())
+	   - 웹 애플리케이션 내부의 파일을 읽어올 때 사용합니다.
+	   
+	  📌 예제: /WEB-INF/config.properties 파일 읽기 
+	
+		InputStream inputStream = getServletContext().getResourceAsStream("/WEB-INF/config.properties");
+
+		if (inputStream != null) {
+		    Properties properties = new Properties();
+		    properties.load(inputStream);
+		    String dbUser = properties.getProperty("db.user");
+		}
+		
+		✔ 설정 파일 등을 읽을 때 유용합니다.
+  	
+  	4) 웹 애플리케이션 환경 정보 제공
+		메서드										설명
+		getContextPath()				애플리케이션 컨텍스트 경로 반환
+		getServerInfo()					웹 서버 정보 반환
+		getRealPath(String path)		특정 경로의 실제 파일 시스템 경로 반환
+  		
+  		
+  		📌 예제
+  		ServletContext context = getServletContext();
+		String contextPath = context.getContextPath();
+		String serverInfo = context.getServerInfo();
+		String realPath = context.getRealPath("/index.html");
+		
+		✔ 애플리케이션의 실행 환경을 확인할 때 사용됩니다.
+		
+	5) 서버 로그 기록 (log())	
+	
+	ServletContext context = getServletContext();
+	context.log("This is a log message from ServletContext.");
+	
+  		
+ 응용예제.	 웹사이트(웹프로젝트 내부의 서블릿)에 방문하는 방문자수를 카운트 서비스 하는 서블릿 페이지 만들기
+ 
+ 	실습파일 :  com.example.servlet.VisitorCounterServlet
