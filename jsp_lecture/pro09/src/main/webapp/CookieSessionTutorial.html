@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<!-- CookieSessionTutorial_v2.html · 2026-08-20 · 장면(Scene) 단위 고밀도 애니메이션 버전 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>쿠키 · 세션 애니메이션 자습서 v2 (장면별 상세판)</title>
+<style>
+:root{
+  --bg:#0d1220; --panel:#151c30; --panel2:#1b2440; --line:#2a3558;
+  --txt:#dce3f5; --dim:#8b96b8; --amber:#ffb454; --cyan:#5cd6ff;
+  --green:#5dde8f; --red:#ff6b7a; --pink:#ff8fc7; --code:#0a0e1a;
+  --mono:'D2Coding','Consolas','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;line-height:1.7}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 120px}
+
+header{border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#151c30,#0f1526);padding:28px 24px;margin-bottom:28px}
+.eyebrow{font-family:var(--mono);color:var(--cyan);font-size:13px;letter-spacing:2px}
+h1{font-size:clamp(22px,4.5vw,30px);margin:8px 0 10px}
+h1 b{color:var(--amber)}
+.sub{color:var(--dim);font-size:15px}
+.dl{display:inline-block;margin-top:16px;background:var(--amber);color:#1a1206;font-weight:bold;border:none;border-radius:8px;padding:10px 18px;font-size:14px;cursor:pointer}
+
+section{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:24px 20px;margin-bottom:26px}
+.step-tag{display:inline-block;font-family:var(--mono);font-size:12px;color:#0d1220;background:var(--cyan);border-radius:6px;padding:3px 10px;font-weight:bold;letter-spacing:1px}
+h2{font-size:20px;margin:10px 0 6px}
+h3{font-size:16px;margin:20px 0 8px;color:var(--cyan)}
+p{margin:8px 0;font-size:15px}
+.why{border-left:4px solid var(--amber);background:var(--panel2);border-radius:0 10px 10px 0;padding:12px 14px;margin:14px 0;font-size:14.5px}
+.why b{color:var(--amber)}
+.warn{border-left:4px solid var(--red);background:#241722;border-radius:0 10px 10px 0;padding:12px 14px;margin:14px 0;font-size:14px}
+.warn b{color:var(--red)}
+.note{color:var(--dim);font-size:13px}
+
+.codebox{position:relative;margin:12px 0}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.65;color:#cdd7f0}
+.copy{position:absolute;top:8px;right:8px;background:var(--panel2);color:var(--cyan);border:1px solid var(--line);border-radius:6px;font-size:12px;padding:4px 10px;cursor:pointer}
+.cm{color:#6b7694}.kw{color:#7aa2ff}.st{color:#ffcf87}
+
+/* ═══ 무대 ═══ */
+.stage{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
+.stage-title{font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:10px;letter-spacing:1px}
+
+/* 장면 캡션 바 */
+.caption{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:12px;min-height:56px}
+.scnum{font-family:var(--mono);font-size:11px;color:#0d1220;background:var(--amber);border-radius:6px;padding:2px 8px;font-weight:bold;white-space:nowrap;margin-top:3px}
+.sctext{font-size:13.5px}
+.sctext b{color:var(--amber)}
+
+/* 배우 배치 + 통신 회선 */
+.commwrap{position:relative}
+.duo{display:grid;grid-template-columns:1fr 110px 1fr;gap:0;align-items:stretch}
+@media(max-width:720px){.duo{grid-template-columns:1fr 64px 1fr}}
+.wire{position:relative}
+.wire::before{content:"";position:absolute;left:0;right:0;top:70px;border-top:2px dashed var(--line)}
+.wire .cut{position:absolute;left:50%;top:58px;transform:translateX(-50%);color:var(--red);font-size:19px;font-weight:bold;opacity:0;transition:opacity .4s}
+.wire .cut.show{opacity:1}
+.wire .lbl{position:absolute;left:50%;top:40px;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--dim);white-space:nowrap}
+
+/* 브라우저 창 모형 */
+.bwin{background:#101a30;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.bbar{display:flex;align-items:center;gap:6px;background:#0c1426;border-bottom:1px solid var(--line);padding:6px 8px}
+.bdot{width:9px;height:9px;border-radius:50%}
+.bd1{background:#ff5f57}.bd2{background:#febc2e}.bd3{background:#28c840}
+.burl{flex:1;font-family:var(--mono);font-size:10.5px;color:var(--dim);background:#0a0e1a;border:1px solid var(--line);border-radius:5px;padding:2px 8px;overflow:hidden;white-space:nowrap}
+.bview{padding:10px;min-height:96px;font-size:12px;transition:background .4s}
+.bview h6{font-size:12.5px;margin-bottom:6px;color:var(--txt)}
+.fakeinput{display:block;background:#0a0e1a;border:1px solid var(--line);border-radius:5px;padding:3px 8px;margin:4px 0;font-family:var(--mono);font-size:11px;color:var(--txt)}
+.fakebtn{display:inline-block;background:var(--cyan);color:#0d1220;border-radius:5px;padding:2px 10px;font-size:11px;font-weight:bold;margin-top:4px}
+.pgok{color:var(--green)} .pgbad{color:var(--red)}
+.bview .big{font-size:14px;font-weight:bold}
+
+/* 쿠키 서랍 */
+.drawer{border:1px dashed var(--line);border-radius:9px;padding:7px 9px;margin-top:8px}
+.drawer h5{font-size:10.5px;color:var(--dim);font-family:var(--mono);letter-spacing:1px;margin-bottom:4px}
+.tokenchip{display:inline-block;font-family:var(--mono);font-size:11px;border-radius:6px;padding:3px 8px;margin:2px;border:1px solid var(--amber);color:var(--amber);background:#241c0e;opacity:0;transform:translateY(-14px) scale(.6);transition:all .6s}
+.tokenchip.show{opacity:1;transform:none}
+.tokenchip.cy{border-color:var(--cyan);color:var(--cyan);background:#0e1e2b}
+.empty{font-size:11px;color:var(--dim)}
+
+/* 서버 모형 */
+.srv{background:#181322;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.srvhead{display:flex;align-items:center;gap:8px;background:#120e1a;border-bottom:1px solid var(--line);padding:6px 10px;font-family:var(--mono);font-size:11px;color:var(--amber)}
+.led{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.led.think{background:var(--amber);box-shadow:0 0 6px var(--amber);animation:blink .7s infinite}
+@keyframes blink{50%{opacity:.25}}
+.srvface{text-align:center;font-size:26px;padding:4px 0 0}
+.console{margin:8px;background:#0a0e1a;border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-family:var(--mono);font-size:10.5px;color:var(--green);min-height:74px;line-height:1.55}
+.console .c-dim{color:var(--dim)} .console .c-red{color:var(--red)} .console .c-amb{color:var(--amber)}
+.memo{border:1px dashed var(--line);border-radius:9px;padding:7px 9px;margin:0 8px 8px}
+.memo h5{font-size:10.5px;color:var(--dim);font-family:var(--mono);letter-spacing:1px;margin-bottom:4px}
+.sessrow{display:flex;justify-content:space-between;gap:6px;font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);border-radius:6px;padding:3px 7px;margin:3px 0;opacity:0;transition:all .5s}
+.sessrow.show{opacity:1}
+.sessrow.scan{border-color:var(--amber);background:#241c0e}
+.sessrow.hit{border-color:var(--green);background:#0f2418;box-shadow:0 0 10px rgba(93,222,143,.4)}
+.sessrow .k{color:var(--pink)} .sessrow .v{color:var(--dim)}
+
+/* HTTP 봉투 (원문 표시) */
+.mail{position:absolute;top:6px;left:2%;width:230px;background:#10203a;border:1.5px solid var(--cyan);border-radius:9px;font-family:var(--mono);font-size:10.5px;color:var(--txt);opacity:0;z-index:5;box-shadow:0 8px 22px rgba(0,0,0,.6);transition:left 1.4s ease-in-out,opacity .4s}
+.mail.res{border-color:var(--amber)}
+.mailhead{padding:4px 8px;border-bottom:1px solid var(--line);color:var(--cyan);font-weight:bold}
+.mail.res .mailhead{color:var(--amber)}
+.mailbody{padding:6px 8px;line-height:1.5}
+.hline{color:var(--txt)} .hhdr{color:var(--dim)}
+.hcook{color:var(--amber);background:#241c0e;border-radius:4px;padding:0 3px}
+.hkey{color:var(--cyan);background:#0e1e2b;border-radius:4px;padding:0 3px}
+.hnone{color:var(--red)}
+.mail.go{left:calc(98% - 230px)}
+.mail.on{opacity:1}
+@media(max-width:720px){.mail{width:170px;font-size:9.5px}.mail.go{left:calc(98% - 170px)}}
+
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px 16px;font-size:14px;cursor:pointer}
+.btn.primary{background:var(--cyan);color:#0d1220;font-weight:bold;border:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* 비교표 / 게임 / 퀴즈 / 마무리 (v1과 동일) */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--panel2);color:var(--cyan);font-family:var(--mono);font-size:12.5px}
+td:first-child{color:var(--amber);white-space:nowrap}
+.sortgame .item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
+.sortgame .item h4{font-size:14px;margin-bottom:8px}
+.sortgame .pick{display:flex;gap:8px}
+.sortgame .verdict{display:none;font-size:13px;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px;color:var(--dim)}
+.sortgame .verdict.show{display:block}
+.sortgame .pick .btn.ok{background:var(--green);color:#0d1220;border:none;font-weight:bold}
+.sortgame .pick .btn.no{background:var(--red);color:#fff;border:none}
+.quiz{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}
+.quiz h4{font-size:14.5px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:var(--code);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;font-size:13.5px;cursor:pointer}
+.opt.ok{border-color:var(--green);background:#123524}
+.opt.no{border-color:var(--red);background:#33161d}
+.expl{display:none;font-size:13px;color:var(--dim);border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}
+.expl.show{display:block}
+.finale{border:1px solid var(--amber);background:linear-gradient(160deg,#1d1a12,#151c30)}
+.finale ol{margin:10px 0 0 22px;font-size:15px}
+.finale li{margin:8px 0}
+.finale b{color:var(--amber)}
+#dash{position:fixed;right:14px;bottom:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-family:var(--mono);font-size:12px;color:var(--dim);box-shadow:0 6px 20px rgba(0,0,0,.5);z-index:9}
+#dash b{color:var(--green)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">SERVLET · COOKIE &amp; SESSION · v2 상세 애니메이션</div>
+  <h1>쿠키와 세션<br><b>봉투 속 HTTP 원문까지 들여다보기</b></h1>
+  <p class="sub">이번 버전은 브라우저 <b>화면</b>, 서버 <b>처리 콘솔</b>, 오가는 봉투의
+  <b>HTTP 메시지 원문</b>까지 전부 그려집니다.
+  <b>[다음 장면 ▶]</b> 버튼으로 한 장면씩 넘기며 천천히 관찰하세요.</p>
+  <button class="dl" onclick="downloadDoc()">⬇️ 이 문서 다운로드 (.html)</button>
+</header>
+
+<!-- ══════════ STEP 1 : 무상태 ══════════ -->
+<section id="s1">
+  <span class="step-tag">STEP 1</span>
+  <h2>문제 상황 — HTTP는 기억력이 없다 (무상태, Stateless)</h2>
+  <div class="why">💡 웹의 통신 규칙 HTTP는 <b>요청 1번 → 응답 1번 → 연결 종료</b>입니다.
+  응답을 보내는 순간 서버는 그 사용자에 대한 기록을 <b>하나도 남기지 않습니다</b>.
+  아래 무대에서 그 결과를 장면별로 확인하세요.</div>
+
+  <div class="stage">
+    <div class="stage-title">[ 무대 1 · 아무 장치가 없을 때 — 총 6장면 ]</div>
+    <div class="caption"><span class="scnum" id="cap1n">장면 0/6</span><span class="sctext" id="cap1t">[다음 장면 ▶] 버튼을 눌러 시작하세요.</span></div>
+    <div class="commwrap">
+      <div class="duo">
+        <div><!-- 브라우저 -->
+          <div class="bwin">
+            <div class="bbar"><span class="bdot bd1"></span><span class="bdot bd2"></span><span class="bdot bd3"></span><span class="burl" id="url1">localhost:8090/pro09/loginForm</span></div>
+            <div class="bview" id="view1"></div>
+          </div>
+          <div class="drawer"><h5>🍪 쿠키 보관함 (hong의 컴퓨터)</h5><span class="empty">비어 있음 — 이 무대에서는 끝까지 비어 있습니다</span></div>
+        </div>
+        <div class="wire"><span class="lbl">HTTP 통신 회선</span><span class="cut" id="cut1">✕ 연결 끊김</span></div>
+        <div><!-- 서버 -->
+          <div class="srv">
+            <div class="srvhead"><span class="led" id="led1"></span>TOMCAT :8090 <span id="face1" style="margin-left:auto;font-size:16px">😐</span></div>
+            <div class="console" id="con1"><span class="c-dim">서버 대기 중...</span></div>
+            <div class="memo"><h5>서버가 기억하는 것</h5><span class="empty" id="mem1">없음</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mail" id="mail1"><div class="mailhead">📨 HTTP 요청</div><div class="mailbody" id="mb1"></div></div>
+    </div>
+    <div class="ctrl">
+      <button class="btn primary" id="next1" onclick="play(1)">다음 장면 ▶</button>
+      <button class="btn" onclick="reset(1)">⟲ 처음부터</button>
+    </div>
+  </div>
+
+  <div class="why">📌 <b>결론</b> — 로그인 성공 5초 뒤에도 서버는 "누구세요?"부터 시작합니다.
+  사용자를 계속 알아보게 하려면 <b>상태 유지 장치</b>가 필요합니다. → 쿠키(STEP 2)와 세션(STEP 3)</div>
+</section>
+
+<!-- ══════════ STEP 2 : 쿠키 ══════════ -->
+<section id="s2">
+  <span class="step-tag">STEP 2</span>
+  <h2>쿠키(Cookie) — 정보를 "브라우저"에 맡긴다</h2>
+  <p><b>쿠키</b> = 서버가 응답에 실어 보내는 <b>이름=값 텍스트 조각</b>.
+  브라우저는 이를 자기 컴퓨터에 저장했다가, 같은 서버로 가는 <b>모든 요청에 자동으로 붙입니다</b>.
+  봉투 속 <span class="hcook">Set-Cookie</span> / <span class="hcook">Cookie</span> 헤더가
+  실제로 어디에 적히는지 관찰하세요.</p>
+
+  <div class="stage">
+    <div class="stage-title">[ 무대 2 · 쿠키의 일생 : 발급 → 저장 → 자동 재전송 — 총 7장면 ]</div>
+    <div class="caption"><span class="scnum" id="cap2n">장면 0/7</span><span class="sctext" id="cap2t">[다음 장면 ▶] 버튼을 눌러 시작하세요.</span></div>
+    <div class="commwrap">
+      <div class="duo">
+        <div>
+          <div class="bwin">
+            <div class="bbar"><span class="bdot bd1"></span><span class="bdot bd2"></span><span class="bdot bd3"></span><span class="burl" id="url2">localhost:8090/pro09/loginForm</span></div>
+            <div class="bview" id="view2"></div>
+          </div>
+          <div class="drawer"><h5>🍪 쿠키 보관함 (hong의 컴퓨터)</h5>
+            <span class="empty" id="ckempty2">비어 있음</span>
+            <span class="tokenchip" id="ck2">🍪 userId=hong · 24시간 유효</span>
+          </div>
+        </div>
+        <div class="wire"><span class="lbl">HTTP 통신 회선</span><span class="cut" id="cut2">✕ 연결 끊김</span></div>
+        <div>
+          <div class="srv">
+            <div class="srvhead"><span class="led" id="led2"></span>TOMCAT :8090 <span id="face2" style="margin-left:auto;font-size:16px">😐</span></div>
+            <div class="console" id="con2"><span class="c-dim">서버 대기 중...</span></div>
+            <div class="memo"><h5>서버가 기억하는 것</h5><span class="empty">없음 — 쿠키 방식에서 서버는 끝까지 아무것도 저장하지 않습니다!</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mail" id="mail2"><div class="mailhead">📨 HTTP 요청</div><div class="mailbody" id="mb2"></div></div>
+    </div>
+    <div class="ctrl">
+      <button class="btn primary" id="next2" onclick="play(2)">다음 장면 ▶</button>
+      <button class="btn" onclick="reset(2)">⟲ 처음부터</button>
+    </div>
+  </div>
+
+  <h3>서블릿 코드로 보면 (발급 / 읽기)</h3>
+  <div class="codebox"><button class="copy" onclick="cp(this)">복사</button><pre><span class="cm">// [발급] 장면 3에서 서버가 실행한 코드</span>
+Cookie cookie = <span class="kw">new</span> Cookie(<span class="st">"userId"</span>, <span class="st">"hong"</span>); <span class="cm">// 이름=값으로 생성</span>
+cookie.setMaxAge(60 * 60 * 24);              <span class="cm">// 유효 시간(초 단위) = 24시간</span>
+response.addCookie(cookie);                  <span class="cm">// 응답 헤더에 Set-Cookie: userId=hong 추가</span>
+
+<span class="cm">// [읽기] 장면 6에서 서버가 실행한 코드</span>
+Cookie[] cookies = request.getCookies();     <span class="cm">// 요청에 실려 온 쿠키 전부를 배열로</span>
+<span class="kw">for</span> (Cookie c : cookies) {
+    <span class="kw">if</span> (c.getName().equals(<span class="st">"userId"</span>)) {   <span class="cm">// 이름이 userId인 쿠키를 찾아</span>
+        String userId = c.getValue();        <span class="cm">// 값 "hong"을 꺼냄</span>
+    }
+}</pre></div>
+
+  <div class="warn">⚠️ <b>쿠키의 약점</b> — 쿠키는 사용자 컴퓨터에 저장되고,
+  F12 개발자도구에서 누구나 <b>보고 고칠 수 있습니다</b>.
+  userId=hong 을 userId=admin 으로 바꿔 보내는 조작도 가능합니다.
+  → <b>비밀번호·회원 정보를 쿠키에 담으면 절대 안 됩니다.</b> 해결책이 STEP 3의 세션입니다.</div>
+</section>
+
+<!-- ══════════ STEP 3 : 세션 ══════════ -->
+<section id="s3">
+  <span class="step-tag">STEP 3</span>
+  <h2>세션(Session) — 정보는 "서버 금고"에, 브라우저엔 열쇠만</h2>
+  <p>정보 자체는 <b>서버 메모리의 세션 저장소</b>에 두고, 브라우저에는 그 칸을 여는
+  <b>열쇠 번호(<span class="hkey">JSESSIONID</span>)만</b> 쿠키로 줍니다.
+  봉투에 회원 정보가 <b>한 번도 실리지 않는 것</b>을 확인하세요.</p>
+
+  <div class="stage">
+    <div class="stage-title">[ 무대 3 · 세션 : ID 발급 → ID만 재전송 → 서버가 금고 조회 — 총 7장면 ]</div>
+    <div class="caption"><span class="scnum" id="cap3n">장면 0/7</span><span class="sctext" id="cap3t">[다음 장면 ▶] 버튼을 눌러 시작하세요.</span></div>
+    <div class="commwrap">
+      <div class="duo">
+        <div>
+          <div class="bwin">
+            <div class="bbar"><span class="bdot bd1"></span><span class="bdot bd2"></span><span class="bdot bd3"></span><span class="burl" id="url3">localhost:8090/pro09/loginForm</span></div>
+            <div class="bview" id="view3"></div>
+          </div>
+          <div class="drawer"><h5>🍪 쿠키 보관함 (hong의 컴퓨터)</h5>
+            <span class="empty" id="ckempty3">비어 있음</span>
+            <span class="tokenchip cy" id="ck3">🔑 JSESSIONID=A1B2C3</span>
+            <div class="note" id="keynote3" style="display:none">← 열쇠 번호뿐. 아이디·등급은 여기 없음!</div>
+          </div>
+        </div>
+        <div class="wire"><span class="lbl">HTTP 통신 회선</span><span class="cut" id="cut3">✕ 연결 끊김</span></div>
+        <div>
+          <div class="srv">
+            <div class="srvhead"><span class="led" id="led3"></span>TOMCAT :8090 <span id="face3" style="margin-left:auto;font-size:16px">😐</span></div>
+            <div class="console" id="con3"><span class="c-dim">서버 대기 중...</span></div>
+            <div class="memo"><h5>🗄️ 세션 저장소 (서버 메모리 금고)</h5>
+              <div class="sessrow" id="sr3a"><span class="k">Z9Y8X7</span><span class="v">id=lee (다른 사용자)</span></div>
+              <div class="sessrow" id="sr3b"><span class="k">A1B2C3</span><span class="v">id=hong, 등급=VIP</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mail" id="mail3"><div class="mailhead">📨 HTTP 요청</div><div class="mailbody" id="mb3"></div></div>
+    </div>
+    <div class="ctrl">
+      <button class="btn primary" id="next3" onclick="play(3)">다음 장면 ▶</button>
+      <button class="btn" onclick="reset(3)">⟲ 처음부터</button>
+    </div>
+  </div>
+
+  <h3>서블릿 코드로 보면 (저장 / 사용 / 종료)</h3>
+  <div class="codebox"><button class="copy" onclick="cp(this)">복사</button><pre><span class="cm">// [저장] 장면 3에서 서버가 실행한 코드</span>
+HttpSession session = request.getSession(); <span class="cm">// 세션 없으면 새로 생성, 있으면 기존 것 반환</span>
+session.setAttribute(<span class="st">"userId"</span>, <span class="st">"hong"</span>);   <span class="cm">// 서버 금고에 저장 (브라우저로 안 나감!)</span>
+session.setAttribute(<span class="st">"grade"</span>, <span class="st">"VIP"</span>);
+<span class="cm">// 이때 톰캣이 자동으로 응답에 Set-Cookie: JSESSIONID=A1B2C3 을 실어 준다</span>
+
+<span class="cm">// [사용] 장면 6에서 서버가 실행한 코드</span>
+HttpSession s = request.getSession();
+String userId = (String) s.getAttribute(<span class="st">"userId"</span>); <span class="cm">// "hong" (Object 반환 → 형변환)</span>
+
+<span class="cm">// [종료] 로그아웃 시</span>
+s.invalidate(); <span class="cm">// 금고에서 이 사용자의 칸을 통째로 삭제</span></pre></div>
+
+  <div class="why">💡 <b>한 줄 요약</b> — 쿠키는 <b>내용물을 통째로</b> 들고 다니고,
+  세션은 <b>열쇠 번호만</b> 들고 다닙니다. 내용물은 전부 서버 금고 안에 있습니다.</div>
+</section>
+
+<!-- ══════════ STEP 4 : 비교 + 분류 게임 ══════════ -->
+<section id="s4">
+  <span class="step-tag">STEP 4</span>
+  <h2>쿠키 vs 세션 — 한눈 비교 + 분류 연습</h2>
+  <table>
+    <tr><th>비교 항목</th><th>쿠키 (Cookie)</th><th>세션 (Session)</th></tr>
+    <tr><td>저장 위치</td><td>사용자 컴퓨터(브라우저)</td><td>서버 메모리</td></tr>
+    <tr><td>저장 형태</td><td>이름=값 텍스트</td><td>객체(Object)도 저장 가능</td></tr>
+    <tr><td>보안</td><td>낮음 (사용자가 보고 고칠 수 있음)</td><td>높음 (서버에만 존재)</td></tr>
+    <tr><td>서버 부담</td><td>없음</td><td>사용자 수만큼 메모리 사용</td></tr>
+    <tr><td>유지 기간</td><td>setMaxAge로 지정 (브라우저 꺼도 유지 가능)</td><td>브라우저 종료·시간 만료·invalidate() 시 소멸</td></tr>
+    <tr><td>대표 용도</td><td>오늘 하루 팝업 안 보기, 아이디 저장</td><td>로그인 상태 유지, 장바구니</td></tr>
+  </table>
+
+  <h3>🛠️ 분류 연습 — 이 정보는 어디에 저장해야 할까?</h3>
+  <div class="sortgame" id="game">
+    <div class="item" data-ans="cookie">
+      <h4>1) "오늘 하루 이 팝업창 열지 않기" 체크 여부</h4>
+      <div class="pick">
+        <button class="btn" onclick="pick(this,'cookie')">🍪 쿠키에 저장</button>
+        <button class="btn" onclick="pick(this,'session')">🔑 세션에 저장</button>
+      </div>
+      <div class="verdict">✅ <b>쿠키</b> — 민감하지 않고, 브라우저를 껐다 켜도 하루 동안 유지되어야 하므로 setMaxAge를 지정한 쿠키가 적합합니다.</div>
+    </div>
+    <div class="item" data-ans="session">
+      <h4>2) 로그인한 회원의 아이디와 등급 (로그인 상태 유지)</h4>
+      <div class="pick">
+        <button class="btn" onclick="pick(this,'cookie')">🍪 쿠키에 저장</button>
+        <button class="btn" onclick="pick(this,'session')">🔑 세션에 저장</button>
+      </div>
+      <div class="verdict">✅ <b>세션</b> — 회원 정보를 사용자 손에 두면 위조될 수 있습니다. 서버가 보관하고 브라우저에는 JSESSIONID만 줍니다.</div>
+    </div>
+    <div class="item" data-ans="session">
+      <h4>3) 쇼핑몰 장바구니에 담긴 상품 목록</h4>
+      <div class="pick">
+        <button class="btn" onclick="pick(this,'cookie')">🍪 쿠키에 저장</button>
+        <button class="btn" onclick="pick(this,'session')">🔑 세션에 저장</button>
+      </div>
+      <div class="verdict">✅ <b>세션</b> — 목록은 크기가 크고(쿠키는 용량 제한이 작음) 가격 조작 위험도 있어 서버 쪽 세션이 적합합니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 퀴즈 ══════════ -->
+<section id="s5">
+  <span class="step-tag">CHECK</span>
+  <h2>🧠 이해도 점검 퀴즈</h2>
+  <div class="quiz" data-q="q1">
+    <h4>Q1. 로그인 직후의 다음 요청에서 서버가 사용자를 못 알아보는 근본 이유는?</h4>
+    <button class="opt" onclick="grade(this,false)">톰캣 서버의 메모리가 부족해서</button>
+    <button class="opt" onclick="grade(this,true)">HTTP가 요청-응답 후 연결을 끊고 상태를 남기지 않는 무상태 규칙이라서</button>
+    <button class="opt" onclick="grade(this,false)">브라우저가 보안상 아이디 전송을 차단해서</button>
+    <div class="expl">✅ HTTP는 무상태(Stateless)입니다. 무대 1의 장면 4에서 연결이 ✕ 끊기는 순간 서버는 전부 잊었습니다.</div>
+  </div>
+  <div class="quiz" data-q="q2">
+    <h4>Q2. 세션 방식에서 브라우저 쿠키 보관함에 실제로 저장되는 것은?</h4>
+    <button class="opt" onclick="grade(this,false)">회원의 아이디와 등급 전체</button>
+    <button class="opt" onclick="grade(this,true)">세션 금고의 열쇠 번호인 JSESSIONID 하나</button>
+    <button class="opt" onclick="grade(this,false)">아무것도 저장되지 않는다</button>
+    <div class="expl">✅ 무대 3에서 브라우저 서랍에 들어온 것은 🔑 JSESSIONID=A1B2C3 하나뿐이었습니다. 세션도 결국 이 쿠키 하나의 도움을 받습니다.</div>
+  </div>
+  <div class="quiz" data-q="q3">
+    <h4>Q3. session.setAttribute("userId","hong") 의 "hong"이 저장되는 위치는?</h4>
+    <button class="opt" onclick="grade(this,false)">사용자 컴퓨터의 쿠키 파일</button>
+    <button class="opt" onclick="grade(this,false)">오라클 DB의 t_member 테이블</button>
+    <button class="opt" onclick="grade(this,true)">서버(톰캣) 메모리의 세션 저장소</button>
+    <div class="expl">✅ setAttribute의 값은 서버 메모리 금고(무대 3의 🗄️)에 저장됩니다. 쿠키와는 저장 위치 자체가 다릅니다.</div>
+  </div>
+</section>
+
+<!-- ══════════ 핵심 정리 ══════════ -->
+<section class="finale">
+  <span class="step-tag" style="background:var(--amber)">핵심 정리 3줄</span>
+  <ol>
+    <li>HTTP는 <b>무상태</b> — 응답 후 연결을 끊고 사용자를 잊으므로, 상태 유지 장치가 필요하다.</li>
+    <li><b>쿠키</b> = 정보를 <b>브라우저</b>에 저장, 매 요청에 자동 첨부(Cookie 헤더) — 편하지만 노출·수정 가능해 민감 정보 금지.</li>
+    <li><b>세션</b> = 정보는 <b>서버 금고</b>에, 브라우저엔 열쇠 <b>JSESSIONID</b>만 — 로그인 유지의 표준.</li>
+  </ol>
+</section>
+
+</div><!-- /wrap -->
+
+<div id="dash">진행률 <b id="dashPct">0%</b> · 퀴즈 <b id="dashQuiz">0/3</b></div>
+
+<script>
+/* ───────── 공통 도우미 ───────── */
+function $(id){return document.getElementById(id);}
+function cp(btn){
+  try{
+    var t=btn.nextElementSibling.innerText;
+    navigator.clipboard.writeText(t).then(function(){btn.textContent='복사됨!';setTimeout(function(){btn.textContent='복사';},1200);});
+  }catch(e){btn.textContent='Ctrl+C로 복사하세요';}
+}
+function downloadDoc(){
+  try{
+    var blob=new Blob(['<!DOCTYPE html>\n'+document.documentElement.outerHTML],{type:'text/html;charset=utf-8'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='CookieSessionTutorial_v2.html';a.click();URL.revokeObjectURL(a.href);
+  }catch(e){alert('브라우저에서 Ctrl+S로 저장해 주세요.');}
+}
+/* 봉투 이동 : dir='req'(좌→우) / 'res'(우→좌). body = HTTP 원문 HTML */
+function fly(n,dir,body,cb){
+  var m=$('mail'+n);
+  m.querySelector('.mailhead').textContent = dir==='req' ? '📨 HTTP 요청' : '📩 HTTP 응답';
+  m.classList.toggle('res',dir==='res');
+  $('mb'+n).innerHTML=body;
+  m.style.transition='none';
+  m.classList.toggle('go',dir==='res');   // 응답은 오른쪽에서 출발
+  m.offsetHeight;
+  m.style.transition='';
+  m.classList.add('on');
+  setTimeout(function(){m.classList.toggle('go',dir==='req');},80);
+  setTimeout(function(){m.classList.remove('on');if(cb)cb();},1650);
+}
+/* 브라우저 화면(페이지) 상태들 */
+function pgLoginForm(){return '<h6>로그인</h6><span class="fakeinput">아이디 : hong</span><span class="fakeinput">비밀번호 : ••••</span><span class="fakebtn">로그인</span>';}
+function pgOk(){return '<div class="big pgok">✅ 로그인 성공!</div><span class="note">hong님, 환영합니다.</span>';}
+function pgMyReq(){return '<h6>마이페이지로 이동 중...</h6><span class="note">/mypage 요청 전송</span>';}
+function pgDenied(){return '<div class="big pgbad">🚫 로그인이 필요합니다</div><span class="note">서버가 사용자를 알 수 없어 로그인 화면으로 돌려보냄</span>';}
+function pgMyOk(who){return '<div class="big pgok">👤 '+who+'님의 마이페이지</div><span class="note">주문내역 · 포인트 · 등급 확인 가능</span>';}
+function con(n,html){$('con'+n).innerHTML=html;}
+function face(n,f,think){$('face'+n).textContent=f;$('led'+n).classList.toggle('think',!!think);}
+function cap(n,i,total,text){$('cap'+n+'n').textContent='장면 '+i+'/'+total;$('cap'+n+'t').innerHTML=text;}
+
+/* ───────── 장면 대본 ───────── */
+var scenes={
+ 1:[ // 무상태 (6장면)
+  function(){cap(1,1,6,'<b>hong님이 로그인 폼에 입력</b> — 아이디 hong, 비밀번호 입력 후 로그인 버튼을 누르려 합니다.');
+    $('view1').innerHTML=pgLoginForm();},
+  function(){cap(1,2,6,'<b>요청 봉투가 서버로 이동</b> — 봉투 안 HTTP 원문을 보세요. 입력값이 본문(body)에 실려 갑니다.');
+    face(1,'🧐',true);
+    fly(1,'req','<span class="hline">POST /pro09/login HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><span class="hhdr">(Cookie 헤더 <span class="hnone">없음</span>)</span><br><br>id=hong&amp;pw=1212',function(){
+      con(1,'&gt; 요청 수신 : POST /login<br>&gt; DB에서 hong 조회... <span class="c-amb">일치!</span><br>&gt; 로그인 성공 응답 준비');face(1,'😀',false);});},
+  function(){cap(1,3,6,'<b>응답 봉투가 브라우저로 이동</b> — "로그인 성공" 화면이 브라우저에 그려집니다.');
+    fly(1,'res','<span class="hline">HTTP/1.1 200 OK</span><br><span class="hhdr">Content-Type: text/html</span><br><br>로그인 성공!',function(){
+      $('url1').textContent='localhost:8090/pro09/login';$('view1').innerHTML=pgOk();});},
+  function(){cap(1,4,6,'⚡ <b>연결 종료!</b> — 응답이 끝나자 회선이 끊기고, 서버는 hong님에 대한 기록을 <b>전부 지웁니다</b>. 이것이 무상태입니다.');
+    $('cut1').classList.add('show');face(1,'😐',false);
+    con(1,'&gt; 응답 전송 완료<br>&gt; <span class="c-red">연결 종료. 남긴 기록 : 없음</span><br>&gt; 다음 요청 대기...');
+    $('mem1').textContent='없음 (방금 로그인한 hong도 모름)';},
+  function(){cap(1,5,6,'<b>hong님이 마이페이지 요청</b> — 봉투를 보세요. 서버가 hong님인지 알 수 있는 정보가 <b>한 줄도 없습니다</b>.');
+    $('cut1').classList.remove('show');$('url1').textContent='localhost:8090/pro09/mypage';$('view1').innerHTML=pgMyReq();face(1,'🤔',true);
+    fly(1,'req','<span class="hline">GET /pro09/mypage HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><span class="hhdr">(Cookie 헤더 <span class="hnone">없음</span>)</span><br><br><span class="hnone">누구인지 알 단서 0개</span>',function(){
+      con(1,'&gt; 요청 수신 : GET /mypage<br>&gt; 이 요청이 누구인지 <span class="c-red">알 방법이 없음</span><br>&gt; 로그인 페이지로 돌려보내자');});},
+  function(){cap(1,6,6,'🚫 <b>"로그인이 필요합니다"</b> — 방금 로그인했는데도! 관찰 완료. 해결책은 STEP 2(쿠키)와 STEP 3(세션)입니다.');
+    fly(1,'res','<span class="hline">HTTP/1.1 302 Found</span><br><span class="hhdr">Location: /loginForm</span><br><br>로그인 필요',function(){
+      $('view1').innerHTML=pgDenied();face(1,'😐',false);mark('st1');});}
+ ],
+ 2:[ // 쿠키 (7장면)
+  function(){cap(2,1,7,'<b>로그인 폼 입력</b> — 아직 쿠키 보관함은 비어 있습니다.');
+    $('view2').innerHTML=pgLoginForm();},
+  function(){cap(2,2,7,'<b>로그인 요청 전송</b> — 첫 요청이라 Cookie 헤더가 없습니다.');
+    face(2,'🧐',true);
+    fly(2,'req','<span class="hline">POST /pro09/login HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><span class="hhdr">(Cookie 헤더 없음)</span><br><br>id=hong&amp;pw=1212',function(){
+      con(2,'&gt; hong 확인... <span class="c-amb">일치!</span><br>&gt; new Cookie("userId","hong")<br>&gt; response.addCookie(cookie) 실행');face(2,'😀',false);});},
+  function(){cap(2,3,7,'<b>응답에 <span class="hcook">Set-Cookie</span> 헤더 부착</b> — 서버가 "이 쪽지를 보관해 두세요"라고 브라우저에 지시합니다.');
+    fly(2,'res','<span class="hline">HTTP/1.1 200 OK</span><br><span class="hcook">Set-Cookie: userId=hong;</span><br><span class="hcook">Max-Age=86400</span><br><br>로그인 성공!',function(){
+      $('url2').textContent='localhost:8090/pro09/login';$('view2').innerHTML=pgOk();});},
+  function(){cap(2,4,7,'🍪 <b>브라우저가 쿠키를 저장</b> — 보관함에 userId=hong 이 들어갑니다. <b>서버 쪽 메모에는 여전히 아무것도 없습니다!</b>');
+    $('ckempty2').style.display='none';$('ck2').classList.add('show');face(2,'😐',false);
+    con(2,'&gt; 응답 전송 완료. 연결 종료<br>&gt; <span class="c-red">서버가 남긴 기록 : 없음</span><br>&gt; (쿠키는 브라우저에만 저장됨)');
+    $('cut2').classList.add('show');},
+  function(){cap(2,5,7,'<b>마이페이지 재요청</b> — 브라우저가 보관함의 쿠키를 <b>자동으로</b> <span class="hcook">Cookie</span> 헤더에 붙였습니다. hong님이 한 일은 없습니다!');
+    $('cut2').classList.remove('show');$('url2').textContent='localhost:8090/pro09/mypage';$('view2').innerHTML=pgMyReq();face(2,'🧐',true);
+    fly(2,'req','<span class="hline">GET /pro09/mypage HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><span class="hcook">Cookie: userId=hong</span> ← 자동 부착!',function(){});},
+  function(){cap(2,6,7,'<b>서버가 쿠키를 읽음</b> — request.getCookies()로 userId=hong 을 발견합니다.');
+    con(2,'&gt; GET /mypage 수신<br>&gt; getCookies() → <span class="c-amb">userId=hong 발견!</span><br>&gt; "hong님이시군요" 페이지 생성');face(2,'😀',false);},
+  function(){cap(2,7,7,'✅ <b>hong님의 마이페이지 완성</b> — 서버는 아무것도 기억하지 않았지만, 봉투에 실려 온 쿠키 덕분에 알아봤습니다.');
+    fly(2,'res','<span class="hline">HTTP/1.1 200 OK</span><br><br>hong님의 마이페이지',function(){
+      $('view2').innerHTML=pgMyOk('hong');mark('st2');});}
+ ],
+ 3:[ // 세션 (7장면)
+  function(){cap(3,1,7,'<b>로그인 폼 입력</b> — 이번엔 세션 방식입니다. 서버의 🗄️ 금고에 주목하세요.');
+    $('view3').innerHTML=pgLoginForm();},
+  function(){cap(3,2,7,'<b>로그인 요청 전송</b> — 여기까지는 쿠키 방식과 같습니다.');
+    face(3,'🧐',true);
+    fly(3,'req','<span class="hline">POST /pro09/login HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><br>id=hong&amp;pw=1212',function(){
+      con(3,'&gt; hong 확인... <span class="c-amb">일치!</span><br>&gt; getSession() → 새 금고 칸 A1B2C3 생성<br>&gt; setAttribute("userId","hong") 저장');});},
+  function(){cap(3,3,7,'🗄️ <b>서버 금고에 저장!</b> — A1B2C3 칸에 [id=hong, 등급=VIP]가 들어갑니다. 이 정보는 <b>서버 밖으로 나가지 않습니다</b>.');
+    $('sr3a').classList.add('show');$('sr3b').classList.add('show');face(3,'😀',false);},
+  function(){cap(3,4,7,'<b>응답에는 열쇠 번호만</b> — <span class="hkey">Set-Cookie: JSESSIONID=A1B2C3</span>. 봉투 어디에도 hong·VIP라는 글자가 없습니다!');
+    fly(3,'res','<span class="hline">HTTP/1.1 200 OK</span><br><span class="hkey">Set-Cookie:</span><br><span class="hkey">JSESSIONID=A1B2C3</span><br><br>로그인 성공! <span class="hhdr">(회원정보 안 실림)</span>',function(){
+      $('url3').textContent='localhost:8090/pro09/login';$('view3').innerHTML=pgOk();
+      $('ckempty3').style.display='none';$('ck3').classList.add('show');$('keynote3').style.display='block';face(3,'😐',false);
+      con(3,'&gt; 응답 전송. 연결 종료<br>&gt; 금고는 <span class="c-amb">서버에 그대로 유지</span><br>&gt; 다음 요청 대기...');});},
+  function(){cap(3,5,7,'<b>마이페이지 재요청</b> — 봉투에는 열쇠 번호 <span class="hkey">JSESSIONID=A1B2C3</span> 하나만 자동 부착됩니다.');
+    $('url3').textContent='localhost:8090/pro09/mypage';$('view3').innerHTML=pgMyReq();face(3,'🧐',true);
+    fly(3,'req','<span class="hline">GET /pro09/mypage HTTP/1.1</span><br><span class="hhdr">Host: localhost:8090</span><br><span class="hkey">Cookie: JSESSIONID=A1B2C3</span> ← 열쇠만!',function(){
+      con(3,'&gt; GET /mypage 수신<br>&gt; 열쇠 A1B2C3 확인<br>&gt; 금고 조회를 시작합니다...');});},
+  function(){cap(3,6,7,'🔍 <b>금고 조회</b> — 서버가 저장소를 훑습니다. Z9Y8X7... 아니고, <b>A1B2C3 발견!</b> [id=hong, 등급=VIP]');
+    $('sr3a').classList.add('scan');
+    setTimeout(function(){$('sr3a').classList.remove('scan');$('sr3b').classList.add('scan');},550);
+    setTimeout(function(){$('sr3b').classList.remove('scan');$('sr3b').classList.add('hit');face(3,'😀',false);
+      con(3,'&gt; A1B2C3 칸 <span class="c-amb">발견!</span><br>&gt; getAttribute("userId") → "hong"<br>&gt; getAttribute("grade") → "VIP"');},1100);},
+  function(){cap(3,7,7,'✅ <b>"VIP hong님의 마이페이지"</b> — 민감한 정보는 서버 금고 밖으로 한 번도 나가지 않았습니다. 이것이 로그인 유지의 표준, 세션입니다.');
+    fly(3,'res','<span class="hline">HTTP/1.1 200 OK</span><br><br>VIP hong님의 마이페이지',function(){
+      $('view3').innerHTML=pgMyOk('VIP hong');mark('st3');});}
+ ]
+};
+var idx={1:0,2:0,3:0},lock={1:false,2:false,3:false};
+function play(n){
+  if(lock[n])return;
+  var list=scenes[n];
+  if(idx[n]>=list.length)return;
+  lock[n]=true;
+  list[idx[n]]();
+  idx[n]++;
+  var b=$('next'+n);
+  if(idx[n]>=list.length){b.textContent='✅ 무대 종료 (⟲로 다시보기)';b.disabled=true;}
+  else b.textContent='다음 장면 ▶ ('+(idx[n]+1)+'/'+list.length+')';
+  setTimeout(function(){lock[n]=false;},1750); // 봉투 이동이 끝난 뒤 다음 장면 허용
+}
+function reset(n){
+  if(lock[n])return;
+  idx[n]=0;
+  var b=$('next'+n);b.disabled=false;b.textContent='다음 장면 ▶';
+  cap(n,0,scenes[n].length,'[다음 장면 ▶] 버튼을 눌러 시작하세요.');
+  $('view'+n).innerHTML='';con(n,'<span class="c-dim">서버 대기 중...</span>');
+  face(n,'😐',false);$('cut'+n).classList.remove('show');
+  $('url'+n).textContent='localhost:8090/pro09/loginForm';
+  var m=$('mail'+n);m.classList.remove('on','go','res');
+  if(n===2){$('ck2').classList.remove('show');$('ckempty2').style.display='';}
+  if(n===3){$('ck3').classList.remove('show');$('ckempty3').style.display='';$('keynote3').style.display='none';
+    ['sr3a','sr3b'].forEach(function(i){var e=$(i);e.classList.remove('show','scan','hit');});}
+  if(n===1){$('mem1').textContent='없음';}
+}
+
+/* ───────── 분류 게임 ───────── */
+var gameDone=0;
+function pick(btn,choice){
+  var item=btn.closest('.item');
+  if(item.dataset.done)return;
+  item.dataset.done='1';
+  var ans=item.dataset.ans;
+  item.querySelectorAll('.pick .btn').forEach(function(b){
+    var isAns=(b.getAttribute('onclick').indexOf("'"+ans+"'")>-1);
+    if(b===btn)b.classList.add(choice===ans?'ok':'no');
+    if(isAns&&b!==btn&&choice!==ans)b.classList.add('ok');
+    b.disabled=true;
+  });
+  item.querySelector('.verdict').classList.add('show');
+  gameDone++;
+  if(gameDone>=3)mark('game');
+}
+
+/* ───────── 퀴즈 + 대시보드 ───────── */
+var state={st1:0,st2:0,st3:0,game:0,q1:0,q2:0,q3:0};
+try{var sv=localStorage.getItem('csTutorialV2');if(sv)state=JSON.parse(sv);}catch(e){}
+function mark(k){state[k]=1;save();}
+function grade(btn,ok){
+  var q=btn.closest('.quiz');
+  q.querySelectorAll('.opt').forEach(function(o){o.disabled=true;});
+  btn.classList.add(ok?'ok':'no');
+  if(!ok)q.querySelectorAll('.opt').forEach(function(o){if(o.getAttribute('onclick').indexOf('true')>-1)o.classList.add('ok');});
+  q.querySelector('.expl').classList.add('show');
+  if(ok)state[q.dataset.q]=1;save();
+}
+function save(){
+  try{localStorage.setItem('csTutorialV2',JSON.stringify(state));}catch(e){}
+  var steps=['st1','st2','st3','game'].reduce(function(a,k){return a+state[k];},0);
+  var quiz=['q1','q2','q3'].reduce(function(a,k){return a+state[k];},0);
+  $('dashPct').textContent=Math.round((steps+quiz)/7*100)+'%';
+  $('dashQuiz').textContent=quiz+'/3';
+}
+save();
+</script>
+</body>
+</html>

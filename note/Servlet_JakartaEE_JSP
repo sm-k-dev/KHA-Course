@@ -664,3 +664,19 @@ response.sendRedirect("second");
 > **아니야. `setAttribute()`가 바인딩을 하고, `forward()`는 그 바인딩이 들어 있는 기존 request를 그대로 전달해주는 거야.**
 
 이제 이 구조를 기준으로 Servlet 코드를 읽으면 돼.
+
+===============================================================================
+
+http://톰캣서버IP주소:톰캣서버PORT/컨텍스트경로/요청할서블릿자원주소
+http://localhost:port번호/
+http://127.0.0.1:port번호/
+위 세개는 모두 같은 뜻이며 내 컴퓨터의 웹서버 주소이다.
+
+HTTP의 통신 규칙
+    http://IP 주소:port 번호/
+HTTP 프로토콜의 한계 - 기억력이 없다 (무상태, Stateless)
+    요청 한번 → 응답 한번 → 연결 종료
+
+    HttpServletRequest.setAttribute("키", "value")
+    ServletContext.setAttribute("키", "value")
+    HttpSession.setAttribute("키", "value")
