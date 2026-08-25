@@ -680,3 +680,10 @@ HTTP 프로토콜의 한계 - 기억력이 없다 (무상태, Stateless)
     HttpServletRequest.setAttribute("키", "value")
     ServletContext.setAttribute("키", "value")
     HttpSession.setAttribute("키", "value")
+
+==============================================================================
+
+다이나믹 웹 프로젝트 에서 DB 연결 순서
+    1. webapp/WEB-INF/lib 폴더에 ojdbc6.jar (드라이버), tomcat-dbcp-7.0.30.jar 붙여넣기
+    2. webapp/META-INF 폴더에 context.xml 붙여넣기
+    3. DAO, VO, Servlet 작성하기
