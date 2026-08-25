@@ -6,18 +6,18 @@
 </head>
 <body>
 	<!-- 
-		 login3.html 파일 설명
+		 login4.html 파일 설명
 		 - 클라이언트가 웹브라우저 프로그램을 이용해 로그인 요청하는 디자인 화면 파일
 		 - 로그인 요청 주소 : http://톰캣서버IP주소:톰캣서버PORT/컨텍스트경로/요청할서블릿자원주소 
-		 				  http://192.168.20.2:8181/pro09/login2
-		 				  http://localhost:8181/pro09/login2    <======= 사용 
-		 				  http://127.0.0.1:8181/pro09/login2
-		 - 로그인 요청 받을 서블릿 클래스 명 : LoginServlet 클래스 				  
+		 				  http://192.168.20.2:8181/pro09/login4
+		 				  http://localhost:8181/pro09/login4    <======= 사용 
+		 				  http://127.0.0.1:8181/pro09/login4
+		 - 로그인 요청 받을 서블릿 클래스 명 : SessionTest 클래스 				  
 	 -->
-	 <form action="login3" method="post" name="loginForm">
+	 <form action="login4" method="post" name="loginForm">
 	 
 	    <!-- 입력한 아이디, 비밀번호를 톰캣이 HttpServletRequest객체에 보관후 
-	         LoginServlet의 doPost메소드로 전달할것이다. -->
+	         SessionTest의 doPost메소드로 전달할것이다. -->
 	 	아이디 : <input type="text" name="user_id"><br>
 	 	비밀번호 : <input type="password" name="user_pw"><br>
 	 	
@@ -28,14 +28,6 @@
 	 	<input type="reset" value="다시입력">
 	
 	 </form>
-	 
-	 
-
 
 </body>
 </html>
-
-
-
-
-
