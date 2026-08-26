@@ -21,6 +21,9 @@ public class EncoderFilter extends HttpFilter implements Filter {
 	
 	ServletContext	servletContext;
 	
+	/*==================================================================
+	  init() : EncoderFilter 객체가 톰캣에 만들어질 때 딱 1번 호출되는 준비 메소드
+	==================================================================*/   
 	/*
 		init 메소드
 		- 클라이언트가 웹브라우저를 이용해 LoginTest 서블릿 요청시
@@ -33,6 +36,19 @@ public class EncoderFilter extends HttpFilter implements Filter {
 		this.servletContext	=	fConfig.getServletContext();
 	}
 	
+	/*==================================================================
+	  doFilter() : 요청이 올 때마다 "매번" 호출되는 핵심 메소드
+
+	  매개변수 3개
+	    request  : 브라우저의 요청 정보가 담긴 HttpServletRequest 객체 
+	    response : 브라우저로 보낼 응답 정보를 담을 HttpServletResponse 객체
+	    chain    : 다음 차례(다음 필터 또는 서블릿)로 넘겨주는 연결 객체
+
+	  ** 가장 중요한 규칙 **
+	    chain.doFilter() 호출줄을 기준으로
+	      윗부분  = 서블릿 실행 "전"에 동작  -> 요청 필터
+	      아랫부분 = 서블릿 실행 "후"에 동작  -> 응답 필터
+	==================================================================*/	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		
@@ -60,6 +76,17 @@ public class EncoderFilter extends HttpFilter implements Filter {
 		String	contextPath	=	((HttpServletRequest)request).getContextPath();	// 전체 URL 중에서 "/pro10" 컨텐스트 주소 얻기
 		String	pathInfo	=	((HttpServletRequest)request).getRequestURI();	// 전체 URL 중에서 "/pro10/login" URI 주소 얻기
 		String	realPath	=	request.getRealPath(pathInfo);
+		/* URI가 서버 컴퓨터의 실제 폴더 어디에 해당하는지 물리 경로(실제 전체 경로)를 얻는다.
+		   예) -> C:\...\wtpwebapps\pro10\login
+
+		   ** 주의 : request.getRealPath()는 폐기(deprecated)된 메소드다.
+		      실무에서는 아래처럼 ServletContext의 것을 사용한다.
+		      String realPath = servletContext.getRealPath(pathInfo);  
+		*/
+		String mesg = "ContextPath : " + contextPath
+				    + "\n URI 정보 : " + pathInfo
+				    + "\n 물리적 URI 정보 : " + realPath;
+		System.out.println(mesg);
 		
 		/*
 			공통작업3 : 처리 시간 측정 - 시작 시각 기록
@@ -68,10 +95,23 @@ public class EncoderFilter extends HttpFilter implements Filter {
 		/* 현재 시각을 1/1000 초(밀리초) 단위 숫자로 얻는다.
 		 	LoginTest 서블릿 실행 "전"의 시각이다. */
 		
-		/*	시간 차이를 눈으로 확인하기 위한 부하 (일부러 만든 작업) :
-		 	*/
+		/* 시간 차이를 눈으로 확인하기 위한 부하(일부러 만든 작업) :
+		   1을 1000번 출력해서 처리 시간을 늘려 본다. 실무 코드는 아니다. */
+		for (int i = 0; i < 1000; i++) {
+			System.out.println("1");
+		}
 		
+		/*--------------------------------------------------------------
+		  [경계선] 다음 차례로 넘기기
+		  - 다음 필터가 또 있으면 그 필터로,
+		    없으면 요청받은 서블릿(예: LoginTest)으로 진행시킨다.
+		  - 이 줄을 빼먹으면 서블릿이 아예 실행되지 않고
+		    브라우저는 빈 화면을 받게 된다. (필터 단골 사고!)
+		--------------------------------------------------------------*/
 		chain.doFilter(request, response);
+		
+		/* 여기서 서블릿이 실행을 마칠 때까지 기다렸다가
+		   끝나면 아랫줄부터 이어서 실행된다. */
 		
 		// ---------------------------------------------------------------------------
 		// [응답 필터 구간 시작] - LoginTest 서블릿 클래스의 코드 모두 실행 후 공통작업 코드 작성
@@ -84,10 +124,13 @@ public class EncoderFilter extends HttpFilter implements Filter {
 		/* (끝시각 - 시작시각) = 요청 하나를 처리하는 데 걸린 시간.
 		 	LoginTest 서블릿 실행 시간을 작동 측정하는 성능 확인 기법이다.*/
 	}
-
+	
+	/*==================================================================
+	  destroy() : 톰캣 서버가 종료될 때 딱 1번 호출되는 정리 메소드
+	==================================================================*/
 	@Override
 	public void destroy() {
-		
+		System.out.println("destroy 메소드 호출 됨");
 	}
 
 }
