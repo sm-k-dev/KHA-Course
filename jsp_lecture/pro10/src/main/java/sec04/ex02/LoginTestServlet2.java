@@ -60,7 +60,7 @@ public class LoginTestServlet2 extends HttpServlet {
 		}
 		//브라우저에 현재 접속자 수 표시(클라이언트의 웹브라우저로 응답)
 		out.print("<html>");
-			out.print("<head>");
+			out.print("<head>");		
 				out.print("<script type='text/javascript'>");
 				//자바스크립트의  window 객체의 setTimeout() 메소드를 이용해  5초 간격으로 LoginTestServlet 서블릿 재요청하여
 				// 현재 접속자 수를 표시하여 브라우저에 출력!
@@ -89,3 +89,11 @@ public class LoginTestServlet2 extends HttpServlet {
 	}
 
 }
+
+
+
+
+
+
+
+

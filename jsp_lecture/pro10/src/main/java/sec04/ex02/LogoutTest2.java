@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
 //사용자가  <a>링크를 클릭하여  로그아웃 요청을 하면 
 //HttpSession 세션 객체를 TOMCAT 서버에서 제거 하고,
 //ArrayList 배열에서  로그아웃 요청한 사용자의 ID 문자열객체를 삭제하여 로그아웃된 화면을 브라우저로 보여주는 서블릿 
@@ -63,3 +64,14 @@ public class LogoutTest2 extends HttpServlet {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -1,8 +1,11 @@
 package sec04.ex02;
 
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+
 
 /*
 [이 LoginImpl 클래스의 역할 2가지]
@@ -59,3 +62,15 @@ public class LoginImpl implements HttpSessionListener{
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+ 
