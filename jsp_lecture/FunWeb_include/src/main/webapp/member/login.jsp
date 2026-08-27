@@ -21,6 +21,20 @@
 
  </script>
  <![endif]-->
+ <%--
+ 	[로그인 실패 안내]
+ 	MemberController 서블리이 디스패처방식으로 포워딩할때 공유 받은 request 내장객체에 담아 둔 
+ 	"loginMsg" 키에 대응하는 ,실패 메세지 값이 있으면  경고창으로 브라우저에 보여준다.
+  --%>
+<%
+	String loginMsg	 = (String)request.getAttribute("loginMsg");
+	
+	if(loginMsg != null){ //로그인 실패로 인한 request에 바인딩한 경고메세지가 값으로 저장되어 있다면?
+%>		
+		<script>  alert("<%=loginMsg%>"); </script>				
+<%			
+	}
+%>  
 </head>
 <body>
 	<div id="wrap">
@@ -43,7 +57,11 @@
 		<!-- 본문내용 -->
 		<article>
 			<h1>Login</h1>
-			<form action="" id="join">
+			
+			<form action="login.do" id="join" method="post">
+				<%-- action : 전송 목적지 = 컨트롤러의 로그인 기능 (login.do)
+			         method="post" : 비밀번호가 주소창에 노출되지 않게 본문으로 전송 --%>
+			     
 				<fieldset>
 					<legend>Login Info</legend>
 					<label>User ID</label> <input type="text" name="id"><br>
@@ -51,8 +69,8 @@
 				</fieldset>
 				<div class="clear"></div>
 				<div id="buttons">
-					<input type="button" value="Submit" class="submit"> <input
-						type="button" value="Cancel" class="cancel">
+					<input type="submit" value="로그인" class="submit"> 
+					<input type="reset" value="취소" class="cancel">
 				</div>
 			</form>
 		</article>

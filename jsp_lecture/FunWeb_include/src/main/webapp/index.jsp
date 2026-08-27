@@ -31,7 +31,23 @@
 		<!-- 헤더파일들어가는 곳 -->
 		<header>
 			<div id="login">
+			
+<%
+	//의미1. index.jsp(메인화면)을 요청 했을때 session 내장객체 메모리에 바인딩한 값을 얻는데.. 없으면?(null이면?) 미로그인된 화면 보여주기
+	//의미2. index.jsp(메인화면)을 요청 했을때 session 내장객체 메모리에 바인딩한 값을 얻는데...있으면?(로그인 요청한 세션아이디이면?) 로그인된 화면 보여주기		
+	String userId = (String)session.getAttribute("userId");
+
+	if(userId == null){ //아직 로그인 된 상태가 아니면?
+%>			
 				<a href="member/login.jsp">login</a> | <a href="member/join.jsp">join</a>
+<%	
+	}else { //지금현재 로그인 처리하여 session내장객체 메모리에 로그인요청한 아이디가 존재 한다면?
+%>		
+				<b><%=userId%></b>님 환영합니다 | <a href="member/logout.do">logout</a>
+<%	
+	}
+%>
+					
 			</div>
 			<div class="clear"></div>
 			<!-- 로고들어가는 곳 -->
