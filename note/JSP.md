@@ -14,3 +14,5 @@ JSP 는 HTML, CSS와 자바스크립트에 자바코드를 쓰는 것
     C:\워크스페이스\.metadata\.plugins\org.eclipse.wst.server.core\tmp0 => 복제당한 tomcat 서버 폴더
 
 driver 파일은 class 파일이랑 dbms를 연결해 주는 역할을 한다
+
+jsp 내장객체 (내장변수) - request(HttpServletRequest), response, session(HttpSession), application(SevletContext), pageContext (ServletConfig)
