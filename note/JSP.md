@@ -16,3 +16,5 @@ JSP 는 HTML, CSS와 자바스크립트에 자바코드를 쓰는 것
 driver 파일은 class 파일이랑 dbms를 연결해 주는 역할을 한다
 
 jsp 내장객체 (내장변수) - request(HttpServletRequest), response, session(HttpSession), application(SevletContext), pageContext (ServletConfig)
+
+VO = Bean
