@@ -16,7 +16,7 @@
 	String email = request.getParameter("email");
 	
 	/*
-		<jsp:useBean> 액션태그는 자바코드 객체 생성하는 구문을 대체해서 작성ㄴ할 수 있는 태그이다.
+		<jsp:useBean> 액션태그는 자바코드 객체 생성하는 구문을 대체해서 작성 할 수 있는 태그이다.
 		
 		문법
 			<jsp:useBean	속성 = "값" 
@@ -33,6 +33,7 @@
 %>
 	<%-- jsp:useBean 액션태그를 사용해 MemberVO클래스의 기본생성자를 호출해 객체를 생성한 후 page 내장객체 영역에 바인딩 --%>
 	<jsp:useBean id="vo" class="sec01.ex01.MemberVO" scope="page" />
+	<%-- MemberVO는 page라는 내장객체에 포함되어 있다. 따라서 scope를 생략해도 MemberVO가 page 내장객체에 포함된 것이라 자동으로 page에 바인딩 된다 --%>
 <%	
 	// 3.1.1. 바로 위 jsp:useBean 액션태그를 사용해 생성한 MemberVO클래스의 객체 메모리의 각 인스턴스 변수에 요청한 데이터를 저장
 	vo.setId(id);	vo.setPwd(pwd);	vo.setName(name);	vo.setEmail(email);
