@@ -1,5 +1,5 @@
 서블릿은 자바코드에 HTML, CSS, 자바스크립트 코드를 쓰는 것과 반대로
-JSP 는 HTML, CSS와 자바스크립트에 자바코드를 쓰는 것
+JSP (Java Server Page) 는 HTML, CSS와 자바스크립트에 자바코드를 쓰는 것
 
 톰캣 컨테이너에서 JSP 변환 과정
     1. 변환 단계 (Translation Step): 컨테이너는 JSP 파일을 자바 파일로 변환 (이것이 서블릿) hello.jsp (이 파일에서 자바 코드만 빼내어서) → hello_jsp.java(변환된 이 파일이 서블릿)
