@@ -18,3 +18,16 @@ driver 파일은 class 파일이랑 dbms를 연결해 주는 역할을 한다
 jsp 내장객체 (내장변수) - request(HttpServletRequest), response, session(HttpSession), application(SevletContext), pageContext (ServletConfig)
 
 VO = Bean
+
+c:set
+c:if
+c:forEach
+c:choose
+
+fmt:formatDate
+fmt:forNumber
+
+fn:length()
+fn:substring()
+fn:split()
+fn:contain()
