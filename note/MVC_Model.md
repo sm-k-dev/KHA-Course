@@ -98,7 +98,7 @@ MVC 패턴 *"역할에 따라 코드를 나누어 관리하자"*
     2. Controller (컨트롤러) 영역
         사용자의 요청을 가장 먼저 받아서 적절한 서비스(Model)를 호출하고, 그 결과를 다시 전달해 주는 중재자 역할을 합니다.
         
-        BoardController.java => Controller
+        BoardController.java (servlet)=> Controller
             게시글 작성 요청이 오면 BoardService를 불러서 일을 시키고, 처리 결과를 받아오는 흐름 제어(라우팅) 역할을 전담합니다.
             
     3. View (뷰) / 진입점 영역
@@ -180,3 +180,18 @@ MVC 패턴 *"역할에 따라 코드를 나누어 관리하자"*
         BoardMain(입력) => BoardController => BoardService => BoardRepository(저장) 순으로 들어갑니다.
         결과는 역순(Repository => Service => Controller => Main)으로 return되며 전달됩니다.
         나중에 DB를 붙이면 MemoryBoardRepository 대신 DB용 Repository 클래스를 새로 만들어서 갈아 끼우게 됩니다!
+
+ =====================================================
+
+ MVC 디자인 패턴 개발 방식: 개발자들이 정함
+    Model: 브라우저로 응답할 데이터 ( VO / DAO )
+    View: 요청한 브라우저로 응답할 디자인 화면 ( .html / .jsp )
+    Controller: Model과 View를 연결 해 주는 중간 관리자 ( .java / 서블릿 클래스 )
+
+클라이언트의 파일첨부 후 업로드 요청하는 디자인 VIEW(WEB-INF/views/fileUpload.jsp) 요청 흐름
+
+순서1. 브라우저 주소창에 URL: http://localhost:8181/pro15/upload.do 주소 입력 후 GET 방식으로 Controller(FileUploadServlet) 요청
+
+순서2. FileUploadServlet 안의 doGet 메소드 호출 당함, doGet 메소드 안에서 VIEW fileUpload.jsp를 재요청 (포워딩)
+
+순서3. VIEW (WEB-INF/views/fileUpload.jsp) 파일 첨부 후 업로드 요청하는 화면을 만들어서 브라우저에 보여준다
