@@ -1,6 +1,6 @@
 <!--
 ================================================================================
- 파일명   : JQueryAjax/4.html
+ 파일명   : JQueryAjax/3.html
  주제     : jQuery $.getJSON 으로 JSON 배열을 받아 반복 출력하기
  대상     : 비전공자
 ================================================================================
@@ -32,7 +32,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>jQuery $.getJSON 으로 JSON 파일 읽는 4.html 화면</title>
+<title>jQuery $.getJSON 으로 JSON 파일 읽는 3.html 화면</title>
 
 	<!-- jQuery 문법 사용을 위한 파일 불러오기 -->
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -114,14 +114,87 @@
 
 <script type="text/javascript">
 
-	//===================================================================
 	//1. <div id="target"> 요소를 선택해서 CLICK 이벤트 등록
-	//===================================================================
 	$("#target").click(function(){
 
+		//2. $.getJSON(url, callback) 메소드 호출
+		//   첫 번째 인자 : 톰캣서버가 제공하는 ex1.json 파일의 요청 주소
+		//   두 번째 인자 : 응답받은 데이터를 처리할 콜백함수
+		$.getJSON('ex1.json', function(data){ 
+			/*
+			data 매개변수로 전달받은 ex1.json 파일의 데이터 모습
 
+			[
+			  { "term":"BACCHUS. 바쿠스", "part":"명사.", "definition":"...", "quote":[...], "author":"애주가" },
+			  { "term":"BACKBITE. 험담하다", "part":"동사.", "definition":"..." },
+			  .....
+			]
+
+			대괄호 [ ] 로 감싸져 있으므로 배열입니다.
+			배열 안의 각 칸에 중괄호 { } 로 된 객체가 하나씩 들어 있습니다.
+
+			dataType 이 자동으로 json 이므로
+			이미 자바스크립트 배열로 변환된 상태로 넘어옵니다.
+
+			data.length  ->  카드 개수 (여기서는 7)
+			data[0]      ->  첫 번째 카드 객체
+			data[0].term ->  "BACCHUS. 바쿠스"
+		*/
+		
+			//3. 화면에 넣을 HTML문자열을 누적해서 저장할 변수 선언
+			let html = '';
+			
+			/*
+			참고. $.each 반복 메소드 문법
+
+				$.each(순회할 배열, function(인덱스, 값){
+
+					반복해서 실행할 코드 작성;
+
+				});
+
+				인덱스 : 지금 몇 번째 칸인지를 나타내는 숫자 (0부터 시작)
+				값     : 그 칸에 들어 있는 실제 데이터 (여기서는 객체 하나)
+		   */
+		 	//4. 배열에 저장된 객체의 개수 만큼 반복
+		 	//   ex1.json 에 카드가 7개 있으므로 이 안쪾 코드가 7번 반복 실행
+		 	$.each(data, function(entryIndex, entry){	 		
+		 		//4.1. 카드 하나를 감쌀 바깥 div 태그의 시작 부분
+		 		html += '<div class="entry">';	 		
+		 			//4.2. entry.term -> 현재 회차의 객체에서 term 키의 값을 꺼냅니다.
+		 			html += '<h3 class="term">' +  entry.term    + '</h3>';		 			
+		 			html += '<div class="part">' + entry.part    + "</div>";		 		
+		 			html += '<div class="definition">'  +  entry.definition  + '</div>';  			
+		 			//4.3. quote 키가 있는 객체에만 인용문을 출력
+					//    if(entry.quote) 의 의미
+					//      -> quote 가 있으면 그 값(배열)이 참으로 취급됩니다.
+					//      -> quote 가 없으면 undefined 이고 거짓으로 취급됩니다.
+		 			if(entry.quote){		 				
+		 				//quote의 값도 배열이므로  다시 반복문으로 한 줄씩 꺼냅니다.
+		 				$.each(entry.quote, function(lineIndex, line){		 					
+		 					html += '<div class="quote">' + line  + '</div>';	 		
+		 				});		 				
+		 				//인용문이 있는 카드에만 지은이도 함꼐 출력합니다.
+		 				html += '<div class="author">' +  entry.author   + "</div>";	 				
+		 			}  		
+		 		//4.4. 카드 하나를 감쌋던 div 태그 닫는 부분
+		 		html += '</div>';	
+		 	});
+		 		
+		 	//5. 반복문으로 완성한 HTML 문자열을 id="dictionary" 요소사이에 보여주자
+		 	$('#dictionary').html(html);	 
+		});
 	});
 </script>
+
+
+
+
+
+
+
+
+
 
 </body>
 </html>
