@@ -166,7 +166,7 @@
 		
 		
 		
-      <Context docBase="pro15" path="/pro15" reloadable="true" source="org.eclipse.jst.jee.server:pro15"/></Host>
+      <Context docBase="pro15" path="/pro15" reloadable="true" source="org.eclipse.jst.jee.server:pro15"/><Context docBase="pro16_OpenApi_jQuery_Ajax" path="/pro16_OpenApi_jQuery_Ajax" reloadable="true" source="org.eclipse.jst.jee.server:pro16_OpenApi_jQuery_Ajax"/></Host>
     </Engine>
   </Service>
 </Server>
