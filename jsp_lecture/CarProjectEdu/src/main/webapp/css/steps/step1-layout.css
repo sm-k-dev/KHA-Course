@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* ============================================================
    1단계 — 배치(레이아웃)만 잡는다
    색·꾸밈 없음. "어디에 무엇이 놓이는가" 만 결정한다.
@@ -10,6 +11,7 @@
     margin: 0; padding: 0  → 브라우저가 기본으로 주는 바깥·안쪽 여백을 0 으로 초기화.
                              이걸 안 하면 브라우저마다 화면이 미묘하게 달라진다. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 /* 화면 전체: 위(머리) - 가운데(내용) - 아래(바닥) 세로 배치 */
 body {
     /* 요소를 어떤 방식으로 배치할지 flex */
@@ -18,14 +20,16 @@ body {
     min-height: 100vh;          /* 내용이 짧아도 바닥줄이 화면 아래에 붙게 */
                                 /* 100vh = 화면 높이의 100%. vh 는 viewport height 의 약자다 */
 }
+
 /* 머리: 로고는 왼쪽, 메뉴는 오른쪽 — 가로 한 줄 */
 header {
-    /* 요소를 어떤 방식으로 배치할지 flex */
+	 /* 요소를 어떤 방식으로 배치할지 flex */
     display: flex;                    /* 로고와 메뉴를 가로로 나란히 놓는다 */
     justify-content: space-between;   /* 가로 방향: 양 끝으로 밀어 붙인다 (로고 왼쪽, 메뉴 오른쪽) */
     align-items: center;              /* 세로 방향: 가운데 정렬 (높이가 달라도 눈높이가 맞는다) */
     padding: 12px 24px;               /* 안쪽 여백. 위아래 12px, 좌우 24px */
-    border: 2px dashed gray;    /* 임시 선 */
+    border: 2px dashed gray;          /* 임시 선 */
+	
 }
 /* 메뉴: 링크들을 가로로 나란히 */
 nav ul {
@@ -34,16 +38,19 @@ nav ul {
     gap: 24px;                  /* 항목 사이 간격 24px. margin 을 일일이 안 줘도 된다 */
     list-style: none;           /* 점 목록 기호 제거 */
 }
+
 /* 내용: 가운데 정렬 + 최대 폭 제한 (넓은 모니터에서 퍼지지 않게) */
 main {
-    /* 늘어나는 비율 1 */
+	 /* 늘어나는 비율 1 */
     flex: 1;                    /* 남는 세로 공간을 전부 차지 */
     width: 100%;                /* 기본은 부모 폭을 꽉 채운다 */
     max-width: 1100px;          /* 다만 1100px 를 넘지는 않는다 (넓은 모니터에서 글이 너무 길어짐 방지) */
     margin: 0 auto;             /* 위아래 여백 0, 좌우 auto → 좌우 여백이 같아져서 가운데로 온다 */
     padding: 24px;              /* 안쪽 여백 24px. 글이 테두리에 붙지 않게 */
-    border: 2px dashed gray;    /* 임시 선 */
+    border: 2px dashed gray;    /* 임시 선 */	
 }
+
+
 /* 차량 카드: 한 줄에 3개씩 격자로 */
 .car-grid {
     /* 요소를 어떤 방식으로 배치할지 grid */
@@ -57,11 +64,13 @@ main {
     border: 2px dashed gray;    /* 임시 선 */
     padding: 12px;              /* 카드 안쪽 여백 */
 }
+
 /* 카드 안 이미지: 칸 폭에 맞춰 줄어들게 */
 /*  width:100%  → 카드 폭에 맞춰 가로를 채운다
     height:auto → 세로는 가로 비율에 맞춰 자동 (안 주면 사진이 찌그러진다)
     display:block → 이미지 아래 생기는 미세한 빈틈을 없앤다 */
 .car-card img { width: 100%; height: auto; display: block; }
+
 /* 바닥줄 */
 footer {
     /* 안쪽 여백 16px 24px */
@@ -69,3 +78,29 @@ footer {
     text-align: center;         /* 글자를 가운데로 */
     border: 2px dashed gray;    /* 임시 선 */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

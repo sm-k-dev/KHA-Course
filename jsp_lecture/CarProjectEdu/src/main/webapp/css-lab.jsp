@@ -45,79 +45,79 @@
 </head>
 <%-- 실제로 보이는 내용 구역 --%>
 <body>
-<header>
-	<%-- 다른 화면으로 넘어가는 링크 --%>
-	<a class="logo" href="#">SM렌탈</a>
-	<%-- 메뉴 구역 --%>
-	<nav>
-		<%-- 점 목록 --%>
-		<ul>
-			<%-- 목록의 한 줄 --%>
-			<li><a href="#">차량 목록</a></li>
-			<%-- 목록의 한 줄 --%>
-			<li><a href="#">예약하기</a></li>
-			<%-- 목록의 한 줄 --%>
-			<li><a href="#">예약확인</a></li>
-			<%-- 목록의 한 줄 --%>
-			<li><a href="#">게시판</a></li>
-			<%-- 목록의 한 줄 --%>
-			<li><a href="#">로그인</a></li>
-		</ul>
-	</nav>
-</header>
-<main>
-	<%-- 제목 --%>
-	<h2>이번 주 인기 차량</h2>
-	<%-- car-grid 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-	<div class="car-grid">
-		<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-		<div class="car-card">
-			<%-- 이미지를 화면에 보여준다 --%>
-			<img src="<%=contextPath%>/img/morning.jpg" alt="모닝">
-			<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-			<div class="card-body">
-				<%-- 작은 제목 --%>
-				<h3>모닝</h3>
-				<%-- 문단 글 --%>
-				<p class="price">35,000원 / 1일</p>
-				<%-- 다른 화면으로 넘어가는 링크 --%>
-				<a class="btn" href="#">예약하기</a>
+	<header>
+		<%-- 다른 화면으로 넘어가는 링크 --%>
+		<a class="logo" href="#">SM렌탈</a>
+		<%-- 메뉴 구역 --%>
+		<nav>
+			<%-- 점 목록 --%>
+			<ul>
+				<%-- 목록의 한 줄 --%>
+				<li><a href="#">차량 목록</a></li>
+				<%-- 목록의 한 줄 --%>
+				<li><a href="#">예약하기</a></li>
+				<%-- 목록의 한 줄 --%>
+				<li><a href="#">예약확인</a></li>
+				<%-- 목록의 한 줄 --%>
+				<li><a href="#">게시판</a></li>
+				<%-- 목록의 한 줄 --%>
+				<li><a href="#">로그인</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+		<%-- 제목 --%>
+		<h2>이번 주 인기 차량</h2>
+		<%-- car-grid 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+		<div class="car-grid">
+			<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+			<div class="car-card">
+				<%-- 이미지를 화면에 보여준다 --%>
+				<img src="<%=contextPath%>/img/morning.jpg" alt="모닝">
+				<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+				<div class="card-body">
+					<%-- 작은 제목 --%>
+					<h3>모닝</h3>
+					<%-- 문단 글 --%>
+					<p class="price">35,000원 / 1일</p>
+					<%-- 다른 화면으로 넘어가는 링크 --%>
+					<a class="btn" href="#">예약하기</a>
+				</div>
+			</div>
+			<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+			<div class="car-card">
+				<%-- 이미지를 화면에 보여준다 --%>
+				<img src="<%=contextPath%>/img/ray.jpg" alt="레이">
+				<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+				<div class="card-body">
+					<%-- 작은 제목 --%>
+					<h3>레이</h3>
+					<%-- 문단 글 --%>
+					<p class="price">38,000원 / 1일</p>
+					<%-- 다른 화면으로 넘어가는 링크 --%>
+					<a class="btn" href="#">예약하기</a>
+				</div>
+			</div>
+			<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+			<div class="car-card">
+				<%-- 이미지를 화면에 보여준다 --%>
+				<img src="<%=contextPath%>/img/spark.jpg" alt="스파크">
+				<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
+				<div class="card-body">
+					<%-- 작은 제목 --%>
+					<h3>스파크</h3>
+					<%-- 문단 글 --%>
+					<p class="price">36,000원 / 1일</p>
+					<%-- 다른 화면으로 넘어가는 링크 --%>
+					<a class="btn" href="#">예약하기</a>
+				</div>
 			</div>
 		</div>
-		<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-		<div class="car-card">
-			<%-- 이미지를 화면에 보여준다 --%>
-			<img src="<%=contextPath%>/img/ray.jpg" alt="레이">
-			<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-			<div class="card-body">
-				<%-- 작은 제목 --%>
-				<h3>레이</h3>
-				<%-- 문단 글 --%>
-				<p class="price">38,000원 / 1일</p>
-				<%-- 다른 화면으로 넘어가는 링크 --%>
-				<a class="btn" href="#">예약하기</a>
-			</div>
-		</div>
-		<%-- car-card 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-		<div class="car-card">
-			<%-- 이미지를 화면에 보여준다 --%>
-			<img src="<%=contextPath%>/img/spark.jpg" alt="스파크">
-			<%-- card-body 모양을 입힐 영역. 실제 모양은 CSS 에서 정한다 --%>
-			<div class="card-body">
-				<%-- 작은 제목 --%>
-				<h3>스파크</h3>
-				<%-- 문단 글 --%>
-				<p class="price">36,000원 / 1일</p>
-				<%-- 다른 화면으로 넘어가는 링크 --%>
-				<a class="btn" href="#">예약하기</a>
-			</div>
-		</div>
-	</div>
-</main>
-<%-- 바닥 구역 --%>
-<footer>
-	(주)SM렌탈 | 대표 신상국 | 서울시 강남구 역삼동 | 02-3456-6789
-</footer>
+	</main>
+	<%-- 바닥 구역 --%>
+	<footer>
+		(주)SM렌탈 | 대표 신상국 | 서울시 강남구 역삼동 | 02-3456-6789
+	</footer>
 <!-- 강의 진행용: 현재 단계와 다음 단계 이동 (실습장에만 있는 도구) -->
 <div style="position:fixed; right:12px; bottom:12px; background:#222; color:#fff;
             padding:8px 14px; border-radius:8px; font-size:13px; opacity:0.85;">
@@ -130,3 +130,4 @@
 </div>
 </body>
 </html>
+

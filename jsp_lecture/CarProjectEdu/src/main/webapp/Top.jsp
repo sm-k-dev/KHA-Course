@@ -451,7 +451,8 @@ header.site-header {
 <%
     /* Java 코드: 한글 인코딩 설정 */
     request.setCharacterEncoding("utf-8");
-    /* Java 코드: 현재 웹 애플리케이션의 경로 얻기 (예: /CarProject2) */
+
+    /* Java 코드: 현재 웹 애플리케이션의 경로 얻기 (예: /CarProjectEdu) */
     String contextPath = request.getContextPath();
 %>
 <!-- ==========================================
@@ -509,15 +510,7 @@ header.site-header {
                 </button>
                 <%-- 글자 묶음 — CSS 로 모양을 입히는 용도 --%>
                 <span class="top-divider"></span>
-                <%-- 방명록 버튼 제거
-                     이 프로젝트에는 /Guestbook/* 요청을 처리하는 서블릿이 없어
-                     버튼을 누르면 404 오류가 발생했다.
-                     방명록 기능을 새로 만들면 아래 주석을 되살려 사용하면 된다.
-                <button type="button" class="top-btn top-btn-outline"
-                        onclick="location.href='<%=contextPath%>/Guestbook/GuestbookListAction.gb'">
-                    방명록
-                </button>
-                --%>
+
                 <span class="top-divider"></span>
                 <!-- 인라인 검색 폼 -->
                 <form class="top-search-form" action="<%=contextPath%>/Car/NaverSearchAPI.do">
@@ -544,7 +537,7 @@ header.site-header {
                             자리라서 여기가 뚫리면 사이트 전체가 뚫린다. -->
                 <span class="login-user-id">&#128100; <%=util.HtmlUtil.escape(displayName)%></span>
                 <%-- 글자 묶음 — CSS 로 모양을 입히는 용도 --%>
-                <span class="top-divider"></span>
+                <span class="top-divider"></span>            
                 <!-- 정보수정 버튼 -->
                 <button type="button" class="top-btn top-btn-primary"
                         onclick="location.href='<%=contextPath%>/member/memberUpdate.me'">
@@ -557,15 +550,7 @@ header.site-header {
                     <%-- 화면에 그대로 보이는 글자: "로그아웃" --%>
                     로그아웃
                 </button>
-                <%-- 방명록 버튼 제거
-                     이 프로젝트에는 /Guestbook/* 요청을 처리하는 서블릿이 없어
-                     버튼을 누르면 404 오류가 발생했다.
-                     방명록 기능을 새로 만들면 아래 주석을 되살려 사용하면 된다.
-                <button type="button" class="top-btn top-btn-outline"
-                        onclick="location.href='<%=contextPath%>/Guestbook/GuestbookListAction.gb'">
-                    방명록
-                </button>
-                --%>
+
                 <span class="top-divider"></span>
                 <!-- 인라인 검색 폼 -->
                 <form class="top-search-form" action="<%=contextPath%>/Car/NaverSearchAPI.do">
