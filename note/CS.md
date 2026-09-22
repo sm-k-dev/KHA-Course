@@ -237,3 +237,16 @@ Computer Science
     - 글 번호별로 파일 생성
     - 원 글이 지워지면, 해당 글 번호 폴더의 폴더 삭제
     - 
+
+openrouter.ai - chatbot 용
+
+카카오 OAuth
+    REST API 요청키
+    카카오 로그인 리다이렉트 URI
+        http://localhost:8081/CarProject/member/kakaoCallback.me
+    복사한 인가코드 받기 위한 요청 주소
+        https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}
+    복사한 인가코드 받기 위한 요청 주소 만드는 문법
+        https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=클라이언트RESTAPI키&redirect_uri=카카오_로그인화면_요청_콜백주소
+    복사한 인가코드 받기 위한 요청 주소 완성
+        https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=클라이언트RESTAPI키&redirect_uri=http://localhost:8081/CarProject/member/kakaoCallback.me

@@ -1,0 +1,378 @@
+-----------------------------------------------------------------------------
+[전체 흐름 목차]
+
+게시판 만들기
+
+1. version 1 : 단순한 CRUD 기능만 구현  ->자바빈 사용
+   CRUD 해석 : Creat,Read,Update,Delete의 약자로 데이터를 생성하고 읽고 입력하고 삭제한다는 말
+
+2. version 2 : 게시판 페이징 기술 기능 구현
+   페이징 기술 해석 : 
+   게시판에 등록된 많은 글들을 한페이지에 다보여지게 하지않고..
+   여러페이지로 나누어서 등록된 글들을 뿌려지게 하는 기술.           
+
+3. version 3 : 답변(댓글) 기능 구현
+----------------------------------------------------------------------------
+
+
+
+
+##########################이클립스 JSPApplication 프로젝트 생성 ##########################
+
+
+1.준비해야 할 것
+
+해보기.
+JSPApplication 프로젝트에  WebContent\WEB-INF\lib폴더에\ 
+
+	commons-dbcp2-2.1.1.jar
+	commons-pool2-2.4.2.jar
+	mysql-connector-java-5.1.38-bin.jar
+	servlet-api.jar
+
+	위파일 복사 해 놓기 
+
+
+해보기.
+JSPApplication 프로젝트에  WebContent\META-INF폴더에..\context.xml 복사해서 넣기
+
+
+해보기.
+JSPApplication 프로젝트에  WebContent\WEB-INF\web.xml파일 복사해서 넣기
+
+
+
+
+
+해보기.
+JSPApplication프로젝트에 board폴더 생성하여 안에 \img폴더 생성하여 re.gif파일 붙여 넣기 
+
+해보기.
+JSPApplication프로젝트에 board폴더 안에\ 제공한 v0폴더 붙여 넣기
+ 
+
+
+
+해보기.
+------메인페이지----------
+JSPApplication프로젝트에 WebContent\index.jsp 만들기
+
+아래소스 추가
+<li><a href="/JSPApplication/board/v0/List.jsp">게시판 디자인</a></li>
+<li><a href="/JSPApplication/board/v1/List.jsp">게시판 단순 CRUD</a></li>
+<li><a href="/JSPApplication/board/v2/List.jsp">페이징이 구현된 게시판</a></li>
+
+
+해보기. index.jsp 실행하여  게시판 디자인 링크 클릭하여 게시판 디자인 보기!!!!!
+
+
+
+
+
+2. 
+
+JSP 활용 예제- 게시판 첫번째 버전(DB연동 방식 및 java bean 준비하기) 
+
+해보기.
+JSPApplication프로젝트에 board폴더 안에 생성한 v0폴더 복사하여 v1폴더 만들기
+
+
+
+
+
+JSP 활용 예제- 게시판 첫번째 버전(게시판 테이블 생성)
+해보기. 
+mysql DBMS ->  jspbeginner데이터베이스에  게시판 테이블 생성
+
+CREATE TABLE tblBoard(
+	//글번호 저장 
+	num 		int not null primary key auto_increment,		
+	//글쓴 사람 이름 저장
+	name		varchar(20),
+	//글쓴 사람 이메일 저장
+	email		varchar(50),
+	//글쓴 사람의 홈페이지 주소 저장 
+	homepage	varchar(50),
+	//글제목 저장
+	subject		varchar(50),
+	//쓴글내용 저장
+	content		varchar(4000),
+	//글의 비밀번호를 저장하는 필드
+	pass		varchar(10),
+	//글의 조회수를 저장하는 필드
+	count		int,
+	//글쓴이의 ip를 저장하는 필드
+	ip		varchar(50),
+	//글을 쓴 날짜를 저장하는 필드
+	regdate		datetime,
+	//답변달기 2개 필드 사용  
+	pos		int,
+	depth		int,
+	
+);
+
+
+
+create table tblBoard (
+	num int primary key AUTO_INCREMENT,
+	name varchar(20),
+	email varchar(50),
+	homepage varchar(100),
+	subject varchar(50),
+	content varchar(100),
+	pass varchar(10),
+	count int,
+	ip varchar(50),
+	regdate datetime,     
+	pos int,
+	depth int    
+);
+
+
+
+
+해보기.
+<게시판 테이블에 저장시킬 데이터를 객체단위로 전달하기 위한 자바빈클래스 만들기>
+JSPApplication프로젝트에  com.bean.board패키지에 BoardDto.java파일 만들기
+
+해보기.
+<DB작업을할 클래스의 메소드이름에대한 규칙을 정해 놓은 추상메소드들이 있는 인테페이스 만들기>
+JSPApplication프로젝트에  com.bean.board패키지에 IBoardDao.java 인터페이스 파일 만들기
+
+
+해보기.
+<게시판 DB연동하여 작업할 Dao클래스 만들기>
+com.bean.board패키지에 BoardDaoImpl.java 클래스 만들기 <--IBoardDao인터페이스 틀 구현
+
+//DB연결 생성자 만들기
+	public BoardDaoImpl() {}
+
+// 연결 해제 (자원 해제)메소드 만들기
+	public void freeResource() {}
+
+/*글전체 목록 가져오기*/
+	//글목록 뿌려주는 메소드 //List.jsp에서 사용하는 메소드만들기 
+	@Override
+	public Vector getBoardList(String keyField, String keyWord) {}
+
+해보기.
+List.jsp페이지  <순서1>~<순서3>까지만 만들기
+
+
+-------------------------------------------------------------------
+
+
+해보기.
+/*글쓰기 메소드*/
+	com.bean.board패키지에 BoardDaoImpl.java 클래스에 소스 추가 
+	public void insertBoard(BoardDto dto){}
+
+
+해보기.
+Post.jsp페이지에서 PostProc.jsp페이지로 글쓰기 요청을 하는데...
+먼저 Post.jsp페이지에  <추가1> 소스 추가  
+그다음 PostProc.jsp에 <순서1,순서2,순서3,순서4,순서5>소스 추가
+
+해보기.
+List.jsp실행하여 검색어를 입력하여 게시판 리스트 결과보기 
+문제점 : 검색어를 입력 하지 않고  "찾기" 버튼을 눌렀을때... 검색어와 상관없이 원래 라면...
+전체 게시판 리스트 보여주게 하는 것이 맞지만..
+저희는 !!  "검색어를 입력하세요" 라는 유효성 체크를 했다. 
+그러므로 "찾기"버튼을 눌러도 전체 게시판 리스트 가 보여 지지 않는 다는 문제점이 있다.  
+
+해보기. 
+검색어와 상관없이 [처음으로]글자를 클릭했을때...전체 게시판 리스트 보여주게 하기위해..
+List.jsp페이지를 열어서  
+<추가1.> [처음으로]글자 링크 fnList()함수 호출하는 소스 수정. 
+<추가2.> <추가3.><추가4.>소스 추가 
+
+-------------------------------------------------------------------
+
+
+게시판 첫번째 버전(Read페이지 글읽기페이지 구현)
+스토리 : 글읽기 페이지 (Read.jsp)로 이동할때...
+읽을 글번호, 검색기준값(keyField),검색어값(keyword)을 같이 전달함.
+ 
+해보기.
+List.jsp페이지를 열어서<추가5.><추가6.><추가7> 소스 추가 
+
+
+
+해보기.
+Read.jsp페이지를 열어서
+List.jsp페이지에서 글제목을 눌렀을때....
+읽을 글번호, 검색기준값(keyField),검색어값(keyword)이 잘 전달 되어 오는지 확인 코드 추가 
+
+<%
+request.setCharacterEncoding("UTF-8");
+out.println(request.getParmeter("num") + ","
+           + request.getParmeter("keyField") + ","
+	   + request.getParmeter("keyWord")
+	   );
+%>
+
+
+
+해보기.
+/*글조회수 증가, 글상세보기메소드*/
+	com.bean.board패키지에 BoardDaoImpl.java파일을 열어서 .. 소스 추가 
+	public BoardDto getBoard(int num){return dto}
+
+
+
+
+해보기.
+Read.jsp페이지를 열어서 <순서1>~<순서5>까지 소스 추가 
+
+해보기.
+index.jsp->List.jsp->Read.jsp 실행하여 게시판 상세 글읽기 확인하기
+
+해보기.
+Read.jsp페이지에서  "목록" 링크를 눌렀을때...
+<순서6.>~<순서8> 작성.
+
+해보기.
+index.jsp->List.jsp->Read.jsp 실행하여 게시판 상세 글읽기 확인하기
+
+
+
+-------------------------------------------------------------------
+
+게시판 글수정!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+해보기.
+Read.jsp페이지에서 <순서9.>소스 추가 
+
+
+해보기.
+/*글수정 메소드*/
+	com.bean.board패키지에 BoardDaoImpl.java파일을 열어서 .. 소스 추가 
+	public void updateBoard(BoardDto dto){return dto}
+
+해보기!!
+수정할 내용들을 뿌려줄 Update.jsp페이지 작성
+
+해보기!!
+Update.jsp 에서 UpdateProc.jsp로 수정할 데이터들 전달....
+UpdateProc.jsp 페이지 작성
+
+List.jsp페이지부터 실행하여 글 수정 확인하기 
+
+-------------------------------------------------------------------
+게시판 글삭제!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+해보기.
+/*글수정 삭제메소드*/
+	com.bean.board패키지에 BoardDaoImpl.java파일을 열어서 .. 소스 추가 
+	public void deleteBoard(int num){}
+
+해보기.
+Read.jsp페이지로 가서 <순서10>작성
+
+해보기.
+Delete.jsp페이지로 가서<순서1><순서2>작성
+
+List.jsp페이지로부터 실행하여 글 삭제 확인하기
+
+
+-------------------------------------------------------------------
+
+
+
+
+
+
+
+
+3. version 3 : 답변(댓글) 기능 구현
+
+
+순서1) v2복사 -> v3만들기
+
+순서2) Mysql접속하여   delete from tblBoard;  레코드 모두 지우기
+
+순서3) v3폴더 안에 있는  Post.jsp복사 -> Reply.jsp 답변달수 있는 디자인 페이지 작성
+[1]  답변하기 글자 바꾸기
+[2]ReplyProc.jsp수정
+
+
+순서4) Read.jsp페이지(글상세보기)로 가서 답변링크 추가
+[1] 답변 링크 추가 
+
+
+
+순서5) 
+
+(설명) Reply.jsp 답변달수 있는 디자인 페이지에서...
+      기존 DB에 저장되어 있는 부모글에 대한 제목,내용은 뿌려져 있어야 할 것이다.
+
+Reply.jsp페이지 
+[3] DB에 저장된 답변을 달기위한 부모글정보를 가져오기 DB작업. 추가!
+[4] 부모글에 대한 답변글을 달기 위한 부모글 번호 전달  추가!
+[5] 검색어, 검색기준값 전달 추가!
+[6] 부모글  제목, 내용 뿌리기 수정!
+
+
+순서6)
+답변 달기 규칙 .								
+1) 전체적인 게시판의  정렬은  글번호(num)가 아니라..  pos를 기준으로 오름차순으로.								
+2) 새로운 데이터를 입력할때 먼저 기존 데이터의 모든 pos 값은 1씩 증가 시킨다.								
+3) 처음 입력되는 데이터(부모글,답변글이 아닌 글)는 무조건 pos와 depth값은 0으로 입력한다.								
+
+
+
+2)3) 규칙을 잘 생각 하고... BoardDaoImpl.java 파일의 insertBoard메소드 수정
+
+
+insertBoard()
+[1]추가! 답변달기 규칙2. 새로운 데이터를 입력할때 먼저 기존 데이터의 모든 pos 값은 1씩 증가 시킨다.
+
+
+replyBoard()
+[2] [3] 추가
+
+
+
+순서7)
+ReplyProc.jsp만들기
+
+
+순서8)
+BoardDaoImpl.java 파일의 getBoardList()메소드 수정
+
+수정내용
+
+sql = "select * from tblBoard order by pos asc";
+
+ sql = "select * from tblBoard where " + keyField + " like '%" + keyWord + "%' order by pos asc";
+
+
+순서9)
+List.jsp실행하여 답변 달아보자!!!!
+
+
+순서10) 들여쓰기 작업
+
+BoardDaoImpl.java 파일의 useDepth()메소드 추가
+
+
+순서11) List.jsp페이지로 가서.. (1),(2) 수정
+
+
+순서12) 
+List.jsp실행하여 답변 달아보자!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

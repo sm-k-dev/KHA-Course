@@ -1,0 +1,1375 @@
+<!-- v4 · 설치편·단계별 체크·2단계인증·한글메뉴 대응 추가 · v3 · 비전공자 상세판(화면 기초·아이콘 해설·리허설·FAQ 추가) · v2 · 2026-09-17 · 실제 캡처 교체 기능 추가 · git.html + git_king.html 통합 · Eclipse(EGit) 메뉴 기준 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧩 이클립스 팀프로젝트 GitHub 100% 따라하기 — 팀장·팀원 통합 자습서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--sub:#5b6477;--line:#e3e7ef;--pri:#4f46e5;--pri2:#eef0ff;--lead:#b45309;--leadbg:#fff4e0;--mem:#0369a1;--membg:#e0f2fe;--ok:#15803d;--okbg:#e8f7ee;--warn:#b91c1c;--warnbg:#fdecec;--why:#6d28d9;--whybg:#f3edff;--code:#0f172a;--side:#141a2a}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Pretendard,"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:16px}
+a{color:var(--pri)}
+/* 사이드바 */
+#side{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--side);color:#cfd6e6;overflow-y:auto;padding:18px 14px 90px;z-index:50;transition:transform .25s}
+#side h1{font-size:17px;color:#fff;margin:0 0 4px;line-height:1.4}
+#side .ver{font-size:12px;color:#8b95ab;margin-bottom:14px}
+#side .part{font-size:11px;letter-spacing:.08em;color:#7c87a0;margin:16px 6px 6px;font-weight:700}
+#side a{display:flex;gap:8px;align-items:center;color:#cfd6e6;text-decoration:none;padding:7px 10px;border-radius:8px;font-size:14px;line-height:1.35}
+#side a:hover{background:#222a3f}
+#side a.on{background:var(--pri);color:#fff}
+#side a .ck{margin-left:auto;font-size:12px;opacity:.9}
+#side a .rb{font-size:11px;opacity:.85}
+#burger{display:none;position:fixed;top:10px;left:10px;z-index:60;border:0;background:var(--side);color:#fff;border-radius:10px;padding:8px 12px;font-size:20px}
+#dim{display:none}
+main{margin-left:280px;padding:24px 28px 120px;max-width:1080px}
+/* 상단 바 */
+.topbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;position:sticky;top:8px;z-index:40;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.topbar .lbl{font-size:13px;color:var(--sub);margin-right:2px}
+.vbtn,.tbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;font-family:inherit}
+.vbtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tbtn.dl{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:700}
+.topbar .sp{flex:1}
+/* 히어로 */
+.hero{background:linear-gradient(135deg,#312e81,#4f46e5 55%,#0ea5e9);color:#fff;border-radius:18px;padding:30px 28px;margin:16px 0 22px}
+.hero h1{margin:0 0 8px;font-size:28px;line-height:1.35}
+.hero p{margin:0;opacity:.95}
+.tags span{display:inline-block;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px;font-size:13px;margin:10px 6px 0 0}
+/* 섹션 */
+section{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 26px 22px;margin:0 0 22px;scroll-margin-top:80px}
+section>h2{margin:0 0 6px;font-size:23px;line-height:1.4}
+section .lead-in{color:var(--sub);margin:0 0 14px}
+h3{font-size:18px;margin:26px 0 10px;padding-left:10px;border-left:4px solid var(--pri)}
+.role{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:1px 10px;margin-right:6px;vertical-align:middle}
+.role.all{background:#eceff5;color:#374151}
+.role.lead{background:var(--leadbg);color:var(--lead)}
+.role.mem{background:var(--membg);color:var(--mem)}
+body[data-view="lead"] [data-role="mem"],body[data-view="mem"] [data-role="lead"]{opacity:.32;filter:grayscale(.6)}
+body[data-view="lead"] [data-role="mem"]:hover,body[data-view="mem"] [data-role="lead"]:hover{opacity:.8}
+/* 박스 */
+.why,.ok,.warn,.note{border-radius:12px;padding:12px 16px;margin:12px 0}
+.why{background:var(--whybg);border-left:5px solid var(--why)}
+.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.warn{background:var(--warnbg);border-left:5px solid var(--warn)}
+.note{background:var(--pri2);border-left:5px solid var(--pri)}
+.why b:first-child,.ok b:first-child,.warn b:first-child,.note b:first-child{display:block;margin-bottom:2px}
+/* 메뉴 경로 */
+.mp{display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px;font-size:14px}
+.mp i{font-style:normal;background:#1f2937;color:#fff;border-radius:6px;padding:0 8px;line-height:1.9;white-space:nowrap}
+.mp i+i::before{content:""}
+.mp .ar{color:#9aa3b5;font-weight:700}
+kbd{background:#fff;border:1px solid #c9d0dc;border-bottom-width:3px;border-radius:6px;padding:0 6px;font-size:13px;font-family:inherit}
+.btnw{display:inline-block;background:#e8eaf0;border:1px solid #c5cad6;border-radius:6px;padding:0 8px;font-size:14px;white-space:nowrap}
+.btng{display:inline-block;background:#1f883d;color:#fff;border-radius:6px;padding:0 8px;font-size:14px;white-space:nowrap}
+code.i{background:#eef1f6;border-radius:5px;padding:1px 6px;font-size:14px;font-family:Consolas,"D2Coding",monospace}
+/* 단계 */
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:10px 0}
+ol.steps>li{counter-increment:s;position:relative;padding:12px 14px 12px 56px;border:1px solid var(--line);border-radius:12px;margin:10px 0;background:#fcfdff}
+ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--pri);color:#fff;font-weight:800;display:grid;place-items:center;font-size:15px}
+ol.steps>li[data-role="lead"]::before{background:var(--lead)}
+ol.steps>li[data-role="mem"]::before{background:var(--mem)}
+ol.steps>li>b.t{display:block;font-size:16px;margin-bottom:2px}
+ol.steps>li p{margin:4px 0}
+/* 코드 */
+.code{border-radius:12px;overflow:hidden;margin:10px 0;border:1px solid #1e293b}
+.code-h{display:flex;align-items:center;gap:8px;background:#1e293b;color:#cbd5e1;font-size:13px;padding:6px 10px}
+.code-h span{flex:1}
+.copy{border:0;background:#4f46e5;color:#fff;border-radius:6px;padding:3px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+.copy.done{background:#15803d}
+.code pre{margin:0;background:var(--code);color:#e2e8f0;padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.6;font-family:Consolas,"D2Coding",monospace;white-space:pre}
+/* 표 */
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f1f3f8}
+/* 화면 예시 */
+figure.shot{margin:14px 0}
+.win{border:1px solid #b8bfcc;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.08);font-size:13.5px;max-width:640px}
+.win .tb{background:linear-gradient(#eef1f6,#dde2ea);padding:6px 10px;font-weight:700;display:flex;gap:6px;align-items:center;border-bottom:1px solid #c7ced9}
+.win .tb::before{content:"● ● ●";color:#9aa3b5;font-size:10px;letter-spacing:2px;margin-right:6px}
+.win.gh .tb{background:#24292f;color:#fff;border-color:#24292f}
+.win .bd{padding:12px 14px}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.row .k{min-width:120px;color:#475569}
+.inp{flex:1;min-width:160px;border:1px solid #b8bfcc;border-radius:5px;padding:2px 8px;background:#fff;font-family:Consolas,monospace;font-size:13px}
+.hl{outline:3px solid #f59e0b;outline-offset:2px;border-radius:5px}
+.mm{list-style:none;margin:0;padding:4px 0;border:1px solid #c7ced9;border-radius:6px;display:inline-block;background:#fff;min-width:210px;vertical-align:top}
+.mm li{padding:3px 14px}
+.mm li.sel{background:#2563eb;color:#fff}
+.mm li.sep{border-top:1px solid #e2e6ee;margin:3px 0;padding:0}
+.pane{border:1px solid #d3d9e3;border-radius:6px;margin:6px 0}
+.pane .ph{background:#f1f4f9;padding:3px 8px;font-weight:700;display:flex;justify-content:space-between}
+.pane .pb{padding:5px 8px;font-family:Consolas,monospace;font-size:12.5px;min-height:24px}
+figcaption{font-size:12.5px;color:var(--sub);margin-top:6px}
+/* 미션/퀴즈 */
+.do,.quiz{border-radius:14px;padding:14px 16px;margin:18px 0 6px}
+.do{background:#fff8eb;border:2px dashed #f59e0b}
+.quiz{background:#f0f7ff;border:2px solid #93c5fd}
+.do h4,.quiz h4{margin:0 0 6px;font-size:16px}
+.do ul{margin:4px 0 8px;padding-left:20px}
+.done-btn{border:0;border-radius:8px;padding:7px 14px;font-weight:700;cursor:pointer;background:#f59e0b;color:#fff;font-family:inherit}
+.do.fin{background:#ecfdf3;border-color:#22c55e}
+.do.fin .done-btn{background:#16a34a}
+.opt{display:block;width:100%;text-align:left;border:1px solid #bcd4f2;background:#fff;border-radius:9px;padding:8px 12px;margin:6px 0;cursor:pointer;font-family:inherit;font-size:15px}
+.opt.right{background:#dcfce7;border-color:#16a34a;font-weight:700}
+.opt.wrong{background:#fee2e2;border-color:#dc2626}
+.exp{display:none;margin-top:8px;background:#fff;border-radius:9px;padding:8px 12px;border:1px solid #bcd4f2}
+.quiz.answered .exp{display:block}
+details.alt{margin:12px 0;border:1px solid var(--line);border-radius:12px;padding:8px 14px;background:#fafbfd}
+details.alt summary{cursor:pointer;font-weight:700;color:#334155}
+/* 흐름도 */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:12px 0}
+.flow .fb{flex:1;min-width:130px;border-radius:12px;padding:10px;text-align:center;background:var(--pri2);border:1px solid #c7cbff;font-size:14px;line-height:1.45}
+.flow .fb b{display:block;font-size:15px}
+.flow .fb.l{background:var(--leadbg);border-color:#f7c979}
+.flow .fb.m{background:var(--membg);border-color:#7dd3fc}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fcfdff}
+.card h4{margin:0 0 4px}
+/* 대시보드 */
+#dash{position:fixed;right:16px;bottom:16px;z-index:70;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:10px 12px;display:flex;gap:10px;align-items:center;cursor:pointer}
+#dash svg{width:54px;height:54px}
+#dash .dt{font-size:13px;line-height:1.45}
+#dash .dt b{font-size:15px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:90}
+#toast.show{opacity:1}
+
+/* 실제 캡처 */
+.capbar{display:none;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px;padding:8px 10px;border:2px dashed #0ea5e9;border-radius:10px;background:#f0f9ff;font-size:13.5px;max-width:640px}
+body.capmode .capbar{display:flex}
+.capbar b{flex:1;min-width:160px}
+.capbar button{border:1px solid #7dd3fc;background:#fff;border-radius:7px;padding:3px 9px;font-size:13px;cursor:pointer;font-family:inherit}
+.capbar button.arm{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+img.real{display:block;max-width:100%;border:1px solid #b8bfcc;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.1)}
+figure.has-real .win{display:none}
+figure.has-real.show-mock .win{display:block;margin-top:8px}
+figure.has-real.show-mock img.real{display:none}
+.mocktg{display:none;margin-top:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 10px;font-size:12.5px;cursor:pointer;font-family:inherit}
+figure.has-real .mocktg{display:inline-block}
+.capguide{display:none}
+body.capmode .capguide{display:block}
+.tbtn.cap.on{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+
+/* v3 */
+.ide{display:grid;grid-template-columns:30% 70%;grid-template-rows:auto 150px 90px;border:2px solid #94a3b8;border-radius:10px;overflow:hidden;font-size:12.5px;max-width:640px;background:#fff}
+.ide>div{border:1px solid #cbd5e1;padding:6px 8px;position:relative}
+.ide .i-menu{grid-column:1/3;background:#e2e8f0;font-weight:700}
+.ide .i-pe{grid-row:2/4;background:#f8fafc}
+.ide .i-ed{background:#fff}
+.ide .i-bt{background:#f1f5f9}
+.ide .nb{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;font-weight:800;font-size:12px;margin-right:4px}
+.big{font-size:17px;line-height:1.8}
+.chk li{list-style:none;margin:4px 0}
+.chk{padding-left:4px}
+.faq details{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0;background:#fcfdff}
+.faq summary{cursor:pointer;font-weight:700}
+.stuck{background:#fff7ed;border-left:5px solid #ea580c;border-radius:12px;padding:10px 14px;margin:10px 0}
+.stuck b:first-child{display:block;margin-bottom:2px}
+
+/* v4 단계 체크 */
+ol.steps>li{padding-right:92px}
+.stepck{position:absolute;right:10px;top:10px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:3px 8px;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
+ol.steps>li.sdone{background:#f0fdf4;border-color:#86efac}
+ol.steps>li.sdone .stepck{background:#16a34a;color:#fff;border-color:#16a34a}
+ol.steps>li.sdone::before{background:#16a34a!important;content:"✓"}
+.secprog{font-size:13px;color:var(--sub);margin:-4px 0 12px}
+.secprog b{color:var(--pri)}
+@media (max-width:1000px){ol.steps>li{padding-right:12px;padding-bottom:40px}.stepck{top:auto;bottom:8px;right:8px}}
+@media (max-width:1000px){
+  #side{transform:translateX(-100%)}
+  body.menu #side{transform:none}
+  body.menu #dim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:45}
+  #burger{display:block}
+  main{margin-left:0;padding:60px 12px 120px}
+  section{padding:18px 14px}
+  .hero{padding:22px 16px}.hero h1{font-size:22px}
+  .grid2{grid-template-columns:1fr}
+  .topbar{top:4px}
+  ol.steps>li{padding-left:50px}
+  #dash .dt{display:none}
+}
+@media print{#side,#burger,.topbar,#dash{display:none}main{margin:0}}
+</style>
+</head>
+<body data-view="all">
+<button id="burger" aria-label="메뉴 열기">☰</button>
+<div id="dim"></div>
+<nav id="side">
+  <h1>🧩 이클립스 팀프로젝트<br>GitHub 따라하기</h1>
+  <div class="ver">v1 · Eclipse 메뉴(EGit) 기준 · 팀장+팀원</div>
+  <div id="navlist"></div>
+</nav>
+
+<main>
+<div class="topbar">
+  <span class="lbl">👀 내 역할 보기</span>
+  <button class="vbtn" data-v="all">👥 전체</button>
+  <button class="vbtn" data-v="lead">👑 팀장</button>
+  <button class="vbtn" data-v="mem">👤 팀원</button>
+  <span class="sp"></span>
+  <button class="tbtn" id="resetBtn">↺ 진행 초기화</button>
+  <button class="tbtn cap" id="capBtn">📷 캡처 모드 <span id="capCnt">0/11</span></button>
+  <button class="tbtn dl" id="dlBtn">⬇️ 문서 다운로드</button>
+</div>
+
+<div class="hero">
+  <h1>🧩 이클립스 Dynamic Web Project<br>팀프로젝트를 GitHub로 관리하기</h1>
+  <p>Git Bash 없이 <b>이클립스 메뉴만 눌러서</b> 처음부터 끝까지 진행합니다. 팀장과 팀원이 각자 자기 표시만 따라가면 됩니다.</p>
+  <p style="margin-top:10px;background:rgba(255,255,255,.15);border-radius:10px;padding:8px 12px">🐣 <b>컴퓨터가 서툴러도 괜찮아요.</b> ① 한 단계 끝낼 때마다 <b>✅ 이렇게 되면 성공</b>과 내 화면을 비교 ② 다르면 바로 아래 <b>⚠️ / 🆘</b> 상자 확인 ③ 그래도 안 되면 <a href="#s14" style="color:#fff">14장 질문 템플릿</a>으로 캡처해서 물어보기</p>
+  <div class="tags"><span>👑 팀장 = 저장소 만들기·병합</span><span>👤 팀원 = 복제·브랜치·PR</span><span>⏱️ 첫 세팅 약 60분</span><span>💾 진행 자동 저장</span></div>
+</div>
+
+<!-- ============ 0. 시작 ============ -->
+<section id="s0" data-num="0" data-short="시작 전 안내" data-part="시작">
+  <h2>🗺️ 0. 시작 전 안내 — 전체 지도</h2>
+  <p class="lead-in">먼저 전체 흐름을 한 번 보고 시작합니다. 5분이면 됩니다.</p>
+
+  <div class="why"><b>💡 이 문서를 읽는 방법</b>
+  위쪽 <b>👀 내 역할 보기</b>에서 👑 팀장 또는 👤 팀원을 누르세요. 내 차례가 아닌 단계는 흐리게 보입니다. 순서는 <b>위에서 아래로</b> 그대로 따라가면 됩니다.</div>
+
+  <h3>👥 역할 표시 읽는 법</h3>
+  <div class="tw"><table>
+    <tr><th>표시</th><th>누가 하나요?</th><th>대표 작업</th></tr>
+    <tr><td><span class="role all">👥 전원</span></td><td>팀장 + 팀원 모두 각자 PC에서</td><td>GitHub 가입, 토큰 발급, 이클립스 Git 설정</td></tr>
+    <tr><td><span class="role lead">👑 팀장</span></td><td>팀장 1명만</td><td>저장소 생성, 팀원 초대, 첫 업로드, PR 병합</td></tr>
+    <tr><td><span class="role mem">👤 팀원</span></td><td>팀원들만</td><td>프로젝트 복제(Clone), 기능 브랜치 작업, PR 요청</td></tr>
+  </table></div>
+
+  <h3>🧭 전체 흐름 한눈에 보기</h3>
+  <div class="flow">
+    <div class="fb"><b>① 준비</b>👥 가입·토큰·설정</div>
+    <div class="fb l"><b>② 저장소</b>👑 만들기·초대</div>
+    <div class="fb l"><b>③ 첫 업로드</b>👑 Share → Push</div>
+    <div class="fb m"><b>④ 합류</b>👤 Clone → Import</div>
+    <div class="fb m"><b>⑤ 작업</b>👤 브랜치 → Push → PR</div>
+    <div class="fb l"><b>⑥ 병합</b>👑 Merge → 전원 Pull</div>
+  </div>
+
+  <h3>🖥️ 이클립스 화면 이름 먼저 알기 (가장 중요)</h3>
+  <p>이 문서에 나오는 <b>"Project Explorer", "우클릭", "탭"</b>이 어디인지 먼저 눈으로 익힙니다.</p>
+  <figure style="margin:12px 0"><div class="ide">
+    <div class="i-menu"><span class="nb">1</span>메뉴바 : File  Edit  Navigate  Search  Project  Run  <b>Window</b>  Help</div>
+    <div class="i-pe"><span class="nb">2</span><b>Project Explorer</b><br>📁 CarProject2 [CarProject2 main]<br>&nbsp;&nbsp;📁 src<br>&nbsp;&nbsp;📄 .gitignore<br><br><span style="color:#b45309">← 프로젝트 이름 위에서<br>마우스 <b>오른쪽 버튼</b></span></div>
+    <div class="i-ed"><span class="nb">3</span><b>편집기</b> (Login.jsp 코드 작성하는 곳)</div>
+    <div class="i-bt"><span class="nb">4</span>아래 탭들 : Servers │ Console │ <b>Git Staging</b> │ <b>Git Repositories</b></div>
+  </div><figcaption>이클립스 기본 화면 구조 · 창 배치는 사람마다 다를 수 있음</figcaption></figure>
+  <div class="tw"><table>
+    <tr><th>번호</th><th>이름</th><th>이 문서에서 이렇게 부름</th><th>하는 일</th></tr>
+    <tr><td>1</td><td>메뉴바</td><td><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i></span></td><td>검은 칸 순서대로 클릭. <b>›</b> 는 "그 다음 누르기"</td></tr>
+    <tr><td>2</td><td>Project Explorer</td><td>"프로젝트 우클릭"</td><td>프로젝트 <b>이름 글자 위</b>에서 마우스 오른쪽 버튼 → <b>Team</b> 메뉴가 여기 있음</td></tr>
+    <tr><td>3</td><td>편집기</td><td>"파일 열기"</td><td>파일 더블클릭하면 열림. 저장은 <kbd>Ctrl</kbd>+<kbd>S</kbd></td></tr>
+    <tr><td>4</td><td>뷰(View) 탭</td><td>"Git Staging 탭"</td><td>아래쪽 탭 이름을 한 번 클릭하면 그 창으로 바뀜</td></tr>
+  </table></div>
+  <div class="stuck"><b>🆘 창이 뒤죽박죽 사라졌어요</b><span class="mp"><i>Window</i><span class="ar">›</span><i>Perspective</i><span class="ar">›</span><i>Reset Perspective...</i></span> → <span class="btnw">Reset Perspective</span>. 처음 모습으로 돌아옵니다. 이후 3장 ②에서 Git 탭만 다시 열면 됩니다.</div>
+  <div class="stuck"><b>🆘 Project Explorer가 안 보여요</b><span class="mp"><i>Window</i><span class="ar">›</span><i>Show View</i><span class="ar">›</span><i>Project Explorer</i></span> (목록에 없으면 <b>Other...</b> → 검색칸에 <code class="i">project</code>)</div>
+  <div class="note"><b>📌 우클릭이 뭐예요?</b> 마우스 <b>오른쪽 버튼</b>을 한 번 누르는 것입니다. 노트북 터치패드는 <b>두 손가락으로 톡</b> 누르거나 오른쪽 아래를 누르세요. 메뉴가 뜨면 손을 떼고 원하는 글자를 <b>왼쪽 버튼으로</b> 누릅니다.</div>
+
+  <h3>📖 용어 5개만 비유로 알고 가기</h3>
+  <div class="tw"><table>
+    <tr><th>용어</th><th>뜻</th><th>생활 비유</th></tr>
+    <tr><td><b>Git</b></td><td>코드 변경 기록 프로그램</td><td>한글(HWP)의 "변경 내용 추적"</td></tr>
+    <tr><td><b>GitHub</b></td><td>코드를 올려 공유하는 사이트</td><td>팀 공유 구글 드라이브</td></tr>
+    <tr><td><b>Commit</b></td><td>내 PC에 변경 저장</td><td>게임 세이브</td></tr>
+    <tr><td><b>Push / Pull</b></td><td>올리기 / 받기</td><td>택배 발송 / 택배 수령</td></tr>
+    <tr><td><b>Branch</b></td><td>내 전용 작업 공간</td><td>아파트 공사의 층별 담당</td></tr>
+    <tr><td><b>Pull Request(PR)</b></td><td>"제 코드 합쳐주세요" 요청</td><td>결재 올리기 → 팀장 승인</td></tr>
+  </table></div>
+
+  <h3>🔣 Git 아이콘·표시 읽는 법 (작업하면서 계속 보게 됨)</h3>
+  <div class="tw"><table>
+    <tr><th>보이는 모습</th><th>뜻</th><th>내가 할 일</th></tr>
+    <tr><td><code class="i">CarProject2 [CarProject2 main]</code></td><td>지금 <b>main</b> 브랜치에 있음</td><td>main이면 코딩 금지 → 내 브랜치로 Switch</td></tr>
+    <tr><td><code class="i">[CarProject2 feature/login]</code></td><td>내 작업 브랜치에 있음</td><td>이 상태에서 코딩 OK</td></tr>
+    <tr><td><code class="i">[… main ↑1]</code></td><td>커밋 1개가 아직 <b>GitHub에 안 올라감</b></td><td>Push 하기</td></tr>
+    <tr><td><code class="i">[… main ↓2]</code></td><td>GitHub에 <b>새 커밋 2개</b>가 있음</td><td>Pull 하기</td></tr>
+    <tr><td><code class="i">NO-HEAD</code></td><td>Git은 시작했지만 커밋이 0개</td><td>첫 Commit 하기 (6장)</td></tr>
+    <tr><td>파일 앞 <code class="i">&gt;</code></td><td>수정했지만 커밋 안 함</td><td>Git Staging에서 커밋</td></tr>
+    <tr><td>파일 아이콘에 <b>?</b></td><td>Git이 처음 보는 새 파일</td><td>＋＋ 로 담기</td></tr>
+    <tr><td>파일 아이콘에 <b>작은 원통</b></td><td>커밋까지 끝난 안전한 파일</td><td>할 일 없음</td></tr>
+    <tr><td>파일 아이콘에 <b style="color:#b91c1c">빨간 ◆</b></td><td>충돌 발생</td><td>11장 충돌 해결</td></tr>
+  </table></div>
+  <div class="stuck"><b>🆘 [CarProject2 main] 같은 대괄호 표시가 아예 안 보여요</b>
+  <ol style="margin:4px 0;padding-left:20px"><li><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i></span></li>
+  <li>왼쪽 위 검색칸에 <code class="i">decorations</code> 입력</li>
+  <li><span class="mp"><i>General</i><span class="ar">›</span><i>Appearance</i><span class="ar">›</span><i>Label Decorations</i></span> 클릭</li>
+  <li>목록에서 <b>☑ Git</b> 체크 → <span class="btnw">Apply and Close</span></li></ol></div>
+
+  <h3>🈯 이클립스 메뉴가 한글로 보이나요? (영어↔한글 대응표)</h3>
+  <p>이 문서는 <b>영어 메뉴</b> 기준입니다. 한글 언어팩을 설치했다면 아래 표로 바꿔 읽으세요. <b>팀 전체가 영어 메뉴를 쓰는 것</b>을 가장 추천합니다.</p>
+  <div class="tw"><table>
+    <tr><th>영어 (이 문서)</th><th>한글 언어팩</th><th>영어 (이 문서)</th><th>한글 언어팩</th></tr>
+    <tr><td>Window</td><td>창</td><td>Team</td><td>팀</td></tr>
+    <tr><td>Preferences</td><td>환경 설정</td><td>Share Project...</td><td>프로젝트 공유...</td></tr>
+    <tr><td>Show View</td><td>보기 표시</td><td>Commit</td><td>커미트</td></tr>
+    <tr><td>Import...</td><td>가져오기...</td><td>Push / Pull</td><td>푸시 / 풀</td></tr>
+    <tr><td>Properties</td><td>특성</td><td>Switch To</td><td>전환 대상</td></tr>
+    <tr><td>Apply and Close</td><td>적용 후 닫기</td><td>Merge...</td><td>병합...</td></tr>
+  </table></div>
+  <div class="warn"><b>⚠️ GitHub 사이트는 크롬 "자동 번역"을 꺼주세요</b> 번역되면 <b>Create repository → 저장소 만들기</b>처럼 버튼 이름이 바뀌어 이 문서와 달라집니다. 주소창 오른쪽 번역 아이콘 → <b>영어 번역 안 함</b>.</div>
+
+  <h3>🧰 팀 전체가 먼저 맞출 것 (중요!)</h3>
+  <div class="warn"><b>⚠️ 버전이 다르면 복제 후 빨간 X가 납니다</b>
+  팀장과 팀원 모두 아래 항목을 <b>똑같이</b> 맞추세요. 단톡방에 한 번 공지하면 됩니다.</div>
+  <div class="tw"><table>
+    <tr><th>항목</th><th>맞출 내용 (예시)</th><th>확인하는 메뉴</th></tr>
+    <tr><td>이클립스</td><td>Eclipse IDE for <b>Enterprise Java and Web</b> Developers (같은 연도판)</td><td><span class="mp"><i>Help</i><span class="ar">›</span><i>About Eclipse IDE</i></span></td></tr>
+    <tr><td>JDK</td><td>같은 버전 (예: 17 또는 21)</td><td><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>Java</i><span class="ar">›</span><i>Installed JREs</i></span></td></tr>
+    <tr><td>Tomcat</td><td>같은 버전 + <b>런타임 이름도 동일</b> (예: Apache Tomcat v10.1)</td><td><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>Server</i><span class="ar">›</span><i>Runtime Environments</i></span></td></tr>
+    <tr><td>인코딩</td><td><b>UTF-8</b> (한글 깨짐 방지)</td><td><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>General</i><span class="ar">›</span><i>Workspace</i></span> → Text file encoding</td></tr>
+  </table></div>
+
+  <div class="note"><b>📌 이 문서의 예시 값</b>
+  프로젝트명 <code class="i">CarProject2</code> · 팀장 아이디 <code class="i">park-leader</code> · 팀원 아이디 <code class="i">kim-minsu</code>. 실제로는 <b>본인 값으로 바꿔</b> 입력하세요.</div>
+
+  <div class="capguide note"><b>📷 캡처 모드 — 실제 화면으로 교체하는 법 (강사용)</b>
+  <ol style="margin:4px 0 8px;padding-left:20px"><li>이클립스/GitHub에서 해당 화면을 띄우고 <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>로 영역 캡처</li>
+  <li>문서의 해당 그림 위 <b>📋 붙여넣기 대기</b> 클릭 → <kbd>Ctrl</kbd>+<kbd>V</kbd> (또는 <b>📁 파일 선택</b>)</li>
+  <li>11개 채운 뒤 상단 <b>⬇️ 문서 다운로드</b> → 캡처가 <b>HTML 안에 내장</b>된 파일이 저장됩니다</li></ol>
+  <div class="tw"><table><tr><th>#</th><th>캡처할 화면</th><th>상태</th></tr><tr><td>1</td><td>GitHub 토큰(classic) 발급 화면</td><td id="cst1">⬜</td></tr><tr><td>2</td><td>Preferences › Git › Configuration</td><td id="cst2">⬜</td></tr><tr><td>3</td><td>GitHub New repository 화면</td><td id="cst3">⬜</td></tr><tr><td>4</td><td>Team › Share Project 창</td><td id="cst4">⬜</td></tr><tr><td>5</td><td>Git Staging 뷰 (첫 커밋)</td><td id="cst5">⬜</td></tr><tr><td>6</td><td>Push Branch main 창</td><td id="cst6">⬜</td></tr><tr><td>7</td><td>Clone › Local Destination 창</td><td id="cst7">⬜</td></tr><tr><td>8</td><td>Team › Switch To › New Branch 창</td><td id="cst8">⬜</td></tr><tr><td>9</td><td>GitHub Open a pull request 화면</td><td id="cst9">⬜</td></tr><tr><td>10</td><td>PR Merge pull request 영역</td><td id="cst10">⬜</td></tr><tr><td>11</td><td>Merge Result (Conflicting) 창</td><td id="cst11">⬜</td></tr></table></div>
+  <p style="margin:4px 0 0;font-size:13px">💡 캡처는 이 브라우저에 임시 저장되고, 수강생에게는 다운로드한 파일을 배포하세요. 토큰·이메일이 보이면 가리고 캡처하세요.</p></div>
+  <div class="do" data-id="m0"><h4>🛠️ 미션 0 — 팀 합의하기</h4>
+    <ul><li>단톡방에 이클립스·JDK·Tomcat 버전과 UTF-8 설정을 공지하기</li><li>팀장 1명을 정하고, 각자 담당 기능(로그인/목록 등)을 나누기</li></ul>
+    <button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q0" data-ans="2"><h4>🧠 퀴즈 0</h4>
+    <p>팀원 코드를 main에 최종으로 합치는(Merge) 역할은 누구일까요?</p>
+    <button class="opt">① 가장 먼저 코드를 올린 팀원</button>
+    <button class="opt">② 아무나 먼저 누르는 사람</button>
+    <button class="opt">③ 팀장</button>
+    <div class="exp">정답 ③. 팀장은 편집장입니다. 팀원이 PR로 요청하면 팀장이 확인하고 Merge합니다.</div></div>
+</section>
+
+<!-- ============ 0-1. 설치 ============ -->
+<section id="s01" data-num="0-1" data-short="설치·Tomcat 실행" data-part="PART 0 · 개발 환경 (전원)" data-role="all">
+  <h2><span class="role all">👥 전원</span> 0-1. 개발 환경 설치 — JDK · 이클립스 · Tomcat · 첫 실행</h2>
+  <p class="lead-in">이미 수업에서 JSP를 실행해 봤다면 ⑧번 <b>연습 실행</b>만 확인하고 넘어가세요. 처음 설치라면 ①부터 하나도 빼지 말고 따라합니다.</p>
+  <div class="why"><b>💡 왜 여기부터?</b> Git 문제의 절반은 사실 <b>설치·실행 문제</b>입니다. 내 PC에서 JSP가 뜨는 것까지 확인해야 이후 단계에서 원인을 헷갈리지 않습니다.</div>
+  <div class="warn"><b>⚠️ 폴더 이름 규칙 (가장 흔한 실패 원인)</b> 설치 폴더·워크스페이스 경로에 <b>한글과 띄어쓰기를 넣지 마세요.</b> 이 문서는 <code class="i">C:\dev</code> 폴더 하나에 모두 모읍니다.</div>
+
+  <h3>① 작업 폴더 만들기</h3>
+  <ol class="steps">
+    <li><b class="t">키보드 <kbd>Win</kbd>+<kbd>E</kbd> → 왼쪽 <b>내 PC</b> → <b>로컬 디스크 (C:)</b> 더블클릭</b></li>
+    <li><b class="t">빈 곳 우클릭 → <span class="mp"><i>새로 만들기</i><span class="ar">›</span><i>폴더</i></span> → 이름에 <code class="i">dev</code> 입력 → <kbd>Enter</kbd></b><p>결과: <code class="i">C:\dev</code> 폴더가 생깁니다.</p></li>
+    <li><b class="t"><b>파일 확장자 보이게</b>: 탐색기 위쪽 <span class="mp"><i>보기</i><span class="ar">›</span><i>표시</i><span class="ar">›</span><i>파일 확장명</i></span> ☑</b><p>윈도우10은 <span class="mp"><i>보기</i></span> 탭 → ☑ 파일 확장명. 압축 파일(.zip)을 구분하기 쉬워집니다.</p></li>
+  </ol>
+
+  <h3>② JDK 설치 (자바 번역기)</h3>
+  <ol class="steps">
+    <li><b class="t">팀이 정한 버전 확인 (예: 17)</b><p>0장 표에서 정한 버전을 씁니다. 모르면 <b>17</b>을 설치하세요.</p></li>
+    <li><b class="t">브라우저에서 아래 주소 접속</b><div class="code"><div class="code-h"><span>📋 JDK 다운로드 주소 (Eclipse Temurin)</span><button class="copy">복사</button></div><pre>https://adoptium.net/temurin/releases/</pre></div></li>
+    <li><b class="t">Operating System <b>Windows</b> · Architecture <b>x64</b> · Package Type <b>JDK</b> · Version <b>17</b> 선택 → <b>.msi</b> 다운로드</b></li>
+    <li><b class="t">받은 .msi 더블클릭 → <span class="btnw">Next</span></b><p>설치 옵션 화면에서 <b>Set JAVA_HOME variable</b> 왼쪽 ✖ 아이콘 클릭 → <b>Will be installed on local hard drive</b> 선택 → <span class="btnw">Next</span> → <span class="btnw">Install</span> → <span class="btnw">Finish</span></p></li>
+    <li><b class="t">확인: <kbd>Win</kbd> 키 → <code class="i">cmd</code> 입력 → <kbd>Enter</kbd> → 아래 명령 붙여넣기 → <kbd>Enter</kbd></b><div class="code"><div class="code-h"><span>📋 명령 프롬프트</span><button class="copy">복사</button></div><pre>java -version</pre></div><div class="ok"><b>✅ 성공 예시</b><code class="i">openjdk version "17.0.x"</code> 로 시작하는 3줄이 보이면 성공</div><div class="stuck"><b>🆘 'java'은(는) 내부 또는 외부 명령… 이 떠요</b> cmd 창을 <b>닫고 새로</b> 열어 다시 입력. 그래도 안 되면 PC 재부팅 후 재시도.</div></li>
+  </ol>
+
+  <h3>③ 이클립스 설치</h3>
+  <ol class="steps">
+    <li><b class="t">아래 주소 접속</b><div class="code"><div class="code-h"><span>📋 이클립스 패키지 주소</span><button class="copy">복사</button></div><pre>https://www.eclipse.org/downloads/packages/</pre></div></li>
+    <li><b class="t"><b>Eclipse IDE for Enterprise Java and Web Developers</b> 줄의 <b>Windows x86_64</b> 클릭 → <span class="btnw">Download</span></b><div class="warn"><b>⚠️ 이름 정확히!</b> "Eclipse IDE for Java Developers"(Enterprise 없는 것)는 JSP·Tomcat·Git 메뉴가 부족합니다.</div></li>
+    <li><b class="t">받은 .zip 우클릭 → <b>압축 풀기...</b> → 대상 폴더를 <code class="i">C:\dev</code> 로 → 압축 풀기</b><p>결과: <code class="i">C:\dev\eclipse\eclipse.exe</code> 가 생깁니다.</p></li>
+    <li><b class="t"><code class="i">eclipse.exe</code> 우클릭 → <span class="mp"><i>작업 표시줄에 고정</i></span> (윈도우11은 추가 옵션 표시 안에 있음) → 실행</b></li>
+    <li><b class="t">Workspace 입력칸에 아래 경로 → <b>☑ Use this as the default</b> → <span class="btnw">Launch</span></b><div class="code"><div class="code-h"><span>📋 워크스페이스 경로 (전원 동일 추천)</span><button class="copy">복사</button></div><pre>C:\dev\workspace</pre></div></li>
+    <li><b class="t">Welcome 화면이 뜨면 탭의 <b>✕</b>로 닫기</b><div class="ok"><b>✅ 성공</b> 왼쪽에 Project Explorer, 가운데 빈 편집기가 보이면 0장 화면 도해와 같은 상태입니다.</div></li>
+  </ol>
+
+  <h3>④ 한글 깨짐 방지 (UTF-8) — 3군데</h3>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i></span> → 검색칸에 <code class="i">workspace</code> → <span class="mp"><i>General</i><span class="ar">›</span><i>Workspace</i></span></b><p>아래쪽 <b>Text file encoding</b> → 🔘 <b>Other</b> → <code class="i">UTF-8</code> 선택 → <span class="btnw">Apply</span></p></li>
+    <li><b class="t">검색칸 지우고 <code class="i">jsp</code> → <span class="mp"><i>Web</i><span class="ar">›</span><i>JSP Files</i></span></b><p>Encoding → <b>ISO 10646/Unicode(UTF-8)</b> → <span class="btnw">Apply</span></p></li>
+    <li><b class="t">같은 방법으로 <span class="mp"><i>Web</i><span class="ar">›</span><i>HTML Files</i></span> 와 <span class="mp"><i>Web</i><span class="ar">›</span><i>CSS Files</i></span> 도 UTF-8 → <span class="btnw">Apply and Close</span></b></li>
+  </ol>
+
+  <h3>⑤ 이클립스에 JDK 등록</h3>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>Java</i><span class="ar">›</span><i>Installed JREs</i></span> → <span class="btnw">Add...</span></b></li>
+    <li><b class="t"><b>Standard VM</b> → <span class="btnw">Next &gt;</span> → JRE home 옆 <span class="btnw">Directory...</span></b><p>C:\Program Files\Eclipse Adoptium\ 안의 <b>jdk-17…</b> 폴더 선택 → <span class="btnw">폴더 선택</span> → <span class="btnw">Finish</span></p></li>
+    <li><b class="t">목록에서 방금 추가한 <b>jdk-17…</b> 왼쪽 칸 ☑ → <span class="btnw">Apply and Close</span></b></li>
+  </ol>
+
+  <h3>⑥ Tomcat 받기</h3>
+  <div class="warn"><b>⚠️ Tomcat 9 vs 10 — 수업 코드에 맞춰 고르기</b> 코드에 <code class="i">import javax.servlet...</code> 이 있으면 <b>Tomcat 9</b>, <code class="i">import jakarta.servlet...</code> 이면 <b>Tomcat 10.1</b>. 틀리면 서블릿이 전부 빨간 줄이 됩니다. 이 문서 예시는 10.1입니다.</div>
+  <ol class="steps">
+    <li><b class="t">주소 접속</b><div class="code"><div class="code-h"><span>📋 Tomcat 10.1 다운로드 (9는 주소의 10.cgi → 9.cgi)</span><button class="copy">복사</button></div><pre>https://tomcat.apache.org/download-10.cgi</pre></div></li>
+    <li><b class="t"><b>Binary Distributions › Core:</b> 아래 <b>64-bit Windows zip</b> 클릭</b><p>installer(.exe)가 아니라 <b>zip</b>입니다.</p></li>
+    <li><b class="t">zip 압축 풀기 → 대상 <code class="i">C:\dev</code></b><p>결과: <code class="i">C:\dev\apache-tomcat-10.1.xx</code> (안에 bin, conf, lib 폴더가 보여야 함)</p><div class="stuck"><b>🆘 폴더 안에 또 같은 이름 폴더가 있어요</b> bin 폴더가 보이는 <b>그 폴더</b>가 Tomcat 폴더입니다. ⑦에서 그 폴더를 선택하세요.</div></li>
+  </ol>
+
+  <h3>⑦ 이클립스에 Tomcat 연결</h3>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>Server</i><span class="ar">›</span><i>Runtime Environments</i></span> → <span class="btnw">Add...</span></b></li>
+    <li><b class="t"><b>Apache</b> ▶ 펼치기 → <b>Apache Tomcat v10.1</b> 선택 → <span class="btnw">Next &gt;</span></b></li>
+    <li><b class="t">Tomcat installation directory → <span class="btnw">Browse...</span> → <code class="i">C:\dev\apache-tomcat-10.1.xx</code> 선택</b><p>JRE 칸 → <b>jdk-17…</b> 선택 → <span class="btnw">Finish</span> → <span class="btnw">Apply and Close</span></p><div class="ok"><b>✅ 성공</b> 목록에 <b>Apache Tomcat v10.1</b> 이 한 줄 생김. <b>이 이름을 팀 전원이 똑같이</b> 가지고 있어야 합니다.</div></li>
+    <li><b class="t">아래 <b>Servers</b> 탭 클릭 (없으면 <span class="mp"><i>Window</i><span class="ar">›</span><i>Show View</i><span class="ar">›</span><i>Servers</i></span>)</b><p>"No servers are available. Click this link to create a new server..." <b>파란 글자</b> 클릭 → Apache › <b>Tomcat v10.1 Server</b> → <span class="btnw">Finish</span></p></li>
+  </ol>
+
+  <h3>⑧ 연습 프로젝트로 실행 확인 (전원 필수)</h3>
+  <div class="note"><b>📌 연습 이름은 HelloWeb</b> 팀원은 여기서 <b>CarProject2를 만들지 마세요.</b> 같은 이름이 있으면 7장 Clone이 실패합니다.</div>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>File</i><span class="ar">›</span><i>New</i><span class="ar">›</span><i>Dynamic Web Project</i></span></b><p>목록에 없으면 <span class="mp"><i>File</i><span class="ar">›</span><i>New</i><span class="ar">›</span><i>Other...</i></span> → 검색 <code class="i">dynamic</code> → Web › Dynamic Web Project → Next</p></li>
+    <li><b class="t">Project name <code class="i">HelloWeb</code> · Target runtime <b>Apache Tomcat v10.1</b> · 나머지 그대로 → <span class="btnw">Next &gt;</span> → <span class="btnw">Next &gt;</span></b></li>
+    <li><b class="t"><b>☑ Generate web.xml deployment descriptor</b> 체크 → <span class="btnw">Finish</span></b><p>"Open Associated Perspective?" 창이 뜨면 <span class="btnw">Open</span> 또는 <span class="btnw">No</span> 아무거나.</p></li>
+    <li><b class="t">HelloWeb ▶ 펼치기 → <b>src</b> › <b>main</b> › <b>webapp</b> 우클릭 → <span class="mp"><i>New</i><span class="ar">›</span><i>JSP File</i></span></b><p>File name <code class="i">index.jsp</code> → <span class="btnw">Finish</span></p></li>
+    <li><b class="t">&lt;body&gt; 와 &lt;/body&gt; 사이에 한 줄 붙여넣기 → <kbd>Ctrl</kbd>+<kbd>S</kbd></b><div class="code"><div class="code-h"><span>📋 index.jsp body 안</span><button class="copy">복사</button></div><pre>&lt;h1&gt;안녕하세요! 실행 성공 🎉&lt;/h1&gt;</pre></div></li>
+    <li><b class="t">HelloWeb 우클릭 → <span class="mp"><i>Run As</i><span class="ar">›</span><i>Run on Server</i></span> → Tomcat v10.1 Server 선택 → ☑ Always use this server → <span class="btnw">Finish</span></b></li>
+    <li><b class="t">브라우저(또는 이클립스 내부 창)에 결과 확인</b><div class="code"><div class="code-h"><span>📋 직접 주소 입력 시</span><button class="copy">복사</button></div><pre>http://localhost:8080/HelloWeb/</pre></div><div class="ok"><b>✅ 성공</b> 큰 글씨로 <b>안녕하세요! 실행 성공 🎉</b> 가 보입니다.</div></li>
+  </ol>
+  <div class="tw"><table>
+    <tr><th>🆘 증상</th><th>해결</th></tr>
+    <tr><td>Port 8080 required by Tomcat… is already in use</td><td>Servers 탭 Tomcat <b>더블클릭</b> → 오른쪽 Ports 표의 HTTP/1.1 <code class="i">8080</code>을 <code class="i">8081</code>로 → <kbd>Ctrl</kbd>+<kbd>S</kbd> → 주소도 8081로</td></tr>
+    <tr><td>한글이 ???로 보임</td><td>④ UTF-8 설정 확인 후 index.jsp 첫 줄에 <code class="i">pageEncoding="UTF-8"</code> 있는지 확인</td></tr>
+    <tr><td>404 Not Found</td><td>주소의 프로젝트 이름 대소문자 확인 (HelloWeb) · index.jsp가 webapp 바로 아래인지 확인</td></tr>
+    <tr><td>Target runtime 목록이 비어 있음</td><td>⑦ Runtime Environments 등록부터 다시</td></tr>
+    <tr><td>Run on Server 메뉴가 없음</td><td>Enterprise 판 이클립스인지 ③ 다시 확인</td></tr>
+  </table></div>
+  <div class="do" data-id="m01"><h4>🛠️ 미션 0-1</h4><ul><li>java -version 성공</li><li>HelloWeb 실행 화면에 "실행 성공 🎉" 확인</li><li>Runtime Environments 이름을 단톡방에 공유해 팀원과 똑같은지 비교</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q01" data-ans="1"><h4>🧠 퀴즈 0-1</h4><p>설치·워크스페이스 경로로 가장 안전한 것은?</p>
+    <button class="opt">① C:\Users\홍길동\바탕 화면\자바 공부</button><button class="opt">② C:\dev\workspace</button><button class="opt">③ D:\새 폴더 (2)</button>
+    <div class="exp">정답 ②. 한글·띄어쓰기가 없는 짧은 경로가 Tomcat·Git 오류를 막습니다.</div></div>
+</section>
+
+<!-- ============ 1. GitHub 가입 ============ -->
+<section id="s1" data-num="1" data-short="GitHub 가입" data-part="PART A · 준비 (전원)" data-role="all">
+  <h2><span class="role all">👥 전원</span> 1. GitHub 계정 만들기</h2>
+  <p class="lead-in">한 사람당 계정 1개가 필요합니다. 이미 있으면 ⑤번만 하세요.</p>
+  <div class="why"><b>💡 왜 하나요?</b> GitHub는 팀 공유 드라이브입니다. 계정이 있어야 팀장이 초대할 수 있습니다.</div>
+  <ol class="steps">
+    <li><b class="t">https://github.com 접속 → 오른쪽 위 <span class="btnw">Sign up</span></b></li>
+    <li><b class="t">자주 쓰는 이메일 입력</b><p>이 이메일로 팀 초대장이 옵니다.</p></li>
+    <li><b class="t">비밀번호와 Username(영문) 입력</b><p>예: <code class="i">kim-minsu</code>. 팀원이 나를 찾을 때 쓰는 아이디입니다.</p></li>
+    <li><b class="t">이메일로 온 인증 코드 입력</b><p>로그인되고 오른쪽 위에 프로필 사진이 보이면 가입 완료입니다.</p></li>
+    <li><b class="t">가입 설문(팀 인원·용도) 화면이 나오면 맨 아래 <span class="btnw">Skip personalization</span></b><p>요금제 선택이 나오면 <b>Free</b>(무료)를 고릅니다. 결제 정보는 넣지 않습니다.</p></li>
+    <li><b class="t">2단계 인증(2FA) 켜기 — 안 켜면 나중에 GitHub가 막습니다</b>
+      <p>GitHub는 코드를 올리는 계정에 2단계 인증을 요구합니다. 노란 배너가 뜨거나 아래 순서로 직접 켭니다.</p>
+      <p>① 휴대폰에 <b>Google Authenticator</b> 또는 <b>Microsoft Authenticator</b> 앱 설치<br>
+      ② github.com 프로필 사진 → <span class="btnw">Settings</span> → 왼쪽 <span class="btnw">Password and authentication</span> → <span class="btng">Enable two-factor authentication</span><br>
+      ③ 화면의 <b>QR코드</b>를 앱의 <b>＋</b> 버튼 → QR 스캔으로 찍기<br>
+      ④ 앱에 나온 <b>6자리 숫자</b>를 GitHub 칸에 입력 → Continue<br>
+      ⑤ <b>Recovery codes</b> 화면 → <span class="btnw">Download</span> → 파일을 안전한 곳에 보관 → <span class="btng">I have saved my recovery codes</span></p>
+      <div class="warn"><b>⚠️ Recovery codes 파일을 절대 버리지 마세요</b> 휴대폰을 잃어버렸을 때 계정에 들어갈 수 있는 유일한 열쇠입니다.</div>
+      <div class="stuck"><b>🆘 로그인할 때마다 숫자를 물어봐요</b> 정상입니다. 휴대폰 앱의 <b>지금 보이는 6자리</b>를 입력하세요. 숫자는 30초마다 바뀝니다.</div></li>
+    <li><b class="t">이메일 인증 확인</b><p>프로필 사진 → Settings → <b>Emails</b>에서 내 이메일 옆에 <b>Unverified</b>가 있으면 <span class="btnw">Resend verification email</span> → 메일의 링크 클릭. 인증 안 된 계정은 초대 수락이 막힐 수 있습니다.</p></li>
+    <li><b class="t">Username을 팀장에게 전달</b><p>아래 문장을 복사해서 단톡방에 보내세요.</p>
+      <div class="code"><div class="code-h"><span>💬 단톡방 메시지</span><button class="copy">복사</button></div><pre>제 GitHub 아이디는 kim-minsu 입니다. 초대 부탁드려요!</pre></div></li>
+  </ol>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> github.com 오른쪽 위 프로필 사진 클릭 → <b>Signed in as 내아이디</b>가 보입니다.</div>
+  <div class="do" data-id="m1"><h4>🛠️ 미션 1</h4><ul><li>GitHub 가입 후 로그인하기</li><li>Username을 단톡방에 공유하기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q1" data-ans="1"><h4>🧠 퀴즈 1</h4><p>팀장이 팀원을 초대할 때 필요한 정보는?</p>
+    <button class="opt">① 팀원의 GitHub 비밀번호</button><button class="opt">② 팀원의 GitHub Username(또는 이메일)</button><button class="opt">③ 팀원의 이클립스 버전</button>
+    <div class="exp">정답 ②. 비밀번호는 절대 공유하지 않습니다. 아이디만 알려주세요.</div></div>
+</section>
+
+<!-- ============ 2. 토큰 ============ -->
+<section id="s2" data-num="2" data-short="토큰(PAT) 발급" data-role="all">
+  <h2><span class="role all">👥 전원</span> 2. 이클립스 로그인용 토큰(PAT) 발급</h2>
+  <p class="lead-in">이클립스는 GitHub 비밀번호로 로그인이 안 됩니다. 대신 <b>토큰</b>을 씁니다.</p>
+  <div class="why"><b>💡 토큰이란?</b> 이클립스 전용 <b>출입 카드</b>입니다. 비밀번호 대신 이 긴 글자를 입력합니다. 잃어버리면 새로 발급하면 됩니다.</div>
+  <ol class="steps">
+    <li><b class="t">GitHub 오른쪽 위 프로필 사진 → <span class="btnw">Settings</span></b></li>
+    <li><b class="t">왼쪽 메뉴 맨 아래 <span class="btnw">Developer settings</span></b></li>
+    <li><b class="t"><span class="btnw">Personal access tokens</span> → <span class="btnw">Tokens (classic)</span></b>
+      <div class="warn"><b>⚠️ Fine-grained 말고 classic을 고르세요</b>Fine-grained 토큰은 <b>남(팀장)의 저장소</b>에 접근이 막히는 경우가 많습니다. 팀원은 반드시 classic을 쓰세요.</div></li>
+    <li><b class="t"><span class="btnw">Generate new token</span> → <span class="btnw">Generate new token (classic)</span></b><div class="stuck" style="margin:0 0 0 0"><b>🆘 "Confirm access" 창이 떠요</b> 보안 확인입니다. GitHub 비밀번호 또는 휴대폰 앱 6자리를 입력하면 넘어갑니다.</div></li>
+    <li><b class="t">아래처럼 입력</b>
+      <p>Note: <code class="i">eclipse-team</code> · Expiration: <b>90 days</b> (프로젝트 기간보다 길게) · Select scopes: <b>☑ repo</b> 한 개만 체크</p></li>
+    <li><b class="t">맨 아래 <span class="btng">Generate token</span> → 초록 글자 토큰 복사</b>
+      <p><code class="i">ghp_</code>로 시작합니다. <b>이 화면을 벗어나면 다시 볼 수 없습니다.</b> 메모장에 붙여 두세요.</p></li>
+  </ol>
+  <figure class="shot" data-shot="1" data-name="GitHub 토큰(classic) 발급 화면"><div class="win gh"><div class="tb">New personal access token (classic)</div><div class="bd">
+    <div class="row"><span class="k">Note</span><span class="inp">eclipse-team</span></div>
+    <div class="row"><span class="k">Expiration</span><span class="inp">90 days</span></div>
+    <div class="row"><span class="k">Select scopes</span><span class="hl">☑ <b>repo</b> Full control of private repositories</span></div>
+    <div class="row"><span class="k"></span>☐ workflow ☐ admin:org ☐ ...</div>
+    <div class="row"><span class="btng">Generate token</span></div>
+  </div></div><figcaption>예시 화면 · 문구와 위치는 GitHub 업데이트에 따라 조금 다를 수 있음</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> <code class="i">ghp_xxxxxxxx…</code> 형태의 토큰을 메모장에 저장했습니다.</div>
+  <div class="warn"><b>⚠️ 토큰을 단톡방·코드에 절대 붙이지 마세요</b> 다른 사람이 내 계정으로 코드를 지울 수 있습니다. 노출되면 같은 화면에서 <span class="btnw">Delete</span> 후 재발급하세요.</div>
+  <div class="do" data-id="m2"><h4>🛠️ 미션 2</h4><ul><li>classic 토큰(repo 체크)을 발급해 메모장에 저장하기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q2" data-ans="0"><h4>🧠 퀴즈 2</h4><p>이클립스에서 GitHub 로그인 창의 <b>Password</b> 칸에 넣는 것은?</p>
+    <button class="opt">① 발급받은 토큰(ghp_…)</button><button class="opt">② GitHub 로그인 비밀번호</button><button class="opt">③ 이메일 인증 코드</button>
+    <div class="exp">정답 ①. 2021년부터 비밀번호 인증은 막혔습니다. User 칸엔 아이디, Password 칸엔 토큰입니다.</div></div>
+</section>
+
+<!-- ============ 3. 이클립스 Git 설정 ============ -->
+<section id="s3" data-num="3" data-short="이클립스 Git 설정" data-role="all">
+  <h2><span class="role all">👥 전원</span> 3. 이클립스 Git 기본 설정 (PC당 1회)</h2>
+  <p class="lead-in">내 이름표를 붙이고, Git 작업 창 2개를 꺼내 둡니다.</p>
+  <div class="why"><b>💡 왜 하나요?</b> 커밋마다 <b>누가 수정했는지</b> 기록됩니다. 이름표가 없으면 누구 코드인지 모릅니다.</div>
+
+  <h3>① 이름·이메일·기본 브랜치 등록</h3>
+  <div class="note"><b>📌 Preferences 창에서 메뉴 찾는 요령</b> 창 왼쪽 위 <b>검색칸(type filter text)</b>에 <code class="i">configuration</code>을 입력하면 긴 목록이 줄어들어 바로 찾을 수 있습니다. 왼쪽 목록의 <b>▶ 화살표</b>를 눌러야 하위 메뉴가 펼쳐집니다.</div>
+  <div class="stuck"><b>🆘 Add Entry 창은 어떻게 입력하나요?</b> 창에 칸이 2개 있습니다. 위 칸 <b>Key</b>에 <code class="i">user.name</code>, 아래 칸 <b>Value</b>에 내 아이디를 넣고 <span class="btnw">Add</span>. 이걸 3번 반복합니다. 띄어쓰기·대소문자를 틀리면 안 되니 <b>복사 버튼</b>을 쓰세요.</div>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i></span></b></li>
+    <li><b class="t"><span class="mp"><i>Version Control (Team)</i><span class="ar">›</span><i>Git</i><span class="ar">›</span><i>Configuration</i></span></b><p><b>User Settings</b> 탭이 선택된 상태인지 확인합니다.</p></li>
+    <li><b class="t"><span class="btnw">Add Entry...</span>를 눌러 아래 3개를 하나씩 추가</b>
+      <div class="tw"><table><tr><th>Key (복사)</th><th>Value (예시 → 본인 값)</th></tr>
+        <tr><td><code class="i">user.name</code></td><td><code class="i">kim-minsu</code> (GitHub 아이디와 같게)</td></tr>
+        <tr><td><code class="i">user.email</code></td><td><code class="i">kim@gmail.com</code> (GitHub 가입 이메일)</td></tr>
+        <tr><td><code class="i">init.defaultBranch</code></td><td><code class="i">main</code> (그대로)</td></tr></table></div>
+      <div class="code"><div class="code-h"><span>📋 Key 3개 (한 줄씩 복사해서 사용)</span><button class="copy">복사</button></div><pre>user.name
+user.email
+init.defaultBranch</pre></div></li>
+    <li><b class="t"><span class="btnw">Apply and Close</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="2" data-name="Preferences › Git › Configuration"><div class="win"><div class="tb">Preferences › Git › Configuration</div><div class="bd">
+    <div class="row"><span class="btnw hl">User Settings</span><span class="btnw">System Settings</span><span class="btnw">Repository Settings</span></div>
+    <div class="pane"><div class="ph"><span>Key</span><span>Value</span></div><div class="pb">
+      user.name ………… kim-minsu<br>user.email ………… kim@gmail.com<br>init.defaultbranch … main</div></div>
+    <div class="row"><span class="btnw hl">Add Entry...</span><span class="btnw">Remove</span><span style="flex:1"></span><span class="btnw">Apply and Close</span></div>
+  </div></div><figcaption>예시 화면 · 이클립스 버전에 따라 메뉴 이름이 "Team › Git"으로 보일 수 있음</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 목록에 <b>user.name / user.email / init.defaultbranch</b> 3줄이 보입니다.</div>
+
+  <h3>② Git 작업 창(뷰) 2개 꺼내기</h3>
+  <ol class="steps">
+    <li><b class="t"><span class="mp"><i>Window</i><span class="ar">›</span><i>Show View</i><span class="ar">›</span><i>Other...</i></span></b></li>
+    <li><b class="t">검색칸에 <code class="i">git</code> 입력 → <b>Git Staging</b> 선택 → <span class="btnw">Open</span></b><p>커밋할 때 쓰는 창입니다. <b>택배 포장대</b>라고 생각하세요.</p></li>
+    <li><b class="t">같은 방법으로 <b>Git Repositories</b>도 열기</b><p>내 PC의 Git 저장소 목록 창입니다.</p></li>
+  </ol>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 이클립스 아래쪽에 <b>Git Staging</b>, <b>Git Repositories</b> 탭이 생겼습니다.</div>
+  <div class="warn"><b>⚠️ Preferences에 Git 메뉴가 없어요</b> "Enterprise Java and Web" 판이 아니면 Git 기능(EGit)이 빠져 있을 수 있습니다. <span class="mp"><i>Help</i><span class="ar">›</span><i>Eclipse Marketplace</i></span>에서 <b>EGit</b> 검색 → Install 하세요.</div>
+  <details class="alt"><summary>💻 Git Bash로 같은 설정 하기 (선택)</summary>
+    <div class="code"><div class="code-h"><span>Git Bash</span><button class="copy">복사</button></div><pre>git config --global user.name "kim-minsu"
+git config --global user.email "kim@gmail.com"
+git config --global init.defaultBranch main
+git config --list</pre></div>
+    <div class="ok"><b>✅ 성공</b> 마지막 줄 결과에 <code class="i">user.name=kim-minsu</code>가 보이면 됩니다. (q 키로 나가기)</div></details>
+  <div class="do" data-id="m3"><h4>🛠️ 미션 3</h4><ul><li>Configuration에 3개 항목 등록</li><li>Git Staging · Git Repositories 창 열기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q3" data-ans="1"><h4>🧠 퀴즈 3</h4><p><code class="i">init.defaultBranch = main</code>을 넣는 이유는?</p>
+    <button class="opt">① 이클립스 속도가 빨라져서</button><button class="opt">② 새 저장소의 기본 브랜치 이름을 GitHub와 같은 main으로 맞추려고</button><button class="opt">③ 팀원 초대가 자동으로 돼서</button>
+    <div class="exp">정답 ②. 설정하지 않으면 master로 만들어져 GitHub의 main과 이름이 달라집니다.</div></div>
+</section>
+
+<!-- ============ 4. 저장소 + 초대 ============ -->
+<section id="s4" data-num="4" data-short="저장소 만들기·초대" data-part="PART B · 저장소 세팅 (팀장)" data-role="lead">
+  <h2><span class="role lead">👑 팀장</span> 4. GitHub 저장소 만들기 & 팀원 초대</h2>
+  <p class="lead-in">팀 공유 드라이브를 만들고 팀원에게 출입증을 줍니다. 팀원은 ⑧번(초대 수락)만 하세요.</p>
+  <div class="why"><b>💡 핵심 포인트</b> 저장소를 <b>완전히 빈 상태</b>로 만듭니다. README를 체크하면 첫 업로드 때 거절(rejected)이 납니다.</div>
+  <h3>① 빈 저장소 만들기</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">github.com 오른쪽 위 <span class="btnw">＋</span> → <span class="btnw">New repository</span></b></li>
+    <li data-role="lead"><b class="t">Repository name: 이클립스 프로젝트명과 똑같이</b>
+      <div class="code"><div class="code-h"><span>📋 Repository name (예시)</span><button class="copy">복사</button></div><pre>CarProject2</pre></div></li>
+    <li data-role="lead"><b class="t">Visibility: <b>🔘 Private</b></b><p>초대받은 팀원만 볼 수 있습니다.</p></li>
+    <li data-role="lead"><b class="t">Add README / .gitignore / license — <b>전부 체크하지 않음 (None)</b></b></li>
+    <li data-role="lead"><b class="t"><span class="btng">Create repository</span></b><p>"Quick setup" 화면에서 HTTPS 주소를 복사해 두세요.</p>
+      <div class="code"><div class="code-h"><span>📋 저장소 주소 형식 (팀장아이디를 본인 것으로)</span><button class="copy">복사</button></div><pre>https://github.com/park-leader/CarProject2.git</pre></div></li>
+  </ol>
+  <figure class="shot" data-shot="3" data-name="GitHub New repository 화면"><div class="win gh"><div class="tb">Create a new repository</div><div class="bd">
+    <div class="row"><span class="k">Repository name</span><span class="inp">CarProject2</span></div>
+    <div class="row"><span class="k">Visibility</span>○ Public <span class="hl">🔘 Private</span></div>
+    <div class="row"><span class="k">Add README</span><span class="hl">Off</span></div>
+    <div class="row"><span class="k">.gitignore / license</span><span class="hl">No .gitignore · No license</span></div>
+    <div class="row"><span class="btng">Create repository</span></div>
+  </div></div><figcaption>예시 화면 · GitHub 화면 배치는 수시로 바뀔 수 있음</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> "Quick setup — if you've done this kind of thing before" 문구와 HTTPS 주소가 보입니다.</div>
+
+  <h3>② 팀원 초대 & 수락</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">저장소 상단 <span class="btnw">⚙ Settings</span> 탭</b></li>
+    <li data-role="lead"><b class="t">왼쪽 <span class="btnw">Collaborators</span> → 비밀번호 재확인</b></li>
+    <li data-role="lead"><b class="t"><span class="btng">Add people</span> → 팀원 아이디 입력 → 선택 → <span class="btng">Add … to this repository</span></b><p>팀원 수만큼 반복합니다.</p></li>
+    <li data-role="lead"><b class="t">단톡방에 알림</b>
+      <div class="code"><div class="code-h"><span>💬 단톡방 메시지</span><button class="copy">복사</button></div><pre>GitHub 초대 보냈습니다! 메일이나 github.com 🔔알림에서 Accept invitation 눌러주세요.</pre></div></li>
+    <li data-role="mem"><b class="t">👤 팀원: 초대 메일의 <span class="btng">View invitation</span> → <span class="btng">Accept invitation</span></b><p>메일이 없으면 <code class="i">https://github.com/notifications</code> 확인. 또는 아래 주소로 직접 접속합니다.</p>
+      <div class="code"><div class="code-h"><span>📋 초대 확인 주소 (팀장아이디/프로젝트명 수정)</span><button class="copy">복사</button></div><pre>https://github.com/park-leader/CarProject2/invitations</pre></div></li>
+  </ol>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 팀장 화면 Collaborators 목록에서 "Pending Invite"가 사라지고 팀원 이름이 보입니다.</div>
+  <div class="warn"><b>⚠️ 초대 링크가 만료됐어요</b> 초대는 7일 뒤 만료됩니다. 팀장이 목록에서 해당 팀원을 지우고 다시 Add people 하세요.</div>
+  <div class="do" data-id="m4"><h4>🛠️ 미션 4</h4><ul><li>👑 Private 빈 저장소 만들기 + 팀원 전원 초대</li><li>👤 초대 수락 후 저장소 페이지 열리는지 확인</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q4" data-ans="2"><h4>🧠 퀴즈 4</h4><p>이 자습서에서 저장소 만들 때 README를 체크하지 않는 이유는?</p>
+    <button class="opt">① README는 유료라서</button><button class="opt">② 팀원이 볼 수 없어서</button><button class="opt">③ GitHub에 파일이 먼저 생기면 첫 Push가 거절되기 때문</button>
+    <div class="exp">정답 ③. 빈 저장소에 올리면 강제 덮어쓰기(force) 없이 한 번에 올라갑니다.</div></div>
+</section>
+
+<!-- ============ 5. 프로젝트 준비 + gitignore ============ -->
+<section id="s5" data-num="5" data-short="프로젝트·.gitignore" data-role="lead">
+  <h2><span class="role lead">👑 팀장</span> 5. 프로젝트 준비 & .gitignore 만들기</h2>
+  <p class="lead-in">올릴 것과 올리지 않을 것을 구분하는 목록 파일을 만듭니다.</p>
+  <div class="why"><b>💡 .gitignore란?</b> 택배 보낼 때 "이건 넣지 마" 메모입니다. 컴파일 결과물처럼 <b>자동으로 다시 생기는 파일</b>을 뺍니다.</div>
+
+  <h3>① Dynamic Web Project 확인</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">프로젝트가 없다면: <span class="mp"><i>File</i><span class="ar">›</span><i>New</i><span class="ar">›</span><i>Dynamic Web Project</i></span></b><p>Project name <code class="i">CarProject2</code> · Target runtime은 팀이 합의한 Tomcat → <span class="btnw">Finish</span></p></li>
+    <li data-role="lead"><b class="t">Tomcat으로 실행해 첫 화면이 뜨는지 확인</b><p>업로드 전에 <b>에러 없는 상태</b>여야 팀원도 에러 없이 받습니다.</p></li>
+  </ol>
+
+  <h3>② 숨김 파일 보이게 하기</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">Project Explorer 창 오른쪽 위 <kbd>⋮</kbd>(View Menu) → <span class="btnw">Filters and Customization...</span></b></li>
+    <li data-role="lead"><b class="t"><b>☐ .* resources</b> 체크 해제 → <span class="btnw">OK</span></b><p>이제 점(.)으로 시작하는 파일이 보입니다.</p></li>
+  </ol>
+
+  <h3>③ .gitignore 파일 만들기</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">프로젝트 <b>CarProject2 우클릭</b> → <span class="mp"><i>New</i><span class="ar">›</span><i>File</i></span></b><p>File이 없으면 <span class="mp"><i>New</i><span class="ar">›</span><i>Other...</i><span class="ar">›</span><i>General</i><span class="ar">›</span><i>File</i></span></p></li>
+    <li data-role="lead"><b class="t">부모 폴더가 <b>CarProject2</b>(맨 위)인지 확인 → File name에 <code class="i">.gitignore</code> → <span class="btnw">Finish</span></b>
+      <div class="code"><div class="code-h"><span>📋 File name</span><button class="copy">복사</button></div><pre>.gitignore</pre></div></li>
+    <li data-role="lead"><b class="t">열린 편집기에 아래 전체를 붙여넣기 → <kbd>Ctrl</kbd>+<kbd>S</kbd></b>
+      <div class="code"><div class="code-h"><span>📋 .gitignore 내용 (이클립스 팀프로젝트용)</span><button class="copy">복사</button></div><pre># ===== 컴파일 결과물 (빌드하면 자동 생성) =====
+build/
+bin/
+target/
+*.class
+*.war
+
+# ===== 서버 작업 폴더 =====
+work/
+.metadata/
+
+# ===== OS 자동 생성 파일 =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== 로그 =====
+*.log</pre></div></li>
+  </ol>
+  <div class="note"><b>📌 기존 git.html과 달라진 점 — .project · .classpath · .settings는 올립니다</b>
+  이 3개를 빼면 팀원이 복제했을 때 이클립스가 <b>프로젝트로 인식하지 못해</b> Import가 안 됩니다. 대신 0장에서 이클립스·JDK·Tomcat 버전을 팀 전체가 똑같이 맞추는 것입니다.</div>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> Project Explorer의 CarProject2 바로 아래(src와 같은 층)에 <code class="i">.gitignore</code>, <code class="i">.project</code>, <code class="i">.classpath</code>, <code class="i">.settings</code>가 보입니다.</div>
+  <div class="warn"><b>⚠️ DB 비밀번호가 코드에 있어요</b> 저장소는 Private이라 팀원만 봅니다. 그래도 개인 비밀번호 대신 <b>팀 공통 연습용 DB 계정</b>(예: scott/tiger)을 정해 쓰세요.</div>
+  <div class="do" data-id="m5"><h4>🛠️ 미션 5</h4><ul><li>프로젝트가 에러 없이 실행되는지 확인</li><li>.gitignore를 프로젝트 맨 위에 만들고 저장</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q5" data-ans="0"><h4>🧠 퀴즈 5</h4><p>.gitignore로 <b>빼야 하는</b> 것은?</p>
+    <button class="opt">① build/ 폴더와 *.class 파일</button><button class="opt">② src/main/webapp의 JSP 파일</button><button class="opt">③ .project 파일</button>
+    <div class="exp">정답 ①. 빌드하면 자동으로 생기는 결과물은 올리지 않습니다. JSP와 .project는 팀원에게 꼭 필요합니다.</div></div>
+</section>
+
+<!-- ============ 6. Share + 첫 커밋 + Push ============ -->
+<section id="s6" data-num="6" data-short="Share → 첫 Push" data-role="lead">
+  <h2><span class="role lead">👑 팀장</span> 6. 이클립스에서 Git 시작 → 첫 커밋 → GitHub 업로드</h2>
+  <p class="lead-in">이 장이 끝나면 GitHub에 프로젝트가 올라갑니다. 딱 한 번만 합니다.</p>
+
+  <h3>① Share Project — Git 관리 시작</h3>
+  <div class="stuck"><b>🆘 우클릭했는데 Team 메뉴가 안 보여요</b> ① <b>폴더(src)나 파일이 아니라 맨 위 프로젝트 이름</b>에서 우클릭했는지 확인 ② 메뉴 아래쪽에 있으니 <b>스크롤</b> ③ 그래도 없으면 3장 ⚠️의 EGit 설치 확인</div>
+  <div class="note"><b>📌 체크박스(☑) 누르는 법</b> 글자 왼쪽 네모 칸을 클릭하면 ✔ 표시가 생깁니다. 이미 ✔ 되어 있으면 <b>다시 누르지 마세요</b>(해제됩니다).</div>
+  <div class="why"><b>💡 Share Project란?</b> "이 폴더를 Git으로 기록하겠다"는 선언입니다. Git Bash의 <code class="i">git init</code>과 같습니다.</div>
+  <ol class="steps">
+    <li data-role="lead"><b class="t"><b>CarProject2 우클릭</b> → <span class="mp"><i>Team</i><span class="ar">›</span><i>Share Project...</i></span></b><p>저장소 종류를 묻는 창이 나오면 <b>Git</b> → <span class="btnw">Next</span></p></li>
+    <li data-role="lead"><b class="t"><b>☑ Use or create repository in parent folder of project</b> 체크</b></li>
+    <li data-role="lead"><b class="t">목록에서 CarProject2 줄 클릭 → <span class="btnw">Create Repository</span></b></li>
+    <li data-role="lead"><b class="t"><span class="btnw">Finish</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="4" data-name="Team › Share Project 창"><div class="win"><div class="tb">Share Project › Configure Git Repository</div><div class="bd">
+    <div class="row hl">☑ Use or create repository in parent folder of project</div>
+    <div class="pane"><div class="ph"><span>Project</span><span>Current Location · Target</span></div><div class="pb" style="background:#dbeafe">☑ CarProject2 · C:\Users\홍길동\eclipse-workspace\CarProject2 · .git</div></div>
+    <div class="row"><span class="btnw hl">Create Repository</span><span style="flex:1"></span><span class="btnw">Finish</span></div>
+  </div></div><figcaption>예시 화면 · 경로는 PC마다 다름</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> Project Explorer에 <code class="i">CarProject2 [CarProject2 NO-HEAD]</code>로 표시되고 파일마다 <b>?</b> 표시가 붙습니다.</div>
+  <div class="warn"><b>⚠️ Create Repository 버튼이 회색이에요</b> 목록에서 <b>프로젝트 줄을 한 번 클릭</b>해 선택해야 활성화됩니다.</div>
+
+  <h3>② 첫 커밋 (내 PC에 세이브)</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">아래 <b>Git Staging</b> 탭 클릭</b><p>안 보이면 3장 ②를 다시 하세요.</p></li>
+    <li data-role="lead"><b class="t"><b>Unstaged Changes</b> 오른쪽 위 <span class="btnw">＋＋</span>(Add all to index) 아이콘 클릭</b><p>모든 파일이 아래 <b>Staged Changes</b>로 내려갑니다. = 박스에 담기.</p></li>
+    <li data-role="lead"><b class="t">Commit Message에 입력</b>
+      <div class="code"><div class="code-h"><span>📋 커밋 메시지</span><button class="copy">복사</button></div><pre>최초 프로젝트 업로드</pre></div></li>
+    <li data-role="lead"><b class="t">Author/Committer가 <code class="i">park-leader &lt;이메일&gt;</code>인지 확인 → <span class="btnw">Commit</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="5" data-name="Git Staging 뷰 (첫 커밋)"><div class="win"><div class="tb">Git Staging — [CarProject2]</div><div class="bd">
+    <div class="pane"><div class="ph"><span>Unstaged Changes (0)</span><span class="hl">＋＋</span></div><div class="pb"></div></div>
+    <div class="pane"><div class="ph"><span>Staged Changes (27)</span><span>－－</span></div><div class="pb">.gitignore<br>.classpath<br>src/main/webapp/index.jsp …</div></div>
+    <div class="pane"><div class="ph"><span>Commit Message</span></div><div class="pb">최초 프로젝트 업로드</div></div>
+    <div class="row"><span class="k">Author</span><span class="inp">park-leader &lt;park@gmail.com&gt;</span></div>
+    <div class="row"><span style="flex:1"></span><span class="btnw">Commit and Push...</span><span class="btnw hl">Commit</span></div>
+  </div></div><figcaption>예시 화면 · 파일 개수는 프로젝트마다 다름</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 표시가 <code class="i">[CarProject2 main]</code>으로 바뀌고 <b>?</b> 표시가 사라집니다.</div>
+  <div class="stuck"><b>🆘 Git Staging 창이 텅 비었거나 "No repository selected"</b> Project Explorer에서 <b>CarProject2 이름을 한 번 클릭</b>하세요. Git Staging은 <b>지금 선택한 프로젝트</b>의 내용을 보여줍니다.</div>
+  <div class="note"><b>📌 ＋＋ 아이콘을 못 찾겠어요</b> Unstaged Changes 글자 줄의 <b>오른쪽 끝</b>에 작은 아이콘 2개(＋, ＋＋)가 있습니다. 마우스를 올리면 "Add all files including not selected ones to index" 설명이 뜨는 것이 ＋＋입니다. 파일을 <b>마우스로 끌어서</b> 아래 칸에 놓아도 됩니다.</div>
+  <div class="warn"><b>⚠️ Commit 버튼이 회색이에요</b> ① Staged Changes가 비었거나 ② 메시지가 비어 있습니다. 둘 다 채우세요.</div>
+
+  <h3>③ 첫 Push (GitHub에 업로드)</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t"><b>CarProject2 우클릭</b> → <span class="mp"><i>Team</i><span class="ar">›</span><i>Push Branch 'main'...</i></span></b></li>
+    <li data-role="lead"><b class="t">Remote 옆 <span class="btnw">New Remote...</span> (또는 Custom URI) → URI에 저장소 주소 붙여넣기</b>
+      <div class="code"><div class="code-h"><span>📋 URI (팀장아이디 수정)</span><button class="copy">복사</button></div><pre>https://github.com/park-leader/CarProject2.git</pre></div>
+      <p>Remote name은 <code class="i">origin</code> 그대로 둡니다. Host·Repository path는 자동으로 채워집니다.</p></li>
+    <li data-role="lead"><b class="t">Authentication — User: <b>GitHub 아이디</b> · Password: <b>2장의 토큰</b> · <b>☑ Store in Secure Store</b></b></li>
+    <li data-role="lead"><b class="t"><b>☑ Configure upstream for push and pull</b> 확인 → <span class="btnw">Preview &gt;</span></b></li>
+    <li data-role="lead"><b class="t">Push Confirmation 화면 → <span class="btnw">Push</span> → 결과 창 <span class="btnw">Close</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="6" data-name="Push Branch main 창"><div class="win"><div class="tb">Push Branch main</div><div class="bd">
+    <div class="row"><span class="k">Remote</span><span class="inp">origin</span><span class="btnw hl">New Remote...</span></div>
+    <div class="row"><span class="k">URI</span><span class="inp">https://github.com/park-leader/CarProject2.git</span></div>
+    <div class="row"><span class="k">User</span><span class="inp">park-leader</span></div>
+    <div class="row"><span class="k">Password</span><span class="inp">●●●●●●●● (ghp_ 토큰)</span></div>
+    <div class="row">☑ Store in Secure Store</div>
+    <div class="row"><span class="k">Branch</span><span class="inp">main</span></div>
+    <div class="row hl">☑ Configure upstream for push and pull · When doing a pull: Merge</div>
+    <div class="row"><span style="flex:1"></span><span class="btnw hl">Preview &gt;</span><span class="btnw">Cancel</span></div>
+  </div></div><figcaption>예시 화면 · 이클립스 버전에 따라 New Remote 창이 따로 열리거나 한 화면에 합쳐져 보일 수 있음</figcaption></figure>
+  <div class="stuck"><b>🆘 Push 누르자 "Secure Storage" 비밀번호 창이 떠요</b> 토큰을 이클립스 금고에 저장할 때 <b>처음 1번</b> 뜨는 창입니다. 금고 비밀번호(아무거나 기억할 것)를 두 번 입력 → 비밀번호 힌트 질문은 <span class="btnw">No</span> 또는 대충 입력해도 됩니다. 이 비밀번호는 GitHub와 무관합니다.</div>
+  <div class="stuck"><b>🆘 Password 칸에 토큰을 붙였는데 안 보여요</b> 보안상 <b>●●●</b>로만 보이는 게 정상입니다. 메모장에서 <kbd>Ctrl</kbd>+<kbd>C</kbd> → 칸 클릭 → <kbd>Ctrl</kbd>+<kbd>V</kbd>. 토큰 앞뒤에 <b>띄어쓰기</b>가 붙지 않았는지 주의하세요.</div>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 결과 창에 <b>main → main [new branch]</b>가 보이고, 웹브라우저에서 <code class="i">github.com/park-leader/CarProject2</code>를 새로고침하면 파일 목록이 보입니다.</div>
+  <div class="warn"><b>⚠️ "not authorized" / "Authentication is required"</b> 토큰 오타 또는 repo 체크 누락입니다. 2장에서 새 토큰 발급 후 다시 Push. 잘못 저장된 로그인은 <a href="#s13">13장 에러 사전</a>의 Secure Storage 삭제를 따라하세요.</div>
+  <div class="warn"><b>⚠️ Push Branch 메뉴가 안 보여요 (Plan B)</b> <span class="mp"><i>Team</i><span class="ar">›</span><i>Remote</i><span class="ar">›</span><i>Push...</i></span> → URI·User·토큰 입력 → Next → Source ref <code class="i">main</code>, Destination ref <code class="i">main</code> → <span class="btnw">Add Spec</span> → Finish</div>
+  <details class="alt"><summary>💻 Git Bash로 같은 작업 하기 (선택)</summary>
+    <div class="code"><div class="code-h"><span>Git Bash — 프로젝트 폴더에서</span><button class="copy">복사</button></div><pre>cd /c/Users/$USER/eclipse-workspace/CarProject2
+git init
+git add -A
+git commit -m "최초 프로젝트 업로드"
+git branch -M main
+git remote add origin https://github.com/park-leader/CarProject2.git
+git push -u origin main</pre></div>
+    <div class="ok"><b>✅ 성공</b> <code class="i">Branch 'main' set up to track remote branch 'main' from 'origin'.</code></div></details>
+  <div class="code"><div class="code-h"><span>💬 업로드 후 단톡방 메시지</span><button class="copy">복사</button></div><pre>CarProject2 GitHub에 올렸습니다! 7장 보고 Clone 해주세요.
+주소: https://github.com/park-leader/CarProject2.git</pre></div>
+  <div class="do" data-id="m6"><h4>🛠️ 미션 6</h4><ul><li>Share Project → 첫 Commit → Push 완료</li><li>GitHub 웹에서 .gitignore·src 폴더가 보이는지 확인</li><li>단톡방에 Clone 안내 보내기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q6" data-ans="1"><h4>🧠 퀴즈 6</h4><p>Commit과 Push의 차이로 맞는 것은?</p>
+    <button class="opt">① 둘 다 GitHub에 올리는 것이다</button><button class="opt">② Commit은 내 PC에 저장, Push는 GitHub에 올리기</button><button class="opt">③ Push를 먼저 하고 Commit을 한다</button>
+    <div class="exp">정답 ②. 세이브(Commit) 후 클라우드 업로드(Push) 순서입니다.</div></div>
+</section>
+
+<!-- ============ 7. 팀원 Clone ============ -->
+<section id="s7" data-num="7" data-short="Clone → Import" data-part="PART C · 팀원 합류" data-role="mem">
+  <h2><span class="role mem">👤 팀원</span> 7. 팀장 프로젝트를 내 이클립스로 받기 (Clone)</h2>
+  <p class="lead-in">팀장이 올린 프로젝트를 통째로 받아 이클립스에 엽니다. 딱 한 번만 합니다.</p>
+  <div class="why"><b>💡 Clone이란?</b> 공유 드라이브 폴더를 <b>내 PC에 통째로 다운로드</b>하는 것입니다. 기록(이력)까지 함께 옵니다.</div>
+  <div class="warn"><b>⚠️ 먼저 확인!</b> 내 워크스페이스에 <b>같은 이름(CarProject2) 프로젝트가 이미 있으면</b> 우클릭 → Delete로 지우거나 이름을 바꾸세요. 이름이 겹치면 Import가 실패합니다.</div>
+  <ol class="steps">
+    <li data-role="mem"><b class="t"><b>Git Repositories</b> 탭 → <span class="btnw">Clone a Git repository</span> 링크 (또는 초록 화살표 아이콘)</b><p>메뉴로는 <span class="mp"><i>File</i><span class="ar">›</span><i>Import</i><span class="ar">›</span><i>Git</i><span class="ar">›</span><i>Projects from Git</i><span class="ar">›</span><i>Clone URI</i></span>도 같습니다.</p></li>
+    <li data-role="mem"><b class="t">URI 칸에 팀장이 준 주소 붙여넣기</b>
+      <div class="code"><div class="code-h"><span>📋 URI (팀장아이디 수정)</span><button class="copy">복사</button></div><pre>https://github.com/park-leader/CarProject2.git</pre></div></li>
+    <li data-role="mem"><b class="t">Authentication — User: <b>내 아이디</b> · Password: <b>내 토큰</b> · <b>☑ Store in Secure Store</b> → <span class="btnw">Next &gt;</span></b></li>
+    <li data-role="mem"><b class="t">Branch Selection: <b>☑ main</b> → <span class="btnw">Next &gt;</span></b></li>
+    <li data-role="mem"><b class="t">Local Destination — Directory를 워크스페이스 안으로 수정</b>
+      <div class="code"><div class="code-h"><span>📋 Directory 예시 (홍길동을 내 사용자명으로)</span><button class="copy">복사</button></div><pre>C:\Users\홍길동\eclipse-workspace\CarProject2</pre></div>
+      <p>Initial branch <code class="i">main</code> · Remote name <code class="i">origin</code> 그대로.</p></li>
+    <li data-role="mem"><b class="t"><b>☑ Import all existing Eclipse projects after clone finishes</b> 체크 → <span class="btnw">Finish</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="7" data-name="Clone › Local Destination 창"><div class="win"><div class="tb">Clone Git Repository › Local Destination</div><div class="bd">
+    <div class="row"><span class="k">Directory</span><span class="inp hl">C:\Users\홍길동\eclipse-workspace\CarProject2</span><span class="btnw">Browse</span></div>
+    <div class="row"><span class="k">Initial branch</span><span class="inp">main</span></div>
+    <div class="row"><span class="k">Remote name</span><span class="inp">origin</span></div>
+    <div class="row hl">☑ Import all existing Eclipse projects after clone finishes</div>
+    <div class="row"><span style="flex:1"></span><span class="btnw">&lt; Back</span><span class="btnw hl">Finish</span></div>
+  </div></div><figcaption>예시 화면 · 기본값은 C:\Users\이름\git\CarProject2 로 나올 수 있음</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> Project Explorer에 <code class="i">CarProject2 [CarProject2 main]</code>이 나타납니다. 이후 Servers 창에서 Tomcat에 Add 후 실행하면 첫 화면이 뜹니다.</div>
+  <div class="stuck"><b>🆘 "Import all existing Eclipse projects" 체크칸이 없고 다른 창이 떠요</b> <b>Select a wizard to use for importing projects</b> 화면이 뜨면 → <b>🔘 Import existing Eclipse projects</b> 선택 → Next → CarProject2 ☑ → <span class="btnw">Finish</span></div>
+  <div class="stuck"><b>🆘 Clone 중 "Secure Storage" 창이 떠요</b> 6장과 같습니다. 금고 비밀번호를 정해서 입력하면 됩니다.</div>
+  <div class="stuck"><b>🆘 내 워크스페이스 경로를 모르겠어요</b> <span class="mp"><i>File</i><span class="ar">›</span><i>Switch Workspace</i><span class="ar">›</span><i>Other...</i></span> 창 맨 위 칸에 보이는 경로가 내 워크스페이스입니다. 확인만 하고 <span class="btnw">Cancel</span>. 0-1장대로 설치했다면 <code class="i">C:\dev\workspace</code> 이므로 Clone Directory는 <code class="i">C:\dev\workspace\CarProject2</code> 입니다.</div>
+  <div class="stuck"><b>🆘 Clone 후 Tomcat에서 실행하는 법</b> Servers 탭 → Tomcat 우클릭 → <span class="btnw">Add and Remove...</span> → 왼쪽 CarProject2 선택 → <span class="btnw">Add &gt;</span> → <span class="btnw">Finish</span> → CarProject2 우클릭 → <span class="mp"><i>Run As</i><span class="ar">›</span><i>Run on Server</i></span></div>
+  <h3>🔧 빨간 X가 보이면 (가장 흔한 문제)</h3>
+  <ol class="steps">
+    <li data-role="mem"><b class="t">프로젝트 우클릭 → <span class="mp"><i>Properties</i><span class="ar">›</span><i>Targeted Runtimes</i></span> → 내 Tomcat ☑ → Apply</b></li>
+    <li data-role="mem"><b class="t"><span class="mp"><i>Properties</i><span class="ar">›</span><i>Java Build Path</i><span class="ar">›</span><i>Libraries</i></span> → 빨간 JRE 선택 → <span class="btnw">Edit</span> → 내 JDK 선택</b></li>
+    <li data-role="mem"><b class="t"><span class="mp"><i>Project</i><span class="ar">›</span><i>Clean...</i></span> → CarProject2 → Clean</b></li>
+  </ol>
+  <div class="warn"><b>⚠️ 프로젝트가 아예 안 나타나요 (Plan B)</b> <span class="mp"><i>File</i><span class="ar">›</span><i>Import</i><span class="ar">›</span><i>General</i><span class="ar">›</span><i>Existing Projects into Workspace</i></span> → Browse로 Clone 폴더 선택 → Finish. 그래도 없으면 팀장에게 ".project가 올라갔는지" 확인 요청하세요.</div>
+  <details class="alt"><summary>💻 Git Bash로 Clone 하기 (선택)</summary>
+    <div class="code"><div class="code-h"><span>Git Bash</span><button class="copy">복사</button></div><pre>cd /c/Users/$USER/eclipse-workspace
+git clone https://github.com/park-leader/CarProject2.git</pre></div>
+    <div class="ok"><b>✅ 성공</b> <code class="i">Cloning into 'CarProject2'... done.</code> → 이후 이클립스에서 Existing Projects into Workspace로 Import</div></details>
+  <div class="do" data-id="m7"><h4>🛠️ 미션 7</h4><ul><li>Clone 후 [CarProject2 main] 표시 확인</li><li>Tomcat으로 실행해 첫 화면 띄우기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q7" data-ans="2"><h4>🧠 퀴즈 7</h4><p>Clone 뒤 빨간 X가 날 때 먼저 확인할 메뉴는?</p>
+    <button class="opt">① Help › Check for Updates</button><button class="opt">② File › Restart</button><button class="opt">③ Properties › Targeted Runtimes와 Java Build Path</button>
+    <div class="exp">정답 ③. 대부분 Tomcat 런타임이나 JDK 경로가 내 PC와 달라서 생깁니다.</div></div>
+</section>
+
+<!-- ============ 8. 하루 루틴 ============ -->
+<section id="s8" data-num="8" data-short="매일: 브랜치→Push" data-part="PART D · 매일 협업" data-role="all">
+  <h2><span class="role all">👥 전원</span> 8. 매일 작업 루틴 — Pull → 브랜치 → 코딩 → Commit and Push</h2>
+  <p class="lead-in">팀원이 가장 많이 반복하는 장입니다. 팀장도 코드를 짤 때 똑같이 합니다.</p>
+  <div class="why"><b>💡 왜 브랜치에서 작업하나요?</b> 모두 main에 바로 올리면 매번 충돌합니다. 각자 <b>자기 층(브랜치)</b>에서 공사하고, 완성되면 PR로 합칩니다.</div>
+  <div class="tw"><table>
+    <tr><th>담당</th><th>브랜치 이름 (복사해서 사용)</th><th>기능</th></tr>
+    <tr><td>👑 팀장</td><td><code class="i">main</code> (직접 작업 금지) · 공통작업은 <code class="i">feature/common</code></td><td>관리·병합·공통(Top.jsp 등)</td></tr>
+    <tr><td>👤 팀원1</td><td><code class="i">feature/login</code></td><td>로그인/회원가입</td></tr>
+    <tr><td>👤 팀원2</td><td><code class="i">feature/carlist</code></td><td>차량 목록/검색</td></tr>
+    <tr><td>👤 팀원3</td><td><code class="i">feature/reservation</code></td><td>예약</td></tr>
+    <tr><td>👤 팀원4</td><td><code class="i">feature/mypage</code></td><td>마이페이지/리뷰</td></tr>
+  </table></div>
+
+  <h3>☀️ 아침: 최신 코드 받고 내 브랜치 만들기</h3>
+  <ol class="steps">
+    <li><b class="t">프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Switch To</i><span class="ar">›</span><i>main</i></span></b><p>표시가 <code class="i">[CarProject2 main]</code>이 되어야 합니다.</p></li>
+    <li><b class="t">프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Pull</i></span> → 결과 창 Close</b><p>팀원들이 합친 최신 코드를 받습니다. 받은 뒤 <kbd>F5</kbd>로 새로고침합니다.</p></li>
+    <li><b class="t">프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Switch To</i><span class="ar">›</span><i>New Branch...</i></span></b></li>
+    <li><b class="t">Source: <code class="i">main</code> · Branch name 입력 · <b>☑ Check out new branch</b> → <span class="btnw">Finish</span></b>
+      <div class="code"><div class="code-h"><span>📋 Branch name (본인 기능으로)</span><button class="copy">복사</button></div><pre>feature/login</pre></div></li>
+  </ol>
+  <figure class="shot" data-shot="8" data-name="Team › Switch To › New Branch 창"><div class="win"><div class="tb">Create Branch</div><div class="bd">
+    <div class="row"><span class="k">Source</span><span class="inp">refs/heads/main</span><span class="btnw">Select...</span></div>
+    <div class="row"><span class="k">Branch name</span><span class="inp hl">feature/login</span></div>
+    <div class="row">Pull strategy: ◉ Merge ○ Rebase ○ None</div>
+    <div class="row hl">☑ Check out new branch</div>
+    <div class="row"><span style="flex:1"></span><span class="btnw">Finish</span></div>
+  </div></div><figcaption>예시 화면 · 옵션 문구는 버전마다 조금 다를 수 있음</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 표시가 <code class="i">[CarProject2 feature/login]</code>으로 바뀝니다. <b>이 상태에서만 코딩하세요.</b></div>
+  <div class="note"><b>📌 다음 날부터는?</b> 기능이 아직 안 끝났다면 새로 만들지 말고 <span class="mp"><i>Team</i><span class="ar">›</span><i>Switch To</i><span class="ar">›</span><i>feature/login</i></span>으로 이동해서 이어서 작업합니다. main 최신 코드를 섞는 법은 11장에 있습니다.</div>
+
+  <div class="code"><div class="code-h"><span>🧾 하루 체크리스트 — 메모장이나 포스트잇에 붙여두기</span><button class="copy">복사</button></div><pre>☀️ 아침 (코딩 전)
+[ ] 1. 프로젝트 우클릭 › Team › Switch To › main
+[ ] 2. 프로젝트 우클릭 › Team › Pull   → F5
+[ ] 3. Team › Switch To › 내 브랜치 (없으면 New Branch...)
+[ ] 4. 이름 옆 [ ] 안이 내 브랜치인지 눈으로 확인 👀
+
+💻 낮
+[ ] 5. 코딩 → Ctrl+S → Tomcat 실행 확인
+
+🌙 저녁 (퇴근 전)
+[ ] 6. Git Staging 탭 › ＋＋
+[ ] 7. Staged에 내 파일만 있는지 확인
+[ ] 8. 메시지: "어디서 무엇을" 작성
+[ ] 9. Commit and Push... → Close
+[ ] 10. 단톡방에 "push 했습니다" 알림</pre></div>
+  <h3>💻 낮: 코딩 → 저장</h3>
+  <ol class="steps">
+    <li><b class="t">JSP·Java 작성 후 <kbd>Ctrl</kbd>+<kbd>S</kbd></b><p>수정한 파일 이름 앞에 <b>&gt;</b> 표시가 붙습니다. = 아직 커밋 안 됨.</p></li>
+    <li><b class="t">Tomcat으로 실행해서 동작 확인</b><p>에러 나는 코드는 올리지 않습니다.</p></li>
+  </ol>
+
+  <h3>🌙 저녁: Commit and Push</h3>
+  <ol class="steps">
+    <li><b class="t"><b>Git Staging</b> 탭 → <span class="btnw">＋＋</span> 클릭</b><p>Staged Changes에 <b>내가 수정한 파일만</b> 있는지 훑어봅니다. 남의 파일이 있으면 해당 파일을 위로 끌어올려 제외합니다.</p></li>
+    <li><b class="t">Commit Message를 "어디서 무엇을" 형식으로</b>
+      <div class="code"><div class="code-h"><span>📋 좋은 커밋 메시지 예시</span><button class="copy">복사</button></div><pre>로그인 페이지(Login.jsp)와 LoginController 구현</pre></div></li>
+    <li><b class="t"><span class="btnw">Commit and Push...</span></b><p>이 브랜치를 처음 올릴 때만 <b>Push Branch</b> 창이 뜹니다 → Remote <code class="i">origin</code> 확인 → <b>☑ Configure upstream</b> → <span class="btnw">Preview &gt;</span> → <span class="btnw">Push</span></p></li>
+    <li><b class="t">결과 창 Close → 단톡방 알림</b>
+      <div class="code"><div class="code-h"><span>💬 단톡방 메시지</span><button class="copy">복사</button></div><pre>feature/login 브랜치에 push 했습니다! (로그인 화면 구현)</pre></div></li>
+  </ol>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> GitHub 저장소 페이지 왼쪽 위 브랜치 목록(<b>main ▾</b>)을 누르면 <b>feature/login</b>이 보입니다.</div>
+  <div class="warn"><b>⚠️ 절대 하지 말 것</b> <code class="i">[… main]</code> 상태에서 Commit and Push 하기. main에 직접 올라가 팀 전체가 꼬입니다. 커밋 전에 <b>대괄호 안 브랜치 이름</b>을 꼭 보세요.</div>
+  <div class="warn"><b>⚠️ Switch To 할 때 "Checkout conflict" 창이 떠요</b> 커밋 안 한 수정이 있어서입니다. 먼저 Commit 하거나, <a href="#s12">12장</a>의 Stash(임시 서랍)를 쓰세요.</div>
+  <details class="alt"><summary>💻 Git Bash로 하루 루틴 (선택)</summary>
+    <div class="code"><div class="code-h"><span>Git Bash</span><button class="copy">복사</button></div><pre># 아침
+git checkout main
+git pull origin main
+git checkout -b feature/login
+# (이클립스에서 코딩)
+# 저녁
+git add -A
+git commit -m "로그인 페이지(Login.jsp)와 LoginController 구현"
+git push -u origin feature/login</pre></div></details>
+  <div class="do" data-id="m8"><h4>🛠️ 미션 8</h4><ul><li>내 feature 브랜치 만들기</li><li>JSP 한 개 수정 → Commit and Push</li><li>GitHub 브랜치 목록에서 내 브랜치 확인</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q8" data-ans="0"><h4>🧠 퀴즈 8</h4><p>커밋 전에 반드시 확인할 것은?</p>
+    <button class="opt">① 프로젝트 이름 옆 [ ] 안이 내 feature 브랜치인지</button><button class="opt">② 이클립스 테마 색상</button><button class="opt">③ GitHub 프로필 사진</button>
+    <div class="exp">정답 ①. [CarProject2 main] 상태로 올리면 main에 직접 들어갑니다.</div></div>
+</section>
+
+<!-- ============ 9. PR 만들기 ============ -->
+<section id="s9" data-num="9" data-short="Pull Request 요청" data-role="mem">
+  <h2><span class="role mem">👤 팀원</span> 9. 기능 완성 → Pull Request(PR) 올리기</h2>
+  <p class="lead-in">"제 코드를 main에 합쳐주세요" 결재를 올립니다. GitHub 웹에서 합니다.</p>
+  <div class="why"><b>💡 왜 바로 합치지 않나요?</b> 팀장이 먼저 확인해야 에러 코드가 main에 들어가지 않습니다. 기록도 남습니다.</div>
+  <ol class="steps">
+    <li data-role="mem"><b class="t">8장대로 마지막 Commit and Push까지 완료</b></li>
+    <li data-role="mem"><b class="t">GitHub 저장소 페이지 → 노란 배너 <span class="btng">Compare &amp; pull request</span></b><p>배너가 없으면 <span class="btnw">Pull requests</span> 탭 → <span class="btng">New pull request</span> → compare를 내 브랜치로 선택.</p></li>
+    <li data-role="mem"><b class="t">방향 확인: <b>base: main ← compare: feature/login</b></b></li>
+    <li data-role="mem"><b class="t">제목·설명 작성 (복사해서 고치기)</b>
+      <div class="code"><div class="code-h"><span>📋 PR 제목</span><button class="copy">복사</button></div><pre>[로그인] 로그인/회원가입 기능 구현</pre></div>
+      <div class="code"><div class="code-h"><span>📋 PR 설명 템플릿</span><button class="copy">복사</button></div><pre>## 작업 내용
+- Login.jsp 로그인 화면
+- Register.jsp 회원가입 화면
+- LoginController.java, MemberDAO.java 추가
+
+## 테스트
+- [x] 로그인 성공/실패 확인
+- [x] 회원가입 후 DB 저장 확인
+
+## 건드린 공통 파일
+- 없음</pre></div></li>
+    <li data-role="mem"><b class="t">오른쪽 Reviewers에 팀장 선택 → <span class="btng">Create pull request</span></b></li>
+  </ol>
+  <figure class="shot" data-shot="9" data-name="GitHub Open a pull request 화면"><div class="win gh"><div class="tb">Open a pull request</div><div class="bd">
+    <div class="row hl"><span class="btnw">base: main</span> ← <span class="btnw">compare: feature/login</span> ✔ Able to merge.</div>
+    <div class="row"><span class="k">Title</span><span class="inp">[로그인] 로그인/회원가입 기능 구현</span></div>
+    <div class="row"><span class="k">Reviewers</span><span class="inp">park-leader</span></div>
+    <div class="row"><span style="flex:1"></span><span class="btng hl">Create pull request</span></div>
+  </div></div><figcaption>예시 화면</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> <b>🟢 Open</b> 표시와 PR 번호(#1)가 생깁니다. 팀장에게 링크를 보내세요.</div>
+  <div class="note"><b>📌 팀장이 수정 요청하면?</b> 같은 브랜치에서 고치고 Commit and Push만 하면 됩니다. PR에 자동으로 추가됩니다. 새 PR은 만들지 않습니다.</div>
+  <div class="warn"><b>⚠️ "Can't automatically merge" 표시가 떠요</b> 다른 팀원 코드와 충돌입니다. PR은 그대로 만들고 <a href="#s11">11장</a>을 따라 해결하세요.</div>
+  <div class="do" data-id="m9"><h4>🛠️ 미션 9</h4><ul><li>내 브랜치로 PR 생성</li><li>PR 링크를 단톡방에 공유</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q9" data-ans="1"><h4>🧠 퀴즈 9</h4><p>PR 방향으로 올바른 것은?</p>
+    <button class="opt">① base: feature/login ← compare: main</button><button class="opt">② base: main ← compare: feature/login</button><button class="opt">③ base: main ← compare: main</button>
+    <div class="exp">정답 ②. 받는 쪽(base)이 main, 보내는 쪽(compare)이 내 브랜치입니다.</div></div>
+</section>
+
+<!-- ============ 10. 팀장 Merge ============ -->
+<section id="s10" data-num="10" data-short="PR 리뷰·Merge" data-role="lead">
+  <h2><span class="role lead">👑 팀장</span> 10. PR 리뷰 → Merge → 전원 Pull</h2>
+  <p class="lead-in">팀장의 핵심 업무입니다. 한 번에 PR 하나씩 처리합니다.</p>
+  <div class="why"><b>💡 좋은 팀장이란?</b> 코드를 잘 짜는 사람보다 <b>팀원 코드를 안전하게 합치는 사람</b>입니다.</div>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">저장소 → <span class="btnw">Pull requests</span> 탭 → PR 제목 클릭</b></li>
+    <li data-role="lead"><b class="t"><span class="btnw">Files changed</span> 탭에서 3가지 확인</b>
+      <div class="tw"><table><tr><th>확인</th><th>문제면</th></tr>
+        <tr><td>① 담당 파일만 바뀌었나?</td><td>남의 파일 수정 → 코멘트로 되돌려 달라고 요청</td></tr>
+        <tr><td>② build/, *.class 같은 결과물이 없나?</td><td>12장 Untrack 요청</td></tr>
+        <tr><td>③ 테스트 체크가 되어 있나?</td><td>"실행 확인했나요?" 코멘트</td></tr></table></div></li>
+    <li data-role="lead"><b class="t"><span class="btnw">Conversation</span> 탭 아래 → <span class="btng">Merge pull request</span> → <span class="btng">Confirm merge</span></b><p>초록 버튼 = 충돌 없음. 회색이면 11장으로.</p></li>
+    <li data-role="lead"><b class="t"><span class="btnw">Delete branch</span> 클릭</b><p>코드는 main에 이미 합쳐졌으니 원격 브랜치는 정리해도 됩니다.</p></li>
+    <li data-role="lead"><b class="t">단톡방 알림</b>
+      <div class="code"><div class="code-h"><span>💬 단톡방 메시지</span><button class="copy">복사</button></div><pre>[Merge 완료] 로그인 기능 main에 합쳤습니다!
+전원: Team › Switch To › main → Team › Pull → F5 해주세요.</pre></div></li>
+    <li data-role="all"><b class="t">👥 전원(팀장 포함): <span class="mp"><i>Team</i><span class="ar">›</span><i>Switch To</i><span class="ar">›</span><i>main</i></span> → <span class="mp"><i>Team</i><span class="ar">›</span><i>Pull</i></span> → <kbd>F5</kbd></b></li>
+    <li data-role="mem"><b class="t">👤 PR 올린 팀원: 다 쓴 로컬 브랜치 삭제</b><p><b>Git Repositories</b> → CarProject2 → Branches → Local → <b>feature/login 우클릭</b> → <span class="btnw">Delete Branch</span>. 다음 기능은 8장처럼 새 브랜치로 시작합니다.</p></li>
+  </ol>
+  <figure class="shot" data-shot="10" data-name="PR Merge pull request 영역"><div class="win gh"><div class="tb">Pull request #1 · Conversation</div><div class="bd">
+    <div class="row">✅ <b>This branch has no conflicts with the base branch</b></div>
+    <div class="row">Merging can be performed automatically.</div>
+    <div class="row"><span class="btng hl">Merge pull request ▾</span></div>
+    <div class="row" style="color:#6d28d9">↓ 클릭 후 <span class="btng">Confirm merge</span> → 🟣 Merged → <span class="btnw">Delete branch</span></div>
+  </div></div><figcaption>예시 화면</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> PR에 <b>🟣 Merged</b> 표시가 뜨고, Code 탭(main)에서 팀원 파일이 보입니다.</div>
+  <div class="warn"><b>⚠️ PR 여러 개를 연달아 누르지 마세요</b> 1개 Merge → 전원 Pull → 다음 PR 순서입니다. 동시에 합치면 충돌이 늘어납니다.</div>
+  <div class="note"><b>📌 팀장 본인 코드는?</b> 팀장도 8장처럼 <code class="i">feature/common</code> 브랜치 → Push → PR → 본인이 Merge 합니다. (본인 PR은 Approve는 안 되지만 Merge는 됩니다.)</div>
+  <details class="alt"><summary>🔀 PR 없이 이클립스에서 직접 병합하기 (급할 때만)</summary>
+    <ol class="steps">
+      <li data-role="lead"><b class="t"><span class="mp"><i>Team</i><span class="ar">›</span><i>Switch To</i><span class="ar">›</span><i>main</i></span> → <span class="mp"><i>Team</i><span class="ar">›</span><i>Pull</i></span></b></li>
+      <li data-role="lead"><b class="t"><span class="mp"><i>Team</i><span class="ar">›</span><i>Fetch from Upstream</i></span></b><p>팀원 브랜치 정보를 받아옵니다.</p></li>
+      <li data-role="lead"><b class="t"><span class="mp"><i>Team</i><span class="ar">›</span><i>Merge...</i></span> → <b>Remote Tracking › origin/feature/login</b> → <span class="btnw">Merge</span></b></li>
+      <li data-role="lead"><b class="t">결과 Merged 확인 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Push to Upstream</i></span></b></li>
+    </ol>
+    <div class="warn"><b>⚠️</b> 리뷰 기록이 남지 않습니다. 평소에는 PR을 쓰세요.</div></details>
+  <div class="do" data-id="m10"><h4>🛠️ 미션 10</h4><ul><li>👑 PR 1개를 Files changed 확인 후 Merge</li><li>👥 전원 main으로 Switch → Pull → F5</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q10" data-ans="2"><h4>🧠 퀴즈 10</h4><p>Merge 직후 팀원 모두가 해야 하는 것은?</p>
+    <button class="opt">① 저장소 새로 Clone</button><button class="opt">② 이클립스 재설치</button><button class="opt">③ main으로 Switch → Pull → F5</button>
+    <div class="exp">정답 ③. 최신 main을 받아야 다음 작업에서 충돌이 줄어듭니다.</div></div>
+</section>
+
+<!-- ============ 11. 충돌 ============ -->
+<section id="s11" data-num="11" data-short="충돌 해결" data-part="PART E · 문제 해결" data-role="all">
+  <h2><span class="role all">👥 전원</span> 11. 충돌(Conflict) 해결하기</h2>
+  <p class="lead-in">두 사람이 같은 파일 같은 줄을 고치면 생깁니다. 당황하지 않고 순서대로 하면 됩니다.</p>
+  <div class="why"><b>💡 충돌이란?</b> 문서 3번째 줄을 A는 "사과", B는 "바나나"로 바꿨을 때 컴퓨터가 <b>"뭐가 맞아?"</b> 하고 묻는 상황입니다. 사람이 골라주면 끝납니다.</div>
+  <div class="note"><b>📌 원칙: 충돌은 PR을 올린 팀원이 자기 브랜치에서 해결합니다</b> 자기 코드를 가장 잘 알기 때문입니다. 팀장은 해결된 PR을 Merge만 합니다.</div>
+
+  <h3>① 이클립스에서 해결 (추천)</h3>
+  <ol class="steps">
+    <li data-role="mem"><b class="t">내 브랜치 상태 확인: <code class="i">[CarProject2 feature/carlist]</code></b><p>커밋 안 한 수정이 있으면 먼저 Commit 합니다.</p></li>
+    <li data-role="mem"><b class="t">프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Fetch from Upstream</i></span></b></li>
+    <li data-role="mem"><b class="t"><span class="mp"><i>Team</i><span class="ar">›</span><i>Merge...</i></span> → <b>Remote Tracking › origin/main</b> 선택 → <span class="btnw">Merge</span></b><p>= 최신 main을 내 브랜치로 가져와 섞기.</p></li>
+    <li data-role="mem"><b class="t">결과 <b>Conflicting</b> → 빨간 ◆ 아이콘 파일 열기</b><p>Git Staging의 Unstaged Changes에도 빨간 표시로 모입니다.</p></li>
+    <li data-role="mem"><b class="t">표시 3줄을 지우고 남길 코드만 정리 → <kbd>Ctrl</kbd>+<kbd>S</kbd></b>
+      <div class="code"><div class="code-h"><span>😱 충돌 난 Top.jsp</span><button class="copy">복사</button></div><pre>&lt;nav class="main-menu"&gt;
+  &lt;a href="Main.jsp"&gt;홈&lt;/a&gt;
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  &lt;a href="CarList.jsp"&gt;차량검색&lt;/a&gt;
+=======
+  &lt;a href="Login.jsp"&gt;로그인&lt;/a&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; refs/remotes/origin/main
+&lt;/nav&gt;</pre></div>
+      <div class="code"><div class="code-h"><span>😊 해결 후 Top.jsp (둘 다 살림)</span><button class="copy">복사</button></div><pre>&lt;nav class="main-menu"&gt;
+  &lt;a href="Main.jsp"&gt;홈&lt;/a&gt;
+  &lt;a href="Login.jsp"&gt;로그인&lt;/a&gt;
+  &lt;a href="CarList.jsp"&gt;차량검색&lt;/a&gt;
+&lt;/nav&gt;</pre></div>
+      <div class="tw"><table><tr><th>표시</th><th>뜻</th></tr>
+        <tr><td><code class="i">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></td><td>여기부터 <b>내 브랜치</b> 코드</td></tr>
+        <tr><td><code class="i">=======</code></td><td>경계선</td></tr>
+        <tr><td><code class="i">&gt;&gt;&gt;&gt;&gt;&gt;&gt; …origin/main</code></td><td>여기까지 <b>main(남의)</b> 코드</td></tr></table></div></li>
+    <li data-role="mem"><b class="t">Git Staging에서 그 파일을 Staged Changes로 끌어내리기 (Add to Index)</b><p>빨간 ◆가 사라지면 해결 표시가 된 것입니다. 메시지는 "Merge remote-tracking branch 'origin/main'…"으로 자동 입력됩니다.</p></li>
+    <li data-role="mem"><b class="t"><span class="btnw">Commit and Push...</span></b></li>
+    <li data-role="lead"><b class="t">👑 팀장: PR 새로고침 → 초록 Merge 버튼 확인 → 10장대로 Merge</b></li>
+  </ol>
+  <figure class="shot" data-shot="11" data-name="Merge Result (Conflicting) 창"><div class="win"><div class="tb">Merge Result</div><div class="bd">
+    <div class="row"><span class="k">Result</span><b style="color:#b91c1c">Conflicting</b></div>
+    <div class="row"><span class="k">Conflicts</span><span class="inp">◆ src/main/webapp/Top.jsp</span></div>
+    <div class="row"><span style="flex:1"></span><span class="btnw">OK</span></div>
+  </div></div><figcaption>예시 화면 · 파일 이름은 상황마다 다름</figcaption></figure>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> 프로젝트 전체에 빨간 ◆가 없고, GitHub PR에 <b>✅ This branch has no conflicts</b>가 뜹니다.</div>
+  <div class="note"><b>📌 표시를 직접 지우기 어렵다면 Merge Tool</b> 충돌 파일 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Merge Tool</i></span>. 왼쪽이 내 코드, 오른쪽이 main 코드입니다. 가운데 화살표 버튼으로 필요한 줄을 왼쪽으로 가져온 뒤 저장합니다.</div>
+  <div class="warn"><b>⚠️ 너무 꼬여서 처음부터 다시 하고 싶어요</b> 프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Reset...</i></span> → 내 브랜치(Local › feature/carlist) 선택 → Reset type <b>Hard</b> → Reset. <b>커밋 안 한 수정은 사라지니</b> 충돌 정리 중에만 쓰세요.</div>
+
+  <h3>② GitHub 웹에서 해결 (짧은 충돌일 때)</h3>
+  <ol class="steps">
+    <li><b class="t">PR 화면 <span class="btnw">Resolve conflicts</span></b></li>
+    <li><b class="t">표시 3줄 지우고 코드 정리 → <span class="btnw">Mark as resolved</span> → <span class="btng">Commit merge</span></b></li>
+    <li><b class="t">해결한 사람도 이클립스에서 <span class="mp"><i>Team</i><span class="ar">›</span><i>Pull</i></span></b><p>웹에서 만든 커밋을 내 PC로 받아야 다음 Push가 거절되지 않습니다.</p></li>
+  </ol>
+  <h3>🛡️ 충돌 예방 4규칙</h3>
+  <div class="grid2">
+    <div class="card"><h4>📂 파일 분담</h4>같은 파일을 두 명이 동시에 고치지 않기</div>
+    <div class="card"><h4>💬 공통 파일 예고</h4>Top.jsp·web.xml 수정 전 단톡방에 "수정할게요"</div>
+    <div class="card"><h4>📥 Merge 후 즉시 Pull</h4>오래된 main으로 작업하면 충돌 확률 상승</div>
+    <div class="card"><h4>🔢 PR은 하나씩</h4>Merge → 전원 Pull → 다음 Merge</div>
+  </div>
+  <div class="do" data-id="m11"><h4>🛠️ 미션 11 — 일부러 충돌 내보기 (연습)</h4><ul><li>두 팀원이 각자 브랜치에서 index.jsp 같은 줄을 다르게 수정 → 각자 PR</li><li>첫 PR Merge 후, 두 번째 팀원이 ① 방법으로 해결 → 팀장 Merge</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q11" data-ans="1"><h4>🧠 퀴즈 11</h4><p>충돌 해결 후 코드에 <b>남아 있으면 안 되는</b> 것은?</p>
+    <button class="opt">① &lt;nav&gt; 태그</button><button class="opt">② &lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, &gt;&gt;&gt;&gt;&gt;&gt;&gt; 표시</button><button class="opt">③ 로그인 링크</button>
+    <div class="exp">정답 ②. 표시가 남으면 JSP가 깨집니다. 반드시 3줄 모두 지웁니다.</div></div>
+</section>
+
+<!-- ============ 12. 되돌리기 ============ -->
+<section id="s12" data-num="12" data-short="되돌리기·임시저장" data-role="all">
+  <h2><span class="role all">👥 전원</span> 12. 실수 되돌리기 & 임시 저장</h2>
+  <p class="lead-in">상황별로 누를 메뉴를 표로 정리했습니다. 내 상황 줄만 따라하세요.</p>
+  <div class="tw"><table>
+    <tr><th>😰 상황</th><th>🖱️ 이클립스 메뉴</th><th>주의</th></tr>
+    <tr><td>저장한 파일을 마지막 커밋 상태로 되돌리고 싶다</td><td>파일 우클릭 → <span class="mp"><i>Replace With</i><span class="ar">›</span><i>HEAD Revision</i></span></td><td>수정 내용 사라짐</td></tr>
+    <tr><td>커밋 메시지를 잘못 썼다 (Push 전)</td><td>Git Staging → <b>☑ Amend</b>(✎ 아이콘) → 메시지 수정 → Commit</td><td>Push한 뒤엔 하지 않기</td></tr>
+    <tr><td>방금 커밋을 취소하고 코드는 남기고 싶다 (Push 전)</td><td><span class="mp"><i>Team</i><span class="ar">›</span><i>Show in History</i></span> → 바로 아래 커밋 우클릭 → <span class="mp"><i>Reset</i><span class="ar">›</span><i>Soft</i></span></td><td>Push 전만 안전</td></tr>
+    <tr><td>이미 Push한 내 커밋을 취소</td><td>History → 해당 커밋 우클릭 → <span class="btnw">Revert Commit</span> → Push</td><td>기록은 남고 반대 커밋이 생김</td></tr>
+    <tr><td>👑 Merge한 PR 전체를 취소</td><td>GitHub의 Merged PR 화면 → <span class="btnw">Revert</span> → 새 PR 생성 → Merge</td><td>팀 공지 필수</td></tr>
+    <tr><td>작업 중인데 급히 main으로 가야 한다</td><td><span class="mp"><i>Team</i><span class="ar">›</span><i>Stashes</i><span class="ar">›</span><i>Stash Changes...</i></span> → 메모 입력 → OK</td><td>서랍에 넣기</td></tr>
+    <tr><td>서랍에 넣은 작업 다시 꺼내기</td><td>Git Repositories → Stashed Commits → 우클릭 → <span class="btnw">Apply Stashed Changes</span></td><td>원래 브랜치에서 꺼내기</td></tr>
+    <tr><td>build/·.class 같은 파일이 올라가 버렸다</td><td>그 폴더 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Untrack</i></span> → .gitignore에 추가 → Commit and Push</td><td>PC 파일은 안 지워짐</td></tr>
+  </table></div>
+  <div class="why"><b>💡 Stash 비유</b> 책상 위 작업물을 <b>잠깐 서랍에 넣고</b> 다른 일을 한 뒤, 다시 꺼내 이어서 하는 것입니다.</div>
+  <div class="warn"><b>⚠️ Reset Hard는 최후의 수단</b> 커밋 안 한 코드가 영구히 사라집니다. 모르면 먼저 Stash 하세요.</div>
+  <details class="alt"><summary>💻 Git Bash 대응 명령 (선택)</summary>
+    <div class="code"><div class="code-h"><span>Git Bash</span><button class="copy">복사</button></div><pre>git restore 파일명              # 파일 되돌리기
+git commit --amend -m "새 메시지"  # 메시지 수정(Push 전)
+git reset --soft HEAD~1         # 커밋만 취소
+git revert 커밋해시              # Push한 커밋 취소
+git stash / git stash pop       # 서랍 넣기/꺼내기
+git rm -r --cached build/       # 추적만 해제</pre></div></details>
+  <div class="do" data-id="m12"><h4>🛠️ 미션 12</h4><ul><li>JSP 한 줄 수정 → Stash Changes → Apply Stashed Changes로 복원해보기</li><li>History 창에서 커밋 목록 열어보기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q12" data-ans="0"><h4>🧠 퀴즈 12</h4><p>이미 Push해서 팀원이 받아간 커밋을 취소할 때 알맞은 방법은?</p>
+    <button class="opt">① Revert Commit (반대 커밋 만들기)</button><button class="opt">② Reset Hard 후 강제 Push</button><button class="opt">③ 저장소 삭제 후 재생성</button>
+    <div class="exp">정답 ①. 공유된 기록은 지우지 않고 되돌리는 커밋을 추가합니다. 강제 Push는 팀원 코드를 날릴 수 있습니다.</div></div>
+</section>
+
+<!-- ============ 13. 에러 사전 + 치트시트 + 마감 ============ -->
+<section id="s13" data-num="13" data-short="에러 사전·치트시트" data-role="all">
+  <h2><span class="role all">👥 전원</span> 13. 에러 사전 · 메뉴 치트시트 · 최종 제출</h2>
+  <p class="lead-in">막히면 이 장부터 보세요. 오류 문구로 찾으면 빠릅니다.</p>
+  <h3>🚨 에러 사전</h3>
+  <div class="tw"><table>
+    <tr><th>❌ 이런 문구가 뜨면</th><th>원인</th><th>✅ 해결 메뉴</th></tr>
+    <tr><td>not authorized / Authentication is required</td><td>토큰 오타·만료·repo 미체크, 또는 초대 미수락</td><td>① <span class="mp"><i>Window</i><span class="ar">›</span><i>Preferences</i><span class="ar">›</span><i>General</i><span class="ar">›</span><i>Security</i><span class="ar">›</span><i>Secure Storage</i></span> → <b>Contents</b> 탭 → <b>GIT</b> 아래 github.com 항목 Delete ② 새 토큰으로 다시 Push ③ 초대 수락 확인</td></tr>
+    <tr><td>rejected - non-fast-forward</td><td>GitHub가 내 PC보다 최신</td><td><span class="mp"><i>Team</i><span class="ar">›</span><i>Pull</i></span> → (충돌 시 11장) → 다시 Push</td></tr>
+    <tr><td>Checkout conflict with files</td><td>커밋 안 한 수정이 있음</td><td>Commit 하거나 <span class="mp"><i>Team</i><span class="ar">›</span><i>Stashes</i><span class="ar">›</span><i>Stash Changes</i></span></td></tr>
+    <tr><td>Repository not found</td><td>주소 오타 또는 초대 안 받음</td><td>URI 대소문자 확인, 팀장에게 Collaborators 확인 요청</td></tr>
+    <tr><td>Pull 했는데 파일이 안 보임</td><td>이클립스가 변경을 못 감지</td><td>프로젝트 선택 후 <kbd>F5</kbd></td></tr>
+    <tr><td>프로젝트에 빨간 X</td><td>Tomcat·JDK 경로 차이</td><td>Targeted Runtimes / Java Build Path / Project › Clean (7장)</td></tr>
+    <tr><td>한글이 깨짐 (����)</td><td>인코딩 불일치</td><td>전원 Workspace <b>UTF-8</b> + 프로젝트 Properties › Resource › UTF-8</td></tr>
+    <tr><td>커밋 작성자가 이상하게 나옴</td><td>user.name/email 미등록</td><td>3장 Configuration 다시 확인</td></tr>
+    <tr><td>Team 메뉴에 Pull·Switch To가 없음</td><td>프로젝트가 Git에 연결 안 됨</td><td>👑 6장 Share Project / 👤 7장 Clone 다시</td></tr>
+    <tr><td>main에 직접 올려버렸다</td><td>브랜치 확인 누락</td><td>문제없으면 그대로 두고 전원 Pull. 문제 있으면 12장 Revert. 규칙 재공지</td></tr>
+  </table></div>
+
+  <h3>🗂️ 이클립스 메뉴 치트시트 (인쇄해서 모니터 옆에)</h3>
+  <div class="tw"><table>
+    <tr><th>하고 싶은 일</th><th>이클립스 메뉴 (프로젝트 우클릭 기준)</th><th>Git 명령</th><th>누가</th></tr>
+    <tr><td>Git 시작</td><td>Team › Share Project...</td><td>git init</td><td>👑 1회</td></tr>
+    <tr><td>프로젝트 받기</td><td>Git Repositories › Clone a Git repository</td><td>git clone</td><td>👤 1회</td></tr>
+    <tr><td>최신 받기</td><td>Team › Pull</td><td>git pull</td><td>👥 매일</td></tr>
+    <tr><td>브랜치 만들기</td><td>Team › Switch To › New Branch...</td><td>git checkout -b</td><td>👥</td></tr>
+    <tr><td>브랜치 이동</td><td>Team › Switch To › 브랜치명</td><td>git checkout</td><td>👥</td></tr>
+    <tr><td>담기+저장+올리기</td><td>Git Staging › ＋＋ › Commit and Push...</td><td>git add / commit / push</td><td>👥</td></tr>
+    <tr><td>원격 정보만 받기</td><td>Team › Fetch from Upstream</td><td>git fetch</td><td>👥</td></tr>
+    <tr><td>다른 브랜치 섞기</td><td>Team › Merge...</td><td>git merge</td><td>👥</td></tr>
+    <tr><td>변경 비교</td><td>파일 우클릭 › Compare With › HEAD Revision</td><td>git diff</td><td>👥</td></tr>
+    <tr><td>이력 보기</td><td>Team › Show in History</td><td>git log</td><td>👥</td></tr>
+    <tr><td>임시 저장</td><td>Team › Stashes › Stash Changes...</td><td>git stash</td><td>👥</td></tr>
+    <tr><td>PR 요청 / 병합</td><td>GitHub 웹 › Pull requests</td><td>—</td><td>👤 요청 · 👑 병합</td></tr>
+  </table></div>
+
+  <h3>🏁 최종 제출: 완성 버전 표시(Tag)</h3>
+  <ol class="steps">
+    <li data-role="lead"><b class="t">모든 PR Merge 완료 → main으로 Switch → Pull → 최종 실행 확인</b></li>
+    <li data-role="lead"><b class="t">프로젝트 우클릭 → <span class="mp"><i>Team</i><span class="ar">›</span><i>Advanced</i><span class="ar">›</span><i>Tag...</i></span></b>
+      <div class="code"><div class="code-h"><span>📋 Tag name / message</span><button class="copy">복사</button></div><pre>v1.0
+최종 발표 제출 버전</pre></div>
+      <p>이클립스 버전에 따라 <span class="mp"><i>Team</i><span class="ar">›</span><i>Tag...</i></span>으로 바로 보입니다.</p></li>
+    <li data-role="lead"><b class="t"><span class="mp"><i>Team</i><span class="ar">›</span><i>Remote</i><span class="ar">›</span><i>Push Tags...</i></span> → v1.0 ☑ → Finish</b></li>
+    <li data-role="lead"><b class="t">(선택) GitHub → Releases → <span class="btng">Draft a new release</span> → Tag v1.0 → Publish</b><p>발표 자료에 링크로 넣기 좋습니다.</p></li>
+  </ol>
+  <div class="ok"><b>✅ 이렇게 되면 성공</b> GitHub 저장소 오른쪽 <b>Releases</b> 또는 브랜치 목록의 Tags 탭에 <b>v1.0</b>이 보입니다.</div>
+
+  <h3>📋 팀 규칙 템플릿 (팀장이 단톡방 공지)</h3>
+  <div class="code"><div class="code-h"><span>💬 복사해서 공지</span><button class="copy">복사</button></div><pre>📋 [CarProject2 Git 규칙]
+👑 팀장(park-leader): main 관리 · PR 리뷰/Merge · 공통 파일
+👤 팀원1: feature/login   👤 팀원2: feature/carlist
+👤 팀원3: feature/reservation   👤 팀원4: feature/mypage
+
+📌 필수 규칙
+1. 아침: Team › Switch To › main → Team › Pull → F5
+2. 코딩은 내 feature 브랜치에서만! [ ] 안 브랜치명 확인
+3. 저녁: Git Staging ＋＋ → 구체적 메시지 → Commit and Push
+4. 기능 완성 → GitHub에서 Pull Request (Reviewer: 팀장)
+5. Merge 공지 오면 전원 main Pull
+6. Top.jsp·web.xml 등 공통 파일은 수정 전 단톡방 예고
+7. 토큰·비밀번호는 절대 공유 금지
+🛠 버전 통일: Eclipse / JDK / Tomcat / UTF-8</pre></div>
+
+  <div class="do" data-id="m13"><h4>🛠️ 미션 13 — 완주</h4><ul><li>👑 팀 규칙 공지 + v1.0 태그 Push</li><li>👥 치트시트 표를 인쇄하거나 캡처해 두기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q13" data-ans="2"><h4>🧠 퀴즈 13</h4><p>Push할 때 "rejected - non-fast-forward"가 떴습니다. 먼저 누를 메뉴는?</p>
+    <button class="opt">① Team › Share Project</button><button class="opt">② Team › Advanced › Tag</button><button class="opt">③ Team › Pull</button>
+    <div class="exp">정답 ③. GitHub의 최신 내용을 먼저 받아 합친 뒤 다시 Push합니다.</div></div>
+
+  <div class="ok" style="text-align:center;font-size:17px"><b>🎉 완주를 축하합니다!</b>매일 반복: <b>Pull → 브랜치 → 코딩 → Commit and Push → PR → Merge → 전원 Pull</b></div>
+</section>
+
+<!-- ============ 14. 부록 ============ -->
+<section id="s14" data-num="14" data-short="리허설·FAQ·질문법" data-part="부록 · 처음이라면 꼭" data-role="all">
+  <h2><span class="role all">👥 전원</span> 14. 첫날 30분 리허설 · FAQ · 질문하는 법</h2>
+  <p class="lead-in">진짜 코딩 전에 <b>연습용 파일 하나로 한 바퀴</b> 돌면 실전에서 절대 안 막힙니다.</p>
+  <div class="why"><b>💡 왜 리허설을 하나요?</b> 운전 연수처럼, 빈 주차장에서 먼저 한 바퀴 돌아보는 것입니다. 실수해도 연습 파일이라 괜찮습니다.</div>
+
+  <h3>🎬 30분 리허설 시나리오 (팀장+팀원 같이 앉아서)</h3>
+  <div class="tw"><table>
+    <tr><th>분</th><th>누가</th><th>할 일</th><th>확인 방법</th><th>참고</th></tr>
+    <tr data-role="all"><td>0~5</td><td>👥</td><td>전원 3장 설정 확인, 대괄호 표시 보이는지</td><td>[CarProject2 …] 표시</td><td>0장·3장</td></tr>
+    <tr data-role="lead"><td>5~10</td><td>👑</td><td>프로젝트에 <code class="i">rehearsal.txt</code> 만들어 "팀장 입장" 쓰고 Commit and Push (main)</td><td>GitHub 웹에서 파일 보임</td><td>6장</td></tr>
+    <tr data-role="mem"><td>10~15</td><td>👤</td><td>main Pull → 내 브랜치 생성 → rehearsal.txt에 "OOO 입장" 한 줄 추가 → Commit and Push</td><td>GitHub 브랜치 목록에 내 브랜치</td><td>8장</td></tr>
+    <tr data-role="mem"><td>15~18</td><td>👤</td><td>PR 만들기</td><td>🟢 Open</td><td>9장</td></tr>
+    <tr data-role="lead"><td>18~22</td><td>👑</td><td>PR 하나씩 Merge (두 번째부터 충돌 가능 → 해당 팀원이 해결)</td><td>🟣 Merged</td><td>10·11장</td></tr>
+    <tr data-role="all"><td>22~27</td><td>👥</td><td>전원 main Switch → Pull → F5</td><td>rehearsal.txt에 <b>모든 사람 이름</b>이 보임</td><td>10장</td></tr>
+    <tr data-role="lead"><td>27~30</td><td>👑</td><td>rehearsal.txt 삭제 → Commit and Push → 전원 Pull</td><td>파일 사라짐</td><td>—</td></tr>
+  </table></div>
+  <div class="ok"><b>✅ 리허설 성공 기준</b> 모든 팀원 이클립스의 rehearsal.txt 안에 <b>팀원 전체 이름</b>이 들어 있으면 협업 준비 끝입니다.</div>
+  <div class="code"><div class="code-h"><span>📋 rehearsal.txt 에 넣을 한 줄 (이름만 바꾸기)</span><button class="copy">복사</button></div><pre>홍길동 입장 완료! 오늘부터 잘 부탁합니다 🙌</pre></div>
+
+  <h3>📸 막혔을 때 질문하는 법 (이렇게 물으면 1분 안에 해결)</h3>
+  <ol class="steps">
+    <li><b class="t">화면 전체 캡처: <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> → 전체 화면 아이콘</b><p>에러 창과 Project Explorer가 <b>같이</b> 보이게 찍습니다. 토큰·비밀번호는 가립니다.</p></li>
+    <li><b class="t">Console 탭의 빨간 글자도 캡처</b></li>
+    <li><b class="t">아래 템플릿 복사 → 빈칸 채워 단톡방에 캡처와 함께 보내기</b><div class="code"><div class="code-h"><span>💬 질문 템플릿</span><button class="copy">복사</button></div><pre>[Git 질문]
+1. 역할: 팀장 / 팀원
+2. 몇 장 몇 번 단계: 예) 7장 3번
+3. 누른 메뉴: 예) Team › Pull
+4. 뜬 메시지(그대로): 
+5. 프로젝트 이름 옆 [ ] 표시: 예) [CarProject2 feature/login ↑1]
+6. 이미 해본 것: 예) F5, 재시작</pre></div></li>
+  </ol>
+
+  <h3>❓ 자주 묻는 질문 (눌러서 펼치기)</h3>
+  <div class="faq">
+    <details><summary>Q1. Git Bash나 Git 프로그램을 따로 설치해야 하나요?</summary><p>아니요. Enterprise Java and Web 판 이클립스에는 Git 기능(EGit)이 들어 있습니다. 이 문서의 이클립스 메뉴만으로 끝까지 가능합니다.</p></details>
+    <details><summary>Q2. 실수로 main에서 코딩하고 있었어요. 아직 커밋 전이에요.</summary><p>괜찮습니다. 저장(Ctrl+S)만 한 상태에서 <b>Team › Switch To › New Branch...</b>로 내 브랜치를 만들면 <b>수정 내용이 그대로 새 브랜치로 따라옵니다.</b> 거기서 커밋하세요.</p></details>
+    <details><summary>Q3. Pull을 했는데 팀원 파일이 안 보여요.</summary><p>① 프로젝트 클릭 후 <kbd>F5</kbd> ② 지금 브랜치가 main인지 확인 ③ 팀장이 정말 Merge 했는지 GitHub에서 🟣 Merged 확인.</p></details>
+    <details><summary>Q4. Commit만 하고 Push를 깜빡했어요.</summary><p>이름 옆에 <b>↑1</b>이 보입니다. 프로젝트 우클릭 › <b>Team › Push to Upstream</b> 을 누르면 올라갑니다.</p></details>
+    <details><summary>Q5. 토큰이 만료됐어요 / 토큰을 잃어버렸어요.</summary><p>2장대로 새 토큰 발급 → 13장 에러 사전의 Secure Storage에서 github.com 항목 삭제 → 다음 Push/Pull 때 새 토큰 입력.</p></details>
+    <details><summary>Q6. 다른 컴퓨터(집/학원)에서도 이어서 하고 싶어요.</summary><p>새 컴퓨터에서 3장 설정 → 7장 Clone을 한 번 하면 됩니다. 이후엔 <b>시작할 때 Pull, 끝날 때 Push</b>만 지키면 두 컴퓨터가 같아집니다. 커밋 안 하고 컴퓨터를 옮기면 코드가 따라오지 않습니다.</p></details>
+    <details><summary>Q7. 팀장이 너무 바빠요. 팀원이 Merge 해도 되나요?</summary><p>기술적으로 가능하지만, 누가 합쳤는지 헷갈려 사고가 납니다. 팀장이 부재 시 대신할 <b>부팀장 1명</b>을 미리 정하세요.</p></details>
+    <details><summary>Q8. JSP 파일 이름을 바꾸거나 폴더를 옮겼어요.</summary><p>이클립스에서 우클릭 › Refactor › Rename 으로 바꾸면 Git이 자동으로 인식합니다. Git Staging에서 ＋＋ 후 커밋하면 됩니다. 탐색기(윈도우 폴더)에서 직접 바꾸지 마세요.</p></details>
+    <details><summary>Q9. DB 연결 정보(아이디/비번)가 팀원마다 달라요.</summary><p>수업용이면 팀 전체가 같은 연습 계정(예: 오라클 scott)을 만들어 쓰는 것이 가장 쉽습니다. 개인 비밀번호는 절대 커밋하지 마세요.</p></details>
+    <details><summary>Q10. 모든 게 꼬여서 처음부터 다시 받고 싶어요. (팀원)</summary><p>① 내 코드 중 안 올린 파일은 바탕화면에 복사 ② 프로젝트 우클릭 › Delete → <b>☑ Delete project contents on disk</b> ③ 7장 Clone 다시 ④ 백업한 파일 붙여넣기 → 커밋. <b>GitHub에 있는 코드는 사라지지 않습니다.</b></p></details>
+  </div>
+
+  <div class="do" data-id="m14"><h4>🛠️ 미션 14 — 리허설 완주</h4><ul><li>30분 리허설로 rehearsal.txt에 전원 이름 모으기</li><li>질문 템플릿을 단톡방 공지에 고정하기</li></ul><button class="done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q14" data-ans="1"><h4>🧠 퀴즈 14</h4><p>이름 옆에 <code class="i">[CarProject2 feature/login ↑2]</code>가 보입니다. 무슨 뜻이고 무엇을 해야 할까요?</p>
+    <button class="opt">① GitHub에 새 코드 2개 → Pull</button><button class="opt">② 올리지 않은 커밋 2개 → Push</button><button class="opt">③ 충돌 2개 → 11장</button>
+    <div class="exp">정답 ②. ↑(위 화살표)는 "올려야 할 것", ↓(아래 화살표)는 "받아야 할 것"입니다.</div></div>
+</section>
+</main>
+
+<div id="dash" title="진행 현황">
+  <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3.5"/><circle id="ring" cx="18" cy="18" r="15.9" fill="none" stroke="#4f46e5" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 18 18)"/><text id="pct" x="18" y="21.5" text-anchor="middle" font-size="9" font-weight="800" fill="#1d2433">0%</text></svg>
+  <div class="dt"><b>진행 현황</b><br>👣 단계 <span id="sc">0/0</span><br>🛠️ 미션 <span id="mc">0/0</span><br>🧠 퀴즈 <span id="qc">0/0</span></div>
+</div>
+<div id="toast"></div>
+
+<script>
+(function(){
+  var ORIGINAL = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  var KEY = 'eclipseGitTeam_v1';
+  var st = {m:{}, q:{}, s:{}, view:'all'};
+  try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); st.m = p.m || {}; st.q = p.q || {}; st.view = p.view || 'all'; st.cap = !!p.cap; st.s = p.s || {}; } } catch(e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e) {} }
+  var toastEl = document.getElementById('toast'), tt;
+  function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(tt); tt = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800); }
+
+  /* 사이드바 목차 */
+  var nav = document.getElementById('navlist');
+  var secs = document.querySelectorAll('main section');
+  var roleIcon = {all:'👥', lead:'👑', mem:'👤'};
+  secs.forEach(function(s, i){
+    if (s.dataset.part) { var d = document.createElement('div'); d.className = 'part'; d.textContent = s.dataset.part; nav.appendChild(d); }
+    var a = document.createElement('a'); a.href = '#' + s.id; a.dataset.sid = s.id;
+    a.innerHTML = '<span class="rb">' + (roleIcon[s.dataset.role] || '📖') + '</span><span>' + (s.dataset.num || i) + '. ' + s.dataset.short + '</span><span class="ck"></span>';
+    a.addEventListener('click', function(){ document.body.classList.remove('menu'); });
+    nav.appendChild(a);
+  });
+  document.getElementById('burger').onclick = function(){ document.body.classList.toggle('menu'); };
+  document.getElementById('dim').onclick = function(){ document.body.classList.remove('menu'); };
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(en){ if (en.isIntersecting) {
+        nav.querySelectorAll('a').forEach(function(x){ x.classList.toggle('on', x.dataset.sid === en.target.id); });
+      }});
+    }, {rootMargin:'-30% 0px -60% 0px'});
+    secs.forEach(function(s){ io.observe(s); });
+  }
+
+  /* 역할 보기 */
+  function setView(v){ document.body.dataset.view = v; document.querySelectorAll('.vbtn').forEach(function(b){ b.classList.toggle('on', b.dataset.v === v); }); st.view = v; save(); }
+  document.querySelectorAll('.vbtn').forEach(function(b){ b.onclick = function(){ setView(b.dataset.v); toast(b.textContent + ' 보기로 전환'); }; });
+  setView(st.view);
+
+  /* 복사 */
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta); return ok;
+  }
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.onclick = function(){
+      var pre = b.closest('.code').querySelector('pre'); var text = pre.innerText;
+      function done(){ b.textContent = '✓ 복사됨'; b.classList.add('done'); toast('복사했습니다. 붙여넣기 하세요'); setTimeout(function(){ b.textContent = '복사'; b.classList.remove('done'); }, 1500); }
+      function fail(){ var r = document.createRange(); r.selectNodeContents(pre); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); toast('자동 복사가 막혔어요. Ctrl+C를 눌러주세요'); }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text) ? done() : fail(); });
+      } else { fallbackCopy(text) ? done() : fail(); }
+    };
+  });
+
+  /* 미션 */
+  var missions = document.querySelectorAll('.do[data-id]');
+  missions.forEach(function(d){
+    var btn = d.querySelector('.done-btn');
+    function paint(){ var f = !!st.m[d.dataset.id]; d.classList.toggle('fin', f); btn.textContent = f ? '✅ 완료됨 (다시 누르면 취소)' : '완료 체크'; }
+    btn.onclick = function(){ st.m[d.dataset.id] = !st.m[d.dataset.id]; save(); paint(); update(); if (st.m[d.dataset.id]) toast('🎉 미션 완료!'); };
+    paint();
+  });
+
+  /* 퀴즈 */
+  var quizzes = document.querySelectorAll('.quiz[data-id]');
+  quizzes.forEach(function(q){
+    var opts = q.querySelectorAll('.opt'), ans = parseInt(q.dataset.ans, 10);
+    function mark(idx){
+      opts.forEach(function(o, i){ o.classList.remove('right', 'wrong'); if (i === ans) o.classList.add('right'); if (i === idx && idx !== ans) o.classList.add('wrong'); });
+      q.classList.add('answered');
+    }
+    opts.forEach(function(o, i){ o.onclick = function(){ mark(i); if (i === ans) { st.q[q.dataset.id] = 1; toast('⭕ 정답입니다!'); } else { delete st.q[q.dataset.id]; toast('❌ 해설을 읽고 다시 골라보세요'); } save(); update(); }; });
+    if (st.q[q.dataset.id]) mark(ans);
+  });
+
+  /* 대시보드 */
+  /* 단계별 체크 */
+  var stepEls = [];
+  secs.forEach(function(sec){
+    var k = 0;
+    sec.querySelectorAll('ol.steps>li').forEach(function(li){
+      k++; var id = sec.id + '-' + k; li.dataset.sk = id; stepEls.push(li);
+      var b = document.createElement('button'); b.className = 'stepck'; b.type = 'button';
+      function paint(){ var d = !!st.s[id]; li.classList.toggle('sdone', d); b.textContent = d ? '✓ 했어요' : '☐ 했으면 체크'; }
+      b.onclick = function(){ st.s[id] = !st.s[id]; if (!st.s[id]) delete st.s[id]; save(); paint(); update(); };
+      li.appendChild(b); paint();
+    });
+    if (k) { var pr = document.createElement('div'); pr.className = 'secprog'; pr.dataset.sec = sec.id; var h = sec.querySelector('.lead-in') || sec.querySelector('h2'); h.parentNode.insertBefore(pr, h.nextSibling); }
+  });
+  function update(){
+    var mDone = 0, qDone = 0;
+    missions.forEach(function(d){ if (st.m[d.dataset.id]) mDone++; });
+    quizzes.forEach(function(q){ if (st.q[q.dataset.id]) qDone++; });
+    var sDone = 0; stepEls.forEach(function(li){ if (st.s[li.dataset.sk]) sDone++; });
+    var total = missions.length + quizzes.length + stepEls.length, pct = total ? Math.round((mDone + qDone + sDone) / total * 100) : 0;
+    document.getElementById('sc').textContent = sDone + '/' + stepEls.length;
+    document.querySelectorAll('.secprog').forEach(function(pr){ var all = document.querySelectorAll('#' + pr.dataset.sec + ' ol.steps>li'), n = 0; all.forEach(function(li){ if (st.s[li.dataset.sk]) n++; }); pr.innerHTML = '👣 이 장 단계 <b>' + n + ' / ' + all.length + '</b> 완료' + (n === all.length ? ' 🎉' : ' · 끝낸 단계마다 오른쪽 <b>☐ 했으면 체크</b>를 누르세요'); });
+    document.getElementById('ring').setAttribute('stroke-dasharray', pct + ' 100');
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('mc').textContent = mDone + '/' + missions.length;
+    document.getElementById('qc').textContent = qDone + '/' + quizzes.length;
+    secs.forEach(function(s){
+      var a = nav.querySelector('a[data-sid="' + s.id + '"] .ck'); if (!a) return;
+      var d = s.querySelector('.do[data-id]'), q = s.querySelector('.quiz[data-id]');
+      var ok = (!d || st.m[d.dataset.id]) && (!q || st.q[q.dataset.id]);
+      a.textContent = ok ? '✅' : '';
+    });
+  }
+  document.getElementById('dash').onclick = function(){
+    var next = null;
+    secs.forEach(function(s){ if (next) return; var d = s.querySelector('.do[data-id]'); if (d && !st.m[d.dataset.id]) next = s; });
+    if (next) { next.scrollIntoView({behavior:'smooth'}); toast('다음 할 일로 이동합니다'); } else { toast('🎉 모든 미션 완료!'); }
+  };
+  update();
+
+
+  /* 실제 캡처 교체 */
+  var figs = document.querySelectorAll('figure.shot[data-shot]');
+  var DBN = 'eclipseGitShots', db = null, armed = null;
+  function openDB(cb){
+    try { var r = indexedDB.open(DBN, 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore('shots'); };
+      r.onsuccess = function(){ db = r.result; cb(); };
+      r.onerror = function(){ cb(); };
+    } catch(e) { cb(); }
+  }
+  function dbPut(k, v){ try { if (!db) return; var t = db.transaction('shots', 'readwrite').objectStore('shots'); v ? t.put(v, k) : t.delete(k); } catch(e) {} }
+  function dbGet(k, cb){ try { if (!db) return cb(null); var r = db.transaction('shots').objectStore('shots').get(k); r.onsuccess = function(){ cb(r.result || null); }; r.onerror = function(){ cb(null); }; } catch(e) { cb(null); } }
+  function capCount(){
+    var n = 0;
+    figs.forEach(function(f){ var has = !!f.querySelector('img.real'); if (has) n++; var c = document.getElementById('cst' + f.dataset.shot); if (c) c.textContent = has ? '✅' : '⬜'; });
+    document.getElementById('capCnt').textContent = n + '/' + figs.length;
+  }
+  function setImg(f, src){
+    var old = f.querySelector('img.real'); if (old) old.remove();
+    f.classList.remove('show-mock');
+    if (src) { var im = document.createElement('img'); im.className = 'real'; im.alt = f.dataset.name + ' 실제 화면'; im.src = src; f.insertBefore(im, f.querySelector('.win')); f.classList.add('has-real'); }
+    else f.classList.remove('has-real');
+    capCount();
+  }
+  function shrink(file, cb){
+    var rd = new FileReader();
+    rd.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        var w = im.width, h = im.height, max = 1400;
+        if (w > max) { h = Math.round(h * max / w); w = max; }
+        var c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h);
+        var out = c.toDataURL('image/webp', 0.9);
+        if (out.indexOf('data:image/webp') !== 0) out = c.toDataURL('image/png');
+        cb(out);
+      };
+      im.onerror = function(){ toast('이미지를 읽지 못했어요'); };
+      im.src = rd.result;
+    };
+    rd.readAsDataURL(file);
+  }
+  function apply(f, file){ shrink(file, function(src){ setImg(f, src); dbPut('shot' + f.dataset.shot, src); toast('📷 ' + f.dataset.shot + '번 캡처 교체 완료'); }); }
+  function disarm(){ armed = null; document.querySelectorAll('.capbar .pst').forEach(function(b){ b.classList.remove('arm'); b.textContent = '📋 붙여넣기 대기'; }); }
+  figs.forEach(function(f){
+    var bar = document.createElement('div'); bar.className = 'capbar';
+    bar.innerHTML = '<b>📷 ' + f.dataset.shot + '. ' + f.dataset.name + '</b><button class="pst">📋 붙여넣기 대기</button><button class="pick">📁 파일 선택</button><button class="del">🗑 원래 모형으로</button><input type="file" accept="image/*" hidden>';
+    f.insertBefore(bar, f.firstChild);
+    var inp = bar.querySelector('input');
+    bar.querySelector('.pick').onclick = function(){ inp.click(); };
+    inp.onchange = function(){ if (inp.files[0]) apply(f, inp.files[0]); inp.value = ''; };
+    bar.querySelector('.pst').onclick = function(){ var me = this; var was = armed === f; disarm(); if (!was) { armed = f; me.classList.add('arm'); me.textContent = '⌨️ 지금 Ctrl+V'; } };
+    bar.querySelector('.del').onclick = function(){ setImg(f, null); dbPut('shot' + f.dataset.shot, null); toast('모형 화면으로 되돌렸습니다'); };
+    var tg = document.createElement('button'); tg.className = 'mocktg'; tg.textContent = '🧩 모형 ↔ 실제 화면 전환';
+    tg.onclick = function(){ f.classList.toggle('show-mock'); };
+    f.appendChild(tg);
+    if (f.querySelector('img.real')) f.classList.add('has-real');
+  });
+  document.addEventListener('paste', function(e){
+    if (!armed) return;
+    var items = (e.clipboardData || {}).items || [];
+    for (var i = 0; i < items.length; i++) { if (items[i].type.indexOf('image') === 0) { e.preventDefault(); apply(armed, items[i].getAsFile()); disarm(); return; } }
+    toast('클립보드에 이미지가 없어요. Win+Shift+S로 먼저 캡처하세요');
+  });
+  function setCap(on){ document.body.classList.toggle('capmode', on); document.getElementById('capBtn').classList.toggle('on', on); st.cap = on; save(); if (!on) disarm(); }
+  document.getElementById('capBtn').onclick = function(){ setCap(!document.body.classList.contains('capmode')); toast(document.body.classList.contains('capmode') ? '📷 캡처 모드 켜짐' : '캡처 모드 꺼짐'); };
+  setCap(!!st.cap);
+  openDB(function(){
+    figs.forEach(function(f){ if (f.querySelector('img.real')) return; dbGet('shot' + f.dataset.shot, function(src){ if (src) setImg(f, src); }); });
+    capCount();
+  });
+  capCount();
+  function buildDownload(){
+    var doc = new DOMParser().parseFromString(ORIGINAL, 'text/html');
+    doc.querySelectorAll('figure.shot[data-shot]').forEach(function(df){
+      var live = document.querySelector('figure.shot[data-shot="' + df.dataset.shot + '"] img.real');
+      var old = df.querySelector('img.real'); if (old) old.remove();
+      df.classList.remove('has-real', 'show-mock');
+      if (live) { var im = doc.createElement('img'); im.className = 'real'; im.alt = live.alt; im.src = live.src; df.insertBefore(im, df.querySelector('.win')); df.classList.add('has-real'); }
+    });
+    doc.body.classList.remove('capmode', 'menu');
+    return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  }
+
+  /* 초기화 · 다운로드 */
+  document.getElementById('resetBtn').onclick = function(){
+    if (!confirm('미션·퀴즈 진행 기록을 모두 지울까요?')) return;
+    st = {m:{}, q:{}, s:{}, view:st.view, cap:st.cap}; save(); location.reload();
+  };
+  document.getElementById('dlBtn').onclick = function(){
+    try {
+      var blob = new Blob([buildDownload()], {type:'text/html;charset=utf-8'});
+      var url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'EclipseGitTeamProject.html'; document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 500);
+      toast('⬇️ 다운로드를 시작합니다');
+    } catch(e) { toast('다운로드가 막혔어요. Ctrl+S로 저장하세요'); }
+  };
+})();
+</script>
+</body>
+</html>

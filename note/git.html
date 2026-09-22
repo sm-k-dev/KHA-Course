@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>🐙 Git &amp; GitHub 팀프로젝트 완전 정복 — 비전공자 실전 가이드</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--bg4:#30363d;--border:#30363d;
+  --text:#c9d1d9;--muted:#8b949e;--head:#f0f6fc;
+  --s0:#8b949e;--s0b:rgba(139,148,158,.12);
+  --s1:#58a6ff;--s1b:rgba(88,166,255,.12);
+  --s2:#3fb950;--s2b:rgba(63,185,80,.12);
+  --s3:#d29922;--s3b:rgba(210,153,34,.12);
+  --s4:#bc8cff;--s4b:rgba(188,140,255,.12);
+  --s5:#f78166;--s5b:rgba(247,129,102,.12);
+  --s6:#26c6da;--s6b:rgba(38,198,218,.12);
+  --ok:#3fb950;--err:#f85149;--warn:#d29922;--tip:#bc8cff;--info:#58a6ff;
+  --git:#f05032;--gitb:rgba(240,80,50,.12);
+  --r:8px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;font-size:15px;line-height:1.8;}
+p{margin-bottom:12px;}
+a{color:var(--info);text-decoration:none;}
+a:hover{text-decoration:underline;}
+code{background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:'Consolas','Courier New',monospace;font-size:13px;}
+
+.site-header{background:linear-gradient(135deg,#0d1117 0%,#1a2332 50%,#0d1117 100%);border-bottom:2px solid var(--border);padding:24px 40px 0;position:sticky;top:0;z-index:200;}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;}
+.site-header h1{font-size:17px;font-weight:800;color:var(--head);}
+.badge{font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;white-space:nowrap;}
+.badge-git{background:var(--gitb);border:1px solid rgba(240,80,50,.4);color:var(--git);}
+.badge-gh{background:var(--s4b);border:1px solid rgba(188,140,255,.4);color:var(--tip);}
+.badge-team{background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.4);color:var(--ok);}
+.site-header>p{font-size:12px;color:var(--muted);margin-bottom:14px;}
+
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:0;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 16px;border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;background:var(--bg3);color:var(--muted);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .2s;position:relative;bottom:-1px;}
+.tab:hover{color:var(--head);background:var(--bg4);}
+.tab.active{color:#fff;background:var(--bg2);}
+.tab[data-s="0"].active{border-top:3px solid var(--s0);}
+.tab[data-s="1"].active{border-top:3px solid var(--s1);}
+.tab[data-s="2"].active{border-top:3px solid var(--s2);}
+.tab[data-s="3"].active{border-top:3px solid var(--s3);}
+.tab[data-s="4"].active{border-top:3px solid var(--s4);}
+.tab[data-s="5"].active{border-top:3px solid var(--s5);}
+.tab[data-s="6"].active{border-top:3px solid var(--s6);}
+.tab-line{font-size:14px;display:block;margin-bottom:1px;}
+.tab-sub{font-size:10px;opacity:.7;}
+
+.pane{display:none;max-width:920px;margin:0 auto;padding:36px 40px 120px;}
+.pane.active{display:block;}
+@media(max-width:700px){.pane{padding:24px 18px 100px;}.site-header{padding:18px 18px 0;}}
+
+.page-badge{display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-bottom:16px;border:1px solid;}
+.b0{background:var(--s0b);border-color:rgba(139,148,158,.4);color:var(--s0);}
+.b1{background:var(--s1b);border-color:rgba(88,166,255,.4);color:var(--s1);}
+.b2{background:var(--s2b);border-color:rgba(63,185,80,.4);color:var(--s2);}
+.b3{background:var(--s3b);border-color:rgba(210,153,34,.4);color:var(--s3);}
+.b4{background:var(--s4b);border-color:rgba(188,140,255,.4);color:var(--tip);}
+.b5{background:var(--s5b);border-color:rgba(247,129,102,.4);color:var(--s5);}
+.b6{background:var(--s6b);border-color:rgba(38,198,218,.4);color:var(--s6);}
+h2.pt{font-size:26px;font-weight:800;color:var(--head);margin-bottom:8px;line-height:1.3;}
+p.pd{font-size:14.5px;color:var(--muted);margin-bottom:28px;line-height:1.7;}
+
+.concept{background:linear-gradient(135deg,rgba(88,166,255,.07),rgba(188,140,255,.07));border:1px solid rgba(88,166,255,.25);border-radius:var(--r);padding:20px 24px;margin-bottom:24px;}
+.concept-title{font-size:13px;font-weight:800;color:var(--info);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.concept p{font-size:14px;color:var(--text);margin-bottom:8px;}
+.concept p:last-child{margin-bottom:0;}
+.analogy{background:rgba(210,153,34,.08);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;padding:10px 14px;margin-top:10px;font-size:13.5px;color:var(--text);}
+.analogy strong{color:var(--warn);}
+
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:20px 0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;overflow-x:auto;}
+.flow-node{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--head);white-space:nowrap;text-align:center;flex-shrink:0;}
+.flow-node small{display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;}
+.flow-arrow{color:var(--muted);font-size:18px;padding:0 6px;flex-shrink:0;}
+.flow-node.c1{border-color:rgba(88,166,255,.5);color:var(--s1);}
+.flow-node.c2{border-color:rgba(63,185,80,.5);color:var(--s2);}
+.flow-node.c3{border-color:rgba(210,153,34,.5);color:var(--s3);}
+.flow-node.c4{border-color:rgba(188,140,255,.5);color:var(--tip);}
+.flow-node.c5{border-color:rgba(247,129,102,.5);color:var(--s5);}
+.flow-node.cg{border-color:rgba(240,80,50,.5);color:var(--git);}
+
+.box{border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:14px;line-height:1.7;}
+.box-title{font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.box-ok{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);}
+.box-ok .box-title{color:var(--ok);}
+.box-warn{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.3);}
+.box-warn .box-title{color:var(--warn);}
+.box-err{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);}
+.box-err .box-title{color:var(--err);}
+.box-tip{background:rgba(188,140,255,.08);border:1px solid rgba(188,140,255,.3);}
+.box-tip .box-title{color:var(--tip);}
+.box-info{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);}
+.box-info .box-title{color:var(--info);}
+
+.steps{list-style:none;margin-bottom:24px;}
+.steps>li{display:flex;gap:16px;margin-bottom:20px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;margin-top:2px;}
+.sn1{background:var(--s1);} .sn2{background:var(--s2);} .sn3{background:var(--s3);}
+.sn4{background:var(--tip);} .sn5{background:var(--s5);} .sn6{background:var(--s6);}
+.sng{background:var(--git);}
+.step-body{flex:1;}
+.step-body strong{display:block;color:var(--head);font-size:14.5px;margin-bottom:4px;}
+.step-body p{font-size:13.5px;color:var(--muted);margin-bottom:0;}
+
+.code-wrap{position:relative;margin-bottom:16px;}
+.code-label{font-size:11px;font-weight:700;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;padding:5px 14px;display:inline-block;}
+.code-wrap pre{background:var(--bg2);border:1px solid var(--border);border-radius:0 6px 6px 6px;padding:14px 16px;overflow-x:auto;font-family:'Consolas','Courier New',monospace;font-size:13px;line-height:1.6;color:#e6edf3;white-space:pre;}
+.code-wrap pre.no-label{border-radius:6px;}
+.copy-btn{position:absolute;top:32px;right:10px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.copy-btn.no-label{top:8px;}
+.copy-btn:hover{background:var(--bg4);color:var(--head);}
+.copy-btn.ok{color:var(--ok);border-color:var(--ok);}
+.kw{color:#ff7b72;} .cm{color:#8b949e;font-style:italic;} .str{color:#a5d6ff;}
+.num{color:#79c0ff;} .fn{color:#d2a8ff;} .tag{color:#7ee787;} .at{color:#ffa657;}
+
+.prog-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:24px;}
+.prog-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+.prog-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--ok),#7ee787);border-radius:3px;width:0%;transition:width .4s;}
+
+.checklist{list-style:none;margin-bottom:24px;}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:13.5px;}
+.checklist li:hover{border-color:var(--ok);background:rgba(63,185,80,.05);}
+.checklist li.done{background:rgba(63,185,80,.07);border-color:rgba(63,185,80,.35);}
+.checklist li.done span{text-decoration:line-through;color:var(--muted);}
+.checklist input[type=checkbox]{width:15px;height:15px;accent-color:var(--ok);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.checklist label{cursor:pointer;line-height:1.5;}
+
+.expected{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Consolas',monospace;color:var(--ok);margin-top:6px;margin-bottom:6px;}
+
+.trouble{background:rgba(248,81,73,.05);border:1px solid rgba(248,81,73,.25);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;}
+.trouble-title{font-size:13px;font-weight:800;color:var(--err);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.trouble dt{font-size:13px;font-weight:700;color:var(--warn);margin-bottom:4px;}
+.trouble dd{font-size:13px;color:var(--text);margin-left:14px;margin-bottom:10px;line-height:1.7;}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:24px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.card-icon{font-size:24px;margin-bottom:8px;}
+.card-title{font-size:13.5px;font-weight:800;color:var(--head);margin-bottom:4px;}
+.card-desc{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+.sec{font-size:17px;font-weight:800;color:var(--head);margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sec2{font-size:15px;font-weight:700;color:var(--head);margin:24px 0 10px;}
+hr.divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13.5px;}
+th{background:var(--bg3);color:var(--head);font-weight:700;padding:9px 14px;text-align:left;border:1px solid var(--border);}
+td{padding:9px 14px;border:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+
+#scroll-top{position:fixed;bottom:32px;right:32px;width:44px;height:44px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:500;transition:all .2s;}
+#scroll-top.show{display:flex;}
+#scroll-top:hover{color:var(--head);border-color:var(--info);}
+.next-btn{background:var(--s2);color:#fff;border:none;border-radius:var(--r);padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.next-btn:hover{opacity:.85;transform:translateY(-1px);}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-top">
+    <span style="font-size:22px">🐙</span>
+    <h1>Git &amp; GitHub 팀프로젝트 완전 정복</h1>
+    <span class="badge badge-git">Git</span>
+    <span class="badge badge-gh">GitHub</span>
+    <span class="badge badge-team">팀프로젝트</span>
+  </div>
+  <p>비전공자도 처음부터 따라할 수 있는 Git &amp; GitHub 팀프로젝트 협업 가이드 · Eclipse Dynamic Web Project 기준</p>
+  <nav class="tabs">
+    <button class="tab active" data-s="0" onclick="show(0)"><span class="tab-line">📖 시작</span><span class="tab-sub">개념 이해</span></button>
+    <button class="tab" data-s="1" onclick="show(1)"><span class="tab-line">Step 1</span><span class="tab-sub">Git 설치</span></button>
+    <button class="tab" data-s="2" onclick="show(2)"><span class="tab-line">Step 2</span><span class="tab-sub">저장소 연결</span></button>
+    <button class="tab" data-s="3" onclick="show(3)"><span class="tab-line">Step 3</span><span class="tab-sub">기본 사용법</span></button>
+    <button class="tab" data-s="4" onclick="show(4)"><span class="tab-line">Step 4</span><span class="tab-sub">브랜치 협업</span></button>
+    <button class="tab" data-s="5" onclick="show(5)"><span class="tab-line">Step 5</span><span class="tab-sub">충돌 해결</span></button>
+    <button class="tab" data-s="6" onclick="show(6)"><span class="tab-line">Step 6</span><span class="tab-sub">실전 팁</span></button>
+  </nav>
+</header>
+
+<!-- ════════════════════════════════
+     STEP 0 : 시작 전 안내 & 개념 이해
+     ════════════════════════════════ -->
+<section class="pane active" id="s0">
+  <div class="page-badge b0">📖 시작 전 안내</div>
+  <h2 class="pt">이 가이드로 무엇을 배우나요?</h2>
+  <p class="pd">팀프로젝트에서 Git과 GitHub을 사용하여 여러 명이 동시에 코드를 작성하고 합치는 방법을 처음부터 배웁니다.<br>코딩 경험이 없어도 하나씩 따라하면 됩니다. 모든 명령어 옆의 <strong style="color:var(--ok)">복사</strong> 버튼을 눌러 Git Bash에 붙여넣기 하세요.</p>
+
+  <h3 class="sec">🗺️ 팀프로젝트 Git 흐름 한눈에 보기</h3>
+  <div class="flow">
+    <div class="flow-node c1">💻 내 PC<small>코드 작성 (Eclipse)</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node cg">📦 git add<small>변경 파일 선택</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node cg">💾 git commit<small>변경 내역 저장</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node c4">🐙 git push<small>GitHub에 업로드</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node c2">👥 팀원이 pull<small>최신 코드 받기</small></div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:28px;">① Eclipse에서 코드 수정 → ② git add로 변경 파일 선택 → ③ git commit으로 내 PC에 저장 → ④ git push로 GitHub에 업로드 → ⑤ 팀원이 git pull로 최신 코드를 받음</p>
+
+  <h3 class="sec">💡 핵심 개념 5가지 (쉽게 이해하기)</h3>
+
+  <div class="concept">
+    <div class="concept-title">🔧 1. Git이란?</div>
+    <p><strong style="color:var(--head)">코드의 변경 이력을 관리</strong>하는 프로그램입니다. 누가, 언제, 어떤 코드를 수정했는지 기록하고, 이전 버전으로 되돌릴 수도 있습니다.</p>
+    <div class="analogy">📝 <strong>비유:</strong> 한글(HWP)의 <strong>"변경 내용 추적"</strong> 기능과 같습니다. 문서를 수정할 때마다 누가 뭘 바꿨는지 기록되는 것처럼, Git은 코드의 모든 변경을 기록합니다.</div>
+  </div>
+
+  <div class="concept">
+    <div class="concept-title">🐙 2. GitHub란?</div>
+    <p>Git으로 관리하는 코드를 <strong style="color:var(--head)">인터넷에 저장하고 팀과 공유</strong>하는 서비스입니다. 구글 드라이브처럼 코드를 올리고 팀원끼리 함께 작업할 수 있습니다.</p>
+    <div class="analogy">☁️ <strong>비유:</strong> Git = 내 PC의 폴더, GitHub = <strong>구글 드라이브</strong>. 내 폴더의 파일을 구글 드라이브에 올려서 팀원과 공유하는 것과 같습니다.</div>
+  </div>
+
+  <div class="concept">
+    <div class="concept-title">📦 3. Repository(저장소)란?</div>
+    <p>프로젝트 파일과 변경 이력을 저장하는 <strong style="color:var(--head)">폴더</strong>입니다. 내 PC에 있는 것을 <strong>로컬 저장소</strong>, GitHub에 있는 것을 <strong>원격 저장소</strong>라고 합니다.</p>
+    <div class="analogy">📂 <strong>비유:</strong> 로컬 저장소 = 내 책상 위 <strong>작업 폴더</strong>, 원격 저장소 = 팀 공유 <strong>클라우드 폴더</strong>.</div>
+  </div>
+
+  <div class="concept">
+    <div class="concept-title">🌿 4. Branch(브랜치)란?</div>
+    <p>메인 코드에서 <strong style="color:var(--head)">복사본을 만들어 독립적으로 작업</strong>하는 공간입니다. 각 팀원이 자기 브랜치에서 작업하고, 완료되면 메인에 합칩니다.</p>
+    <div class="analogy">🛤️ <strong>비유:</strong> 기차 <strong>철로 분기점</strong>과 같습니다. 본선(main)에서 갈라져 나가서 작업한 뒤, 다시 본선에 합류(merge)합니다.</div>
+  </div>
+
+  <div class="concept">
+    <div class="concept-title">🔄 5. Commit, Push, Pull이란?</div>
+    <p><strong style="color:var(--head)">Commit</strong> = 변경 내역을 내 PC에 저장 (세이브포인트 만들기)<br>
+    <strong style="color:var(--head)">Push</strong> = 내 PC의 커밋을 GitHub에 업로드 (팀원에게 공유)<br>
+    <strong style="color:var(--head)">Pull</strong> = GitHub의 최신 코드를 내 PC로 다운로드 (팀원 작업 받기)</p>
+    <div class="analogy">🎮 <strong>비유:</strong> Commit = 게임 <strong>세이브</strong>, Push = 세이브 파일을 <strong>클라우드에 업로드</strong>, Pull = 클라우드에서 <strong>세이브 파일 다운로드</strong></div>
+  </div>
+
+  <h3 class="sec">🖥️ Git Bash 기초 터미널 명령어 (처음 쓰는 사람 필독!)</h3>
+  <div class="concept">
+    <div class="concept-title">❓ Git Bash란?</div>
+    <p>Git을 사용하기 위한 <strong style="color:var(--head)">명령어 입력 프로그램</strong>입니다. 마우스 클릭 대신 <strong>글자를 타이핑</strong>해서 컴퓨터에게 명령합니다.</p>
+    <div class="analogy">⌨️ <strong>비유:</strong> 카카오톡에서 친구에게 메시지 보내듯, Git Bash에 <strong>"명령어를 입력"</strong>하면 컴퓨터가 실행합니다.</div>
+  </div>
+
+  <div class="box box-info"><div class="box-title">ℹ️ 반드시 알아야 할 기초 명령어 4개</div>
+    <table>
+      <tr><th>명령어</th><th>의미</th><th>사용 예시</th></tr>
+      <tr><td><code>pwd</code></td><td><strong>현재 내가 어디 있는지</strong> 확인</td><td><code>pwd</code> → <code>/c/Users/홍길동</code></td></tr>
+      <tr><td><code>ls</code></td><td><strong>현재 폴더 안의 파일/폴더 목록</strong> 보기</td><td><code>ls</code> → 파일 이름들이 나열됨</td></tr>
+      <tr><td><code>cd 폴더명</code></td><td>해당 <strong>폴더로 이동</strong></td><td><code>cd eclipse-workspace</code></td></tr>
+      <tr><td><code>cd ..</code></td><td><strong>상위(부모) 폴더로 이동</strong></td><td><code>cd ..</code> → 한 칸 위로</td></tr>
+    </table>
+  </div>
+
+  <div class="box box-warn"><div class="box-title">⚠️ Git Bash 경로 표기 주의!</div>
+    <p>Windows 탐색기: <code>C:\Users\홍길동\eclipse-workspace</code> (역슬래시 \)<br>
+    Git Bash에서는: <code>/c/Users/홍길동/eclipse-workspace</code> (<strong>슬래시 /</strong>로 변환!)<br>
+    드라이브 <code>C:</code> → <code>/c</code>, <code>D:</code> → <code>/d</code> 로 바뀝니다.</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 기초 명령어 연습 (지금 바로 따라 해보세요!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># 1. 현재 위치 확인 (나 지금 어디 폴더에 있지?)</span>
+pwd
+
+<span class="cm"># 2. 현재 폴더의 파일/폴더 목록 보기</span>
+ls
+
+<span class="cm"># 3. eclipse-workspace 폴더로 이동 (★ 본인 사용자명으로 변경!)</span>
+cd /c/Users/$USER/eclipse-workspace
+
+<span class="cm"># 4. 이동 후 위치 다시 확인</span>
+pwd
+
+<span class="cm"># 5. 프로젝트 폴더 목록 보기</span>
+ls</pre>
+  </div>
+  <div class="box box-tip"><div class="box-title">💜 팁: Tab키로 자동완성!</div><p>폴더 이름을 다 입력하지 않아도, 앞 글자 몇 개만 치고 <strong>Tab 키</strong>를 누르면 자동완성됩니다!<br>예: <code>cd ecli</code> + Tab → <code>cd eclipse-workspace/</code> 자동완성!</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">📂 JSP MVC Dynamic Web Project 폴더 구조</h3>
+  <div class="concept">
+    <div class="concept-title">❓ 우리 프로젝트 폴더가 어떻게 생겼나요?</div>
+    <p>Eclipse Dynamic Web Project (JSP MVC)의 폴더 구조입니다. <strong style="color:var(--ok)">Git으로 관리할 파일</strong>과 <strong style="color:var(--err)">제외할 파일</strong>을 구분하세요!</p>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">프로젝트 폴더 구조 (CarProject2 예시)</div>
+    <pre><span class="tag">CarProject2/</span>                      ← 프로젝트 루트
+├── <span class="tag">src/main/java/</span>               ← ✅ Java 소스 (Controller, DAO, VO)
+│   └── com/smrental/
+│       ├── controller/CarController.java
+│       ├── dao/CarDAO.java
+│       └── vo/CarVO.java
+├── <span class="tag">src/main/webapp/</span>             ← ✅ 웹 파일 (JSP, CSS, JS, 이미지)
+│   ├── WEB-INF/web.xml
+│   ├── css/style.css
+│   ├── js/script.js
+│   ├── Top.jsp, Main.jsp, CarList.jsp ...
+├── <span class="cm">.settings/</span>                    ← ❌ 제외! (Eclipse 설정)
+├── <span class="cm">.classpath</span>                    ← ❌ 제외! (Eclipse 설정)
+├── <span class="cm">.project</span>                      ← ❌ 제외! (Eclipse 설정)
+├── <span class="cm">build/ 또는 bin/</span>              ← ❌ 제외! (컴파일 결과물)
+└── <span class="tag">.gitignore</span>                    ← ✅ Git 제외 목록 파일</pre>
+  </div>
+  <div class="box box-ok"><div class="box-title">✅ Git으로 관리 = 팀원이 직접 작성한 코드</div><p><code>src/main/java/</code> (Java), <code>src/main/webapp/</code> (JSP, CSS, JS)</p></div>
+  <div class="box box-err"><div class="box-title">❌ Git에서 제외 = Eclipse가 자동 생성하는 설정</div><p><code>.settings/</code>, <code>.classpath</code>, <code>.project</code>, <code>build/</code> — 각 PC마다 달라서 공유하면 오류!</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">🧰 시작 전 준비물 확인</h3>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🐙</div><div class="card-title">GitHub 계정</div><div class="card-desc">github.com에서 무료 가입. 이메일만 있으면 OK.</div></div>
+    <div class="card"><div class="card-icon">🖥️</div><div class="card-title">Git 설치</div><div class="card-desc">git-scm.com에서 다운로드. Step 1에서 설치합니다.</div></div>
+    <div class="card"><div class="card-icon">☕</div><div class="card-title">Eclipse 프로젝트</div><div class="card-desc">CarProject2 같은 Dynamic Web Project.</div></div>
+    <div class="card"><div class="card-icon">⏱️</div><div class="card-title">약 30분</div><div class="card-desc">처음 설정 시간. 이후엔 3줄 명령어로 끝!</div></div>
+  </div>
+
+  <div class="box box-ok"><div class="box-title">🎯 목표</div><p>이 가이드를 따라하면 팀원 여러 명이 <strong>동시에 코드를 작성하고, 충돌 없이 합치는 방법</strong>을 완전히 익힐 수 있습니다.</p></div>
+  <button class="next-btn" onclick="show(1)">시작하기 → Step 1 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 1 : Git 설치 & 초기 설정
+     ════════════════════════════════ -->
+<section class="pane" id="s1">
+  <div class="page-badge b1">🔧 Step 1</div>
+  <h2 class="pt">Git 설치 &amp; 초기 설정</h2>
+  <p class="pd">Git을 설치하고, 내 이름과 이메일을 등록합니다. 이 설정은 컴퓨터당 딱 한 번만 하면 됩니다.</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 1 진행률</span><span id="p1b-text">0 / 5</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p1b"></div></div>
+  </div>
+
+  <h3 class="sec">⓪ GitHub 계정 만들기 (전체 팀원 — 한 사람당 1개)</h3>
+  <div class="concept">
+    <div class="concept-title">❓ 왜 GitHub 계정이 필요한가요?</div>
+    <p>GitHub은 코드를 저장하고 팀원과 공유하는 <strong style="color:var(--head)">클라우드 서비스</strong>입니다. <strong>팀장 포함 모든 팀원이 각자 계정</strong>이 있어야 합니다!</p>
+  </div>
+  <ul class="steps">
+    <li><div class="step-num sn1">1</div><div class="step-body"><strong><a href="https://github.com" target="_blank">https://github.com</a> 접속 → 오른쪽 위 「Sign up」 클릭</strong><p>이미 계정이 있으면 이 단계를 건너뛰세요.</p></div></li>
+    <li><div class="step-num sn1">2</div><div class="step-body"><strong>이메일 주소 입력</strong><p>본인이 자주 쓰는 이메일 입력 (예: <code>hong@gmail.com</code>). 이 이메일로 초대장이 옵니다!</p></div></li>
+    <li><div class="step-num sn1">3</div><div class="step-body"><strong>비밀번호 설정 → 사용자 이름(Username) 입력</strong><p>Username은 영문으로! 팀원이 검색할 때 사용합니다 (예: <code>hong-gildong</code>)<br>⚠️ 이 Username을 팀장에게 알려주세요! (팀원 초대에 필요)</p></div></li>
+    <li><div class="step-num sn1">4</div><div class="step-body"><strong>이메일 인증</strong><p>입력한 이메일로 인증 코드가 옵니다 → 코드 입력하면 가입 완료!</p></div></li>
+    <li><div class="step-num sn1">5</div><div class="step-body"><strong>가입 완료 확인</strong><p>github.com에 로그인되면 성공! 프로필 사진(아바타)이 보입니다.</p></div></li>
+  </ul>
+  <div class="box box-warn"><div class="box-title">⚠️ 팀 전체 확인사항</div>
+    <p><strong>팀장:</strong> 계정 생성 후 저장소를 만들 예정<br>
+    <strong>팀원1~4:</strong> 각자 계정 생성 후 <strong>Username을 팀장에게 카톡/문자로 전달!</strong><br>
+    예) "제 GitHub 아이디는 <code>kim-minsu</code>입니다"</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">① Git 다운로드 &amp; 설치 (전체 팀원 — 각자 PC에 설치)</h3>
+  <ul class="steps">
+    <li><div class="step-num sn1">1</div><div class="step-body"><strong><a href="https://git-scm.com" target="_blank">https://git-scm.com</a> 접속</strong><p>웹브라우저(크롬 등)에서 주소창에 직접 입력 후 Enter!</p></div></li>
+    <li><div class="step-num sn1">2</div><div class="step-body"><strong>「Download for Windows」 클릭하여 설치 파일 다운로드</strong><p>큰 버튼이 보입니다. 클릭하면 <code>Git-2.xx.x-64-bit.exe</code> 파일이 다운로드됩니다.</p></div></li>
+    <li><div class="step-num sn1">3</div><div class="step-body"><strong>다운로드된 파일 더블클릭 → 「Next」를 계속 클릭 → 「Install」</strong><p>⚠️ <strong>옵션을 절대 변경하지 마세요!</strong> 모든 설정은 기본값 그대로 Next만 누르면 됩니다.<br>총 8~10번 정도 Next를 누르게 됩니다. 마지막에 Install → Finish 클릭!</p></div></li>
+    <li><div class="step-num sn1">4</div><div class="step-body"><strong>설치 확인: 바탕화면 빈 공간 → 마우스 우클릭</strong><p>메뉴에 <strong>「Open Git Bash here」</strong> 또는 <strong>「Git Bash Here」</strong>가 보이면 설치 성공!<br>(Windows 11에서는 우클릭 → 「더 많은 옵션 표시」를 먼저 클릭해야 보일 수 있습니다)</p></div></li>
+  </ul>
+
+  <h3 class="sec">② Git 설치 확인</h3>
+  <p>Git Bash를 열고 아래 명령어로 설치를 확인합니다.</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git --version</pre>
+  </div>
+  <div class="expected">git version 2.xx.x  ← 버전 번호가 나오면 설치 성공 ✓</div>
+
+  <hr class="divider">
+
+  <h3 class="sec">③ 사용자 정보 등록 (전체 팀원 — 각자 PC에서 최초 1회)</h3>
+  <div class="concept">
+    <div class="concept-title">❓ 왜 이름과 이메일을 등록하나요?</div>
+    <p>Git은 코드를 저장할 때마다 <strong style="color:var(--head)">"누가 수정했는지"</strong> 기록합니다. 팀장/팀원1/팀원2/팀원3/팀원4 모두 각자 등록해야 누가 뭘 수정했는지 구분됩니다!</p>
+  </div>
+
+  <p><strong>내 이름 등록</strong> — GitHub Username과 동일하게 입력!</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 이름 등록 (★ 본인 이름으로 바꾸세요!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git config --global user.name "여기에_본인이름"</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 명령어 한 글자씩 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git</code></td><td>Git 프로그램을 실행하겠다</td><td>"Git아!" 하고 부르는 것</td></tr>
+      <tr><td><code>config</code></td><td>설정(configuration)을 변경</td><td>"설정 좀 바꿀게"</td></tr>
+      <tr><td><code>--global</code></td><td>이 PC의 <strong>모든 프로젝트</strong>에 적용</td><td>"이 컴퓨터 전체에 적용해줘"</td></tr>
+      <tr><td><code>user.name</code></td><td>사용자 이름 설정 항목</td><td>"내 이름은..."</td></tr>
+      <tr><td><code>"홍길동"</code></td><td>등록할 이름 (큰따옴표 필수!)</td><td>본인 이름을 입력</td></tr>
+    </table>
+  </div>
+  <div class="box box-tip"><div class="box-title">💜 팀원별 이름 등록 예시</div>
+    <table>
+      <tr><th>역할</th><th>GitHub Username</th><th>입력할 명령어</th></tr>
+      <tr><td>팀장</td><td>park-leader</td><td><code>git config --global user.name "park-leader"</code></td></tr>
+      <tr><td>팀원1</td><td>kim-minsu</td><td><code>git config --global user.name "kim-minsu"</code></td></tr>
+      <tr><td>팀원2</td><td>lee-jieun</td><td><code>git config --global user.name "lee-jieun"</code></td></tr>
+      <tr><td>팀원3</td><td>choi-yunji</td><td><code>git config --global user.name "choi-yunji"</code></td></tr>
+      <tr><td>팀원4</td><td>jung-siwoo</td><td><code>git config --global user.name "jung-siwoo"</code></td></tr>
+    </table>
+  </div>
+
+  <p><strong>이메일 등록</strong> — GitHub 가입할 때 사용한 이메일과 <strong>반드시 동일하게!</strong></p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 이메일 등록 (★ 본인 이메일로 바꾸세요!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git config --global user.email "여기에_이메일주소"</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 명령어 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>user.email</code></td><td>사용자 이메일 설정 항목</td></tr>
+      <tr><td><code>"hong@gmail.com"</code></td><td>GitHub 가입 이메일과 동일해야 합니다!</td></tr>
+    </table>
+  </div>
+
+  <p><strong>등록 확인</strong> — 이름과 이메일이 제대로 등록되었는지 확인합니다.</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 설정 확인</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git config --list</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 명령어 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git config</code></td><td>Git 설정 명령어</td></tr>
+      <tr><td><code>--list</code></td><td>현재 등록된 <strong>모든 설정을 목록</strong>으로 보여줌</td></tr>
+    </table>
+  </div>
+  <div class="expected">user.name=홍길동<br>user.email=hong@gmail.com  ← 내 정보가 보이면 성공 ✓</div>
+  <div class="box box-warn"><div class="box-title">⚠️ 이름/이메일이 안 보이면?</div><p>화면에 많은 설정이 나열됩니다. 키보드 <strong>↓ 화살표</strong>를 눌러 아래로 스크롤하세요. <code>user.name</code>과 <code>user.email</code> 항목을 찾으면 됩니다. 나가려면 <strong>q</strong> 키를 누르세요.</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">☑️ Step 1 완료 체크리스트</h3>
+  <ul class="checklist" id="cl1">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g1c0"><label>GitHub 계정 생성 완료 (팀원 전체)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g1c1"><label>Git 설치 완료 — <code>git --version</code>에서 버전 확인</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g1c2"><label>사용자 이름 등록 완료 (GitHub 아이디와 동일하게)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g1c3"><label>이메일 등록 완료 (GitHub 가입 이메일과 동일하게)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g1c4"><label><code>git config --list</code>에서 이름/이메일 확인 완료</label></li>
+  </ul>
+  <div class="box box-ok"><div class="box-title">🎉 Step 1 완료!</div><p>Git 설치와 초기 설정이 끝났습니다. 이제 <strong>Step 2</strong>에서 GitHub 저장소를 만들고 프로젝트를 연결합니다.</p></div>
+  <button class="next-btn" onclick="show(2)" style="background:var(--s1);">다음 단계 → Step 2 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 2 : GitHub 저장소 만들기 & 프로젝트 연결
+     ════════════════════════════════ -->
+<section class="pane" id="s2">
+  <div class="page-badge b2">📦 Step 2</div>
+  <h2 class="pt">GitHub 저장소 만들기 &amp; 프로젝트 연결</h2>
+  <p class="pd">GitHub에 팀 저장소를 만들고, Eclipse 프로젝트를 연결합니다. 팀장이 한 번 하면 됩니다.</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 2 진행률</span><span id="p2b-text">0 / 5</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p2b"></div></div>
+  </div>
+
+  <h3 class="sec">① GitHub에 저장소(Repository) 만들기 [🟢 팀장만 실행]</h3>
+  <div class="box box-warn"><div class="box-title">⚠️ 이 단계는 팀장만!</div><p>팀원1~4는 이 단계를 건너뛰세요. 팀장이 저장소를 만들고 초대할 때까지 기다리세요.</p></div>
+  <ul class="steps">
+    <li><div class="step-num sn2">1</div><div class="step-body"><strong><a href="https://github.com" target="_blank">github.com</a> 로그인</strong><p>Step 1에서 만든 계정으로 로그인합니다.</p></div></li>
+    <li><div class="step-num sn2">2</div><div class="step-body"><strong>오른쪽 위 「+」 버튼 클릭 → 「New repository」 클릭</strong><p>프로필 사진 왼쪽에 있는 + 아이콘입니다.</p></div></li>
+    <li><div class="step-num sn2">3</div><div class="step-body"><strong>저장소 설정 입력 (아래 내용 정확히 따라하기!)</strong>
+      <p>① <strong>Repository name</strong>: <code>CarProject2</code> (Eclipse 프로젝트명과 반드시 동일!)<br>
+      ② <strong>Description</strong>: <code>SM렌탈 팀프로젝트</code> (설명 - 선택사항)<br>
+      ③ <strong>Visibility</strong>: 🔘 <strong>Private</strong> (비공개) 선택 ← 외부인이 못 보게!<br>
+      ④ <strong>Add a README file</strong>: ✅ 반드시 체크!<br>
+      ⑤ 나머지는 건드리지 마세요!</p></div></li>
+    <li><div class="step-num sn2">4</div><div class="step-body"><strong>「Create repository」 초록 버튼 클릭 → 저장소 생성 완료!</strong><p>화면이 바뀌면서 저장소 페이지가 나타납니다. 주소창의 URL을 메모하세요!<br>예: <code>https://github.com/park-leader/CarProject2</code></p></div></li>
+  </ul>
+
+  <h3 class="sec">② 팀원 초대하기 [🟢 팀장만 실행]</h3>
+  <div class="box box-info"><div class="box-title">ℹ️ 팀원 4명 모두 초대해야 합니다!</div><p>팀원이 저장소에 접근하려면 반드시 초대를 받아야 합니다.</p></div>
+  <ul class="steps">
+    <li><div class="step-num sn2">1</div><div class="step-body"><strong>저장소 페이지 → 상단 「Settings」 탭 클릭</strong><p>Code, Issues, Pull requests 탭들 오른쪽 끝에 톱니바퀴 아이콘의 Settings가 있습니다.</p></div></li>
+    <li><div class="step-num sn2">2</div><div class="step-body"><strong>왼쪽 메뉴에서 「Collaborators」 클릭</strong><p>비밀번호 재확인을 요청할 수 있습니다 → GitHub 비밀번호 입력</p></div></li>
+    <li><div class="step-num sn2">3</div><div class="step-body"><strong>「Add people」 초록 버튼 클릭 → 팀원 GitHub Username 입력 → 선택 → 초대</strong><p>팀원1: <code>kim-minsu</code> 입력 → 「Add kim-minsu to this repository」 클릭<br>
+    이 과정을 <strong>팀원2, 팀원3, 팀원4</strong>까지 반복합니다! (총 4번)</p></div></li>
+    <li><div class="step-num sn2">4</div><div class="step-body"><strong>[팀원1~4] 이메일 확인 → 초대 수락!</strong><p>GitHub 가입 이메일로 초대 메일이 옵니다 → 「Accept invitation」 클릭!<br>또는 github.com 로그인 후 알림(🔔)에서 수락할 수도 있습니다.</p></div></li>
+  </ul>
+  <div class="box box-warn"><div class="box-title">⚠️ 팀원이 초대를 수락해야 다음 단계 가능!</div><p>팀장은 팀원들에게 카톡으로 "GitHub 초대 보냈으니 수락해주세요!" 라고 알려주세요.</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">③ Eclipse 프로젝트 폴더에서 Git 시작하기</h3>
+  <div class="concept">
+    <div class="concept-title">❓ git init이란?</div>
+    <p><strong style="color:var(--head)">"이 폴더를 Git으로 관리하겠다!"</strong>라고 선언하는 명령어입니다. 이 명령어를 실행하면 폴더 안에 숨겨진 .git 폴더가 생기고, 이때부터 모든 변경 이력이 기록됩니다.</p>
+  </div>
+
+  <p><strong>Eclipse 프로젝트 폴더로 이동</strong> — Git Bash에서 실행</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 프로젝트 폴더로 이동</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>cd /c/Users/$USER/eclipse-workspace/CarProject2</pre>
+  </div>
+  <div class="box box-warn"><div class="box-title">⚠️ 경로 수정</div><p>위 경로는 예시입니다. 본인의 Eclipse workspace 경로에 맞게 수정하세요.<br>모르겠으면: Eclipse → 프로젝트 우클릭 → Properties → Location 에서 확인!</p></div>
+
+  <p><strong>Git 저장소 초기화</strong></p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — Git 시작</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git init</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 명령어 설명</div>
+    <table>
+      <tr><th>명령어</th><th>의미</th></tr>
+      <tr><td><code>git init</code></td><td>"이 폴더에서 Git을 시작한다!" — 숨겨진 .git 폴더가 생김</td></tr>
+    </table>
+  </div>
+  <div class="expected">Initialized empty Git repository in ...  ← 이 메시지가 나오면 성공 ✓</div>
+
+  <hr class="divider">
+
+  <h3 class="sec">④ .gitignore 파일 만들기 [🟢 팀장만 실행]</h3>
+  <div class="concept">
+    <div class="concept-title">❓ .gitignore란?</div>
+    <p><strong style="color:var(--head)">"이 파일은 Git에 올리지 마!"</strong>라고 적는 목록 파일입니다. Eclipse 설정 파일, 컴파일 결과물 등 <strong>팀원과 공유할 필요 없는 파일</strong>을 여기에 적습니다.</p>
+    <div class="analogy">🚫 <strong>비유:</strong> 택배 보낼 때 <strong>"이건 포장하지 마"</strong> 목록과 같습니다. 불필요한 것은 빼고 필요한 것만 보냅니다.</div>
+  </div>
+
+  <div class="box box-err"><div class="box-title">❌ .gitignore가 없으면 이런 문제 발생!</div>
+    <p>① Eclipse 설정 파일(.settings/)이 올라가서 → 팀원 PC에서 <strong>프로젝트 오류</strong> 발생<br>
+    ② .class 파일(bin/)이 올라가서 → 저장소 용량만 <strong>쓸데없이 증가</strong><br>
+    ③ 각자 PC별 설정이 섞여서 → <strong>매번 충돌</strong> 발생</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — .gitignore 파일 생성 (아래 전체를 복사 → 붙여넣기 → Enter!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>cat > .gitignore &lt;&lt;'EOF'
+# ========================================
+# Eclipse Dynamic Web Project (JSP MVC)
+# Git 제외 파일 목록
+# ========================================
+
+# --- Eclipse 설정 파일 (각 PC마다 달라서 공유하면 오류!) ---
+.settings/
+.project
+.classpath
+
+# --- 컴파일 결과물 (빌드하면 자동 생성됨) ---
+bin/
+build/
+target/
+*.class
+*.war
+*.ear
+
+# --- Tomcat 서버 관련 ---
+.tomcat/
+work/
+Servers/
+
+# --- OS가 자동 생성하는 파일 ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- 기타 IDE 설정 (IntelliJ, VS Code 등) ---
+*.iml
+.idea/
+.vscode/
+
+# --- 로그 파일 ---
+*.log
+EOF</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 명령어 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>왜 필요한가?</th></tr>
+      <tr><td><code>cat > .gitignore</code></td><td><code>.gitignore</code> 파일을 새로 만듦</td><td>이 파일에 적힌 것은 Git이 무시합니다</td></tr>
+      <tr><td><code>&lt;&lt;'EOF' ~ EOF</code></td><td>여러 줄을 한 번에 입력하는 방법</td><td>EOF를 만나면 입력이 끝남</td></tr>
+      <tr><td><code># 주석</code></td><td><code>#</code>으로 시작하는 줄은 설명(주석)</td><td>Git이 무시하는 줄, 사람이 읽기 위한 메모</td></tr>
+      <tr><td><code>.settings/</code></td><td>Eclipse 프로젝트별 설정 폴더</td><td>각자 PC마다 달라서 공유하면 Eclipse 오류!</td></tr>
+      <tr><td><code>.project</code></td><td>Eclipse 프로젝트 파일</td><td>Eclipse가 자동 생성, 공유 불필요</td></tr>
+      <tr><td><code>.classpath</code></td><td>Eclipse의 Java 빌드 경로 설정</td><td>각자 PC의 JDK/라이브러리 경로가 다름</td></tr>
+      <tr><td><code>bin/</code></td><td>컴파일된 .class 파일 폴더</td><td>빌드하면 자동 생성 → 올릴 필요 없음</td></tr>
+      <tr><td><code>*.class</code></td><td>Java 컴파일 결과 파일</td><td><code>*</code>은 "모든"이라는 뜻 → 모든 .class 파일 제외</td></tr>
+      <tr><td><code>*.war</code></td><td>웹 애플리케이션 배포 파일</td><td>용량이 크고, 빌드하면 자동 생성됨</td></tr>
+      <tr><td><code>Thumbs.db</code></td><td>Windows 썸네일 캐시</td><td>Windows가 자동 생성, 코드와 무관</td></tr>
+      <tr><td><code>.DS_Store</code></td><td>Mac 폴더 설정 파일</td><td>Mac이 자동 생성, 코드와 무관</td></tr>
+    </table>
+  </div>
+  <div class="box box-ok"><div class="box-title">✅ 확인 방법</div><p>Git Bash에서 <code>cat .gitignore</code> 입력 → 위에 적은 내용이 그대로 보이면 성공!</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⑤ GitHub 원격 저장소와 연결 &amp; 첫 업로드 [🟢 팀장만 실행]</h3>
+  <p>아래 명령어를 <strong>한 줄씩 순서대로</strong> Git Bash에 입력합니다. (전체 복사 후 붙여넣기도 가능!)</p>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓐ 모든 파일을 Git에 추가</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git add -A</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git add -A 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git add</code></td><td>파일을 Git의 <strong>"대기실(Staging Area)"</strong>에 올림</td><td>택배 보낼 물건을 <strong>박스에 담기</strong></td></tr>
+      <tr><td><code>-A</code></td><td><strong>모든(All)</strong> 변경/추가/삭제된 파일을 한 번에 추가</td><td>"이 폴더의 <strong>모든 물건</strong>을 다 담아!"</td></tr>
+    </table>
+    <p>⚠️ 아무 메시지 없이 다음 줄이 나오면 정상입니다! (에러가 없다는 뜻)</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓑ 첫 번째 커밋 (내 PC에 저장)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git commit -m "최초 프로젝트 업로드"</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git commit -m 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git commit</code></td><td>대기실의 파일들을 <strong>내 PC의 Git 저장소에 확정 저장</strong></td><td>박스를 <strong>봉인하고 라벨 붙이기</strong></td></tr>
+      <tr><td><code>-m</code></td><td>커밋 메시지(message)를 바로 작성하겠다</td><td>라벨에 <strong>뭘 넣었는지 적기</strong></td></tr>
+      <tr><td><code>"최초 프로젝트 업로드"</code></td><td>이 저장의 설명 (큰따옴표 필수!)</td><td>"이 박스에는 프로젝트 전체가 들어있습니다"</td></tr>
+    </table>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓒ 기본 브랜치 이름을 main으로 설정</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git branch -M main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git branch -M main 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git branch</code></td><td>브랜치(가지) 관련 명령어</td></tr>
+      <tr><td><code>-M</code></td><td>현재 브랜치의 이름을 <strong>강제로 변경</strong></td></tr>
+      <tr><td><code>main</code></td><td>변경할 이름. GitHub의 기본 브랜치명이 <code>main</code>이므로 맞춰줌</td></tr>
+    </table>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓓ GitHub 원격 저장소 주소 등록 (★ 팀장 아이디로 변경!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git remote add origin https://github.com/팀장아이디/CarProject2.git</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git remote add origin URL 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git remote</code></td><td>원격(Remote) 저장소 관련 명령어</td><td>택배 보낼 <strong>주소 관리</strong></td></tr>
+      <tr><td><code>add</code></td><td>새 원격 저장소를 <strong>추가</strong></td><td>새 배송 주소를 <strong>등록</strong></td></tr>
+      <tr><td><code>origin</code></td><td>이 원격 저장소의 <strong>별명</strong> (관례적으로 origin 사용)</td><td>"우리 팀 저장소"라는 <strong>별명</strong></td></tr>
+      <tr><td><code>https://github.com/...</code></td><td>GitHub 저장소의 실제 주소</td><td>실제 <strong>배송지 주소</strong></td></tr>
+    </table>
+    <p>⚠️ <code>팀장아이디</code> 부분을 팀장의 실제 GitHub Username으로 바꾸세요!<br>예: <code>git remote add origin https://github.com/park-leader/CarProject2.git</code></p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓔ GitHub에 업로드! (첫 push)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git push -u origin main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git push -u origin main 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git push</code></td><td>내 PC의 커밋을 <strong>원격 저장소(GitHub)에 업로드</strong></td><td>봉인한 박스를 <strong>택배 발송!</strong></td></tr>
+      <tr><td><code>-u</code></td><td><strong>이 브랜치를 기본 업로드 대상으로 기억</strong> (최초 1회만 필요)</td><td>"앞으로 여기로 계속 보내줘" 설정</td></tr>
+      <tr><td><code>origin</code></td><td>어디로? → origin(GitHub 저장소)으로</td><td>아까 등록한 배송 주소</td></tr>
+      <tr><td><code>main</code></td><td>어떤 브랜치를? → main 브랜치를</td><td>메인 줄기를 업로드</td></tr>
+    </table>
+  </div>
+
+  <div class="box box-warn"><div class="box-title">⚠️ 처음 push할 때 로그인 필요!</div>
+    <p>① GitHub 로그인 창이 뜹니다<br>
+    ② <strong>「Sign in with your browser」</strong> 버튼을 클릭<br>
+    ③ 웹브라우저에서 GitHub 로그인 → <strong>「Authorize」</strong> 클릭<br>
+    ④ "Authentication Successful" 메시지가 나오면 성공!<br>
+    ⑤ Git Bash로 돌아가면 push가 진행됩니다.</p>
+  </div>
+  <div class="expected">Enumerating objects: ...<br>Writing objects: 100% ... done.<br>Branch 'main' set up to track remote branch 'main' from 'origin'. ← 이 메시지가 나오면 성공 ✓</div>
+  <div class="box box-ok"><div class="box-title">✅ 확인 방법</div><p>GitHub 사이트 (<code>github.com/팀장아이디/CarProject2</code>)에 접속하면 방금 올린 파일들이 보입니다!</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⑥ 팀원: 저장소 복제(Clone)하기 [🔵 팀원1~4만 실행]</h3>
+  <div class="box box-warn"><div class="box-title">⚠️ 이 단계는 팀원만!</div><p>팀장은 이미 ③~⑤에서 직접 프로젝트를 올렸으므로, 이 단계를 건너뛰세요.</p></div>
+  <div class="concept">
+    <div class="concept-title">❓ git clone이란?</div>
+    <p><strong style="color:var(--head)">GitHub의 프로젝트를 내 PC로 통째로 다운로드</strong>하는 명령어입니다. 팀장이 올린 프로젝트를 팀원이 받을 때 딱 1번 사용합니다.</p>
+    <div class="analogy">📥 <strong>비유:</strong> 구글 드라이브에서 <strong>공유 폴더를 내 PC에 다운로드</strong>하는 것과 같습니다.</div>
+  </div>
+
+  <p><strong>ⓐ Eclipse workspace 폴더로 이동</strong></p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — workspace 폴더로 이동</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>cd /c/Users/$USER/eclipse-workspace</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ cd 명령어 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>cd</code></td><td>Change Directory — 폴더 이동 명령어</td></tr>
+      <tr><td><code>/c/Users/$USER</code></td><td>내 사용자 폴더 (Windows의 <code>C:\Users\내이름</code>)</td></tr>
+      <tr><td><code>eclipse-workspace</code></td><td>Eclipse 프로젝트들이 저장된 폴더</td></tr>
+    </table>
+    <p>⚠️ <code>$USER</code>는 자동으로 본인 Windows 사용자명으로 변환됩니다.<br>
+    만약 안 되면 직접 입력: <code>cd /c/Users/홍길동/eclipse-workspace</code></p>
+  </div>
+
+  <p><strong>ⓑ GitHub에서 프로젝트 다운로드 (clone)</strong></p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 프로젝트 복제 (★ 팀장 아이디로 변경!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git clone https://github.com/팀장아이디/CarProject2.git</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git clone URL 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git clone</code></td><td>원격 저장소를 <strong>내 PC에 통째로 복사</strong></td><td>공유 폴더를 <strong>내 PC에 다운로드</strong></td></tr>
+      <tr><td><code>https://github.com/...</code></td><td>팀장이 만든 GitHub 저장소 주소</td><td>다운로드할 <strong>공유 폴더 링크</strong></td></tr>
+    </table>
+    <p>처음 실행 시 GitHub 로그인 창이 뜰 수 있습니다 → 로그인하면 다운로드 진행!</p>
+  </div>
+  <div class="expected">Cloning into 'CarProject2'...<br>Resolving deltas: 100% ... done. ← 이 메시지가 나오면 성공 ✓</div>
+
+  <p><strong>ⓒ clone한 프로젝트 폴더로 이동</strong></p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 프로젝트 폴더 진입</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>cd CarProject2</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⑦ Eclipse에서 Clone한 프로젝트 열기 [🔵 팀원1~4 필수!]</h3>
+  <div class="box box-err"><div class="box-title">❌ 주의: 그냥 폴더를 열면 안 됩니다!</div><p>clone한 폴더를 Eclipse에서 열려면 <strong>반드시 Import 과정</strong>을 거쳐야 합니다!</p></div>
+
+  <ul class="steps">
+    <li><div class="step-num sn2">1</div><div class="step-body"><strong>Eclipse 실행</strong><p>평소처럼 Eclipse를 실행합니다.</p></div></li>
+    <li><div class="step-num sn2">2</div><div class="step-body"><strong>File → Import 클릭</strong><p>상단 메뉴바에서 File → Import를 선택합니다.</p></div></li>
+    <li><div class="step-num sn2">3</div><div class="step-body"><strong>「Existing Projects into Workspace」 선택 → Next</strong><p>General 폴더 안에 있습니다. 더블클릭하면 바로 다음으로 넘어갑니다.</p></div></li>
+    <li><div class="step-num sn2">4</div><div class="step-body"><strong>「Browse」 클릭 → clone한 CarProject2 폴더 선택 → 「폴더 선택」</strong><p>경로 예시: <code>C:\Users\홍길동\eclipse-workspace\CarProject2</code></p></div></li>
+    <li><div class="step-num sn2">5</div><div class="step-body"><strong>Projects에 CarProject2가 체크되어 있는지 확인 → 「Finish」 클릭</strong><p>왼쪽 Project Explorer에 CarProject2가 나타나면 성공!</p></div></li>
+  </ul>
+
+  <div class="box box-warn"><div class="box-title">⚠️ 빨간 X 에러가 나타나면?</div>
+    <p>Clone 후 Eclipse에서 프로젝트에 빨간 X가 보일 수 있습니다. 해결 방법:<br>
+    ① 프로젝트 우클릭 → <strong>Properties</strong> → <strong>Java Build Path</strong> → Libraries 탭<br>
+    ② JRE System Library 에러가 있으면 → 선택 → <strong>Edit</strong> → 본인 PC의 JRE 선택 → OK<br>
+    ③ 프로젝트 우클릭 → <strong>Properties</strong> → <strong>Targeted Runtimes</strong> → Apache Tomcat 체크 → OK<br>
+    ④ 프로젝트 우클릭 → <strong>Maven → Update Project</strong> (Maven 프로젝트인 경우)</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">☑️ Step 2 완료 체크리스트</h3>
+  <ul class="checklist" id="cl2">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g2c0"><label>[팀장] GitHub 저장소 생성 완료 (Private + README 체크)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g2c1"><label>[팀장] 팀원1~4 전원 초대 완료 + 팀원 수락 완료</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g2c2"><label>[팀장] git init → .gitignore 생성 → git push 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g2c3"><label>[팀장] GitHub 사이트에서 파일 확인 (.gitignore 포함)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g2c4"><label>[팀원1~4] git clone 성공 → Eclipse Import → 프로젝트 열림</label></li>
+  </ul>
+  <div class="box box-ok"><div class="box-title">🎉 Step 2 완료!</div><p>GitHub 저장소 연결이 끝났습니다! 이제 <strong>Step 3</strong>에서 매일 사용할 기본 명령어를 배웁니다.</p></div>
+  <button class="next-btn" onclick="show(3)" style="background:var(--s2);">다음 단계 → Step 3 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 3 : 매일 사용하는 기본 명령어
+     ════════════════════════════════ -->
+<section class="pane" id="s3">
+  <div class="page-badge b3">💻 Step 3</div>
+  <h2 class="pt">매일 사용하는 Git 기본 명령어</h2>
+  <p class="pd">팀프로젝트에서 매일 사용하는 핵심 명령어 5개를 배웁니다. 이것만 알면 기본 협업이 가능합니다!</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 3 진행률</span><span id="p3b-text">0 / 5</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p3b"></div></div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-node c1">① git pull<small>최신 코드 받기</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node c3">코드 작성<small>Eclipse에서 개발</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node cg">② git add<small>파일 선택</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node cg">③ git commit<small>저장</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node c4">④ git push<small>업로드</small></div>
+  </div>
+  <div class="box box-warn"><div class="box-title">⭐ 가장 중요한 규칙</div><p>매일 작업 시작 전에 <strong>반드시 git pull 먼저!</strong> 팀원이 올린 최신 코드를 받아야 충돌을 예방합니다.</p></div>
+
+  <h3 class="sec">① git pull — 최신 코드 받기 [전체 팀원 — 매일 처음에!]</h3>
+  <div class="box box-err"><div class="box-title">❌ pull 안 하면 무슨 일이?</div><p>팀원2가 어제 올린 코드를 안 받고 작업 → 내가 push할 때 <strong>"rejected" 에러</strong> 발생! 처음부터 다시 해야 하는 상황 발생!</p></div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 매일 작업 시작 전 반드시 실행!</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git pull origin main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git pull origin main 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git pull</code></td><td>원격 저장소의 최신 코드를 <strong>다운로드 + 자동 합치기</strong></td><td>팀 공유 폴더에서 <strong>최신 파일 받기</strong></td></tr>
+      <tr><td><code>origin</code></td><td>어디서? → GitHub 저장소(origin)에서</td><td>우리 팀 <strong>공유 폴더</strong>에서</td></tr>
+      <tr><td><code>main</code></td><td>어떤 브랜치를? → main(메인) 브랜치를</td><td><strong>메인 폴더</strong>의 최신 버전을</td></tr>
+    </table>
+  </div>
+  <div class="expected">Already up to date. ← 이미 최신이면 이 메시지<br>또는 파일 변경 내역이 표시되면 → 팀원이 올린 코드가 내 PC에 반영된 것! ✓</div>
+  <div class="box box-tip"><div class="box-title">💜 pull 후 Eclipse에서 새로고침!</div><p>pull로 코드를 받은 후, Eclipse에서 프로젝트를 <strong>우클릭 → Refresh</strong> (또는 <strong>F5 키</strong>)를 눌러야 변경된 파일이 Eclipse에 반영됩니다!</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">② git status — 현재 상태 확인</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 어떤 파일이 바뀌었는지 확인</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git status</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 출력 결과 읽는 법</div>
+    <table>
+      <tr><th>표시</th><th>의미</th></tr>
+      <tr><td style="color:#f85149;">modified: Top.jsp</td><td>수정된 파일 (아직 add 안 함)</td></tr>
+      <tr><td style="color:#f85149;">Untracked files: NewFile.jsp</td><td>새로 만든 파일 (Git이 아직 모르는 파일)</td></tr>
+      <tr><td style="color:#3fb950;">Changes to be committed</td><td>add 완료 → commit 대기 중인 파일</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">③ git add — 변경 파일 선택 (박스에 담기)</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 모든 변경 파일 선택</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git add -A</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git add -A 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git add</code></td><td>파일을 <strong>커밋 대기실(Staging Area)</strong>에 올림</td><td>택배 보낼 물건을 <strong>박스에 담기</strong></td></tr>
+      <tr><td><code>-A</code></td><td><strong>All</strong> — 수정/추가/삭제된 모든 파일을 한 번에</td><td>"변경된 거 <strong>전부 다</strong> 담아!"</td></tr>
+    </table>
+    <p>아무 메시지 없이 다음 줄이 나오면 정상! (에러가 없다는 뜻)</p>
+  </div>
+  <div class="box box-tip"><div class="box-title">💜 특정 파일만 add하고 싶을 때</div>
+    <table>
+      <tr><th>명령어</th><th>의미</th><th>사용 상황</th></tr>
+      <tr><td><code>git add -A</code></td><td><strong>모든 변경</strong> 파일 추가</td><td>가장 많이 사용! 보통 이것만 쓰면 OK</td></tr>
+      <tr><td><code>git add Top.jsp</code></td><td><strong>Top.jsp만</strong> 추가</td><td>특정 파일 하나만 올리고 싶을 때</td></tr>
+      <tr><td><code>git add src/main/webapp/</code></td><td><strong>webapp 폴더 전체</strong> 추가</td><td>특정 폴더만 올리고 싶을 때</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">④ git commit — 변경 내역 저장 (세이브포인트 만들기)</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 커밋 메시지와 함께 저장</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git commit -m "여기에 수정 내용 요약 작성"</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git commit -m 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git commit</code></td><td>대기실의 파일을 <strong>내 PC Git 저장소에 확정 저장</strong></td><td>박스를 <strong>봉인하고 라벨 붙이기</strong></td></tr>
+      <tr><td><code>-m</code></td><td><strong>메시지(message)</strong>를 바로 입력하겠다</td><td>라벨에 <strong>내용물 적기</strong></td></tr>
+      <tr><td><code>"수정 내용"</code></td><td>이 커밋이 뭘 했는지 설명 (큰따옴표 필수!)</td><td>"이 박스에는 ~가 들어있습니다"</td></tr>
+    </table>
+  </div>
+  <div class="box box-tip"><div class="box-title">💜 좋은 커밋 메시지 작성법 — 팀원별 예시</div>
+    <table>
+      <tr><th>팀원</th><th>좋은 예시 ✅</th><th>나쁜 예시 ❌</th></tr>
+      <tr><td>팀장</td><td><code>프로젝트 초기 설정 완료</code></td><td><code>설정</code></td></tr>
+      <tr><td>팀원1</td><td><code>로그인/회원가입 JSP 페이지 구현</code></td><td><code>수정함</code></td></tr>
+      <tr><td>팀원2</td><td><code>CarList.jsp 검색 기능 버그 수정</code></td><td><code>ㅎㅎ</code></td></tr>
+      <tr><td>팀원3</td><td><code>AI 추천 서비스 Controller+DAO 구현</code></td><td><code>1234</code></td></tr>
+      <tr><td>팀원4</td><td><code>메인 페이지 CSS 디자인 변경</code></td><td><code>아 몰라</code></td></tr>
+    </table>
+    <p>💡 규칙: <strong>"어디서 무엇을 했는지"</strong> 한 줄로 요약! 나중에 문제 생기면 이력 추적에 매우 유용합니다.</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⑤ git push — GitHub에 업로드 (택배 발송!)</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — GitHub에 올리기</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git push origin main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git push origin main 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git push</code></td><td>내 PC의 커밋을 <strong>GitHub에 업로드</strong></td><td>봉인한 박스를 <strong>택배 발송!</strong></td></tr>
+      <tr><td><code>origin</code></td><td>어디로? → origin(GitHub)으로</td><td>팀 공유 <strong>클라우드</strong>로</td></tr>
+      <tr><td><code>main</code></td><td>어떤 브랜치를? → main 브랜치를</td><td>메인 폴더에 업로드</td></tr>
+    </table>
+  </div>
+  <div class="box box-warn"><div class="box-title">⚠️ push 후 반드시 확인!</div><p>① GitHub 사이트 접속 → 저장소 페이지에서 방금 올린 파일이 보이는지 확인<br>② 커밋 메시지와 시간이 맞는지 확인<br>③ 팀 단톡방에 <strong>"push 했습니다!"</strong> 알림 보내기! → 팀원들이 pull할 수 있도록</p></div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⭐ 매일 사용하는 3줄 명령어 (이것만 외우세요!)</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 매일 작업 루틴</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># === 작업 시작 전 ===</span>
+git pull origin main
+
+<span class="cm"># === Eclipse에서 코드 작업... ===</span>
+
+<span class="cm"># === 작업 완료 후 업로드 ===</span>
+git add -A
+git commit -m "작업 내용 요약"
+git push origin main</pre>
+  </div>
+
+  <h3 class="sec">⑥ git diff — 내가 뭘 수정했는지 확인하기</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 수정한 내용 미리보기 (add 전에 확인!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git diff</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git diff 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git diff</code></td><td>마지막 커밋 이후 <strong>어떤 줄이 바뀌었는지</strong> 보여줌</td><td>이전 문서와 현재 문서의 <strong>변경 내용 추적</strong></td></tr>
+    </table>
+    <p><span style="color:var(--ok)">+ 초록색 줄</span> = 새로 추가된 코드 &nbsp;|&nbsp; <span style="color:var(--err)">- 빨간색 줄</span> = 삭제된 코드<br>
+    나가려면 <strong>q 키</strong>를 누르세요!</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">📋 git log — 커밋 이력 확인</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 지금까지의 커밋 기록 보기</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git log --oneline</pre>
+  </div>
+  <div class="expected">a1b2c3d AI 추천 서비스 페이지 구현<br>e4f5g6h 로그인 기능 추가<br>i7j8k9l 최초 프로젝트 업로드  ← 커밋 이력이 보이면 성공 ✓</div>
+
+  <hr class="divider">
+  <h3 class="sec">🎬 실전 시나리오: 팀원1(김민수)의 하루</h3>
+  <div class="concept">
+    <div class="concept-title">📋 상황 설정</div>
+    <p>팀원1(kim-minsu)이 <strong>로그인 페이지(Login.jsp)</strong>를 만드는 하루입니다. 아래 순서대로 그대로 따라해보세요!</p>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 팀원1의 하루 전체 흐름 (복사해서 실행!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># ===== 1. 아침: 작업 시작 전 최신 코드 받기 =====</span>
+cd /c/Users/$USER/eclipse-workspace/CarProject2
+git pull origin main
+<span class="cm"># → Eclipse에서 프로젝트 우클릭 → Refresh (F5)</span>
+
+<span class="cm"># ===== 2. Eclipse에서 Login.jsp 작성... =====</span>
+<span class="cm"># (Eclipse에서 코드를 작성하고 저장합니다)</span>
+
+<span class="cm"># ===== 3. 작업 완료 후: 뭐가 바뀌었는지 확인 =====</span>
+git status
+<span class="cm"># → 빨간색으로 modified: Login.jsp 등이 보임</span>
+
+<span class="cm"># ===== 4. 변경 파일을 Git에 추가 =====</span>
+git add -A
+
+<span class="cm"># ===== 5. 커밋 (내 PC에 저장) =====</span>
+git commit -m "로그인 페이지(Login.jsp) 구현"
+
+<span class="cm"># ===== 6. GitHub에 업로드 =====</span>
+git push origin main
+
+<span class="cm"># ===== 7. 팀 단톡방에 "push 했습니다!" 알림 =====</span></pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">☑️ Step 3 완료 체크리스트</h3>
+  <ul class="checklist" id="cl3">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g3c0"><label><code>git pull origin main</code>으로 최신 코드 받기 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g3c1"><label><code>git status</code>로 변경 파일 확인 (빨간/초록색 파일 이해)</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g3c2"><label><code>git add -A</code> → <code>git commit -m "메시지"</code> 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g3c3"><label><code>git push origin main</code> 성공 — GitHub 사이트에서 파일 확인</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g3c4"><label><code>git diff</code>로 변경 내용 확인 + <code>git log --oneline</code>으로 이력 확인</label></li>
+  </ul>
+  <div class="box box-ok"><div class="box-title">🎉 Step 3 완료!</div><p>기본 Git 사용법을 마스터했습니다! 이제 <strong>Step 4</strong>에서 팀원끼리 충돌 없이 협업하는 브랜치 전략을 배웁니다.</p></div>
+  <button class="next-btn" onclick="show(4)" style="background:var(--s3);">다음 단계 → Step 4 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 4 : 브랜치 협업
+     ════════════════════════════════ -->
+<section class="pane" id="s4">
+  <div class="page-badge b4">🌿 Step 4</div>
+  <h2 class="pt">브랜치로 팀프로젝트 협업하기</h2>
+  <p class="pd">각 팀원이 자기 브랜치에서 작업하고, 완료되면 main에 합칩니다. 충돌 없는 협업의 핵심입니다!</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 4 진행률</span><span id="p4b-text">0 / 5</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p4b"></div></div>
+  </div>
+
+  <div class="box box-info"><div class="box-title">ℹ️ 우리 팀 브랜치 구조 (5인 팀)</div>
+    <table>
+      <tr><th>브랜치 이름</th><th>담당</th><th>작업 내용</th></tr>
+      <tr><td><code>main</code></td><td>팀장 관리</td><td>완성된 코드만! (직접 작업 금지)</td></tr>
+      <tr><td><code>feature/login</code></td><td>팀원1 (김민수)</td><td>로그인/회원가입 기능</td></tr>
+      <tr><td><code>feature/carlist</code></td><td>팀원2 (이지은)</td><td>차량 목록/검색 기능</td></tr>
+      <tr><td><code>feature/reservation</code></td><td>팀원3 (최윤지)</td><td>예약 기능</td></tr>
+      <tr><td><code>feature/mypage</code></td><td>팀원4 (정시우)</td><td>마이페이지/리뷰 기능</td></tr>
+    </table>
+  </div>
+
+  <div class="flow">
+    <div class="flow-node c2">main (메인)<small>완성된 코드만</small></div>
+    <div class="flow-arrow">↗</div>
+    <div class="flow-node c1">feature/login<small>팀원1: 로그인</small></div>
+    <div class="flow-arrow">↗</div>
+    <div class="flow-node c4">feature/carlist<small>팀원2: 차량목록</small></div>
+  </div>
+  <div class="flow" style="margin-top:-10px;">
+    <div class="flow-node c2" style="visibility:hidden;">main</div>
+    <div class="flow-arrow">↗</div>
+    <div class="flow-node c5">feature/reservation<small>팀원3: 예약</small></div>
+    <div class="flow-arrow">↗</div>
+    <div class="flow-node c3">feature/mypage<small>팀원4: 마이페이지</small></div>
+  </div>
+
+  <div class="concept">
+    <div class="concept-title">❓ 왜 브랜치를 사용하나요?</div>
+    <p>5명이 모두 main에 직접 push하면 <strong style="color:var(--err)">코드 충돌이 매번</strong> 발생합니다! 각자 브랜치에서 작업하면 서로 방해 없이 독립적으로 개발 가능!</p>
+    <div class="analogy">🏗️ <strong>비유:</strong> 아파트 공사에서 <strong>각 팀이 다른 층을 담당</strong>하는 것과 같습니다. 1층(팀원1)과 2층(팀원2) 공사가 서로 방해하지 않고, 다 완성되면 합칩니다.</div>
+  </div>
+
+  <h3 class="sec">① 새 브랜치 만들기 [각 팀원이 실행]</h3>
+  <p>각 팀원은 main에서 자기 브랜치를 만들고 그 안에서 작업합니다.</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 새 브랜치 만들고 바로 이동 (★ 본인 기능명으로 변경!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git checkout -b feature/login</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git checkout -b 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git checkout</code></td><td>브랜치를 <strong>이동(전환)</strong>하는 명령어</td><td>다른 방으로 <strong>이동</strong></td></tr>
+      <tr><td><code>-b</code></td><td><strong>새로 만들면서(branch)</strong> 동시에 이동</td><td>새 방을 <strong>만들고 바로 들어가기</strong></td></tr>
+      <tr><td><code>feature/login</code></td><td>브랜치 이름 (규칙: <code>feature/기능명</code>)</td><td>방 이름표</td></tr>
+    </table>
+  </div>
+
+  <div class="box box-tip"><div class="box-title">💜 각 팀원이 만들어야 할 브랜치</div>
+    <table>
+      <tr><th>팀원</th><th>입력할 명령어</th><th>담당 기능</th></tr>
+      <tr><td>팀원1 (김민수)</td><td><code>git checkout -b feature/login</code></td><td>로그인/회원가입</td></tr>
+      <tr><td>팀원2 (이지은)</td><td><code>git checkout -b feature/carlist</code></td><td>차량 목록/검색</td></tr>
+      <tr><td>팀원3 (최윤지)</td><td><code>git checkout -b feature/reservation</code></td><td>예약 기능</td></tr>
+      <tr><td>팀원4 (정시우)</td><td><code>git checkout -b feature/mypage</code></td><td>마이페이지/리뷰</td></tr>
+    </table>
+  </div>
+  <div class="expected">Switched to a new branch 'feature/login' ← 이 메시지가 나오면 성공 ✓</div>
+
+  <h3 class="sec">② 브랜치에서 작업 후 push [각 팀원이 실행]</h3>
+  <p>Eclipse에서 코드를 작성한 후, <strong>내 브랜치에 push</strong>합니다. (main이 아님!)</p>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 팀원1(김민수)의 브랜치 작업 예시</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># Eclipse에서 Login.jsp, LoginController.java 작성 후...</span>
+
+<span class="cm"># 1. 변경 파일 확인</span>
+git status
+
+<span class="cm"># 2. 모든 변경 파일 추가</span>
+git add -A
+
+<span class="cm"># 3. 커밋 (내 PC에 저장)</span>
+git commit -m "로그인 기능 구현 완료"
+
+<span class="cm"># 4. 내 브랜치를 GitHub에 업로드 (★ 본인 브랜치명으로!)</span>
+git push origin feature/login</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git push origin feature/login 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git push</code></td><td>GitHub에 업로드</td></tr>
+      <tr><td><code>origin</code></td><td>GitHub 저장소</td></tr>
+      <tr><td><code>feature/login</code></td><td>업로드할 브랜치 이름 (main이 아니라 <strong>내 브랜치!</strong>)</td></tr>
+    </table>
+    <p>⚠️ <code>git push origin main</code>이 아닙니다! 반드시 <strong>내 브랜치명</strong>을 적으세요.</p>
+  </div>
+
+  <h3 class="sec">③ main에 합치기 (Merge) [기능 완성 후]</h3>
+  <div class="box box-warn"><div class="box-title">⚠️ 합치기 전 주의!</div><p>기능이 <strong>완전히 완성</strong>되고, <strong>테스트까지 끝난 후</strong>에 merge하세요! 미완성 코드를 main에 합치면 팀 전체에 영향!</p></div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓐ main 브랜치로 이동</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git checkout main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git checkout main 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git checkout</code></td><td>브랜치 이동 명령어</td></tr>
+      <tr><td><code>main</code></td><td>main 브랜치로 이동 (합치기 전에 <strong>반드시 main으로 먼저 이동!</strong>)</td></tr>
+    </table>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓑ main을 최신 상태로 업데이트</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git pull origin main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 왜 pull을 먼저?</div><p>다른 팀원이 이미 main에 코드를 합쳤을 수 있습니다. 최신 상태를 받아야 충돌을 줄일 수 있습니다!</p></div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓒ 내 브랜치를 main에 합치기</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git merge feature/login</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git merge feature/login 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git merge</code></td><td>다른 브랜치의 코드를 <strong>현재 브랜치에 합치기</strong></td><td>다른 방의 작업물을 <strong>메인 방에 가져오기</strong></td></tr>
+      <tr><td><code>feature/login</code></td><td>합칠 브랜치 이름</td><td>팀원1의 작업물</td></tr>
+    </table>
+    <p>⚠️ 현재 내가 main에 있는 상태에서 실행해야 합니다! (ⓐ에서 이동했으므로 OK)</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — ⓓ 합친 결과를 GitHub에 업로드</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git push origin main</pre>
+  </div>
+  <div class="expected">합치기(merge) 후 push 성공 → GitHub에서 main 브랜치에 로그인 코드가 추가된 것 확인! ✓</div>
+
+  <h3 class="sec">④ 브랜치 관리 명령어 모음</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 현재 브랜치 목록 확인</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git branch</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git branch 설명</div>
+    <p><code>git branch</code> = 내 PC의 모든 브랜치 목록을 보여줌. <strong>* 표시가 현재 내가 있는 브랜치</strong>입니다.</p>
+  </div>
+  <div class="expected">* main<br>  feature/login<br>  feature/carlist  ← * 표시가 현재 브랜치 ✓</div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — merge 완료 후 브랜치 삭제</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git branch -d feature/login</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git branch -d 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git branch</code></td><td>브랜치 관리 명령어</td></tr>
+      <tr><td><code>-d</code></td><td><strong>delete</strong> — 해당 브랜치를 삭제 (merge된 것만 삭제 가능)</td></tr>
+      <tr><td><code>feature/login</code></td><td>삭제할 브랜치 이름</td></tr>
+    </table>
+    <p>💡 merge가 완료된 브랜치는 삭제해도 됩니다. 코드는 main에 이미 합쳐져 있으니까!</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 다른 브랜치로 이동 (이미 있는 브랜치)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git checkout main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ checkout vs checkout -b 차이</div>
+    <table>
+      <tr><th>명령어</th><th>의미</th><th>사용 상황</th></tr>
+      <tr><td><code>git checkout main</code></td><td>이미 있는 main 브랜치로 <strong>이동만</strong></td><td>기존 브랜치로 돌아갈 때</td></tr>
+      <tr><td><code>git checkout -b feature/new</code></td><td>새 브랜치를 <strong>만들면서 이동</strong></td><td>새 기능 시작할 때</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">🎬 실전 시나리오: 5인 팀 브랜치 작업 흐름</h3>
+  <div class="concept">
+    <div class="concept-title">📋 팀원3(최윤지)의 예약 기능 개발 시나리오</div>
+    <p>팀원3이 예약 기능을 브랜치에서 개발하고, main에 합치는 전체 과정입니다.</p>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 팀원3의 전체 흐름 (순서대로 실행!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># ===== 1단계: 프로젝트 폴더로 이동 =====</span>
+cd /c/Users/$USER/eclipse-workspace/CarProject2
+
+<span class="cm"># ===== 2단계: main 최신 코드 받기 =====</span>
+git checkout main
+git pull origin main
+
+<span class="cm"># ===== 3단계: 내 브랜치 만들고 이동 =====</span>
+git checkout -b feature/reservation
+
+<span class="cm"># ===== 4단계: Eclipse에서 코드 작업! =====</span>
+<span class="cm"># (Reservation.jsp, ReservationController.java 등 작성)</span>
+
+<span class="cm"># ===== 5단계: 작업 완료 후 저장 & 업로드 =====</span>
+git add -A
+git commit -m "예약 기능 JSP + Controller + DAO 구현"
+git push origin feature/reservation
+
+<span class="cm"># ===== 6단계: 기능 완성 후 main에 합치기 =====</span>
+git checkout main
+git pull origin main
+git merge feature/reservation
+git push origin main
+
+<span class="cm"># ===== 7단계: 다 쓴 브랜치 삭제 =====</span>
+git branch -d feature/reservation
+
+<span class="cm"># ===== 8단계: 팀 단톡방에 "예약 기능 main에 합쳤습니다!" =====</span></pre>
+  </div>
+
+  <hr class="divider">
+  <h3 class="sec">☑️ Step 4 완료 체크리스트</h3>
+  <ul class="checklist" id="cl4">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g4c0"><label><code>git checkout -b</code>로 새 브랜치 생성 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g4c1"><label>브랜치에서 코드 작성 후 commit &amp; push 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g4c2"><label><code>git merge</code>로 main에 합치기 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g4c3"><label><code>git branch</code>로 브랜치 목록 확인</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g4c4"><label><code>git branch -d</code>로 사용 완료 브랜치 삭제</label></li>
+  </ul>
+  <div class="box box-ok"><div class="box-title">🎉 Step 4 완료!</div><p>브랜치 협업을 마스터했습니다! 이제 <strong>Step 5</strong>에서 충돌 해결 방법을 배웁니다.</p></div>
+  <button class="next-btn" onclick="show(5)" style="background:var(--tip);">다음 단계 → Step 5 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 5 : 충돌 해결 & Pull Request
+     ════════════════════════════════ -->
+<section class="pane" id="s5">
+  <div class="page-badge b5">🔥 Step 5</div>
+  <h2 class="pt">충돌 해결 &amp; Pull Request</h2>
+  <p class="pd">팀원과 같은 파일을 수정했을 때 충돌이 발생합니다. 당황하지 마세요! 해결 방법을 배웁니다.</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 5 진행률</span><span id="p5b-text">0 / 4</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p5b"></div></div>
+  </div>
+
+  <h3 class="sec">① 충돌(Conflict)이란?</h3>
+  <div class="concept">
+    <div class="concept-title">💥 충돌이 발생하는 상황</div>
+    <p><strong style="color:var(--err)">두 명 이상이 같은 파일의 같은 부분을 동시에 수정</strong>하고 합칠 때 발생합니다. Git이 "어느 쪽 코드를 쓸까요?"라고 물어보는 것입니다.</p>
+    <div class="analogy">📝 <strong>비유:</strong> 같은 문서의 3번째 줄을 A가 "사과"로 바꾸고, B가 "바나나"로 바꿈 → 컴퓨터가 "뭐가 맞아?" 하고 물어보는 상황!</div>
+  </div>
+
+  <h3 class="sec">② 실제 충돌 예시 (Top.jsp)</h3>
+  <div class="concept">
+    <div class="concept-title">📋 상황: 팀원1과 팀원2가 Top.jsp를 동시에 수정!</div>
+    <p>팀원1은 네비게이션에 "로그인" 메뉴를, 팀원2는 "차량검색" 메뉴를 추가했습니다. 둘 다 같은 줄을 수정해서 충돌 발생!</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">충돌 난 Top.jsp (Eclipse에서 열면 이렇게 보임)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>&lt;nav class="main-menu"&gt;
+  &lt;a href="Main.jsp"&gt;홈&lt;/a&gt;
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  <span class="tag">&lt;a href="Login.jsp"&gt;로그인&lt;/a&gt;</span>
+  <span class="tag">&lt;a href="Register.jsp"&gt;회원가입&lt;/a&gt;</span>
+=======
+  <span class="at">&lt;a href="CarList.jsp"&gt;차량검색&lt;/a&gt;</span>
+  <span class="at">&lt;a href="CarDetail.jsp"&gt;차량상세&lt;/a&gt;</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/carlist
+&lt;/nav&gt;</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ 충돌 표시 읽는 법</div>
+    <table>
+      <tr><th>표시</th><th>의미</th><th>이 예시에서는</th></tr>
+      <tr><td><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></td><td>여기부터 <strong>내(현재 브랜치) 코드</strong> 시작</td><td>팀원1이 추가한 로그인 메뉴</td></tr>
+      <tr><td><code>=======</code></td><td>내 코드와 팀원 코드의 <strong>경계선</strong></td><td>여기서 갈림</td></tr>
+      <tr><td><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/carlist</code></td><td>여기까지 <strong>합치려는 브랜치 코드</strong> 끝</td><td>팀원2가 추가한 차량검색 메뉴</td></tr>
+    </table>
+  </div>
+
+  <h3 class="sec">③ 충돌 해결 방법 (3단계)</h3>
+  <ul class="steps">
+    <li><div class="step-num sn5">1</div><div class="step-body"><strong>Eclipse에서 충돌 파일(Top.jsp)을 열기</strong><p><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 표시를 찾습니다. Eclipse에서 빨간 줄로 표시될 수 있습니다.</p></div></li>
+    <li><div class="step-num sn5">2</div><div class="step-body"><strong>두 코드를 모두 살리거나, 하나만 선택하기</strong><p>이 경우 두 메뉴 모두 필요하므로 <strong>양쪽 다 살리고</strong>, <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 표시만 삭제!</p></div></li>
+    <li><div class="step-num sn5">3</div><div class="step-body"><strong>수정 후 저장 → add → commit → push</strong></div></li>
+  </ul>
+
+  <div class="code-wrap">
+    <div class="code-label">충돌 해결 후 최종 Top.jsp (이렇게 만들면 됩니다!)</div>
+    <pre>&lt;nav class="main-menu"&gt;
+  &lt;a href="Main.jsp"&gt;홈&lt;/a&gt;
+  <span class="tag">&lt;a href="Login.jsp"&gt;로그인&lt;/a&gt;</span>
+  <span class="tag">&lt;a href="Register.jsp"&gt;회원가입&lt;/a&gt;</span>
+  <span class="at">&lt;a href="CarList.jsp"&gt;차량검색&lt;/a&gt;</span>
+  <span class="at">&lt;a href="CarDetail.jsp"&gt;차량상세&lt;/a&gt;</span>
+&lt;/nav&gt;</pre>
+  </div>
+  <div class="box box-ok"><div class="box-title">✅ 핵심 포인트</div><p>① <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 세 줄은 <strong>반드시 삭제!</strong><br>② 필요한 코드만 남기고 정리<br>③ 팀원과 카톡으로 상의해서 어떤 코드를 남길지 결정!</p></div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 충돌 해결 후 업로드</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># 충돌 파일 수정 완료 후</span>
+git add -A
+git commit -m "merge 충돌 해결: Top.jsp (로그인+차량검색 메뉴 통합)"
+git push origin main</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">③-2 git stash — 작업 중 임시 저장하기</h3>
+  <div class="concept">
+    <div class="concept-title">❓ stash란?</div>
+    <p>작업 중인데 급하게 pull이나 브랜치 이동이 필요할 때, <strong style="color:var(--head)">현재 수정사항을 임시로 저장</strong>해두는 기능입니다.</p>
+    <div class="analogy">🗄️ <strong>비유:</strong> 책상 위 작업물을 잠깐 <strong>서랍에 넣어두고</strong>, 다른 일을 한 뒤, 다시 <strong>서랍에서 꺼내서</strong> 이어 작업하는 것!</div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 임시 저장하기</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git stash</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git stash 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th><th>비유</th></tr>
+      <tr><td><code>git stash</code></td><td>수정 중인 파일을 <strong>임시 보관함에 저장</strong>하고, 코드를 마지막 커밋 상태로 되돌림</td><td>작업물을 <strong>서랍에 넣기</strong></td></tr>
+    </table>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 임시 저장한 것 다시 꺼내기</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>git stash pop</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git stash pop 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git stash pop</code></td><td>임시 보관함에서 <strong>꺼내서 현재 코드에 적용</strong> (서랍에서 다시 꺼내기)</td></tr>
+    </table>
+  </div>
+  <div class="box box-tip"><div class="box-title">💜 stash 사용 상황 예시</div>
+    <p>팀원2가 코딩 중인데 팀원1이 "main에 push 했으니 pull 해주세요!" 라고 카톡이 왔을 때:<br>
+    ① <code>git stash</code> → 내 수정사항 임시 저장<br>
+    ② <code>git pull origin main</code> → 최신 코드 받기<br>
+    ③ <code>git stash pop</code> → 내 수정사항 다시 꺼내기<br>
+    → 최신 코드 + 내 작업 내용이 합쳐짐!</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">④ Pull Request (PR) — 안전하게 합치기</h3>
+  <div class="concept">
+    <div class="concept-title">🔀 Pull Request란?</div>
+    <p>직접 merge하는 대신, <strong style="color:var(--head)">"이 코드를 main에 합쳐주세요"라고 요청</strong>하는 것입니다. 팀원이 코드를 검토(리뷰)한 후 합칠 수 있어서 더 안전합니다.</p>
+    <div class="analogy">📋 <strong>비유:</strong> 보고서를 바로 제출하는 대신, <strong>"이거 검토해주세요"</strong>하고 결재를 올리는 것과 같습니다.</div>
+  </div>
+
+  <ul class="steps">
+    <li><div class="step-num sn5">1</div><div class="step-body"><strong>[팀원1] 내 브랜치를 GitHub에 push</strong>
+      <div class="code-wrap"><button class="copy-btn no-label" onclick="copyCode(this)">복사</button><pre class="no-label">git push origin feature/login</pre></div>
+      <p>아직 main에 합치는 것이 아닙니다! 내 브랜치를 GitHub에 올리는 것입니다.</p></div></li>
+    <li><div class="step-num sn5">2</div><div class="step-body"><strong>[팀원1] GitHub 사이트 접속 → 노란 배너의 「Compare &amp; pull request」 클릭</strong><p>push 직후 GitHub 저장소 페이지에 접속하면 상단에 <strong>노란색 배너</strong>가 뜹니다.<br>만약 안 보이면: 상단 「Pull requests」 탭 → 「New pull request」 클릭</p></div></li>
+    <li><div class="step-num sn5">3</div><div class="step-body"><strong>[팀원1] PR 제목과 설명 작성 → 「Create pull request」 클릭</strong>
+      <p><strong>제목 예시:</strong> <code>로그인/회원가입 기능 구현</code><br>
+      <strong>설명 예시:</strong></p>
+      <div class="code-wrap"><pre class="no-label">## 작업 내용
+- Login.jsp 로그인 페이지 구현
+- Register.jsp 회원가입 페이지 구현
+- LoginController.java 로그인 처리 Controller 추가
+- MemberDAO.java 회원 DB 조회 메서드 추가
+
+## 테스트 결과
+- 로그인 성공/실패 테스트 완료
+- 회원가입 후 DB 저장 확인 완료</pre></div></div></li>
+    <li><div class="step-num sn5">4</div><div class="step-body"><strong>[팀장 또는 다른 팀원] 코드 리뷰</strong><p>PR 페이지에서 「Files changed」 탭을 클릭하면 수정된 코드를 볼 수 있습니다.<br>문제 없으면 다음 단계로!</p></div></li>
+    <li><div class="step-num sn5">5</div><div class="step-body"><strong>[팀장] 「Merge pull request」 → 「Confirm merge」 클릭</strong><p>초록색 버튼을 클릭하면 feature/login 브랜치의 코드가 main에 합쳐집니다!<br>합치기 완료 후 「Delete branch」 버튼을 눌러 원격 브랜치를 정리할 수 있습니다.</p></div></li>
+    <li><div class="step-num sn5">6</div><div class="step-body"><strong>[전체 팀원] main 최신 코드 받기</strong>
+      <div class="code-wrap"><button class="copy-btn no-label" onclick="copyCode(this)">복사</button><pre class="no-label">git checkout main
+git pull origin main</pre></div>
+      <p>PR이 merge되면 <strong>모든 팀원이 pull</strong>해서 최신 코드를 받아야 합니다!</p></div></li>
+  </ul>
+
+  <hr class="divider">
+  <h3 class="sec">☑️ Step 5 완료 체크리스트</h3>
+  <ul class="checklist" id="cl5">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g5c0"><label>충돌 표시 (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>) 읽는 법 이해</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g5c1"><label>충돌 파일 수정 → add → commit → push 성공</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g5c2"><label>Pull Request 생성 방법 이해</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g5c3"><label>PR Merge 완료 경험</label></li>
+  </ul>
+  <div class="box box-ok"><div class="box-title">🎉 Step 5 완료!</div><p>충돌 해결과 Pull Request를 배웠습니다! <strong>Step 6</strong>에서 실전 팁을 배웁니다.</p></div>
+  <button class="next-btn" onclick="show(6)" style="background:var(--s5);">다음 단계 → Step 6 &nbsp;▶</button>
+</section>
+
+<!-- ════════════════════════════════
+     STEP 6 : 실전 팁 & 문제 해결
+     ════════════════════════════════ -->
+<section class="pane" id="s6">
+  <div class="page-badge b6">🛠️ Step 6</div>
+  <h2 class="pt">실전 팁 &amp; 문제 해결</h2>
+  <p class="pd">팀프로젝트에서 자주 겪는 상황별 해결법과 유용한 명령어를 모았습니다.</p>
+
+  <div class="prog-wrap">
+    <div class="prog-labels"><span>Step 6 진행률</span><span id="p6b-text">0 / 4</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="p6b"></div></div>
+  </div>
+
+  <h3 class="sec">🔧 자주 쓰는 명령어 모음</h3>
+  <table>
+    <tr><th>상황</th><th>명령어</th><th>설명</th></tr>
+    <tr><td>최신 코드 받기</td><td><code>git pull origin main</code></td><td>작업 시작 전 필수!</td></tr>
+    <tr><td>변경사항 저장</td><td><code>git add -A && git commit -m "메시지"</code></td><td>add와 commit 한 줄로</td></tr>
+    <tr><td>업로드</td><td><code>git push origin main</code></td><td>GitHub에 올리기</td></tr>
+    <tr><td>현재 상태 확인</td><td><code>git status</code></td><td>변경된 파일 목록</td></tr>
+    <tr><td>커밋 이력 보기</td><td><code>git log --oneline</code></td><td>간단한 이력 확인</td></tr>
+    <tr><td>브랜치 목록</td><td><code>git branch</code></td><td>현재 브랜치에 * 표시</td></tr>
+    <tr><td>브랜치 만들고 이동</td><td><code>git checkout -b 브랜치명</code></td><td>새 브랜치 생성+이동</td></tr>
+    <tr><td>브랜치 이동</td><td><code>git checkout 브랜치명</code></td><td>이미 있는 브랜치로 이동</td></tr>
+    <tr><td>브랜치 합치기</td><td><code>git merge 브랜치명</code></td><td>현재 브랜치에 합치기</td></tr>
+    <tr><td>마지막 커밋 취소</td><td><code>git reset --soft HEAD~1</code></td><td>커밋만 취소 (코드는 유지)</td></tr>
+    <tr><td>수정 내용 되돌리기</td><td><code>git checkout -- 파일명</code></td><td>아직 add 전 파일만 가능</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h3 class="sec">🚨 자주 발생하는 문제 &amp; 해결법</h3>
+
+  <div class="trouble">
+    <div class="trouble-title">🔥 문제 모음 — 에러별 해결 가이드</div>
+    <dl>
+      <dt>❌ push 시 "rejected" 에러 (가장 흔함!)</dt>
+      <dd><strong>원인:</strong> 팀원이 먼저 push해서 GitHub가 내 코드보다 앞서 있음<br>
+      <strong>해결 (아래 3줄 순서대로 실행!):</strong></dd>
+    </dl>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — rejected 에러 해결</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># 1. GitHub의 최신 코드를 먼저 받기</span>
+git pull origin main
+
+<span class="cm"># 2. 충돌이 있으면 Eclipse에서 파일 수정 후:</span>
+git add -A
+git commit -m "merge 충돌 해결"
+
+<span class="cm"># 3. 다시 push!</span>
+git push origin main</pre>
+  </div>
+
+  <div class="trouble">
+    <div class="trouble-title">🔥 에러 모음 (계속)</div>
+    <dl>
+      <dt>❌ "fatal: not a git repository" 에러</dt>
+      <dd><strong>원인:</strong> 현재 폴더가 Git 저장소가 아님 (프로젝트 폴더가 아닌 곳에서 명령 실행)<br>
+      <strong>해결:</strong> <code>cd /c/Users/$USER/eclipse-workspace/CarProject2</code>로 프로젝트 폴더로 이동!<br>
+      <strong>확인법:</strong> <code>pwd</code> 입력 → 프로젝트 폴더 경로가 맞는지 확인</dd>
+
+      <dt>❌ "Please commit your changes or stash them" 에러</dt>
+      <dd><strong>원인:</strong> 수정 중인 파일이 있어서 pull/checkout 불가<br>
+      <strong>해결 방법 1:</strong> <code>git add -A && git commit -m "임시 저장"</code> 후 다시 시도<br>
+      <strong>해결 방법 2:</strong> <code>git stash</code> → 원하는 작업 후 → <code>git stash pop</code></dd>
+
+      <dt>❌ merge 후 코드가 이상해졌어요</dt>
+      <dd><strong>원인:</strong> merge 도중 충돌 해결을 잘못함<br>
+      <strong>해결:</strong> <code>git merge --abort</code> (merge 진행 중일 때만 사용 가능) → 처음부터 다시 merge</dd>
+
+      <dt>❌ GitHub 로그인이 계속 실패해요</dt>
+      <dd><strong>원인:</strong> 2021년 이후 GitHub 정책 변경으로 비밀번호 인증이 안 됨<br>
+      <strong>해결:</strong> push 시 뜨는 창에서 <strong>「Sign in with your browser」</strong> 클릭 → GitHub 로그인<br>
+      그래도 안 되면 Git Bash에서 아래 명령어 실행 후 다시 push:</dd>
+
+      <dt>❌ .class 파일이나 .settings 폴더가 GitHub에 올라갔어요</dt>
+      <dd><strong>원인:</strong> .gitignore 파일을 만들기 전에 이미 git add를 한 경우<br>
+      <strong>해결:</strong> 아래 명령어로 Git 추적에서 제거 (실제 파일은 삭제 안 됨!)</dd>
+
+      <dt>❌ Eclipse에서 프로젝트에 빨간 X 에러가 나타나요</dt>
+      <dd><strong>원인:</strong> Git pull 후 Eclipse 설정이 맞지 않는 경우<br>
+      <strong>해결 순서:</strong><br>
+      ① 프로젝트 우클릭 → Refresh (F5)<br>
+      ② 프로젝트 우클릭 → Properties → Java Build Path → JRE 설정 확인<br>
+      ③ 프로젝트 우클릭 → Properties → Targeted Runtimes → Tomcat 체크<br>
+      ④ Project → Clean → 해당 프로젝트 선택 → OK</dd>
+
+      <dt>❌ git pull 후 Eclipse에서 파일이 안 보여요</dt>
+      <dd><strong>원인:</strong> Eclipse가 파일 변경을 자동 감지 못할 때<br>
+      <strong>해결:</strong> 프로젝트 우클릭 → <strong>Refresh (F5)</strong> 누르면 바로 반영됩니다!</dd>
+
+      <dt>❌ "Vim 편집기"가 떴어요 (이상한 화면)</dt>
+      <dd><strong>원인:</strong> <code>git commit</code>할 때 <code>-m "메시지"</code>를 빼먹으면 Vim 편집기가 열림<br>
+      <strong>탈출 방법:</strong> <code>:q!</code> 입력 후 Enter → 다시 <code>git commit -m "메시지"</code>로 커밋</dd>
+    </dl>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 이미 올라간 불필요 파일 제거 (실제 파일은 안 지워짐!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># Git 추적에서만 제거 (--cached 옵션 = 실제 파일은 삭제 안 됨!)</span>
+git rm -r --cached .settings/
+git rm --cached .classpath
+git rm --cached .project
+git rm -r --cached bin/
+git rm -r --cached build/
+
+<span class="cm"># 변경 사항 저장 & 업로드</span>
+git commit -m "불필요 파일(Eclipse 설정) Git에서 제거"
+git push origin main</pre>
+  </div>
+  <div class="box box-info"><div class="box-title">ℹ️ git rm --cached 상세 설명</div>
+    <table>
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code>git rm</code></td><td>Git에서 파일을 <strong>제거</strong>하는 명령어</td></tr>
+      <tr><td><code>-r</code></td><td><strong>폴더 전체</strong>를 재귀적으로 제거 (폴더용 옵션)</td></tr>
+      <tr><td><code>--cached</code></td><td><strong>Git 추적에서만 제거</strong>, 실제 파일은 PC에 그대로 남음!</td></tr>
+      <tr><td><code>.settings/</code></td><td>제거할 대상 (폴더 또는 파일 이름)</td></tr>
+    </table>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — GitHub 인증 초기화 (로그인 문제 시)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># Windows 자격 증명 초기화 → 다음 push 때 다시 로그인 창이 뜸</span>
+git credential-manager github logout</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">⭐ 팀프로젝트 협업 규칙 (추천)</h3>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">📋</div><div class="card-title">규칙 1: Pull First!</div><div class="card-desc">작업 시작 전 반드시 git pull. 최신 코드 없이 작업하면 충돌 지옥!</div></div>
+    <div class="card"><div class="card-icon">🌿</div><div class="card-title">규칙 2: 브랜치 사용</div><div class="card-desc">main에 직접 push 금지! 각자 브랜치에서 작업 후 merge 또는 PR.</div></div>
+    <div class="card"><div class="card-icon">💬</div><div class="card-title">규칙 3: 커밋 메시지</div><div class="card-desc">"수정함" 금지! "로그인 기능 추가"처럼 구체적으로 작성.</div></div>
+    <div class="card"><div class="card-icon">📂</div><div class="card-title">규칙 4: 파일 분담</div><div class="card-desc">같은 파일을 동시에 수정하지 않기. 파일별로 담당 분배!</div></div>
+    <div class="card"><div class="card-icon">🔔</div><div class="card-title">규칙 5: Push 알림</div><div class="card-desc">push 후 카톡/슬랙으로 "push 했어요" 알림. 팀원이 pull할 수 있도록!</div></div>
+    <div class="card"><div class="card-icon">🕐</div><div class="card-title">규칙 6: 자주 커밋</div><div class="card-desc">하루치 몰아서 X. 기능 하나 완성될 때마다 commit하면 되돌리기 쉬움.</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">📊 팀프로젝트 일일 워크플로우</h3>
+  <div class="code-wrap">
+    <div class="code-label">Git Bash — 매일 이 순서로!</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre><span class="cm"># ====== 1. 출근 (작업 시작) ======</span>
+git checkout main
+git pull origin main
+git checkout -b feature/오늘작업
+
+<span class="cm"># ====== 2. Eclipse에서 코드 작업 ======</span>
+
+<span class="cm"># ====== 3. 퇴근 (작업 완료) ======</span>
+git add -A
+git commit -m "오늘 작업 내용 요약"
+git push origin feature/오늘작업
+
+<span class="cm"># ====== 4. GitHub에서 Pull Request 생성 ======</span>
+<span class="cm"># ====== 5. 팀원 리뷰 후 Merge ======</span></pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">📋 팀 규칙 템플릿 (팀장이 카톡/노션에 공유!)</h3>
+  <div class="code-wrap">
+    <div class="code-label">팀 규칙 (복사해서 팀 단톡방에 보내세요!)</div>
+    <button class="copy-btn" onclick="copyCode(this)">복사</button>
+    <pre>📋 [Git 팀 규칙] CarProject2
+
+🔵 역할 분담:
+- 팀장 (park-leader): 프로젝트 관리, main 브랜치 관리, PR merge
+- 팀원1 (kim-minsu): feature/login (로그인/회원가입)
+- 팀원2 (lee-jieun): feature/carlist (차량 목록/검색)
+- 팀원3 (choi-yunji): feature/reservation (예약 기능)
+- 팀원4 (jung-siwoo): feature/mypage (마이페이지/리뷰)
+
+📌 필수 규칙:
+1. 작업 시작 전 반드시 git pull!
+2. 각자 브랜치에서만 작업! main 직접 push 금지!
+3. 커밋 메시지는 구체적으로! ("수정함" 금지)
+4. push 후 단톡방에 알림!
+5. 같은 파일 동시 수정 금지! 수정 전 단톡방에 공유!
+
+🕐 일과 루틴:
+- 아침: git pull origin main
+- 코딩: 각자 브랜치에서 작업
+- 저녁: git add → commit → push → 단톡방 알림
+
+🔀 merge 절차:
+- 기능 완성 → GitHub에서 Pull Request 생성
+- 팀장 또는 다른 팀원이 코드 확인 후 Merge</pre>
+  </div>
+
+  <hr class="divider">
+
+  <h3 class="sec">🗂️ 명령어 치트시트 (인쇄해서 모니터 옆에 붙이세요!)</h3>
+  <table>
+    <tr><th style="width:35%;">명령어</th><th style="width:35%;">의미</th><th>언제 사용?</th></tr>
+    <tr style="background:rgba(88,166,255,.08);"><td colspan="3"><strong style="color:var(--s1);">📥 코드 받기</strong></td></tr>
+    <tr><td><code>git pull origin main</code></td><td>GitHub 최신 코드 받기</td><td>매일 작업 시작 전!</td></tr>
+    <tr><td><code>git clone URL</code></td><td>GitHub 프로젝트 통째로 다운로드</td><td>최초 1회 (팀원)</td></tr>
+    <tr style="background:rgba(63,185,80,.08);"><td colspan="3"><strong style="color:var(--s2);">📤 코드 올리기</strong></td></tr>
+    <tr><td><code>git add -A</code></td><td>변경된 모든 파일 추가</td><td>commit 전에</td></tr>
+    <tr><td><code>git commit -m "메시지"</code></td><td>내 PC에 저장 (세이브)</td><td>add 후에</td></tr>
+    <tr><td><code>git push origin main</code></td><td>GitHub에 업로드</td><td>commit 후에</td></tr>
+    <tr style="background:rgba(188,140,255,.08);"><td colspan="3"><strong style="color:var(--tip);">🌿 브랜치</strong></td></tr>
+    <tr><td><code>git checkout -b 브랜치명</code></td><td>새 브랜치 만들기+이동</td><td>새 기능 시작할 때</td></tr>
+    <tr><td><code>git checkout main</code></td><td>main 브랜치로 이동</td><td>merge 전에</td></tr>
+    <tr><td><code>git merge 브랜치명</code></td><td>현재 브랜치에 합치기</td><td>기능 완성 후</td></tr>
+    <tr><td><code>git branch</code></td><td>브랜치 목록 보기</td><td>내가 어디 있는지 확인</td></tr>
+    <tr><td><code>git branch -d 브랜치명</code></td><td>브랜치 삭제</td><td>merge 완료 후 정리</td></tr>
+    <tr style="background:rgba(210,153,34,.08);"><td colspan="3"><strong style="color:var(--s3);">🔍 확인하기</strong></td></tr>
+    <tr><td><code>git status</code></td><td>변경된 파일 목록</td><td>add 전에 확인</td></tr>
+    <tr><td><code>git diff</code></td><td>수정 내용 상세 보기</td><td>뭘 바꿨는지 확인</td></tr>
+    <tr><td><code>git log --oneline</code></td><td>커밋 이력 한줄로</td><td>이력 추적할 때</td></tr>
+    <tr style="background:rgba(248,81,73,.08);"><td colspan="3"><strong style="color:var(--err);">🆘 긴급 상황</strong></td></tr>
+    <tr><td><code>git stash</code></td><td>작업 중 임시 저장</td><td>급한 pull/checkout 필요 시</td></tr>
+    <tr><td><code>git stash pop</code></td><td>임시 저장한 것 복원</td><td>stash 후 다시 작업할 때</td></tr>
+    <tr><td><code>git merge --abort</code></td><td>merge 취소</td><td>merge 도중 문제 발생 시</td></tr>
+    <tr><td><code>git reset --soft HEAD~1</code></td><td>마지막 커밋만 취소</td><td>커밋 메시지 잘못 쓴 경우</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h3 class="sec">☑️ Step 6 완료 체크리스트</h3>
+  <ul class="checklist" id="cl6">
+    <li onclick="ck(this)"><input type="checkbox" data-k="g6c0"><label>자주 쓰는 명령어 이해 완료</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g6c1"><label>rejected 에러 해결 방법 이해</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g6c2"><label>.gitignore로 불필요 파일 관리 이해</label></li>
+    <li onclick="ck(this)"><input type="checkbox" data-k="g6c3"><label>팀 규칙 템플릿 팀원과 공유 완료</label></li>
+  </ul>
+
+  <div class="box box-ok"><div class="box-title">🎉 모든 Step 완료! 축하합니다!</div>
+    <p>Git &amp; GitHub 팀프로젝트 협업의 모든 것을 배웠습니다!<br>
+    <strong>팀장:</strong> 팀 규칙 템플릿을 카톡에 공유하세요!<br>
+    <strong>팀원1~4:</strong> 각자 브랜치를 만들고, 매일 pull → 코딩 → add → commit → push!<br>
+    이제 <strong>충돌 없는 팀 협업</strong>을 시작하세요!</p>
+  </div>
+</section>
+
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'});">↑</button>
+
+<!-- ===== AI Git 도우미 챗봇 ===== -->
+<style>
+.chat-toggle{position:fixed;bottom:28px;right:28px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#f05032,#d63a1e);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(240,80,50,.5);z-index:9999;display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;}
+.chat-toggle:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(240,80,50,.65);}
+.chat-toggle svg{width:28px;height:28px;fill:#fff;}
+.chat-toggle .badge-dot{position:absolute;top:8px;right:8px;width:12px;height:12px;background:#3fb950;border:2px solid #0d1117;border-radius:50%;}
+
+.chat-window{position:fixed;bottom:100px;right:28px;width:380px;height:520px;background:#0d1117;border:1px solid #30363d;border-radius:14px;box-shadow:0 12px 48px rgba(0,0,0,.6);z-index:9999;display:none;flex-direction:column;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;}
+.chat-window.open{display:flex;animation:chatSlideUp .3s ease;}
+@keyframes chatSlideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.chat-head{background:linear-gradient(135deg,#f05032,#d63a1e);padding:14px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.chat-head-icon{width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-head-info{flex:1;}
+.chat-head-info h4{color:#fff;font-size:14px;font-weight:700;margin:0;}
+.chat-head-info span{color:rgba(255,255,255,.7);font-size:11px;}
+.chat-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:6px;}
+.chat-close:hover{background:rgba(255,255,255,.15);color:#fff;}
+
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:#30363d transparent;}
+.chat-body::-webkit-scrollbar{width:5px;}
+.chat-body::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px;}
+
+.chat-msg{max-width:88%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.7;word-break:break-word;white-space:pre-wrap;}
+.chat-msg.bot{background:#161b22;border:1px solid #30363d;color:#c9d1d9;align-self:flex-start;border-bottom-left-radius:4px;}
+.chat-msg.user{background:linear-gradient(135deg,#f05032,#c83a1e);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.chat-msg.bot code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:12px;color:#f78166;}
+
+.chat-typing{align-self:flex-start;display:none;padding:10px 16px;background:#161b22;border:1px solid #30363d;border-radius:12px;border-bottom-left-radius:4px;gap:5px;align-items:center;}
+.chat-typing.show{display:flex;}
+.chat-typing span{width:7px;height:7px;background:#f05032;border-radius:50%;animation:typeBounce .6s infinite alternate;}
+.chat-typing span:nth-child(2){animation-delay:.2s;}
+.chat-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typeBounce{to{opacity:.3;transform:translateY(-4px);}}
+
+.chat-foot{padding:12px;border-top:1px solid #30363d;display:flex;gap:8px;flex-shrink:0;background:#0d1117;}
+.chat-foot input{flex:1;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px 14px;color:#c9d1d9;font-size:13px;outline:none;font-family:inherit;}
+.chat-foot input:focus{border-color:#f05032;}
+.chat-foot input::placeholder{color:#484f58;}
+.chat-foot button{background:linear-gradient(135deg,#f05032,#d63a1e);border:none;border-radius:10px;padding:0 16px;color:#fff;font-size:14px;cursor:pointer;transition:opacity .2s;}
+.chat-foot button:hover{opacity:.85;}
+.chat-foot button:disabled{opacity:.4;cursor:not-allowed;}
+
+.chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;}
+.chat-quick button{background:#161b22;border:1px solid #30363d;color:#8b949e;padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.chat-quick button:hover{border-color:#f05032;color:#f05032;background:#21262d;}
+
+@media(max-width:500px){
+  .chat-window{width:calc(100vw - 20px);height:calc(100vh - 120px);right:10px;bottom:80px;border-radius:12px;}
+  .chat-toggle{bottom:16px;right:16px;width:52px;height:52px;}
+}
+</style>
+
+<!-- 챗봇 토글 버튼 -->
+<button class="chat-toggle" id="chatToggle" onclick="toggleChat()" title="AI Git 도우미">
+  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.74.5 3.37 1.22 4.84L2 22l5.16-1.22C8.63 21.5 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm2.07-7.75l-.9.92C11.45 10.9 11 11.5 11 13h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H6c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+  <span class="badge-dot"></span>
+</button>
+
+<!-- 챗봇 창 -->
+<div class="chat-window" id="chatWindow">
+  <div class="chat-head">
+    <div class="chat-head-icon">🐙</div>
+    <div class="chat-head-info">
+      <h4>AI Git 도우미</h4>
+      <span>Git/GitHub 뭐든 물어보세요!</span>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-msg bot">안녕하세요! 🐙 <strong>AI Git 도우미</strong>입니다.
+
+Git이나 GitHub 사용 중 궁금한 점을 편하게 물어보세요!
+아래 버튼을 눌러 바로 질문할 수도 있어요.</div>
+  </div>
+  <div class="chat-quick" id="chatQuick">
+    <button onclick="askQuick('git add, commit, push 순서를 알려줘')">add→commit→push 순서</button>
+    <button onclick="askQuick('git pull 할 때 rejected 에러 해결법')">rejected 에러 해결</button>
+    <button onclick="askQuick('브랜치 만들고 합치는 방법 알려줘')">브랜치 사용법</button>
+    <button onclick="askQuick('충돌(conflict) 해결하는 방법')">충돌 해결법</button>
+    <button onclick="askQuick('.gitignore 설정하는 법 알려줘')">.gitignore 설정</button>
+  </div>
+  <div class="chat-foot">
+    <input type="text" id="chatInput" placeholder="Git 관련 질문을 입력하세요..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendChat();">
+    <button id="chatSend" onclick="sendChat()">전송</button>
+  </div>
+</div>
+
+<script>
+/* === 챗봇 로직 === */
+var CHAT_API='http://localhost:8090/CarProject2/Chatbot/ai.do';
+var chatBusy=false;
+var lastFailedMsg='';
+
+function toggleChat(){
+  var w=document.getElementById('chatWindow');
+  w.classList.toggle('open');
+  if(w.classList.contains('open')){
+    setTimeout(function(){document.getElementById('chatInput').focus();},300);
+  }
+}
+
+function addMsg(text,role){
+  var body=document.getElementById('chatBody');
+  var div=document.createElement('div');
+  div.className='chat-msg '+role;
+  if(role==='bot'){
+    // 마크다운 → HTML 변환
+    var html=text
+      .replace(/```[\s\S]*?```/g,function(m){return '<code>'+m.replace(/```\w*/g,'').trim()+'</code>';})
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    div.innerHTML=html;
+  } else {
+    div.textContent=text;
+  }
+  body.appendChild(div);
+  body.scrollTop=body.scrollHeight;
+}
+
+function showTyping(show){
+  var el=document.getElementById('chatTyping');
+  if(!el){
+    var body=document.getElementById('chatBody');
+    el=document.createElement('div');
+    el.className='chat-typing';
+    el.id='chatTyping';
+    el.innerHTML='<span></span><span></span><span></span>';
+    body.appendChild(el);
+  }
+  el.classList.toggle('show',show);
+  if(show) document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight;
+}
+
+function doSend(msg){
+  chatBusy=true;
+  document.getElementById('chatSend').disabled=true;
+  showTyping(true);
+  lastFailedMsg='';
+
+  // 한국어 답변 강제 지시를 메시지 앞에 추가
+  var finalMsg='[한국어로 답변해주세요]\n'+msg;
+
+  var formData=new URLSearchParams();
+  formData.append('message',finalMsg);
+  formData.append('type','git');
+
+  fetch(CHAT_API,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+    body:formData.toString()
+  })
+  .then(function(res){return res.json();})
+  .then(function(data){
+    showTyping(false);
+    var reply=data.reply||'응답을 받지 못했습니다.';
+
+    // 에러 응답 감지 → 재시도 안내
+    if(reply.indexOf('모델 일시 불가')>=0 || reply.indexOf('네트워크 연결에 실패')>=0 || reply.indexOf('응답 시간이 초과')>=0){
+      lastFailedMsg=msg;
+      addMsg('⚠️ AI가 일시적으로 응답하지 못했습니다.\n잠시 후 아래 "다시 시도" 버튼을 눌러주세요.','bot');
+      addRetryBtn();
+    } else {
+      addMsg(reply,'bot');
+    }
+  })
+  .catch(function(err){
+    showTyping(false);
+    lastFailedMsg=msg;
+    addMsg('⚠️ 서버에 연결할 수 없습니다.\n\nTomcat 서버가 실행 중인지 확인해주세요.\n(http://localhost:8090/CarProject2)','bot');
+    addRetryBtn();
+    console.error('Chat error:',err);
+  })
+  .finally(function(){
+    chatBusy=false;
+    document.getElementById('chatSend').disabled=false;
+    document.getElementById('chatInput').focus();
+  });
+}
+
+function addRetryBtn(){
+  var body=document.getElementById('chatBody');
+  var btn=document.createElement('button');
+  btn.textContent='🔄 다시 시도';
+  btn.style.cssText='background:#f05032;color:#fff;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;margin:4px 0;';
+  btn.onclick=function(){
+    btn.remove();
+    if(lastFailedMsg) doSend(lastFailedMsg);
+  };
+  body.appendChild(btn);
+  body.scrollTop=body.scrollHeight;
+}
+
+function sendChat(){
+  if(chatBusy)return;
+  var input=document.getElementById('chatInput');
+  var msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  addMsg(msg,'user');
+
+  // 빠른 질문 버튼 숨기기
+  var quick=document.getElementById('chatQuick');
+  if(quick)quick.style.display='none';
+
+  doSend(msg);
+}
+
+function askQuick(q){
+  document.getElementById('chatInput').value=q;
+  sendChat();
+}
+</script>
+
+<script>
+function show(n){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  var p=document.getElementById('s'+n);
+  var t=document.querySelector('.tab[data-s="'+n+'"]');
+  if(p)p.classList.add('active');
+  if(t)t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function ck(li){
+  if(event.target.tagName==='INPUT')return;
+  var cb=li.querySelector('input');
+  if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}
+}
+function updProg(listId,fillId,textId){
+  var boxes=document.querySelectorAll('#'+listId+' input[type=checkbox]');
+  var done=[].slice.call(boxes).filter(function(c){return c.checked;}).length;
+  var fill=document.getElementById(fillId);
+  var txt=document.getElementById(textId);
+  if(fill)fill.style.width=(boxes.length?done/boxes.length*100:0)+'%';
+  if(txt)txt.textContent=done+' / '+boxes.length;
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(function(cb){
+    var k=cb.dataset.k;
+    if(k&&localStorage.getItem(k)==='1'){cb.checked=true;cb.closest('li').classList.add('done');}
+    cb.addEventListener('change',function(){
+      this.closest('li').classList.toggle('done',this.checked);
+      if(this.dataset.k)localStorage.setItem(this.dataset.k,this.checked?'1':'0');
+      var cl=this.closest('.checklist');
+      if(cl){
+        var id=cl.id;
+        if(id==='cl1')updProg('cl1','p1b','p1b-text');
+        if(id==='cl2')updProg('cl2','p2b','p2b-text');
+        if(id==='cl3')updProg('cl3','p3b','p3b-text');
+        if(id==='cl4')updProg('cl4','p4b','p4b-text');
+        if(id==='cl5')updProg('cl5','p5b','p5b-text');
+        if(id==='cl6')updProg('cl6','p6b','p6b-text');
+      }
+    });
+  });
+  ['cl1','cl2','cl3','cl4','cl5','cl6'].forEach(function(id,i){
+    updProg(id,'p'+(i+1)+'b','p'+(i+1)+'b-text');
+  });
+});
+window.addEventListener('scroll',function(){
+  var b=document.getElementById('scroll-top');
+  if(b)b.classList.toggle('show',window.scrollY>300);
+});
+function copyCode(btn){
+  var pre=btn.closest('.code-wrap').querySelector('pre');
+  var text=pre.innerText||pre.textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent='\u2713 \ubcf5\uc0ac\ub428! Git Bash\uc5d0 \ubd99\uc5ec\ub123\uae30';btn.classList.add('ok');
+    setTimeout(function(){btn.textContent='\ubcf5\uc0ac';btn.classList.remove('ok');},2500);
+  }).catch(function(){
+    var ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='\u2713 \ubcf5\uc0ac\ub428! Git Bash\uc5d0 \ubd99\uc5ec\ub123\uae30';btn.classList.add('ok');
+    setTimeout(function(){btn.textContent='\ubcf5\uc0ac';btn.classList.remove('ok');},2500);
+  });
+}
+</script>
+</body>
+</html>

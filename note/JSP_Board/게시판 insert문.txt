@@ -1,0 +1,28 @@
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ccc","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ddd","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("eee","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("fff","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ggg","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ccc","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ddd","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("eee","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("fff","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ggg","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ccc","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ddd","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("eee","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("fff","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ggg","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ccc","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ddd","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("eee","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("fff","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ggg","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ccc","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("ddd","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("eee","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+insert into tblBoard(name, email, homepage, subject, content, regdate, pass, count, ip, pos, depth)values("fff","bbb","hompage","subject","content", now(),"bbb",0,0,0,0);
+
+
+
+
