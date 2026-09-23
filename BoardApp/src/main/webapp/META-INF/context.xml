@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-<!-- JNDI기술을 사용하여 접속할 DB정보를 지정 -->
-	 <Resource 
-	name="jdbc/jspbeginner"
-	auth="Container"
-	type="javax.sql.DataSource"
-	driverClassName="com.mysql.jdbc.Driver"
-	url="jdbc:mysql://localhost:3306/jspbeginner"
-	username="jspid"
-	password="jsppass"	
-	/>
-
+  <!-- Tomcat 커넥션풀(JNDI) : DAO가 java:comp/env/jdbc/jspbeginner 로 조회 -->
+  <Resource
+    name="jdbc/jspbeginner"
+    auth="Container"
+    type="javax.sql.DataSource"
+    driverClassName="com.mysql.jdbc.Driver"
+    url="jdbc:mysql://localhost:3306/jspbeginner?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Seoul"
+    username="root"
+    password="0000"
+    maxTotal="20" maxIdle="10" maxWaitMillis="10000" />
 </Context>

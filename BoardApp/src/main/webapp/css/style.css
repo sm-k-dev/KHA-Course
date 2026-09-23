@@ -1,0 +1,21 @@
+BODY { FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma; }
+TD   { FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma; }
+SELECT { FONT-SIZE: 9pt; COLOR: black; FONT-FAMILY: 굴림,verdana,tahoma; }
+DIV  { FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma; }
+FORM { FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma; }
+TEXTAREA {
+  BORDER: 1px solid #999999; FONT-SIZE: 9pt; COLOR: BLACK;
+  FONT-FAMILY: 굴림,verdana; BACKGROUND-COLOR: white;
+}
+INPUT {
+  BORDER: 1px solid #999999; FONT-SIZE: 9pt; COLOR: BLACK;
+  FONT-FAMILY: 굴림,verdana; HEIGHT: 19px; BACKGROUND-COLOR: white;
+}
+A:link    { text-decoration:none; color:#696969; }
+A:hover   { text-decoration:underline; color:#66CCFF; }
+A:visited { text-decoration:none; color:#330066; }
+.read-content { white-space: pre-wrap; word-break: break-all; }
+
+/* HTML5 정리: cellpadding/cellspacing 속성 제거에 따른 여백 보정 */
+table { border-collapse: collapse; }
+td, th { padding: 4px; }
