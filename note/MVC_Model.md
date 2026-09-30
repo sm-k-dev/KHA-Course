@@ -195,3 +195,13 @@ MVC 패턴 *"역할에 따라 코드를 나누어 관리하자"*
 순서2. FileUploadServlet 안의 doGet 메소드 호출 당함, doGet 메소드 안에서 VIEW fileUpload.jsp를 재요청 (포워딩)
 
 순서3. VIEW (WEB-INF/views/fileUpload.jsp) 파일 첨부 후 업로드 요청하는 화면을 만들어서 브라우저에 보여준다
+
+Spring MVC 
+    c: Controller (Servlet)
+    v: .mustache
+    m: DTO, Repository
+
+MVC
+    c: Servlet
+    v: jsp, html
+    m: VO, DAO
