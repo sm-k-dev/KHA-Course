@@ -1,0 +1,457 @@
+<!doctype html>
+<!-- v1 · 2026-10-01 · REST API 비전공자 해설 (비유 없음) -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REST API 쉽게 이해하기 (비유 없이)</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2330;--sub:#5b6577;--line:#e3e7ef;--pri:#4f46e5;--pri2:#eef0ff;--ok:#16a34a;--okbg:#e8f8ee;--warn:#b45309;--warnbg:#fff4e0;--code:#0f172a;--codeink:#e2e8f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.8;font-size:16px}
+header{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:28px 18px 24px}
+header .in{max-width:900px;margin:auto}
+header h1{margin:0 0 6px;font-size:1.6rem;line-height:1.4}
+header p{margin:0;opacity:.92}
+.dl{margin-top:14px;background:#fff;color:var(--pri);border:0;padding:10px 16px;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer}
+main{max-width:900px;margin:auto;padding:16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+h2{margin:0 0 12px;font-size:1.3rem}
+h3{margin:20px 0 8px;font-size:1.05rem}
+p{margin:8px 0}
+.box{border-radius:12px;padding:12px 14px;margin:12px 0}
+.why{background:var(--pri2);border-left:5px solid var(--pri)}
+.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.warn{background:var(--warnbg);border-left:5px solid var(--warn)}
+.concl{background:#1c2330;color:#fff;border-radius:14px;padding:16px}
+.concl b{color:#a5b4fc}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:10px 0}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f0f2f8}
+.scroll{overflow-x:auto}
+.scroll table{min-width:560px}
+pre{background:var(--code);color:var(--codeink);padding:14px;border-radius:12px;overflow-x:auto;font-size:.85rem;line-height:1.6;margin:8px 0;white-space:pre}
+code{font-family:Consolas,"D2Coding",monospace}
+p code,td code,li code{background:#eef0f6;padding:1px 6px;border-radius:6px;font-size:.88em}
+.cw{position:relative}
+.copy{position:absolute;top:8px;right:8px;background:#334155;color:#fff;border:0;border-radius:8px;padding:5px 10px;font-size:.78rem;cursor:pointer}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;color:#fff}
+.g{background:#2563eb}.po{background:#16a34a}.pa{background:#d97706}.d{background:#dc2626}
+.svgwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fafbff}
+.svgwrap svg{min-width:640px;width:100%;height:auto;display:block}
+.sim label{font-size:.88rem;color:var(--sub);margin-right:6px}
+.sim input{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:.92rem;max-width:150px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.btns button,.rst{border:0;border-radius:10px;padding:9px 12px;color:#fff;font-weight:700;cursor:pointer;font-size:.88rem}
+.rst{background:#64748b}
+.out{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:760px){.out{grid-template-columns:1fr 1fr}}
+.out h4{margin:0 0 4px;font-size:.9rem}
+.shot{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fcfcff}
+.cap{font-size:.8rem;color:var(--sub)}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.q .opt{display:block;width:100%;text-align:left;background:#f7f8fc;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:6px 0;font-size:.92rem;cursor:pointer;color:var(--ink)}
+.q .opt.right{background:var(--okbg);border-color:var(--ok)}
+.q .opt.wrong{background:#fde8e8;border-color:#dc2626}
+.exp{display:none;font-size:.9rem;margin-top:6px;color:var(--sub)}
+.do label{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer}
+.do input{margin-right:8px;transform:scale(1.2)}
+#dash{position:fixed;right:12px;bottom:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px;box-shadow:0 4px 16px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;z-index:10;font-size:.8rem}
+#ring{width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--pri) 0%,#e5e7eb 0);display:flex;align-items:center;justify-content:center}
+#ring span{background:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem}
+.next td:first-child{font-weight:800;white-space:nowrap}
+</style>
+</head>
+<body>
+<header><div class="in">
+<h1>🌐 REST API 쉽게 이해하기</h1>
+<p>비유 없이, 그림에 나온 글자 하나하나를 뜻 그대로 풀어서 설명합니다.</p>
+<button class="dl" id="dlBtn">⬇️ 이 문서 HTML 다운로드</button>
+</div></header>
+<main>
+
+<section id="s0">
+<h2>📌 0. 결론 한 줄</h2>
+<div class="concl">
+<p style="margin:0"><b>REST API</b> = 서버가 데이터를 <b>정해진 주소(URL)</b>와 <b>정해진 동작 이름(GET·POST·PATCH·DELETE)</b>으로 주고받게 만든 약속이고, 주고받는 데이터 형식은 <b>JSON</b>이라는 글자 모양을 씁니다.</p>
+</div>
+<div class="box why"><b>💡 왜 어렵게 느껴지나요?</b><br>한 문단에 새 용어가 6개(서버, 클라이언트, 자원, 설계 방식, 종속, JSON)가 한꺼번에 나오기 때문입니다. 아래에서 하나씩 나눠서 정의합니다.</div>
+</section>
+
+<section id="s1">
+<h2>🖼️ 1. 그림 읽는 순서</h2>
+<p>그림에는 크게 3덩어리가 있습니다. 번호 순서대로 읽으세요.</p>
+<div class="svgwrap">
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+<rect x="10" y="10" width="250" height="300" rx="14" fill="#f0eefa" stroke="#9a8fd6" stroke-dasharray="6 5"/>
+<text x="135" y="32" text-anchor="middle" font-size="14" font-weight="700" fill="#1c2330">① 클라이언트</text>
+<rect x="30" y="48" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="80" y="73" text-anchor="middle" font-size="12">웹 브라우저</text>
+<rect x="140" y="48" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="190" y="73" text-anchor="middle" font-size="12">아이폰 앱</text>
+<rect x="30" y="98" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="80" y="123" text-anchor="middle" font-size="12">안드로이드 앱</text>
+<rect x="140" y="98" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="190" y="123" text-anchor="middle" font-size="12">태블릿 앱</text>
+<rect x="30" y="148" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="80" y="173" text-anchor="middle" font-size="12">스마트워치</text>
+<rect x="140" y="148" width="100" height="40" rx="6" fill="#fff" stroke="#333"/><text x="190" y="173" text-anchor="middle" font-size="12">CCTV 카메라</text>
+<rect x="30" y="198" width="210" height="40" rx="6" fill="#fff" stroke="#333"/><text x="135" y="223" text-anchor="middle" font-size="12">스마트 도어락</text>
+<text x="135" y="272" text-anchor="middle" font-size="12" fill="#5b6577">각 기기 옆 "JSON" 표시 =</text>
+<text x="135" y="290" text-anchor="middle" font-size="12" fill="#5b6577">같은 형식의 데이터를 받는다</text>
+
+<line x1="270" y1="120" x2="400" y2="120" stroke="#1c2330" stroke-width="2"/><polygon points="400,114 412,120 400,126" fill="#1c2330"/>
+<text x="340" y="108" text-anchor="middle" font-size="13" font-weight="700">② 요청</text>
+<line x1="412" y1="190" x2="282" y2="190" stroke="#1c2330" stroke-width="2"/><polygon points="282,184 270,190 282,196" fill="#1c2330"/>
+<text x="340" y="215" text-anchor="middle" font-size="13" font-weight="700">③ 응답(JSON)</text>
+
+<rect x="420" y="90" width="130" height="130" rx="10" fill="#e8e8ee" stroke="#555" stroke-width="2"/>
+<text x="485" y="150" text-anchor="middle" font-size="14" font-weight="700">REST API</text>
+<text x="485" y="172" text-anchor="middle" font-size="12">④ 서버</text>
+
+<text x="660" y="32" text-anchor="middle" font-size="14" font-weight="700">⑤ 서버가 열어둔 주소</text>
+<g font-size="12">
+<rect x="570" y="48" width="70" height="30" rx="6" fill="#fff" stroke="#333"/><text x="605" y="68" text-anchor="middle">GET</text><text x="650" y="68">/articles</text>
+<rect x="570" y="88" width="70" height="30" rx="6" fill="#fff" stroke="#333"/><text x="605" y="108" text-anchor="middle">GET</text><text x="650" y="108">/articles/id</text>
+<rect x="570" y="128" width="70" height="30" rx="6" fill="#fff" stroke="#333"/><text x="605" y="148" text-anchor="middle">POST</text><text x="650" y="148">/articles</text>
+<rect x="570" y="168" width="70" height="30" rx="6" fill="#fff" stroke="#333"/><text x="605" y="188" text-anchor="middle">PATCH</text><text x="650" y="188">/articles/id</text>
+<rect x="570" y="208" width="70" height="30" rx="6" fill="#fff" stroke="#333"/><text x="605" y="228" text-anchor="middle">DELETE</text><text x="650" y="228">/articles/id</text>
+</g>
+</svg>
+</div>
+<p class="cap">📎 위 그림은 책 그림을 문서 안에서 다시 그린 것입니다. 글자 배치는 책과 조금 다를 수 있습니다.</p>
+
+<div class="scroll"><table>
+<tr><th>번호</th><th>그림 속 부분</th><th>뜻</th></tr>
+<tr><td>①</td><td>클라이언트(왼쪽 점선 상자)</td><td>데이터를 <b>요청하는 쪽</b>의 프로그램·기기. 브라우저, 앱, 워치, 카메라, 도어락이 모두 해당합니다.</td></tr>
+<tr><td>②</td><td>요청 화살표(→)</td><td>클라이언트가 서버로 보내는 메시지. "게시글 목록 주세요" 같은 내용이 들어 있습니다.</td></tr>
+<tr><td>③</td><td>데이터 응답 화살표(←)</td><td>서버가 클라이언트로 돌려보내는 메시지. 내용은 <b>JSON</b> 형식입니다.</td></tr>
+<tr><td>④</td><td>REST API(가운데 상자)</td><td>요청을 받아서 처리하고 응답을 만드는 <b>서버 프로그램</b>입니다.</td></tr>
+<tr><td>⑤</td><td>오른쪽 5개 목록</td><td>서버가 받아들이는 요청의 종류. <b>동작 이름 + 주소</b> 한 쌍이 한 종류입니다.</td></tr>
+</table></div>
+<div class="box ok"><b>✅ 이 그림의 핵심 한 줄</b><br>왼쪽의 기기가 무엇이든(브라우저든 도어락이든) 같은 주소로 요청하면, 같은 JSON 형식의 응답을 받는다.</div>
+</section>
+
+<section id="s2">
+<h2>📖 2. 책 본문 문장 풀이</h2>
+<div class="scroll"><table>
+<tr><th>책 문장</th><th>쉬운 말로 바꾸면</th></tr>
+<tr><td>서버 자원을</td><td>서버에 저장된 데이터(게시글, 회원 정보, 상품 등)를</td></tr>
+<tr><td>클라이언트에 구애받지 않고</td><td>요청하는 기기의 종류가 무엇이든 상관없이</td></tr>
+<tr><td>사용할 수 있게 하는</td><td>가져다 쓸 수 있도록 만드는</td></tr>
+<tr><td>설계 방식입니다.</td><td>서버를 만드는 규칙(약속)입니다.</td></tr>
+<tr><td>클라이언트에서 정보를 요청하면</td><td>기기가 "이 데이터 주세요"라고 보내면</td></tr>
+<tr><td>서버는 특정 기기에 종속되지 않고</td><td>서버는 아이폰용, 안드로이드용을 따로 만들지 않고</td></tr>
+<tr><td>모든 기기에서 통용할 수 있는 JSON 데이터를</td><td>어느 기기든 읽을 수 있는 JSON 형식 글자를</td></tr>
+<tr><td>응답으로 보냅니다.</td><td>답장으로 보내줍니다.</td></tr>
+</table></div>
+<div class="box why"><b>💡 "구애받지 않는다 / 종속되지 않는다"</b><br>둘 다 같은 뜻입니다. 서버가 <b>기기 종류에 따라 응답 형식을 바꾸지 않는다</b>는 뜻입니다. 서버 하나, 응답 형식 하나로 모든 기기를 처리합니다.</div>
+</section>
+
+<section id="s3">
+<h2>🔤 3. 용어 정의표</h2>
+<div class="scroll"><table>
+<tr><th>용어</th><th>정의</th><th>예시</th></tr>
+<tr><td>서버</td><td>요청을 받으면 데이터를 처리해서 응답을 돌려주는 프로그램(또는 그 프로그램이 실행되는 컴퓨터)</td><td>Spring Boot로 만든 프로그램</td></tr>
+<tr><td>클라이언트</td><td>서버에 요청을 보내는 프로그램</td><td>크롬 브라우저, 스마트폰 앱</td></tr>
+<tr><td>요청(Request)</td><td>클라이언트가 서버로 보내는 메시지</td><td><code>GET /articles</code></td></tr>
+<tr><td>응답(Response)</td><td>서버가 클라이언트로 돌려보내는 메시지</td><td>JSON 글자와 상태 코드</td></tr>
+<tr><td>자원(Resource)</td><td>서버가 관리하는 데이터 한 종류</td><td>articles(게시글)</td></tr>
+<tr><td>URL / 주소</td><td>어떤 자원인지 가리키는 글자</td><td><code>/articles/3</code> = 게시글 중 3번</td></tr>
+<tr><td>HTTP 메서드</td><td>그 자원으로 무엇을 할지 나타내는 단어</td><td>GET, POST, PATCH, DELETE</td></tr>
+<tr><td>JSON</td><td>데이터를 <code>{"이름":"값"}</code> 모양의 글자로 적는 형식</td><td><code>{"id":1,"title":"안녕"}</code></td></tr>
+<tr><td>API</td><td>프로그램끼리 요청하고 응답받는 방법을 정해놓은 규칙 모음</td><td>위 5개 요청 목록</td></tr>
+<tr><td>REST</td><td>API를 만들 때 "주소는 자원을 가리키고, 동작은 메서드로 구분한다"로 정한 규칙</td><td>GET /articles</td></tr>
+</table></div>
+</section>
+
+<section id="s4">
+<h2>🧩 4. 그림 오른쪽 5개 요청 해설</h2>
+<div class="scroll"><table>
+<tr><th>메서드</th><th>주소</th><th>하는 일</th><th>보내는 데이터</th><th>받는 응답</th></tr>
+<tr><td><span class="tag g">GET</span></td><td><code>/articles</code></td><td>게시글 <b>전체 목록</b> 조회</td><td>없음</td><td>게시글 여러 개 (JSON 배열)</td></tr>
+<tr><td><span class="tag g">GET</span></td><td><code>/articles/1</code></td><td>1번 게시글 <b>하나</b> 조회</td><td>없음</td><td>게시글 1개 (JSON 객체)</td></tr>
+<tr><td><span class="tag po">POST</span></td><td><code>/articles</code></td><td>새 게시글 <b>생성</b></td><td>제목, 내용 (JSON)</td><td>생성된 게시글 (번호 포함)</td></tr>
+<tr><td><span class="tag pa">PATCH</span></td><td><code>/articles/1</code></td><td>1번 게시글의 <b>일부 수정</b></td><td>바꿀 항목만 (JSON)</td><td>수정된 게시글</td></tr>
+<tr><td><span class="tag d">DELETE</span></td><td><code>/articles/1</code></td><td>1번 게시글 <b>삭제</b></td><td>없음</td><td>본문 없음 (상태 코드만)</td></tr>
+</table></div>
+<div class="box warn">⚠️ 그림의 <code>/articles/id</code>에서 <code>id</code>는 실제 글자 "id"가 아니라 <b>번호가 들어갈 자리</b>입니다. 실제로는 <code>/articles/1</code>, <code>/articles/2</code>처럼 숫자를 넣습니다.</div>
+<div class="box why"><b>💡 규칙 2가지만 기억하세요</b><br>1) 주소에는 <b>자원 이름(명사)</b>만 쓴다. (<code>/articles</code>)<br>2) 무엇을 할지는 <b>메서드</b>로 정한다. (조회=GET, 생성=POST, 수정=PATCH, 삭제=DELETE)</div>
+</section>
+
+<section id="s5">
+<h2>🧪 5. 직접 눌러보기 (가상 서버)</h2>
+<p>이 페이지 안에 가짜 서버를 만들어 두었습니다. 버튼을 누르면 <b>요청</b>과 <b>응답</b>이 어떻게 생겼는지 볼 수 있습니다.</p>
+<div class="sim">
+<label>번호(id)</label><input id="simId" type="number" value="1" min="1">
+<label>제목(title)</label><input id="simTitle" type="text" value="새 글 제목">
+<div class="btns">
+<button style="background:#2563eb" data-op="list">GET /articles</button>
+<button style="background:#2563eb" data-op="one">GET /articles/{id}</button>
+<button style="background:#16a34a" data-op="create">POST /articles</button>
+<button style="background:#d97706" data-op="patch">PATCH /articles/{id}</button>
+<button style="background:#dc2626" data-op="del">DELETE /articles/{id}</button>
+<button class="rst" id="simReset">초기화</button>
+</div>
+<div class="out">
+<div class="shot"><h4>📤 클라이언트가 보낸 요청</h4><pre id="reqBox">(버튼을 눌러보세요)</pre></div>
+<div class="shot"><h4>📥 서버가 돌려준 응답</h4><pre id="resBox">(버튼을 눌러보세요)</pre></div>
+</div>
+<div class="shot"><h4>🗄️ 서버에 저장된 데이터 현재 상태</h4><pre id="dbBox"></pre></div>
+</div>
+<p class="cap">📎 실제 서버가 아니라 이 페이지 안의 JavaScript가 만든 예시입니다. 상태 코드 숫자와 문구는 서버마다 다를 수 있습니다.</p>
+</section>
+
+<section id="s6">
+<h2>📨 6. 요청과 응답의 실제 글자 모양</h2>
+<h3>6-1. 요청 (POST /articles)</h3>
+<div class="cw"><button class="copy">복사</button><pre>POST /articles HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+  "title": "첫 번째 글",
+  "content": "안녕하세요"
+}</pre></div>
+<div class="scroll"><table>
+<tr><th>줄</th><th>의미</th></tr>
+<tr><td><code>POST /articles HTTP/1.1</code></td><td>메서드(POST) + 주소(/articles) + 통신 규약 버전</td></tr>
+<tr><td><code>Host: localhost:8080</code></td><td>요청을 받을 서버의 주소와 포트 번호</td></tr>
+<tr><td><code>Content-Type: application/json</code></td><td>아래에 붙은 본문이 JSON 형식이라는 표시</td></tr>
+<tr><td>빈 줄 아래 <code>{ ... }</code></td><td>본문(Body). 서버에 전달할 데이터</td></tr>
+</table></div>
+<h3>6-2. 응답</h3>
+<div class="cw"><button class="copy">복사</button><pre>HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "첫 번째 글",
+  "content": "안녕하세요"
+}</pre></div>
+<div class="ok box"><b>✅ 이렇게 읽으면 성공</b><br>첫 줄의 숫자 <b>201</b> = "생성 성공". 아래 JSON에 서버가 새로 붙여준 <code>id</code>가 보이면 정상입니다.</div>
+<h3>6-3. 자주 보는 상태 코드</h3>
+<div class="scroll"><table>
+<tr><th>코드</th><th>이름</th><th>의미</th></tr>
+<tr><td>200</td><td>OK</td><td>요청 성공</td></tr>
+<tr><td>201</td><td>Created</td><td>새 데이터 생성 성공</td></tr>
+<tr><td>204</td><td>No Content</td><td>성공했고 돌려줄 본문은 없음 (삭제 후)</td></tr>
+<tr><td>400</td><td>Bad Request</td><td>보낸 요청의 형식이 잘못됨</td></tr>
+<tr><td>404</td><td>Not Found</td><td>요청한 번호의 데이터가 없음</td></tr>
+<tr><td>500</td><td>Internal Server Error</td><td>서버 코드 안에서 오류 발생</td></tr>
+</table></div>
+<h3>6-4. JSON 읽는 법</h3>
+<div class="cw"><button class="copy">복사</button><pre>{
+  "id": 1,
+  "title": "첫 번째 글",
+  "tags": ["java", "spring"]
+}</pre></div>
+<ul>
+<li><code>{ }</code> : 데이터 한 건을 묶는 괄호</li>
+<li><code>"id"</code> : 항목 이름(키). 항상 큰따옴표로 감쌉니다.</li>
+<li><code>1</code> : 숫자 값은 따옴표 없이 씁니다.</li>
+<li><code>"첫 번째 글"</code> : 글자 값은 큰따옴표로 감쌉니다.</li>
+<li><code>[ ]</code> : 값 여러 개를 나열할 때 쓰는 괄호</li>
+</ul>
+</section>
+
+<section id="s7">
+<h2>☕ 7. Spring Boot 코드로 보기 (한 줄씩)</h2>
+<p>그림 오른쪽 5개 요청을 Spring Boot로 만들면 아래와 같습니다. 줄마다 <b>누가 호출하고, 어디로 값을 돌려주는지</b>를 적었습니다.</p>
+<div class="cw"><button class="copy">복사</button><pre>@RestController
+@RequestMapping("/articles")
+public class ArticleController {
+
+    private final ArticleService articleService;
+
+    public ArticleController(ArticleService articleService) {
+        this.articleService = articleService;
+    }
+
+    @GetMapping
+    public List&lt;ArticleDto&gt; list() {
+        return articleService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ArticleDto detail(@PathVariable Long id) {
+        return articleService.findById(id);
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;ArticleDto&gt; create(@RequestBody ArticleCreateRequest request) {
+        ArticleDto saved = articleService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PatchMapping("/{id}")
+    public ArticleDto update(@PathVariable Long id, @RequestBody ArticleUpdateRequest request) {
+        return articleService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable Long id) {
+        articleService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}</pre></div>
+<div class="scroll"><table>
+<tr><th>코드</th><th>설명 (호출 위치 → 리턴 위치 포함)</th></tr>
+<tr><td><code>@RestController</code></td><td>이 클래스가 요청을 받는 컨트롤러이고, 메서드가 리턴한 값을 JSON 글자로 바꿔 응답 본문에 넣으라는 표시입니다. 스프링이 프로그램 시작 시 이 클래스를 찾아 등록합니다.</td></tr>
+<tr><td><code>@RequestMapping("/articles")</code></td><td>이 클래스 안의 모든 메서드 주소 앞에 <code>/articles</code>가 붙습니다.</td></tr>
+<tr><td><code>public class ArticleController</code></td><td>컨트롤러 클래스 선언. 클라이언트의 요청이 가장 먼저 도착하는 클래스입니다.</td></tr>
+<tr><td><code>private final ArticleService articleService;</code></td><td>실제 데이터 처리를 맡는 <code>ArticleService</code> 객체를 담는 변수입니다. <code>final</code>이므로 한 번 넣으면 바꿀 수 없습니다.</td></tr>
+<tr><td><code>public ArticleController(ArticleService articleService)</code></td><td>생성자. 스프링이 컨트롤러를 만들 때 <code>ArticleService</code> 객체를 찾아 이 매개변수로 넣어줍니다.</td></tr>
+<tr><td><code>this.articleService = articleService;</code></td><td>받은 객체를 위의 변수에 저장합니다. 이후 모든 메서드가 이 변수로 서비스를 호출합니다.</td></tr>
+<tr><td><code>@GetMapping</code></td><td>메서드가 <code>GET /articles</code> 요청을 처리한다는 표시입니다.</td></tr>
+<tr><td><code>public List&lt;ArticleDto&gt; list()</code></td><td>게시글 목록을 리턴하는 메서드. 스프링이 요청을 받으면 이 메서드를 호출하고, 리턴값은 스프링에게 돌아가 JSON 배열로 변환됩니다.</td></tr>
+<tr><td><code>return articleService.findAll();</code></td><td>서비스의 <code>findAll()</code>을 호출해 전체 목록을 받고, 그 값을 그대로 리턴합니다. 최종적으로 클라이언트에게 200 응답으로 전달됩니다.</td></tr>
+<tr><td><code>@GetMapping("/{id}")</code></td><td><code>GET /articles/1</code> 형태의 요청을 처리합니다. 주소의 <code>{id}</code> 자리에 들어온 숫자가 변수가 됩니다.</td></tr>
+<tr><td><code>@PathVariable Long id</code></td><td>주소에서 꺼낸 번호를 <code>id</code> 변수에 넣습니다. <code>/articles/3</code>이면 id는 3입니다.</td></tr>
+<tr><td><code>return articleService.findById(id);</code></td><td>서비스에 번호를 넘겨 해당 게시글 1개를 받아 리턴합니다. 리턴값은 JSON 객체로 변환되어 응답됩니다.</td></tr>
+<tr><td><code>@PostMapping</code></td><td><code>POST /articles</code> 요청을 처리합니다.</td></tr>
+<tr><td><code>@RequestBody ArticleCreateRequest request</code></td><td>요청 본문의 JSON(제목, 내용)을 <code>ArticleCreateRequest</code> 객체로 바꿔 <code>request</code>에 넣습니다.</td></tr>
+<tr><td><code>ArticleDto saved = articleService.create(request);</code></td><td>서비스의 <code>create()</code>를 호출해 저장하고, 저장된 결과(번호 포함)를 <code>saved</code>에 받습니다.</td></tr>
+<tr><td><code>return ResponseEntity.status(HttpStatus.CREATED).body(saved);</code></td><td>상태 코드 201과 <code>saved</code>를 본문으로 묶어 리턴합니다. 스프링이 이를 HTTP 응답으로 만들어 클라이언트에 보냅니다.</td></tr>
+<tr><td><code>@PatchMapping("/{id}")</code></td><td><code>PATCH /articles/1</code> 요청을 처리합니다.</td></tr>
+<tr><td><code>return articleService.update(id, request);</code></td><td>번호와 수정 내용을 서비스에 넘기고, 수정된 게시글을 받아 리턴합니다.</td></tr>
+<tr><td><code>@DeleteMapping("/{id}")</code></td><td><code>DELETE /articles/1</code> 요청을 처리합니다.</td></tr>
+<tr><td><code>articleService.delete(id);</code></td><td>서비스에 삭제를 요청합니다. 리턴값이 없는 호출입니다.</td></tr>
+<tr><td><code>return ResponseEntity.noContent().build();</code></td><td>본문 없이 상태 코드 204만 담은 응답을 리턴합니다.</td></tr>
+</table></div>
+<div class="box warn">⚠️ <code>ArticleService</code>, <code>ArticleDto</code>, <code>ArticleCreateRequest</code>, <code>ArticleUpdateRequest</code>는 별도 파일로 직접 만들어야 합니다. 이 문서는 컨트롤러의 구조만 보여줍니다.</div>
+</section>
+
+<section id="s8">
+<h2>🧠 8. 퀴즈</h2>
+<div id="quizBox"></div>
+</section>
+
+<section id="s9">
+<h2>🛠️ 9. 확인 체크리스트</h2>
+<div class="do">
+<label><input type="checkbox" data-m="m1"> 그림의 ①~⑤가 각각 무엇인지 말로 설명할 수 있다</label>
+<label><input type="checkbox" data-m="m2"> GET, POST, PATCH, DELETE가 각각 조회·생성·수정·삭제임을 안다</label>
+<label><input type="checkbox" data-m="m3"> 5번 섹션에서 5개 버튼을 모두 눌러 봤다</label>
+<label><input type="checkbox" data-m="m4"> JSON을 보고 키와 값을 구분할 수 있다</label>
+</div>
+</section>
+
+</main>
+
+<div id="dash"><div id="ring"><span id="pct">0%</span></div><div>체크 <b id="mc">0/4</b><br>퀴즈 <b id="qc">0/5</b></div></div>
+
+<script>
+(function(){
+var KEY='restapi_easy_v1', st={m:{},q:{}};
+function load(){try{var r=localStorage.getItem(KEY);if(r)st=JSON.parse(r);}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function dash(){
+  var m=Object.keys(st.m).filter(function(k){return st.m[k];}).length;
+  var q=Object.keys(st.q).filter(function(k){return st.q[k]==='ok';}).length;
+  var p=Math.round((m+q)/9*100);
+  document.getElementById('mc').textContent=m+'/4';
+  document.getElementById('qc').textContent=q+'/5';
+  document.getElementById('pct').textContent=p+'%';
+  document.getElementById('ring').style.background='conic-gradient(#4f46e5 '+p+'%,#e5e7eb 0)';
+}
+load();
+
+/* 복사 버튼 */
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentNode.querySelector('pre').innerText;
+    function done(){b.textContent='복사됨 ✅';setTimeout(function(){b.textContent='복사';},1500);}
+    function fb(){
+      try{var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}
+      catch(e){b.textContent='길게 눌러 직접 복사';}
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fb);}else{fb();}
+  });
+});
+
+/* 다운로드 */
+document.getElementById('dlBtn').addEventListener('click',function(){
+  var html='<!doctype html>\n'+document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='RestApiEasy.html';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+});
+
+/* 체크리스트 */
+document.querySelectorAll('[data-m]').forEach(function(c){
+  c.checked=!!st.m[c.dataset.m];
+  c.addEventListener('change',function(){st.m[c.dataset.m]=c.checked;save();dash();});
+});
+
+/* 가상 서버 */
+var db,nextId;
+function resetDb(){db=[{id:1,title:'첫 번째 글',content:'안녕하세요'},{id:2,title:'두 번째 글',content:'REST API 공부 중'}];nextId=3;}
+function J(o){return JSON.stringify(o,null,2);}
+function showDb(){document.getElementById('dbBox').textContent=J(db);}
+function show(req,status,body){
+  document.getElementById('reqBox').textContent=req;
+  document.getElementById('resBox').textContent=status+(body?'\n\n'+body:'');
+}
+var used={};
+function run(op){
+  var id=Number(document.getElementById('simId').value)||1;
+  var title=document.getElementById('simTitle').value||'새 글';
+  var item=db.filter(function(x){return x.id===id;})[0];
+  var nf='{\n  "message": "해당 번호의 글이 없습니다"\n}';
+  if(op==='list'){show('GET /articles','HTTP/1.1 200 OK',J(db));}
+  else if(op==='one'){
+    show('GET /articles/'+id,item?'':'',''); 
+    if(item)show('GET /articles/'+id,'HTTP/1.1 200 OK',J(item));else show('GET /articles/'+id,'HTTP/1.1 404 Not Found',nf);
+  }
+  else if(op==='create'){
+    var n={id:nextId++,title:title,content:'내용'};db.push(n);
+    show('POST /articles\nContent-Type: application/json\n\n'+J({title:title,content:'내용'}),'HTTP/1.1 201 Created',J(n));
+  }
+  else if(op==='patch'){
+    var rq='PATCH /articles/'+id+'\nContent-Type: application/json\n\n'+J({title:title});
+    if(item){item.title=title;show(rq,'HTTP/1.1 200 OK',J(item));}else show(rq,'HTTP/1.1 404 Not Found',nf);
+  }
+  else if(op==='del'){
+    if(item){db=db.filter(function(x){return x.id!==id;});show('DELETE /articles/'+id,'HTTP/1.1 204 No Content','(본문 없음)');}
+    else show('DELETE /articles/'+id,'HTTP/1.1 404 Not Found',nf);
+  }
+  used[op]=true;
+  if(Object.keys(used).length>=5){var c=document.querySelector('[data-m="m3"]');c.checked=true;st.m.m3=true;save();dash();}
+  showDb();
+}
+resetDb();showDb();
+document.querySelectorAll('[data-op]').forEach(function(b){b.addEventListener('click',function(){run(b.dataset.op);});});
+document.getElementById('simReset').addEventListener('click',function(){resetDb();showDb();show('(버튼을 눌러보세요)','(버튼을 눌러보세요)','');});
+
+/* 퀴즈 */
+var Q=[
+ {q:'그림에서 "클라이언트"에 해당하는 것은?',o:['요청을 보내는 브라우저·앱·기기','JSON 데이터','REST API 상자','/articles 주소'],a:0,e:'클라이언트는 서버에 요청을 보내는 쪽입니다.'},
+ {q:'새 게시글을 만들 때 쓰는 요청은?',o:['GET /articles','POST /articles','PATCH /articles/id','DELETE /articles/id'],a:1,e:'생성은 POST이고, 주소는 목록 자원인 /articles입니다.'},
+ {q:'/articles/id 에서 id의 의미는?',o:['글자 "id"를 그대로 입력','서버 이름','게시글 번호가 들어갈 자리','JSON 키 이름'],a:2,e:'실제로는 /articles/3 처럼 숫자를 넣습니다.'},
+ {q:'"서버가 기기에 종속되지 않는다"의 뜻은?',o:['서버가 기기마다 다른 형식으로 응답한다','서버가 기기 종류와 상관없이 같은 JSON 형식으로 응답한다','서버가 아이폰만 지원한다','서버가 응답하지 않는다'],a:1,e:'기기 종류에 따라 응답 형식을 바꾸지 않는다는 뜻입니다.'},
+ {q:'삭제 성공 후 서버가 보통 돌려주는 상태 코드는?',o:['204 No Content','404 Not Found','500 Internal Server Error','201 Created'],a:0,e:'삭제 후에는 돌려줄 본문이 없어 204를 자주 사용합니다.'}
+];
+var box=document.getElementById('quizBox');
+Q.forEach(function(x,i){
+  var d=document.createElement('div');d.className='q';
+  var h='<b>Q'+(i+1)+'. '+x.q+'</b>';
+  x.o.forEach(function(t,j){h+='<button class="opt" data-i="'+i+'" data-j="'+j+'">'+t+'</button>';});
+  h+='<div class="exp" id="e'+i+'"></div>';
+  d.innerHTML=h;box.appendChild(d);
+});
+box.addEventListener('click',function(ev){
+  var b=ev.target.closest('.opt');if(!b)return;
+  var i=+b.dataset.i,j=+b.dataset.j,x=Q[i],ok=(j===x.a);
+  var opts=b.parentNode.querySelectorAll('.opt');
+  opts.forEach(function(o){o.classList.remove('right','wrong');});
+  b.classList.add(ok?'right':'wrong');
+  if(!ok)opts[x.a].classList.add('right');
+  var e=document.getElementById('e'+i);e.style.display='block';
+  e.textContent=(ok?'✅ 정답! ':'❌ 오답. ')+x.e;
+  st.q[i]=ok?'ok':'no';save();dash();
+});
+Object.keys(st.q).forEach(function(i){
+  if(st.q[i]==='ok'){var opts=box.querySelectorAll('.opt[data-i="'+i+'"]');opts[Q[i].a].classList.add('right');var e=document.getElementById('e'+i);e.style.display='block';e.textContent='✅ 정답! '+Q[i].e;}
+});
+dash();
+})();
+</script>
+</body>
+</html>

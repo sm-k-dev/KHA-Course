@@ -1,0 +1,8 @@
+Spring Boot + JAP (DB) 신규 사업에 주로 사용
+Hibernate는 JAP의 자식객체
+
+Spring Framwork + MyBatis 전자정부 프로젝트에 주로 사용
+
+https://jsonplaceholder.typicode.com/
+
+javascript fetch 함수 이용한 비동기 통신 요청과 응답코드로 바꿔줘 (무분별한 form 태그 사용 금지, 하나의 화면에 요청하는 내용이 많으면 여러개의 form 태그 말고 자바스크립트의 fetch 함수를 써줘)
