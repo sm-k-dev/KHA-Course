@@ -6,3 +6,163 @@ Spring Framwork + MyBatis 전자정부 프로젝트에 주로 사용
 https://jsonplaceholder.typicode.com/
 
 javascript fetch 함수 이용한 비동기 통신 요청과 응답코드로 바꿔줘 (무분별한 form 태그 사용 금지, 하나의 화면에 요청하는 내용이 많으면 여러개의 form 태그 말고 자바스크립트의 fetch 함수를 써줘)
+
+PART 1️⃣ 기초 (Java 객체지향 + Spring 핵심)
+├─ Java 객체지향의 핵심 (Interface, Polymorphism, Dependency Injection)
+├─ Spring Framework란 뭔가?
+├─ IoC (Inversion of Control) 컨테이너
+├─ DI (Dependency Injection) 패턴
+└─ Spring Boot가 왜 필요한가?
+
+PART 2️⃣ REST API & MVC 패턴
+├─ HTTP와 REST API 개념
+├─ @RestController와 @GetMapping/@PostMapping 등
+├─ 요청/응답 흐름
+└─ MVC 패턴 (Controller → Service → Repository)
+
+PART 3️⃣ 계층별 구조 (핵심!)
+├─ Controller 계층 (HTTP 요청 처리)
+├─ Service 계층 (비즈니스 로직)
+├─ Repository 계층 (DB 접근)
+├─ Entity (DB 모델)
+└─ DTO (데이터 전송 객체)
+
+PART 4️⃣ 데이터베이스 & JPA
+├─ 관계형 DB와 테이블
+├─ JPA (Java Persistence API)
+├─ Hibernate ORM
+├─ Entity 매핑
+├─ CRUD 연산
+└─ 쿼리 작성 (@Query)
+
+PART 5️⃣ 실무 패턴
+├─ 트랜잭션 (@Transactional)
+├─ 예외 처리
+├─ 로깅
+├─ 테스트 (JUnit)
+└─ 디버깅
+
+PART 6️⃣ 고급 주제
+├─ 관계 매핑 (1:N, N:N)
+├─ 캐싱
+├─ 보안 (Spring Security)
+└─ 마이크로서비스 기초
+
+
+
+Java Bean 설명
+
+public interface PaymentService {
+    void pay(int amount);
+}
+
+@Service
+public class StripePaymentImpl implements PaymentService {
+    @Override
+    public void pay(int amount) {
+        System.out.println("스트라이프 결제: " + amount + "원");
+    }
+}
+
+@Service
+public class CardPaymentImpl implements PaymentService {
+    @Override
+    public void pay(int amount) {
+        System.out.println("카드 결제: " + amount + "원");
+    }
+}
+
+@Service
+public class AccountPaymentImpl implements PaymentService {
+    @Override
+    public void pay(int amount) {
+        System.out.println("계좌이체: " + amount + "원");
+    }
+}
+🎯 @Autowired로 업캐스팅되어 자동 주입받기
+java
+@Service
+public class OrderService {
+    
+    // 방법 1: 모든 자식들을 List로 받기 (업캐스팅!)
+    @Autowired
+    private List<PaymentService> allPayments;  // 3개 모두 주입됨!
+    
+    public void checkout(String method, int amount) {
+        // 사용자가 선택한 것 찾기
+        PaymentService payment = allPayments.stream()
+            .filter(p -> p.getClass().getSimpleName().contains(method))
+            .findFirst()
+            .orElseThrow();
+        
+        payment.pay(amount);
+    }
+}
+
+업캐스팅이 일어나는 부분:
+
+StripePaymentImpl 객체
+    ↓ (업캐스팅)
+PaymentService 타입 (Interface)
+    ↓
+List<PaymentService>에 들어감
+
+CardPaymentImpl 객체
+    ↓ (업캐스팅)
+PaymentService 타입
+    ↓
+List<PaymentService>에 들어감
+
+AccountPaymentImpl 객체
+    ↓ (업캐스팅)
+PaymentService 타입
+    ↓
+List<PaymentService>에 들어감
+📊 실제 동작
+@Autowired
+private List<PaymentService> allPayments;
+
+// Spring의 동작:
+// 1. PaymentService 인터페이스를 구현한 클래스를 모두 찾음
+//    - StripePaymentImpl ✅
+//    - CardPaymentImpl ✅
+//    - AccountPaymentImpl ✅
+//
+// 2. 각각을 객체로 생성 (Bean 생성)
+//    - new StripePaymentImpl()
+//    - new CardPaymentImpl()
+//    - new AccountPaymentImpl()
+//
+// 3. 각 객체를 PaymentService 타입에 업캐스팅
+//    - StripePaymentImpl → PaymentService (업캐스팅)
+//    - CardPaymentImpl → PaymentService (업캐스팅)
+//    - AccountPaymentImpl → PaymentService (업캐스팅)
+//
+// 4. List에 모두 추가
+//    List = [StripePaymentImpl(as PaymentService), 
+//            CardPaymentImpl(as PaymentService), 
+//            AccountPaymentImpl(as PaymentService)]
+
+✅ 당신의 이해 정리
+1. PaymentService (Interface) - 계약서
+   ↓
+2. 3개의 자식 클래스 (StripePaymentImpl, CardPaymentImpl, AccountPaymentImpl)
+   ↓
+3. @Autowired로 주입 요청
+   ↓
+4. Spring이 자동으로:
+   - 각 자식 객체 생성
+   - PaymentService 타입에 업캐스팅
+   - List에 담아서 주입!
+   ↓
+5. 사용자 선택에 따라 List에서 꺼내서 사용
+
+이것이 DI(Dependency Injection) + 다형성(Polymorphism) + 업캐스팅의 완벽한 조합입니다! 🎉
+
+🚀 당신은 이미 마스터했습니다!
+
+✅ Spring Boot의 DI 원리
+✅ Interface와 자식 클래스의 관계
+✅ Upcasting이 자동으로 일어나는 것
+✅ List로 모든 구현체를 받는 방법
+✅ @Qualifier로 특정 하나를 선택하는 방법
