@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- v2 · 2026-10-15 · 원문: Thymeleaf Tutorial: Using Thymeleaf (문서 20260422 / 프로젝트 3.1.5.RELEASE) · 비유 없이 용어 중심 해설 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Thymeleaf 비전공자 한글 자습서 v2</title>
+<style>
+:root{--bg:#f7f8fa;--text:#1f2328;--muted:#5b6470;--line:#e3e6ea;--accent:#2e7d5b;--accent2:#1d5fa8;--mis:#eef4ff;--warnbg:#fff7e6}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",-apple-system,sans-serif;line-height:1.75;word-break:keep-all}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 16px}
+.topbar h1{font-size:16px;margin:0;flex:1}
+.topbar h1 small{color:var(--muted);font-weight:400}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 10px;font-size:18px;cursor:pointer}
+.dl-btn{border:0;background:var(--accent);color:#fff;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;white-space:nowrap}
+.layout{display:flex;max-width:1280px;margin:0 auto;align-items:flex-start}
+.toc{width:270px;flex:0 0 270px;position:sticky;top:58px;max-height:calc(100vh - 58px);overflow:auto;padding:16px 12px;background:#fff;border-right:1px solid var(--line)}
+.toc-title{font-weight:700;margin-bottom:8px}
+.toc ol{list-style:none;padding:0;margin:0}
+.toc a{display:block;padding:5px 8px;border-radius:6px;color:var(--text);text-decoration:none;font-size:14px}
+.toc a:hover{background:var(--mis)}
+.toc .sub a{padding-left:24px;font-size:13px;color:var(--muted)}
+.content{flex:1;min-width:0;background:#fff;padding:24px 36px 90px}
+h1.doc-title{font-size:28px;margin:6px 0 4px}
+h2{font-size:24px;border-bottom:2px solid var(--line);padding-bottom:8px;margin-top:44px}
+h3{font-size:18px;margin-top:30px}
+h4{font-size:15.5px;margin:20px 0 4px}
+p{margin:10px 0}
+.box{border-radius:10px;padding:12px 16px;margin:14px 0;border:1px solid var(--line);background:#fafbfc}
+.box.why{background:#f3f8ff;border-color:#cfe0f7}
+.box.term{background:#f7f5ff;border-color:#ddd6fe}
+.box.ok{background:#e8f5ee;border-color:#bfe3cf}
+.box.warn{background:var(--warnbg);border-color:#f7d79a}
+.box b.bt{display:block;margin-bottom:4px}
+.codebox{margin:14px 0;border-radius:10px;overflow:hidden;border:1px solid #2d333b}
+.cb-head{display:flex;justify-content:space-between;align-items:center;background:#2d333b;color:#c9d1d9;padding:6px 10px;font-size:13px;gap:8px}
+.copy{background:#3b434d;color:#fff;border:0;border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;white-space:nowrap}
+pre{margin:0;background:#22272e;color:#e6edf3;padding:14px;overflow-x:auto;font-size:13.5px;line-height:1.55;font-family:Consolas,"D2Coding","Courier New",monospace;white-space:pre}
+.box.ok pre{background:#fff;color:#1f2328;border:1px solid #bfe3cf;border-radius:8px;margin-top:6px;font-size:13px}
+code.inl{background:#f0f2f4;padding:1px 5px;border-radius:4px;font-family:Consolas,"D2Coding",monospace;font-size:0.92em}
+.mission{border:2px dashed var(--accent2);border-radius:10px;padding:12px 16px;margin:18px 0;background:var(--mis)}
+.mission b{display:block;margin-bottom:4px}
+.mission label{display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:600;cursor:pointer}
+.mission input{width:20px;height:20px}
+.quiz{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:14px 0}
+.quiz .qtext{font-weight:700;margin:0 0 8px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;font-size:15px;cursor:pointer;font-family:inherit;color:var(--text)}
+.opt:disabled{cursor:default}
+.opt.ok{background:#e6f6ec;border-color:#7bc49a}
+.opt.no{background:#fdecec;border-color:#e59b9b}
+.exp{display:none;margin-top:8px;padding:8px 12px;background:#f6f8fa;border-radius:8px;font-size:14.5px}
+.quiz.done .exp{display:block}
+table.t{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px;display:block;overflow-x:auto}
+table.t th,table.t td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.t th{background:#f4f6f8}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0;font-size:14px}
+.flow span{background:var(--mis);border:1px solid #cfe0f7;border-radius:999px;padding:4px 12px}
+.flow i{font-style:normal;color:var(--muted)}
+.dash{position:fixed;right:14px;bottom:14px;z-index:30;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 4px 16px rgba(0,0,0,.12);width:200px;font-size:13px}
+.dash-title{font-weight:700;text-align:center;margin-bottom:6px}
+.ring{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;margin:0 auto;background:conic-gradient(var(--accent) 0deg,#e5e7eb 0deg)}
+.ring span{background:#fff;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px}
+.dash-row{display:flex;justify-content:space-between;color:var(--muted);margin-top:6px}
+.reset{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12px}
+.ch-end{margin-top:12px;color:var(--muted);font-size:13px}
+@media (max-width:1000px){
+  .menu-btn{display:block}
+  .toc{position:fixed;left:0;top:0;height:100%;max-height:none;width:82%;max-width:320px;z-index:40;transform:translateX(-105%);transition:transform .2s;box-shadow:2px 0 14px rgba(0,0,0,.2);padding-top:18px}
+  .toc.open{transform:none}
+  .content{padding:18px 14px 120px}
+  h1.doc-title{font-size:22px}
+  h2{font-size:20px}
+  h3{font-size:16px}
+  .dash{width:168px;right:10px;bottom:10px;padding:10px}
+  .ring{width:60px;height:60px}
+  .ring span{width:46px;height:46px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menuBtn" class="menu-btn" aria-label="목차 열기">☰</button>
+  <h1>Tutorial: Using Thymeleaf <small>· 비전공자 한글 자습서 v2</small></h1>
+  <button id="dlBtn" class="dl-btn">⬇️ 문서 다운로드</button>
+</header>
+
+<div class="layout">
+
+<nav id="toc" class="toc">
+  <div class="toc-title">📚 Doc Contents</div>
+  <ol>
+    <li><a href="#intro">시작하기 전에 · 용어 정의</a></li>
+    <li><a href="#prep">0 실습 환경 준비</a></li>
+    <li><a href="#introducing-thymeleaf">1 Introducing Thymeleaf</a></li>
+    <li class="sub"><a href="#what-is-thymeleaf">1.1 Thymeleaf란?</a></li>
+    <li class="sub"><a href="#what-kind-of-templates-can-thymeleaf-process">1.2 템플릿 모드</a></li>
+    <li class="sub"><a href="#dialects-the-standard-dialect">1.3 표준 방언</a></li>
+    <li><a href="#the-good-thymes-virtual-grocery">2 The Good Thymes Virtual Grocery</a></li>
+    <li class="sub"><a href="#a-website-for-a-grocery">2.1 요청과 응답의 흐름</a></li>
+    <li class="sub"><a href="#creating-and-configuring-the-template-engine">2.2 템플릿 엔진 설정</a></li>
+    <li><a href="#using-texts">3 Using Texts</a></li>
+    <li class="sub"><a href="#a-multi-language-welcome">3.1 메시지와 th:text</a></li>
+    <li class="sub"><a href="#more-on-texts-and-variables">3.2 이스케이프와 변수</a></li>
+    <li><a href="#standard-expression-syntax">4 Standard Expression Syntax</a></li>
+    <li><a href="#setting-attribute-values">5 Setting Attribute Values</a></li>
+    <li><a href="#iteration">6 Iteration (반복)</a></li>
+    <li><a href="#conditional-evaluation">7 Conditional Evaluation (조건)</a></li>
+    <li><a href="#template-layout">8 Template Layout (조각과 레이아웃)</a></li>
+    <li><a href="#local-variables">9 Local Variables</a></li>
+    <li><a href="#attribute-precedence">10 Attribute Precedence</a></li>
+    <li><a href="#comments-and-blocks">11 Comments and Blocks</a></li>
+    <li><a href="#inlining">12 Inlining</a></li>
+    <li><a href="#textual-template-modes">13 Textual template modes</a></li>
+    <li><a href="#some-more-pages">14 Some more pages (주문 목록)</a></li>
+    <li><a href="#more-on-configuration">15 More on Configuration</a></li>
+    <li><a href="#template-cache">16 Template Cache</a></li>
+    <li><a href="#decoupled-template-logic">17 Decoupled Template Logic</a></li>
+    <li><a href="#appendices">18~21 부록 요약</a></li>
+    <li><a href="#finish">수료 체크</a></li>
+  </ol>
+</nav>
+
+<main class="content">
+
+<!-- ============ 시작하기 전에 ============ -->
+<section id="intro">
+  <h1 class="doc-title">Tutorial: Using Thymeleaf</h1>
+  <p>이 자습서는 Thymeleaf 공식 튜토리얼(3.1 버전)의 장 구성과 순서를 그대로 따릅니다. 각 개념을 프로그래밍 용어로 정의하고, 코드는 한 줄씩 해설합니다. 코드를 직접 입력하고 실행하면서 읽는 것을 전제로 합니다.</p>
+
+  <div class="box term">
+    <b class="bt">📖 기본 용어 정의</b>
+    <p><b>HTML</b>: 웹 페이지의 구조를 적는 문서 형식입니다. <code class="inl">&lt;p&gt;</code>, <code class="inl">&lt;table&gt;</code> 같은 태그로 이루어집니다.</p>
+    <p><b>태그(Tag)</b>: <code class="inl">&lt;</code> 와 <code class="inl">&gt;</code> 사이에 적은 이름입니다. 시작 태그 <code class="inl">&lt;p&gt;</code> 와 종료 태그 <code class="inl">&lt;/p&gt;</code> 가 한 쌍으로 글을 감쌉니다.</p>
+    <p><b>속성(Attribute)</b>: 태그 안의 <code class="inl">이름="값"</code> 형식의 설정입니다. 예: <code class="inl">&lt;a href="/product"&gt;</code> 에서 <code class="inl">href</code> 가 속성 이름입니다.</p>
+    <p><b>템플릿(Template)</b>: 서버가 값을 채워 넣을 수 있도록 <code class="inl">th:</code> 속성이 붙은 HTML 파일입니다.</p>
+    <p><b>템플릿 엔진(Template Engine)</b>: 템플릿 파일을 읽고 <code class="inl">th:</code> 속성을 처리한 뒤, 완성된 HTML 문자열을 만드는 Thymeleaf의 실행 객체입니다.</p>
+    <p><b>컨트롤러(Controller)</b>: 특정 URL 주소로 요청이 들어왔을 때 실행되는 자바 클래스입니다. <code class="inl">@Controller</code> 어노테이션으로 표시합니다.</p>
+    <p><b>메서드(Method)</b>: 클래스 안에 정의된 실행 단위입니다. 자바에서는 <code class="inl">public String home() { ... }</code> 형태로 씁니다.</p>
+    <p><b>어노테이션(Annotation)</b>: <code class="inl">@</code> 기호로 시작하는 표식입니다. 프레임워크가 이 표식을 읽고 동작을 정합니다. 예: <code class="inl">@GetMapping("/")</code>.</p>
+    <p><b>요청(Request)과 응답(Response)</b>: 브라우저가 서버에 주소를 보내는 것이 요청, 서버가 HTML을 돌려주는 것이 응답입니다.</p>
+    <p><b>모델(Model)</b>: 컨트롤러가 템플릿에 값을 전달할 때 쓰는 객체입니다. <code class="inl">addAttribute(이름, 값)</code> 메서드로 값을 넣습니다.</p>
+  </div>
+
+  <div class="box why">
+    <b class="bt">🧭 이 문서 사용법</b>
+    <p>📋 <b>복사</b> 버튼: 코드 상자 오른쪽 위 버튼입니다. 누르면 코드 전체가 클립보드에 복사됩니다.</p>
+    <p>☑️ <b>미션</b>: 실습 과제입니다. 완료하면 체크 칸을 누릅니다.</p>
+    <p>🧠 <b>퀴즈</b>: 보기를 누르면 즉시 정답 여부가 표시되고 해설이 나옵니다.</p>
+    <p>진행률은 오른쪽 아래 원형 그래프에 표시되며, 이 브라우저의 localStorage(브라우저 내부 저장소)에만 저장됩니다.</p>
+  </div>
+</section>
+
+<!-- ============ 0 실습 환경 준비 ============ -->
+<section id="prep">
+  <h2>0 실습 환경 준비</h2>
+  <p>원문 예제는 서블릿(Servlet) API를 직접 호출하는 방식입니다. 서블릿은 자바로 웹 요청을 처리하는 표준 인터페이스입니다. 이 자습서는 <b>Spring Boot</b> 프레임워크를 사용합니다. Spring Boot는 서블릿 설정, 웹 서버(Tomcat) 실행, Thymeleaf 연결 등을 자동으로 설정해 주는 자바 프레임워크입니다. Thymeleaf의 문법과 동작은 원문과 같습니다.</p>
+
+  <h3>용어 정의</h3>
+  <table class="t">
+    <tr><th>용어</th><th>정의</th></tr>
+    <tr><td>JDK (Java Development Kit)</td><td>자바 코드를 컴파일하고 실행하는 도구 모음입니다. 이 자습서는 Java 17 이상을 사용합니다.</td></tr>
+    <tr><td>Maven</td><td>자바 프로젝트의 빌드(컴파일, 패키징)와 외부 라이브러리 다운로드를 관리하는 도구입니다.</td></tr>
+    <tr><td>pom.xml</td><td>Maven이 읽는 설정 파일입니다. 프로젝트가 사용할 라이브러리 목록을 적습니다.</td></tr>
+    <tr><td>의존성(Dependency)</td><td>내 프로젝트가 가져다 쓰는 외부 라이브러리입니다. 예: <code class="inl">spring-boot-starter-thymeleaf</code>.</td></tr>
+    <tr><td>mvnw</td><td>Maven Wrapper 실행 스크립트입니다. Maven을 따로 설치하지 않아도 이 파일로 Maven 명령을 실행할 수 있습니다.</td></tr>
+    <tr><td>Tomcat</td><td>자바 웹 애플리케이션을 실행하는 웹 서버 프로그램입니다. Spring Boot는 Tomcat을 프로그램 안에 포함합니다.</td></tr>
+    <tr><td>localhost / 포트(Port)</td><td><code class="inl">localhost</code> 는 내 컴퓨터 자신을 가리키는 주소입니다. 포트는 한 컴퓨터 안에서 서버 프로그램을 구분하는 번호입니다. 기본 포트는 8080입니다.</td></tr>
+  </table>
+
+  <h3>Step 1. 프로젝트 생성</h3>
+  <p>① 브라우저에서 <code class="inl">https://start.spring.io</code> 에 접속합니다.<br>
+  ② <b>Project</b>에서 <code class="inl">Maven</code>, <b>Language</b>에서 <code class="inl">Java</code>, <b>Java</b> 버전에서 <code class="inl">17</code> 이상을 선택합니다.<br>
+  ③ <b>Dependencies</b>에서 <code class="inl">Spring Web</code> 과 <code class="inl">Thymeleaf</code> 를 추가합니다. Spring Web은 웹 요청을 처리하는 기능, Thymeleaf는 템플릿 엔진 기능입니다.<br>
+  ④ <b>GENERATE</b> 버튼을 누르면 <code class="inl">demo.zip</code> 파일이 내려받아집니다. 압축을 풉니다.</p>
+  <div class="box ok">
+    <b class="bt">✅ 성공 확인</b>
+    <p>압축을 푼 폴더 안에 <code class="inl">src</code> 폴더와 <code class="inl">pom.xml</code> 파일이 있으면 성공입니다.</p>
+  </div>
+
+  <h3>Step 2. 프로그램 실행</h3>
+  <p>압축을 푼 폴더를 기준으로 터미널(명령 프롬프트, PowerShell, 또는 macOS 터미널)을 엽니다. 터미널에서 실행하는 명령은 다음과 같습니다. 이 명령은 Maven Wrapper로 <code class="inl">spring-boot:run</code> 목표(goal)를 실행합니다. 목표는 Maven이 수행하는 작업 단위의 이름입니다. <code class="inl">spring-boot:run</code> 은 웹 서버를 시작합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>Windows (명령 프롬프트 또는 PowerShell)</span><button class="copy">복사</button></div>
+    <pre><code>mvnw.cmd spring-boot:run</code></pre>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>macOS / Linux 터미널</span><button class="copy">복사</button></div>
+    <pre><code>./mvnw spring-boot:run</code></pre>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 성공 확인</b>
+    <pre>... Tomcat started on port 8080 (http) ...
+... Started DemoApplication in 2.xxx seconds ...</pre>
+    <p class="ch-end">숫자와 클래스 이름은 환경마다 다를 수 있습니다. <code class="inl">Started</code> 문구가 나오면 서버가 실행 중입니다.</p>
+  </div>
+
+  <h3>Step 3. 브라우저에서 확인</h3>
+  <p>브라우저 주소창에 <code class="inl">http://localhost:8080</code> 을 입력합니다. 아직 응답할 템플릿과 컨트롤러가 없으므로 <b>Whitelabel Error Page</b>(Spring Boot의 기본 오류 화면)가 나오는 것이 정상입니다.</p>
+  <div class="box warn">
+    <b class="bt">⚠️ 오류: Port 8080 was already in use</b>
+    <p>다른 프로그램이 8080 포트를 이미 사용 중이라는 뜻입니다. 실행 중인 서버를 <b>Ctrl + C</b> 로 멈춘 뒤, 포트를 8081로 바꿔 실행합니다. 서버 설정 항목 <code class="inl">server.port</code> 값을 명령줄 인자로 전달하는 방식입니다.</p>
+    <div class="codebox">
+      <div class="cb-head"><span>macOS / Linux</span><button class="copy">복사</button></div>
+      <pre><code>./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081</code></pre>
+    </div>
+    <p>이 경우 접속 주소는 <code class="inl">http://localhost:8081</code> 입니다. Windows에서는 <code class="inl">./mvnw</code> 대신 <code class="inl">mvnw.cmd</code> 를 씁니다.</p>
+  </div>
+  <p>서버 종료: 실행 중인 터미널에서 <b>Ctrl + C</b> 를 누릅니다.</p>
+
+  <div class="mission">
+    <b>🛠️ 미션 0</b>
+    <p>서버를 실행하고 <code class="inl">http://localhost:8080</code> 에서 Whitelabel Error Page가 나오는지 확인하세요. 화면 상단 주소와 터미널의 Tomcat 포트 번호가 같은지도 확인합니다.</p>
+    <label><input type="checkbox" data-key="m0"> 미션 0 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q0">
+    <p class="qtext">🧠 퀴즈 0. 실행 직후 Whitelabel Error Page가 나오는 이유는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① JDK 설치가 실패했기 때문</button>
+      <button class="opt" data-ok="1">② 요청 주소에 응답할 컨트롤러와 템플릿이 아직 없기 때문</button>
+      <button class="opt" data-ok="0">③ Java 버전이 너무 높기 때문</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 서버는 정상 실행 중이며, 응답할 대상이 없어 Spring Boot가 기본 오류 페이지를 돌려준 것입니다.</div>
+  </div>
+</section>
+
+<!-- ============ 1 Introducing Thymeleaf ============ -->
+<section class="ch" id="introducing-thymeleaf">
+  <h2>1 Introducing Thymeleaf</h2>
+
+  <h3 id="what-is-thymeleaf">1.1 Thymeleaf란?</h3>
+  <p>Thymeleaf는 <b>자바로 작성된 서버 측 템플릿 엔진</b>입니다. "서버 측"은 HTML이 브라우저가 아니라 서버 프로그램 안에서 만들어진다는 뜻입니다. 템플릿 엔진은 HTML, XML, JavaScript, CSS, 일반 텍스트를 처리할 수 있습니다.</p>
+  <p>Thymeleaf의 중요한 특징은 <b>자연 템플릿(Natural Templates)</b>입니다. 자연 템플릿이란 <code class="inl">th:</code> 속성을 붙인 HTML 파일을 브라우저가 그대로 열어도 깨지지 않는 구조를 말합니다. 브라우저는 자기가 모르는 속성을 무시하기 때문입니다.</p>
+
+  <h3 id="what-kind-of-templates-can-thymeleaf-process">1.2 템플릿 모드(Template Mode)</h3>
+  <p>템플릿 모드는 Thymeleaf가 파일의 형식을 어떻게 해석할지 정하는 설정값입니다. 6가지가 있습니다.</p>
+  <table class="t">
+    <tr><th>모드</th><th>종류</th><th>의미</th></tr>
+    <tr><td><code class="inl">HTML</code></td><td>마크업 모드</td><td>HTML4, HTML5, XHTML을 모두 허용합니다. 입력 HTML의 구조를 최대한 그대로 출력합니다. 웹 페이지에서 가장 많이 씁니다.</td></tr>
+    <tr><td><code class="inl">XML</code></td><td>마크업 모드</td><td>XML 문법을 따라야 합니다. 닫는 태그가 없거나 따옴표가 빠지면 오류가 납니다.</td></tr>
+    <tr><td><code class="inl">TEXT</code></td><td>텍스트 모드</td><td>태그를 해석하지 않고 글자로 취급합니다. 이메일 본문 같은 텍스트 파일에 씁니다.</td></tr>
+    <tr><td><code class="inl">JAVASCRIPT</code></td><td>텍스트 모드</td><td>자바스크립트 파일을 처리합니다. 서버 값을 자바스크립트 문법에 맞게 넣습니다.</td></tr>
+    <tr><td><code class="inl">CSS</code></td><td>텍스트 모드</td><td>CSS 파일을 처리합니다.</td></tr>
+    <tr><td><code class="inl">RAW</code></td><td>무처리 모드</td><td>Thymeleaf 문법을 전혀 처리하지 않고 그대로 출력합니다.</td></tr>
+  </table>
+  <div class="box term">
+    <b class="bt">📖 용어 정의</b>
+    <p><b>마크업(Markup)</b>: 태그로 문서의 구조를 표시하는 형식입니다. HTML과 XML이 여기에 속합니다.</p>
+    <p><b>파싱(Parsing)</b>: 파일 글자를 읽어 태그, 속성, 글자 단위로 분해하는 작업입니다.</p>
+  </div>
+
+  <h3 id="dialects-the-standard-dialect">1.3 표준 방언(Standard Dialect)</h3>
+  <p><b>방언(Dialect)</b>은 <code class="inl">th:</code> 속성과 대괄호 문법 등 Thymeleaf 문법을 정의한 규칙 묶음입니다. 방언 안에는 <b>프로세서(Processor)</b>가 여럿 들어 있습니다. 프로세서는 특정 속성이나 태그를 발견했을 때 실행되는 처리 코드입니다. 예를 들어 <code class="inl">th:text</code> 를 처리하는 프로세서는 태그 안의 글자를 교체합니다.</p>
+  <p>표준 방언은 Thymeleaf 코어 라이브러리에 기본으로 들어 있는 방언입니다. 이 자습서에서 배우는 모든 <code class="inl">th:</code> 속성은 표준 방언의 기능입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>템플릿 예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;input type="text" name="userName" value="James Carrot" th:value="${user.name}" /&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">&lt;input type="text" ...&gt;</code></td><td>문자 입력칸을 만드는 HTML 태그입니다.</td></tr>
+      <tr><td><code class="inl">name="userName"</code></td><td>폼을 전송할 때 이 입력칸 값을 <code class="inl">userName</code> 이라는 이름으로 보냅니다.</td></tr>
+      <tr><td><code class="inl">value="James Carrot"</code></td><td>브라우저가 기본으로 보여 주는 값입니다. Thymeleaf를 거치지 않은 원본 파일에서 보입니다.</td></tr>
+      <tr><td><code class="inl">th:value="${user.name}"</code></td><td>서버 처리 시 <code class="inl">value</code> 속성 값을 <code class="inl">user.name</code> 의 값으로 교체합니다. 브라우저는 <code class="inl">th:value</code> 를 모르므로 무시합니다.</td></tr>
+    </table>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 1</b>
+    <p><code class="inl">src/main/resources/templates/</code> 폴더에 <code class="inl">test.html</code> 파일을 만듭니다. 파일 안에 <code class="inl">&lt;p th:text="안녕하세요"&gt;임시 글&lt;/p&gt;</code> 을 적고, 파일을 브라우저에서 직접 열어 "임시 글"이 보이는지 확인하세요. 그다음 서버 주소로 접속하면 결과가 어떻게 다른지도 메모하세요.</p>
+    <label><input type="checkbox" data-key="m1"> 미션 1 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q1a">
+    <p class="qtext">🧠 퀴즈 1-1. 웹 페이지 파일을 처리할 때 사용하는 템플릿 모드는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① TEXT</button>
+      <button class="opt" data-ok="1">② HTML</button>
+      <button class="opt" data-ok="0">③ RAW</button>
+    </div>
+    <div class="exp">정답은 ②번 HTML입니다. HTML 태그 구조를 유지하면서 처리합니다.</div>
+  </div>
+  <div class="quiz" data-id="q1b">
+    <p class="qtext">🧠 퀴즈 1-2. <code class="inl">th:</code> 속성이 붙은 HTML을 브라우저에서 직접 열어도 화면이 깨지지 않는 이유는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="1">① 브라우저가 알지 못하는 속성을 무시하기 때문</button>
+      <button class="opt" data-ok="0">② 브라우저에 Thymeleaf가 내장되어 있기 때문</button>
+      <button class="opt" data-ok="0">③ <code class="inl">th:</code> 속성이 파일을 열 때 자동으로 삭제되기 때문</button>
+    </div>
+    <div class="exp">정답은 ①번입니다. HTML 표준은 알 수 없는 속성을 오류로 처리하지 않고 무시하도록 정해져 있습니다.</div>
+  </div>
+</section>
+
+<!-- ============ 2 The Good Thymes Virtual Grocery ============ -->
+<section class="ch" id="the-good-thymes-virtual-grocery">
+  <h2>2 The Good Thymes Virtual Grocery</h2>
+  <p>원문은 <b>Good Thymes Virtual Grocery(GTVG)</b>라는 가상의 식료품 쇼핑몰 예제 프로그램을 사용합니다. 이 예제에는 다음 데이터 클래스가 있습니다.</p>
+  <table class="t">
+    <tr><th>클래스</th><th>역할</th><th>주요 필드 예시</th></tr>
+    <tr><td><code class="inl">Product</code></td><td>판매 상품 한 개를 표현하는 클래스</td><td><code class="inl">id</code>, <code class="inl">name</code>, <code class="inl">price</code>, <code class="inl">inStock</code>, <code class="inl">comments</code></td></tr>
+    <tr><td><code class="inl">Customer</code></td><td>고객 한 명을 표현하는 클래스</td><td><code class="inl">name</code>, <code class="inl">address</code></td></tr>
+    <tr><td><code class="inl">Order</code></td><td>주문 한 건을 표현하는 클래스</td><td><code class="inl">id</code>, <code class="inl">customer</code>, <code class="inl">total</code></td></tr>
+    <tr><td><code class="inl">Comment</code></td><td>상품 후기 한 건을 표현하는 클래스</td><td><code class="inl">content</code>, <code class="inl">productId</code></td></tr>
+  </table>
+
+  <h3 id="a-website-for-a-grocery">2.1 요청과 응답의 흐름</h3>
+  <p>브라우저가 주소 <code class="inl">/</code> 를 요청했을 때 실행되는 순서는 다음과 같습니다.</p>
+  <div class="flow">
+    <span>① 브라우저: GET / 요청</span><i>→</i>
+    <span>② DispatcherServlet: 주소에 맞는 컨트롤러 찾기</span><i>→</i>
+    <span>③ HomeController.home() 실행</span><i>→</i>
+    <span>④ "home" 문자열 반환</span><i>→</i>
+    <span>⑤ 템플릿 엔진: templates/home.html 처리</span><i>→</i>
+    <span>⑥ HTML 응답 전송</span>
+  </div>
+  <table class="t">
+    <tr><th>단계</th><th>실행 주체</th><th>설명</th></tr>
+    <tr><td>②</td><td>DispatcherServlet</td><td>Spring Boot가 자동으로 등록한 요청 분배 클래스입니다. 개발자가 직접 호출하지 않습니다.</td></tr>
+    <tr><td>③</td><td>HomeController</td><td>개발자가 작성한 클래스입니다. 화면에 보낼 데이터를 Model에 넣습니다.</td></tr>
+    <tr><td>④</td><td>HomeController</td><td>반환된 문자열 <code class="inl">"home"</code> 은 화면 파일 이름입니다. 실제 파일 경로가 아닙니다.</td></tr>
+    <tr><td>⑤</td><td>Thymeleaf</td><td>문자열 <code class="inl">"home"</code> 에 접두사 <code class="inl">templates/</code> 와 접미사 <code class="inl">.html</code> 을 붙여 파일 경로를 만든 뒤 파일을 처리합니다.</td></tr>
+  </table>
+
+  <h4>HomeController.java</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/java/com/example/demo/HomeController.java</span><button class="copy">복사</button></div>
+<pre><code>package com.example.demo;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("today", "2026년 10월 15일");
+        return "home";
+    }
+}</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>의미</th></tr>
+      <tr><td><code class="inl">package com.example.demo;</code></td><td>이 파일이 속한 패키지(클래스 묶음의 폴더 이름)를 선언합니다. Spring Boot는 이 패키지 아래의 클래스를 자동으로 찾습니다.</td></tr>
+      <tr><td><code class="inl">import ...;</code></td><td>다른 패키지에 있는 클래스를 이 파일에서 사용하겠다고 선언합니다.</td></tr>
+      <tr><td><code class="inl">@Controller</code></td><td>이 클래스가 HTTP 요청을 처리하는 컨트롤러임을 Spring에 알립니다. Spring이 프로그램 시작 시 이 클래스를 객체로 만들어 보관합니다.</td></tr>
+      <tr><td><code class="inl">@GetMapping("/")</code></td><td>브라우저가 GET 방식으로 주소 <code class="inl">/</code> 를 요청하면 바로 아래 메서드를 호출하라는 표식입니다.</td></tr>
+      <tr><td><code class="inl">public String home(Model model)</code></td><td>메서드 이름은 <code class="inl">home</code>, 반환 타입은 문자열(<code class="inl">String</code>)입니다. 매개변수 <code class="inl">model</code> 은 Spring이 호출할 때 자동으로 넣어 줍니다.</td></tr>
+      <tr><td><code class="inl">model.addAttribute("today", "...")</code></td><td>템플릿에서 <code class="inl">${today}</code> 로 꺼낼 수 있도록, 이름 <code class="inl">"today"</code> 에 값을 저장합니다. 이름과 값을 쌍으로 저장하는 구조를 맵(Map)이라고 합니다.</td></tr>
+      <tr><td><code class="inl">return "home";</code></td><td>메서드를 끝내고 <code class="inl">"home"</code> 을 Spring에 돌려줍니다. Spring은 이 값을 받아 <code class="inl">templates/home.html</code> 템플릿을 실행합니다.</td></tr>
+    </table>
+    <p>호출 위치와 반환 위치: 이 메서드는 Spring 내부의 DispatcherServlet이 호출합니다. 반환된 문자열은 같은 DispatcherServlet으로 돌아가 템플릿 처리 단계로 넘어갑니다.</p>
+  </div>
+
+  <h3 id="creating-and-configuring-the-template-engine">2.2 템플릿 엔진 설정</h3>
+  <p>원문은 템플릿 엔진을 직접 설정합니다. 핵심 구성 요소는 두 가지입니다.</p>
+  <table class="t">
+    <tr><th>구성 요소</th><th>클래스</th><th>역할</th></tr>
+    <tr><td>템플릿 리졸버(Template Resolver)</td><td><code class="inl">WebApplicationTemplateResolver</code></td><td>템플릿 이름 <code class="inl">"home"</code> 을 실제 파일 위치로 바꿉니다. <code class="inl">setPrefix("/WEB-INF/templates/")</code> 는 앞에 붙일 경로, <code class="inl">setSuffix(".html")</code> 은 뒤에 붙일 확장자를 정합니다.</td></tr>
+    <tr><td>템플릿 엔진(Template Engine)</td><td><code class="inl">TemplateEngine</code></td><td>리졸버가 찾은 파일을 읽고 <code class="inl">th:</code> 속성을 처리해 완성된 HTML을 만듭니다.</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>원문 설정 코드 (서블릿 방식, 읽기 참고용)</span><button class="copy">복사</button></div>
+<pre><code>final WebApplicationTemplateResolver templateResolver =
+        new WebApplicationTemplateResolver(application);   // 파일 위치를 찾는 객체 생성
+templateResolver.setTemplateMode(TemplateMode.HTML);        // 처리 방식을 HTML로 지정
+templateResolver.setPrefix("/WEB-INF/templates/");          // "home" → "/WEB-INF/templates/home"
+templateResolver.setSuffix(".html");                        // ... → "/WEB-INF/templates/home.html"
+
+final TemplateEngine templateEngine = new TemplateEngine(); // 템플릿 엔진 객체 생성
+templateEngine.setTemplateResolver(templateResolver);       // 엔진에 리졸버를 연결</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 Spring Boot에서의 기본 설정</b>
+    <p>Spring Boot는 위 설정을 자동으로 수행합니다. 따라서 이 자습서에서는 아래 규칙만 알면 됩니다.</p>
+    <table class="t">
+      <tr><th>항목</th><th>Spring Boot 기본값</th></tr>
+      <tr><td>접두사(prefix)</td><td><code class="inl">classpath:/templates/</code> (프로젝트의 <code class="inl">src/main/resources/templates/</code> 폴더)</td></tr>
+      <tr><td>접미사(suffix)</td><td><code class="inl">.html</code></td></tr>
+      <tr><td>컨트롤러 반환값 <code class="inl">"home"</code></td><td><code class="inl">templates/home.html</code> 파일을 처리합니다.</td></tr>
+    </table>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 자주 하는 오류 1: 파일 위치가 틀린 경우</b>
+    <p>증상: "Template might not exist" 또는 Whitelabel Error Page. 원인: HTML 파일을 <code class="inl">static</code> 폴더에 넣었습니다. <code class="inl">static</code> 폴더의 파일은 Thymeleaf가 처리하지 않고 그대로 전송합니다. 해결: 파일을 <code class="inl">src/main/resources/templates/</code> 로 옮깁니다.</p>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 자주 하는 오류 2: 반환 문자열에 확장자를 붙인 경우</b>
+    <p><code class="inl">return "home.html";</code> 은 잘못입니다. Spring이 접미사 <code class="inl">.html</code> 을 자동으로 붙이므로 결과가 <code class="inl">home.html.html</code> 이 되어 파일을 찾지 못합니다. 반드시 <code class="inl">return "home";</code> 으로 씁니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 2</b>
+    <p>(1) <code class="inl">HomeController.java</code> 를 위 코드와 같이 작성합니다. (2) <code class="inl">src/main/resources/templates/home.html</code> 을 만들고 본문에 "쇼핑몰 홈입니다"라는 글을 씁니다. (3) 서버를 실행하고 <code class="inl">http://localhost:8080</code> 에서 글이 보이는지 확인합니다.</p>
+    <label><input type="checkbox" data-key="m2"> 미션 2 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q2">
+    <p class="qtext">🧠 퀴즈 2. 컨트롤러 메서드가 <code class="inl">return "home";</code> 을 실행하면 Spring Boot는 어떤 파일을 처리할까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">static/home.html</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">templates/home.html</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">HomeController.java</code></button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 반환 문자열 <code class="inl">"home"</code> 에 접두사 <code class="inl">templates/</code> 과 접미사 <code class="inl">.html</code> 이 붙습니다.</div>
+  </div>
+</section>
+
+<!-- ============ 3 Using Texts ============ -->
+<section class="ch" id="using-texts">
+  <h2>3 Using Texts</h2>
+  <p>이 장에서는 홈 화면에 환영 문구를 출력하는 방법을 배웁니다. 문구를 HTML 안에 직접 쓰지 않고 별도 파일로 분리하는 방식을 함께 익힙니다.</p>
+
+  <h3 id="a-multi-language-welcome">3.1 메시지(Message)와 th:text</h3>
+  <p><b>메시지</b>는 화면에 나오는 문구를 <b>키(key)</b>와 <b>값(value)</b> 쌍으로 저장한 것입니다. 키는 문구를 찾을 때 쓰는 이름이고, 값은 실제 화면에 나갈 문장입니다. 문구를 파일로 분리하면, 언어를 바꿀 때 HTML을 고치지 않고 파일만 바꾸면 됩니다. 이를 <b>국제화(i18n, Internationalization)</b>라고 합니다.</p>
+
+  <h4>home.html</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/templates/home.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+  &lt;head&gt;
+    &lt;title&gt;Good Thymes Virtual Grocery&lt;/title&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;p th:text="#{home.welcome}"&gt;Welcome to our grocery store!&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>의미</th></tr>
+      <tr><td><code class="inl">&lt;!DOCTYPE html&gt;</code></td><td>이 파일이 HTML5 문서임을 브라우저에 알리는 선언입니다.</td></tr>
+      <tr><td><code class="inl">&lt;html xmlns:th="http://www.thymeleaf.org"&gt;</code></td><td><code class="inl">th:</code> 접두어가 Thymeleaf의 속성임을 선언합니다. 편집기(IDE)가 경고를 표시하지 않게 하는 역할을 합니다. 처리 결과에는 영향이 없습니다.</td></tr>
+      <tr><td><code class="inl">&lt;title&gt;</code></td><td>브라우저 탭에 표시되는 제목입니다.</td></tr>
+      <tr><td><code class="inl">&lt;p th:text="#{home.welcome}"&gt;</code></td><td><code class="inl">th:text</code> 속성은 이 태그의 본문(시작 태그와 종료 태그 사이 글자)을 속성 값의 결과로 바꿉니다. <code class="inl">#{home.welcome}</code> 은 메시지 키 <code class="inl">home.welcome</code> 의 값을 가져오라는 표현식입니다.</td></tr>
+      <tr><td>본문 "Welcome to our grocery store!"</td><td>템플릿 처리 후에는 사라집니다. 원본 파일을 브라우저로 직접 열었을 때만 보입니다. 이 글은 디자인 확인용 임시 글입니다.</td></tr>
+    </table>
+  </div>
+
+  <h4>메시지 파일 만들기</h4>
+  <p>메시지 파일은 <code class="inl">.properties</code> 확장자를 가진 텍스트 파일입니다. 한 줄에 <code class="inl">키=값</code> 형식으로 한 개의 메시지를 적습니다. 파일 이름의 끝부분은 언어 코드입니다.</p>
+  <table class="t">
+    <tr><th>파일 이름</th><th>사용 조건</th></tr>
+    <tr><td><code class="inl">messages.properties</code></td><td>기본 파일입니다. 요청한 언어에 맞는 파일이 없을 때 사용합니다.</td></tr>
+    <tr><td><code class="inl">messages_es.properties</code></td><td>스페인어(es) 요청일 때 사용합니다.</td></tr>
+    <tr><td><code class="inl">messages_ko.properties</code></td><td>한국어(ko) 요청일 때 사용합니다.</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/messages.properties</span><button class="copy">복사</button></div>
+    <pre><code>home.welcome=Welcome to our grocery store!</code></pre>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/messages_es.properties</span><button class="copy">복사</button></div>
+    <pre><code>home.welcome=¡Bienvenido a nuestra tienda de comestibles!</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 언어 선택 규칙</b>
+    <p>브라우저는 HTTP 요청 헤더 <code class="inl">Accept-Language</code> 에 선호 언어를 담아 보냅니다. Spring은 이 값을 <b>Locale(지역·언어 정보 객체)</b>로 바꾸고, Locale에 맞는 메시지 파일을 고릅니다. 맞는 파일이 없으면 <code class="inl">messages.properties</code> 를 사용합니다.</p>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 성공 확인</b>
+    <p>브라우저 설정에서 언어를 스페인어(es)로 바꾸고 페이지를 새로고침하면 스페인어 문장이 나옵니다. 설정을 한국어(ko)로 바꾸고 <code class="inl">messages_ko.properties</code> 를 만들면 한국어 문장이 나옵니다.</p>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 오류: 메시지 파일을 고쳤는데 글이 바뀌지 않음</b>
+    <p>메시지 파일은 서버가 시작될 때 읽어 메모리에 저장합니다. 파일을 고친 뒤 서버를 <b>Ctrl + C</b> 로 멈추고 다시 실행해야 바뀝니다.</p>
+  </div>
+
+  <h4>컨트롤러와 Model의 관계</h4>
+  <p>원문에서는 <code class="inl">WebContext</code> 객체에 변수를 담았습니다. 이 객체는 서블릿 기반의 데이터 전달 객체입니다. Spring Boot에서는 <code class="inl">Model</code> 이 같은 역할을 합니다.</p>
+  <table class="t">
+    <tr><th>원문 (서블릿 방식)</th><th>이 자습서 (Spring Boot)</th><th>역할</th></tr>
+    <tr><td><code class="inl">WebContext ctx = new WebContext(...)</code></td><td>컨트롤러 메서드의 <code class="inl">Model model</code> 매개변수</td><td>템플릿에 넘길 값을 담는 객체</td></tr>
+    <tr><td><code class="inl">ctx.setVariable("today", ...)</code></td><td><code class="inl">model.addAttribute("today", ...)</code></td><td>이름과 값을 하나 저장</td></tr>
+    <tr><td><code class="inl">templateEngine.process("home", ctx, writer)</code></td><td><code class="inl">return "home";</code></td><td>템플릿 파일 처리를 요청</td></tr>
+  </table>
+
+  <div class="mission">
+    <b>🛠️ 미션 3</b>
+    <p><code class="inl">messages_ko.properties</code> 파일을 만들고 <code class="inl">home.welcome=쇼핑몰에 오신 것을 환영합니다!</code> 를 한 줄 적습니다. 브라우저 언어를 한국어로 바꾸고 새로고침하여 한글 문장이 나오는지 확인하세요.</p>
+    <label><input type="checkbox" data-key="m3"> 미션 3 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q3">
+    <p class="qtext">🧠 퀴즈 3. <code class="inl">th:text="#{home.welcome}"</code> 의 <code class="inl">#{home.welcome}</code> 는 무엇을 가져올까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 자바 클래스 이름</button>
+      <button class="opt" data-ok="1">② 메시지 파일에서 키가 <code class="inl">home.welcome</code> 인 행의 값</button>
+      <button class="opt" data-ok="0">③ 브라우저의 현재 주소</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">#{키}</code> 는 현재 Locale에 맞는 메시지 파일에서 같은 키를 찾아 값을 가져옵니다.</div>
+  </div>
+
+  <h3 id="more-on-texts-and-variables">3.2 이스케이프와 변수</h3>
+
+  <h4>이스케이프(Escape)란?</h4>
+  <p>HTML에서 <code class="inl">&lt;</code> 와 <code class="inl">&gt;</code> 는 태그의 시작과 끝을 뜻합니다. 글자로 "&lt;b&gt;"를 보여 주고 싶다면 이 기호를 <code class="inl">&amp;lt;</code>, <code class="inl">&amp;gt;</code> 로 바꿔 적어야 합니다. 이렇게 특수 기호를 안전한 표기로 바꾸는 작업을 이스케이프라고 합니다.</p>
+  <p>메시지 값에 HTML 태그가 들어 있다고 가정합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>messages.properties</span><button class="copy">복사</button></div>
+    <pre><code>home.welcome=Welcome to our &lt;b&gt;fantastic&lt;/b&gt; grocery store!</code></pre>
+  </div>
+  <table class="t">
+    <tr><th>속성</th><th>처리 방식</th><th>브라우저 결과</th></tr>
+    <tr><td><code class="inl">th:text</code></td><td>태그 기호를 이스케이프합니다. 기본 동작입니다.</td><td>화면에 <code class="inl">&lt;b&gt;fantastic&lt;/b&gt;</code> 이라는 글자가 그대로 보입니다.</td></tr>
+    <tr><td><code class="inl">th:utext</code></td><td>이스케이프하지 않고 HTML로 출력합니다. (unescaped text)</td><td><b>fantastic</b> 이 굵은 글씨로 보입니다.</td></tr>
+  </table>
+  <div class="box warn">
+    <b class="bt">⚠️ 보안 주의: XSS(Cross-Site Scripting)</b>
+    <p><code class="inl">th:utext</code> 에 사용자가 입력한 값(댓글, 검색어 등)을 넣으면, 입력자가 <code class="inl">&lt;script&gt;</code> 태그를 넣어 다른 사용자 브라우저에서 스크립트를 실행시킬 수 있습니다. 이를 XSS 공격이라고 합니다. 따라서 <code class="inl">th:utext</code> 는 개발자가 직접 작성한 고정 문구에만 사용합니다.</p>
+  </div>
+
+  <h4>변수 표현식 <code class="inl">${...}</code></h4>
+  <p>컨트롤러에서 <code class="inl">model.addAttribute("today", "2026년 10월 15일")</code> 로 저장한 값을 템플릿에서 꺼내려면 <code class="inl">${today}</code> 를 씁니다. <code class="inl">${...}</code> 안의 문법은 Spring 환경에서 <b>SpEL(Spring Expression Language)</b>로 해석됩니다. 원문은 OGNL(Object-Graph Navigation Language)이라는 표현식 언어를 설명하며, 두 언어의 기본 문법은 거의 같습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;p th:utext="#{home.welcome}"&gt;Welcome to our grocery store!&lt;/p&gt;
+&lt;p&gt;Today is: &lt;span th:text="${today}"&gt;13 February 2011&lt;/span&gt;&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:utext="#{home.welcome}"</code></td><td>메시지의 값을 HTML 그대로 출력합니다. 메시지 값에 태그가 없으므로 <code class="inl">th:text</code> 와 결과가 같습니다.</td></tr>
+      <tr><td><code class="inl">&lt;span th:text="${today}"&gt;</code></td><td>변수 <code class="inl">today</code> 의 값을 이스케이프하여 <code class="inl">span</code> 태그 본문으로 출력합니다.</td></tr>
+      <tr><td><code class="inl">13 February 2011</code></td><td>템플릿 처리 전 원본 파일에 보이는 임시 글입니다. 실제 처리 결과로는 사라집니다.</td></tr>
+    </table>
+  </div>
+  <div class="box term">
+    <b class="bt">📖 변수 경로 표기</b>
+    <p><code class="inl">${user.name}</code>: <code class="inl">user</code> 객체를 꺼낸 뒤, 그 객체의 <code class="inl">getName()</code> 메서드를 호출한 결과를 씁니다. 자바 빈(JavaBean) 규칙에서는 <code class="inl">getXxx()</code> 메서드가 속성 <code class="inl">xxx</code> 로 노출됩니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 4</b>
+    <p>(1) 컨트롤러에 <code class="inl">model.addAttribute("userName", "본인 이름")</code> 을 추가합니다. (2) 홈 화면에 <code class="inl">&lt;p th:text="'안녕하세요, ' + ${userName} + '님!'"&gt;</code> 을 추가합니다. 화면에 이름이 나오는지 확인하세요.</p>
+    <label><input type="checkbox" data-key="m4"> 미션 4 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q3b">
+    <p class="qtext">🧠 퀴즈 3-2. HTML 태그 기호를 이스케이프하지 않고 실제 태그로 출력하려면 어떤 속성을 써야 할까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">th:text</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">th:utext</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">th:value</code></button>
+    </div>
+    <div class="exp">정답은 ②번 <code class="inl">th:utext</code> 입니다. 단, XSS 위험이 있으므로 고정 문구에만 씁니다.</div>
+  </div>
+</section>
+
+<!-- ============ 4 Standard Expression Syntax ============ -->
+<section class="ch" id="standard-expression-syntax">
+  <h2>4 Standard Expression Syntax (표준 표현식 문법)</h2>
+  <p><b>표현식(Expression)</b>은 값을 계산하거나 꺼내는 코드 조각입니다. Thymeleaf 속성 값 안에 씁니다. 이 장에서는 Thymeleaf가 제공하는 표현식 종류를 모두 정리합니다.</p>
+
+  <table class="t">
+    <tr><th>표기</th><th>이름</th><th>결과</th></tr>
+    <tr><td><code class="inl">${...}</code></td><td>변수 표현식</td><td>Model에 저장된 값 또는 객체</td></tr>
+    <tr><td><code class="inl">*{...}</code></td><td>선택 변수 표현식</td><td><code class="inl">th:object</code> 로 선택한 객체의 속성 값</td></tr>
+    <tr><td><code class="inl">#{...}</code></td><td>메시지 표현식</td><td>메시지 파일의 값</td></tr>
+    <tr><td><code class="inl">@{...}</code></td><td>링크 주소 표현식</td><td>URL 문자열</td></tr>
+    <tr><td><code class="inl">~{...}</code></td><td>조각 표현식</td><td>HTML 조각(fragment)</td></tr>
+  </table>
+
+  <h3 id="messages">4.1 메시지 표현식 <code class="inl">#{...}</code></h3>
+  <p>메시지 값에 변동 값을 넣을 때는 <code class="inl">{0}</code>, <code class="inl">{1}</code> 같은 자리표시자를 씁니다. 번호는 0부터 시작합니다. 값의 형식은 <code class="inl">java.text.MessageFormat</code> 규칙을 따릅니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>messages.properties</span><button class="copy">복사</button></div>
+    <pre><code>home.welcome=Welcome to our grocery store, {0}!</code></pre>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html</span><button class="copy">복사</button></div>
+    <pre><code>&lt;p th:text="#{home.welcome(${userName})}"&gt;Welcome to our grocery store!&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">#{home.welcome(${userName})}</code>: 키 <code class="inl">home.welcome</code> 의 값에서 <code class="inl">{0}</code> 자리에 변수 <code class="inl">userName</code> 의 값을 넣습니다. 값이 여러 개면 쉼표로 구분합니다. 예: <code class="inl">#{key(${a}, ${b})}</code>.</p>
+    <p>메시지 키 자체도 변수로 만들 수 있습니다. 예: <code class="inl">#{${welcomeMsgKey}}</code>. 변수 값이 <code class="inl">home.welcome</code> 이면 위와 같은 메시지를 가져옵니다.</p>
+  </div>
+
+  <h3 id="variables">4.2 변수 표현식 <code class="inl">${...}</code> 세부 문법</h3>
+  <table class="t">
+    <tr><th>표현</th><th>실행 의미</th></tr>
+    <tr><td><code class="inl">${person.father.name}</code></td><td><code class="inl">person.getFather().getName()</code> 과 같습니다.</td></tr>
+    <tr><td><code class="inl">${person['father']['name']}</code></td><td>위와 같은 의미입니다. 대괄호 안에 속성 이름을 문자열로 씁니다.</td></tr>
+    <tr><td><code class="inl">${countriesByCode.ES}</code></td><td>Map 객체에서 키가 <code class="inl">ES</code> 인 값을 꺼냅니다.</td></tr>
+    <tr><td><code class="inl">${personsArray[0].name}</code></td><td>배열 또는 리스트의 첫 번째 요소(인덱스 0)의 <code class="inl">name</code> 을 꺼냅니다. 인덱스는 0부터 셉니다.</td></tr>
+    <tr><td><code class="inl">${person.createCompleteName()}</code></td><td>매개변수가 없는 메서드를 호출한 결과입니다.</td></tr>
+    <tr><td><code class="inl">${person.createCompleteNameWithSeparator('-')}</code></td><td>문자열 인자 <code class="inl">'-'</code> 를 넘겨 메서드를 호출합니다.</td></tr>
+  </table>
+
+  <h3>기본 객체 <code class="inl">#</code></h3>
+  <p><code class="inl">#</code> 으로 시작하는 이름은 Thymeleaf가 미리 제공하는 객체입니다.</p>
+  <table class="t">
+    <tr><th>이름</th><th>타입</th><th>설명</th></tr>
+    <tr><td><code class="inl">#ctx</code></td><td>컨텍스트 객체</td><td>템플릿 처리 중인 전체 데이터 묶음</td></tr>
+    <tr><td><code class="inl">#vars</code></td><td>변수 맵</td><td>컨텍스트에 저장된 변수 전체</td></tr>
+    <tr><td><code class="inl">#locale</code></td><td>Locale 객체</td><td>현재 언어와 국가 정보. 예: <code class="inl">${#locale.country}</code> 는 <code class="inl">KR</code> 등을 반환합니다.</td></tr>
+  </table>
+
+  <h3>유틸리티 객체 (Expression Utility Objects)</h3>
+  <p>유틸리티 객체는 자주 쓰는 기능을 모아 둔 도구입니다. 함수처럼 호출합니다. 예: <code class="inl">#strings.isEmpty(text)</code>.</p>
+  <table class="t">
+    <tr><th>객체</th><th>처리 대상</th><th>대표 메서드 예시</th></tr>
+    <tr><td><code class="inl">#calendars</code></td><td><code class="inl">java.util.Calendar</code></td><td><code class="inl">format(날짜, '패턴')</code></td></tr>
+    <tr><td><code class="inl">#dates</code></td><td><code class="inl">java.util.Date</code></td><td><code class="inl">format(날짜, '패턴')</code></td></tr>
+    <tr><td><code class="inl">#temporals</code></td><td><code class="inl">java.time</code> 날짜·시간 객체</td><td><code class="inl">format(객체, '패턴')</code></td></tr>
+    <tr><td><code class="inl">#numbers</code></td><td>숫자</td><td><code class="inl">formatDecimal(숫자, 자릿수, '콤마', 자릿수, '소수점')</code></td></tr>
+    <tr><td><code class="inl">#strings</code></td><td>문자열</td><td><code class="inl">isEmpty(s)</code>, <code class="inl">contains(s, 찾을글자)</code></td></tr>
+    <tr><td><code class="inl">#lists</code></td><td>리스트</td><td><code class="inl">size(목록)</code>, <code class="inl">isEmpty(목록)</code></td></tr>
+    <tr><td><code class="inl">#messages</code></td><td>메시지</td><td><code class="inl">msg('키')</code> (표현식 안에서 메시지 가져오기)</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>날짜 형식 지정 (home.html)</span><button class="copy">복사</button></div>
+<pre><code>&lt;p&gt;
+  Today is: &lt;span th:text="${#calendars.format(today,'dd MMMM yyyy')}"&gt;13 May 2011&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 패턴 문자 해설</b>
+    <p><code class="inl">dd</code>: 일(2자리), <code class="inl">MMMM</code>: 월 이름 전체, <code class="inl">yyyy</code>: 연도 4자리. 날짜 패턴 문자는 자바 <code class="inl">SimpleDateFormat</code> 규칙과 같습니다.</p>
+  </div>
+
+  <h3 id="expressions-on-selections-asterisk-syntax">4.3 선택 변수 표현식 <code class="inl">*{...}</code></h3>
+  <p><code class="inl">th:object="${...}"</code> 로 객체를 하나 선택하면, 그 태그 안에서는 <code class="inl">*{속성}</code> 으로 짧게 씁니다. 이때 <code class="inl">*{}</code> 는 선택된 객체를 기준으로 계산합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>userprofile.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:object="${session.user}"&gt;
+  &lt;p&gt;Name: &lt;span th:text="*{firstName}"&gt;Sebastian&lt;/span&gt;.&lt;/p&gt;
+  &lt;p&gt;Surname: &lt;span th:text="*{lastName}"&gt;Pepper&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:object="${session.user}"</code></td><td>세션(사용자 접속 상태 저장소)에 저장된 <code class="inl">user</code> 객체를 선택 대상으로 지정합니다.</td></tr>
+      <tr><td><code class="inl">*{firstName}</code></td><td>선택된 객체의 <code class="inl">getFirstName()</code> 결과입니다. 즉 <code class="inl">${session.user.firstName}</code> 과 같습니다.</td></tr>
+    </table>
+    <p>선택 대상이 없으면 <code class="inl">${...}</code> 과 <code class="inl">*{...}</code> 의 결과가 같습니다. 선택된 객체 자체는 <code class="inl">${#object}</code> 로 참조할 수 있습니다.</p>
+  </div>
+
+  <h3 id="link-urls">4.4 링크 주소 표현식 <code class="inl">@{...}</code></h3>
+  <p><code class="inl">@{...}</code> 는 URL 문자열을 만듭니다. 컨텍스트 경로(프로젝트 주소 앞부분)를 자동으로 붙이고, 쿼리 문자열과 경로 변수를 처리합니다.</p>
+  <table class="t">
+    <tr><th>URL 형식</th><th>예시</th><th>설명</th></tr>
+    <tr><td>절대 URL</td><td><code class="inl">@{http://www.thymeleaf.org}</code></td><td>그대로 씁니다.</td></tr>
+    <tr><td>컨텍스트 상대 URL</td><td><code class="inl">@{/order/list}</code></td><td>슬래시로 시작하면 프로젝트 이름이 자동으로 붙습니다.</td></tr>
+    <tr><td>쿼리 파라미터</td><td><code class="inl">@{/order/details(orderId=${o.id})}</code></td><td>결과: <code class="inl">/order/details?orderId=3</code></td></tr>
+    <tr><td>경로 변수</td><td><code class="inl">@{/order/{orderId}/details(orderId=${o.id})}</code></td><td>결과: <code class="inl">/order/3/details</code></td></tr>
+    <tr><td>서버 루트 상대 URL</td><td><code class="inl">@{~/billing/processInvoice}</code></td><td>같은 서버의 다른 애플리케이션 주소를 가리킬 때 씁니다.</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html 메뉴</span><button class="copy">복사</button></div>
+<pre><code>&lt;ol&gt;
+  &lt;li&gt;&lt;a href="product/list.html" th:href="@{/product/list}"&gt;Product List&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="order/list.html" th:href="@{/order/list}"&gt;Order List&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">href="product/list.html"</code></td><td>정적 HTML로 열었을 때 사용하는 상대 경로입니다. 서버 처리 시에는 무시됩니다.</td></tr>
+      <tr><td><code class="inl">th:href="@{/product/list}"</code></td><td>서버 처리 시 <code class="inl">href</code> 값을 <code class="inl">/프로젝트이름/product/list</code> 형태로 바꿉니다.</td></tr>
+    </table>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 참고: 컨텍스트 경로</b>
+    <p>프로젝트를 Spring Boot로 실행하면 컨텍스트 경로는 기본적으로 <code class="inl">/</code> 입니다. 따라서 <code class="inl">@{/order/list}</code> 는 <code class="inl">/order/list</code> 가 됩니다. 원문 예시의 <code class="inl">/gtvg/</code> 는 서블릿 WAR 배포에서 쓰는 프로젝트 이름입니다.</p>
+  </div>
+
+  <h3 id="fragments">4.5 조각 표현식 <code class="inl">~{...}</code></h3>
+  <p>HTML 조각을 가리키는 표현식입니다. 자세한 내용은 8장에서 다룹니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:insert="~{commons :: main}"&gt;...&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">~{commons :: main}</code>: <code class="inl">commons.html</code> 파일 안에서 <code class="inl">th:fragment="main"</code> 이 붙은 HTML 조각을 가리킵니다.</p>
+  </div>
+
+  <h3 id="literals">4.6 고정값 (Literals)</h3>
+  <table class="t">
+    <tr><th>종류</th><th>예시</th><th>설명</th></tr>
+    <tr><td>문자열 리터럴</td><td><code class="inl">'working web application'</code></td><td>작은따옴표로 감쌉니다. 문자열 안에 작은따옴표를 쓰려면 <code class="inl">\'</code> 로 씁니다.</td></tr>
+    <tr><td>숫자 리터럴</td><td><code class="inl">0</code>, <code class="inl">34</code>, <code class="inl">12.3</code></td><td>따옴표 없이 씁니다.</td></tr>
+    <tr><td>불리언 리터럴</td><td><code class="inl">true</code>, <code class="inl">false</code></td><td>참과 거짓 값입니다.</td></tr>
+    <tr><td>null 리터럴</td><td><code class="inl">null</code></td><td>값이 없음을 뜻합니다. 자바의 <code class="inl">null</code> 과 같습니다.</td></tr>
+    <tr><td>토큰 리터럴</td><td><code class="inl">content</code>, <code class="inl">main</code></td><td>영문 대소문자, 숫자, 점(.), 하이픈(-), 밑줄(_), 대괄호만 쓰면 따옴표 없이 문자열로 취급됩니다.</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:class="content"&gt;...&lt;/div&gt;
+&lt;p&gt;The year is &lt;span th:text="2013"&gt;1492&lt;/span&gt;.&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">th:class="content"</code> 는 <code class="inl">th:class="'content'"</code> 와 같은 결과입니다. 토큰 리터럴은 따옴표를 생략한 문자열 표기입니다.</p>
+  </div>
+
+  <h3 id="appending-texts">4.7 문자열 연결 <code class="inl">+</code></h3>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span th:text="'The name of the user is ' + ${user.name}"&gt;...&lt;/span&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">+</code> 는 두 값을 이어 붙여 하나의 문자열을 만듭니다. 문자열과 변수를 섞을 때 씁니다.</p>
+  </div>
+
+  <h3 id="literal-substitutions">4.8 리터럴 치환 <code class="inl">|...|</code></h3>
+  <p>세로선(<code class="inl">|</code>) 사이에서는 <code class="inl">${...}</code> 를 바로 넣을 수 있습니다. 문자열 연결 <code class="inl">+</code> 를 줄여 줍니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span th:text="|Welcome to our application, ${user.name}!|"&gt;...&lt;/span&gt;</code></pre>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 제한</b>
+    <p><code class="inl">|...|</code> 안에는 <code class="inl">${...}</code>, <code class="inl">*{...}</code>, <code class="inl">#{...}</code> 만 넣을 수 있습니다. 작은따옴표 문자열이나 조건식은 넣을 수 없습니다.</p>
+  </div>
+
+  <h3 id="arithmetic-operations">4.9 사칙연산</h3>
+  <p><code class="inl">+</code>, <code class="inl">-</code>, <code class="inl">*</code>, <code class="inl">/</code>, <code class="inl">%</code>(나머지) 연산자를 씁니다. 글자 별명으로 <code class="inl">div</code>(나눗셈), <code class="inl">mod</code>(나머지)도 쓸 수 있습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: 짝수 여부 확인</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:with="isEven=(${prodStat.count} % 2 == 0)"&gt;...&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">${prodStat.count} % 2</code> 는 count를 2로 나눈 나머지입니다. 나머지가 0이면 <code class="inl">== 0</code> 이 참이 되어 <code class="inl">isEven</code> 은 <code class="inl">true</code> 가 됩니다.</p>
+  </div>
+
+  <h3 id="comparators-and-equality">4.10 비교 연산자</h3>
+  <table class="t">
+    <tr><th>기호</th><th>글자 별명</th><th>의미</th></tr>
+    <tr><td><code class="inl">&gt;</code></td><td><code class="inl">gt</code></td><td>왼쪽이 크다</td></tr>
+    <tr><td><code class="inl">&lt;</code></td><td><code class="inl">lt</code></td><td>왼쪽이 작다</td></tr>
+    <tr><td><code class="inl">&gt;=</code></td><td><code class="inl">ge</code></td><td>왼쪽이 크거나 같다</td></tr>
+    <tr><td><code class="inl">&lt;=</code></td><td><code class="inl">le</code></td><td>왼쪽이 작거나 같다</td></tr>
+    <tr><td><code class="inl">==</code></td><td><code class="inl">eq</code></td><td>같다</td></tr>
+    <tr><td><code class="inl">!=</code></td><td><code class="inl">ne</code></td><td>다르다</td></tr>
+  </table>
+  <div class="box warn">
+    <b class="bt">⚠️ 오류: 속성 안의 부등호 기호</b>
+    <p>XML 규칙상 속성 값 안에 <code class="inl">&lt;</code> 를 쓰면 파싱 오류가 납니다. 이때 <code class="inl">lt</code>, <code class="inl">gt</code> 같은 글자 별명을 쓰거나 <code class="inl">&amp;lt;</code>, <code class="inl">&amp;gt;</code> 로 씁니다.</p>
+  </div>
+
+  <h3 id="conditional-expressions">4.11 조건 연산자 <code class="inl">A ? B : C</code></h3>
+  <p>조건 A가 참이면 B, 거짓이면 C를 결과로 씁니다. 자바의 삼항 연산자와 같은 문법입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;tr th:class="${row.even}? 'even' : 'odd'"&gt;...&lt;/tr&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">${row.even}</code> 이 참이면 <code class="inl">class="even"</code>, 거짓이면 <code class="inl">class="odd"</code> 가 됩니다. 콜론(:) 뒤 부분을 생략하면 거짓일 때 결과는 <code class="inl">null</code> 입니다.</p>
+  </div>
+
+  <h3 id="default-expressions-elvis-operator">4.12 기본값 연산자 <code class="inl">?:</code></h3>
+  <p>왼쪽 값이 <code class="inl">null</code> 이 아니면 왼쪽 값을, <code class="inl">null</code> 이면 오른쪽 값을 씁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span th:text="*{age}?: '(no age specified)'"&gt;27&lt;/span&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">*{age}</code> 값이 <code class="inl">null</code> 이면 글자 <code class="inl">(no age specified)</code> 를 출력합니다. 값이 있으면 그 값을 출력합니다. 아래 두 줄은 같은 결과입니다.</p>
+    <div class="codebox">
+      <div class="cb-head"><span>같은 뜻의 조건 연산자 표현</span><button class="copy">복사</button></div>
+<pre><code>th:text="*{age != null}? *{age} : '(no age specified)'"</code></pre>
+    </div>
+  </div>
+
+  <h3 id="the-no-operation-token">4.13 무처리 토큰 <code class="inl">_</code></h3>
+  <p>밑줄(<code class="inl">_</code>)은 "이 속성 처리를 하지 않는다"는 뜻입니다. 속성이 없는 것처럼 동작하여, 태그 안에 적힌 원본 글자가 그대로 남습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span th:text="${user.name} ?: _"&gt;no user authenticated&lt;/span&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">user.name</code> 이 <code class="inl">null</code> 이면 <code class="inl">th:text</code> 처리를 하지 않으므로 원본 글자 <code class="inl">no user authenticated</code> 가 남습니다. 값이 있으면 그 값으로 바뀝니다.</p>
+  </div>
+
+  <h3 id="data-conversion-formatting">4.14 변환 표현식 <code class="inl">${{...}}</code></h3>
+  <p>두 겹 중괄호를 쓰면 등록된 <b>변환 서비스(ConversionService)</b>가 값을 문자열로 바꿉니다. 날짜 객체처럼 기본 문자열 표현이 보기 어려운 값에 쓰입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;td th:text="${{user.lastAccessDate}}"&gt;...&lt;/td&gt;</code></pre>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 참고</b>
+    <p>변환 서비스가 등록되어 있지 않으면 객체의 <code class="inl">toString()</code> 결과가 출력됩니다. Spring 환경에서는 Spring의 변환 서비스가 자동으로 연결됩니다.</p>
+  </div>
+
+  <h3 id="preprocessing">4.15 전처리 <code class="inl">__...__</code></h3>
+  <p>밑줄 두 개(<code class="inl">__</code>)로 감싼 표현식은 <b>먼저 한 번 평가된 뒤</b>, 그 결과 문자열이 다시 표현식으로 실행됩니다. 메시지 값을 표현식 자리에 넣을 때 쓰는 고급 기능입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;p th:text="${__#{article.text('textVar')}__}"&gt;Some text here...&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 보안 제한</b>
+    <p>전처리는 표현식을 실행하므로 보안 제한이 엄격합니다. 사용자 입력값을 전처리 대상에 넣으면 안 됩니다. 부록 21을 참고하세요.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 5</b>
+    <p>(1) 홈 화면에 "상품 목록"과 "주문 목록" 링크를 <code class="inl">th:href="@{...}"</code> 로 만듭니다. (2) 컨트롤러에서 <code class="inl">model.addAttribute("now", java.time.LocalDate.now())</code> 로 값을 넣고, 화면에서 <code class="inl">${#temporals.format(now, 'yyyy-MM-dd')}</code> 로 날짜를 출력합니다.</p>
+    <label><input type="checkbox" data-key="m5"> 미션 5 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q4a">
+    <p class="qtext">🧠 퀴즈 4-1. <code class="inl">@{/product/list}</code> 표현식의 결과는 무엇인가요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 메시지 파일의 값</button>
+      <button class="opt" data-ok="1">② 프로젝트 경로가 포함된 URL 문자열</button>
+      <button class="opt" data-ok="0">③ 숫자 계산 결과</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">@{...}</code> 는 URL 문자열을 만듭니다.</div>
+  </div>
+  <div class="quiz" data-id="q4b">
+    <p class="qtext">🧠 퀴즈 4-2. <code class="inl">${value}?: '기본값'</code> 에서 <code class="inl">value</code> 가 <code class="inl">null</code> 이면 결과는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">value</code> 의 값이 그대로 출력된다</button>
+      <button class="opt" data-ok="1">② <code class="inl">기본값</code> 이 출력된다</button>
+      <button class="opt" data-ok="0">③ 오류가 발생한다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">?:</code> 는 왼쪽이 <code class="inl">null</code> 일 때만 오른쪽 값을 씁니다.</div>
+  </div>
+</section>
+
+<!-- ============ 5 Setting Attribute Values ============ -->
+<section class="ch" id="setting-attribute-values">
+  <h2>5 Setting Attribute Values (속성 값 설정)</h2>
+  <p>HTML 태그의 속성 값(<code class="inl">href</code>, <code class="inl">src</code>, <code class="inl">value</code>, <code class="inl">class</code> 등)을 서버 데이터로 바꾸는 방법을 배웁니다.</p>
+
+  <h3 id="setting-the-value-of-any-attribute">5.1 임의의 속성 설정 <code class="inl">th:attr</code></h3>
+  <div class="codebox">
+    <div class="cb-head"><span>subscribe.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;form action="subscribe.html" th:attr="action=@{/subscribe}"&gt;
+  &lt;fieldset&gt;
+    &lt;input type="text" name="email" /&gt;
+    &lt;input type="submit" value="Subscribe!" th:attr="value=#{subscribe.submit}"/&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:attr="action=@{/subscribe}"</code></td><td><code class="inl">action</code> 속성의 값을 <code class="inl">@{/subscribe}</code> 표현식의 결과로 바꿉니다.</td></tr>
+      <tr><td><code class="inl">th:attr="value=#{subscribe.submit}"</code></td><td><code class="inl">value</code> 속성 값을 메시지 키 <code class="inl">subscribe.submit</code> 의 값으로 바꿉니다.</td></tr>
+    </table>
+    <p>여러 속성을 바꿀 때는 쉼표로 구분합니다. 예: <code class="inl">th:attr="src=@{/images/logo.png},title=#{logo},alt=#{logo}"</code>. 같은 속성을 두 번 쓰면 HTML 규칙에 어긋나므로 쉼표 목록을 씁니다.</p>
+  </div>
+
+  <h3 id="setting-value-to-specific-attributes">5.2 속성 전용 처리 속성 (<code class="inl">th:value</code>, <code class="inl">th:href</code> 등)</h3>
+  <p><code class="inl">th:attr</code> 은 문법이 복잡하므로, 실제로는 속성마다 전용 속성을 씁니다. 전용 속성 이름은 <code class="inl">th:</code> 뒤에 HTML 속성 이름을 붙인 형태입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>전용 속성 사용</span><button class="copy">복사</button></div>
+<pre><code>&lt;form action="subscribe.html" th:action="@{/subscribe}"&gt;
+  &lt;input type="submit" value="Subscribe!" th:value="#{subscribe.submit}"/&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+  <p>전용 속성의 예: <code class="inl">th:action</code>, <code class="inl">th:value</code>, <code class="inl">th:href</code>, <code class="inl">th:src</code>, <code class="inl">th:class</code>, <code class="inl">th:id</code>, <code class="inl">th:style</code>. 원문은 HTML5 속성 전체에 대응하는 목록을 제공합니다.</p>
+
+  <h3 id="setting-more-than-one-value-at-a-time">5.3 두 속성 동시 설정 <code class="inl">th:alt-title</code></h3>
+  <p><code class="inl">th:alt-title</code> 은 <code class="inl">alt</code> 와 <code class="inl">title</code> 두 속성에 같은 값을 한 번에 넣습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;img src="../../images/gtvglogo.png" th:src="@{/images/gtvglogo.png}" th:alt-title="#{logo}" /&gt;</code></pre>
+  </div>
+
+  <h3 id="appending-and-prepending">5.4 값 추가 <code class="inl">th:attrappend</code>, <code class="inl">th:classappend</code></h3>
+  <p><code class="inl">th:attrappend</code> 은 기존 속성 값 <b>뒤에</b> 문자열을 덧붙입니다. <code class="inl">th:attrprepend</code> 는 <b>앞에</b> 붙입니다. <code class="inl">th:classappend</code> 는 <code class="inl">class</code> 속성에 CSS 클래스 이름만 추가합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;tr th:each="prod : ${prods}" class="row" th:classappend="${prodStat.odd}? 'odd'"&gt;...&lt;/tr&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">class="row"</code> 는 원본 값입니다. <code class="inl">${prodStat.odd}</code> 가 참이면 <code class="inl">odd</code> 가 뒤에 덧붙어 <code class="inl">class="row odd"</code> 가 됩니다. 거짓이면 <code class="inl">null</code> 이므로 아무것도 추가되지 않아 <code class="inl">class="row"</code> 로 남습니다.</p>
+  </div>
+
+  <h3 id="fixed-value-boolean-attributes">5.5 불리언 속성 <code class="inl">th:checked</code> 등</h3>
+  <p>HTML의 <code class="inl">checked</code> 처럼 이름만 있으면 참이 되는 속성을 <b>불리언 속성</b>이라고 합니다. Thymeleaf의 <code class="inl">th:checked</code> 는 조건이 참일 때만 이 속성을 붙입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;input type="checkbox" name="active" th:checked="${user.active}" /&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">user.active</code> 가 <code class="inl">true</code> 이면 <code class="inl">checked</code> 속성이 붙고, <code class="inl">false</code> 이면 속성 자체가 생기지 않습니다.</p>
+  </div>
+
+  <h3 id="setting-the-value-of-any-attribute-default-attribute-processor">5.6 전용 속성이 없는 경우 <code class="inl">th:이름</code></h3>
+  <p>Thymeleaf가 전용 처리를 정의하지 않은 속성이라도, <code class="inl">th:속성이름</code> 으로 쓰면 기본 처리기가 그 속성의 값을 설정합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span th:whatever="${user.name}"&gt;...&lt;/span&gt;
+&lt;!-- 처리 결과: &lt;span whatever="John Apricot"&gt;...&lt;/span&gt; --&gt;</code></pre>
+  </div>
+
+  <h3 id="support-for-html5-friendly-attribute-and-element-names">5.7 HTML5 표준 표기 <code class="inl">data-th-...</code></h3>
+  <p><code class="inl">th:</code> 접두어는 HTML5 표준에서 허용하지 않는 형식입니다. <code class="inl">data-th-</code> 접두어를 쓰면 HTML5 규칙에 맞는 파일이 됩니다. 두 표기는 같은 기능입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;td data-th-text="${user.login}"&gt;...&lt;/td&gt;</code></pre>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 참고</b>
+    <p>이 자습서는 가독성을 위해 <code class="inl">th:</code> 표기를 사용합니다. 두 표기 중 하나만 골라 한 파일 안에서 일관되게 쓰세요.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 6</b>
+    <p>(1) 홈 화면의 로고 이미지 태그에 <code class="inl">th:alt-title="#{logo}"</code> 를 붙입니다. (2) <code class="inl">messages.properties</code> 에 <code class="inl">logo=우리 쇼핑몰 로고</code> 를 추가합니다. (3) 마우스를 이미지 위에 올렸을 때 툴팁이 나오는지 확인합니다.</p>
+    <label><input type="checkbox" data-key="m6"> 미션 6 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q5">
+    <p class="qtext">🧠 퀴즈 5. 기존 <code class="inl">class</code> 값을 지우지 않고 조건에 따라 CSS 클래스를 추가하려면 어떤 속성을 써야 할까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">th:class</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">th:classappend</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">th:value</code></button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">th:class</code> 는 값을 덮어쓰고, <code class="inl">th:classappend</code> 는 뒤에 추가합니다.</div>
+  </div>
+</section>
+
+<!-- ============ 6 Iteration ============ -->
+<section class="ch" id="iteration">
+  <h2>6 Iteration (반복)</h2>
+  <p><b>반복(Iteration)</b>은 목록(리스트)의 요소 수만큼 같은 HTML 태그를 여러 번 출력하는 것입니다. 상품 3개를 출력할 때 <code class="inl">&lt;tr&gt;</code> 줄을 3번 쓰지 않고, 줄 하나를 만든 뒤 Thymeleaf가 반복하게 합니다.</p>
+
+  <h3 id="iteration-basics">6.1 반복의 기본 <code class="inl">th:each</code></h3>
+  <h4>ProductController.java</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/java/com/example/demo/ProductController.java</span><button class="copy">복사</button></div>
+<pre><code>package com.example.demo;
+
+import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class ProductController {
+
+    @GetMapping("/product/list")
+    public String list(Model model) {
+        List&lt;String&gt; prods = List.of("Fresh Sweet Basil", "Italian Tomato", "Yellow Bell Pepper");
+        model.addAttribute("prods", prods);
+        return "product/list";
+    }
+}</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>의미</th></tr>
+      <tr><td><code class="inl">import java.util.List;</code></td><td>자바 표준 라이브러리의 <code class="inl">List</code> 인터페이스(순서가 있는 목록)를 사용합니다.</td></tr>
+      <tr><td><code class="inl">@GetMapping("/product/list")</code></td><td>브라우저가 <code class="inl">/product/list</code> 를 요청하면 아래 메서드를 호출합니다.</td></tr>
+      <tr><td><code class="inl">List&lt;String&gt; prods = List.of(...)</code></td><td>문자열 3개를 담은 불변(변경할 수 없는) 리스트를 만듭니다. 실습용 고정 데이터입니다. 실제 서비스에서는 데이터베이스에서 가져옵니다.</td></tr>
+      <tr><td><code class="inl">model.addAttribute("prods", prods)</code></td><td>템플릿에서 <code class="inl">${prods}</code> 로 꺼낼 수 있도록 이름 <code class="inl">"prods"</code> 로 저장합니다.</td></tr>
+      <tr><td><code class="inl">return "product/list";</code></td><td><code class="inl">templates/product/list.html</code> 파일을 처리하라는 뜻입니다. 슬래시(/)는 폴더 구분자입니다.</td></tr>
+    </table>
+  </div>
+
+  <h4>product/list.html</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/templates/product/list.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;&lt;title&gt;상품 목록&lt;/title&gt;&lt;meta charset="UTF-8"&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;상품 목록&lt;/h1&gt;
+  &lt;ul&gt;
+    &lt;li th:each="prod : ${prods}" th:text="${prod}"&gt;양파&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">&lt;meta charset="UTF-8"&gt;</code></td><td>파일의 문자 인코딩을 UTF-8로 지정합니다. 한글이 깨지지 않게 하는 설정입니다.</td></tr>
+      <tr><td><code class="inl">th:each="prod : ${prods}"</code></td><td><code class="inl">prods</code> 의 요소를 하나씩 꺼내 변수 <code class="inl">prod</code> 에 넣고, 이 태그를 요소 수만큼 반복 출력합니다.</td></tr>
+      <tr><td><code class="inl">th:text="${prod}"</code></td><td>현재 반복의 <code class="inl">prod</code> 값을 태그 본문으로 출력합니다.</td></tr>
+      <tr><td><code class="inl">양파</code></td><td>처리 전 원본의 임시 글입니다. 처리 후에는 사라집니다.</td></tr>
+    </table>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 성공 확인</b>
+    <p><code class="inl">http://localhost:8080/product/list</code> 에서 목록 항목 3개가 보입니다.</p>
+  </div>
+
+  <h4>반복 구문의 구성 요소</h4>
+  <table class="t">
+    <tr><th>구성 요소</th><th>예시</th><th>이름</th></tr>
+    <tr><td>반복 대상</td><td><code class="inl">${prods}</code></td><td>이터레이트 변수(iterated variable)</td></tr>
+    <tr><td>반복 변수</td><td><code class="inl">prod</code></td><td>이터레이션 변수(iteration variable), 줄여서 iter 변수</td></tr>
+    <tr><td>반복 범위</td><td><code class="inl">prod</code> 는 태그와 그 하위 태그 안에서만 사용</td><td>지역 범위(scope)</td></tr>
+  </table>
+
+  <h3 id="iterable-values">6.1.1 반복 가능한 대상</h3>
+  <table class="t">
+    <tr><th>타입</th><th>설명</th></tr>
+    <tr><td><code class="inl">Iterable</code> 구현 객체</td><td>리스트, 집합(Set) 등</td></tr>
+    <tr><td><code class="inl">Enumeration</code>, <code class="inl">Iterator</code></td><td>과거 방식의 순회 객체</td></tr>
+    <tr><td><code class="inl">Map</code></td><td>반복 변수가 <code class="inl">Map.Entry</code>(키와 값 쌍)입니다.</td></tr>
+    <tr><td><code class="inl">Stream</code>, 배열</td><td>스트림과 배열 요소를 순회합니다.</td></tr>
+    <tr><td>그 밖의 객체 1개</td><td>요소가 1개인 목록으로 취급합니다.</td></tr>
+  </table>
+
+  <h3 id="keeping-iteration-status">6.2 반복 상태 변수 (Status Variable)</h3>
+  <p>상태 변수는 반복 진행 정보를 담는 객체입니다. <code class="inl">th:each="prod,iterStat : ${prods}"</code> 처럼 쉼표 뒤에 이름을 적어 만듭니다. 이름을 생략하면 반복 변수 이름에 <code class="inl">Stat</code> 을 붙인 <code class="inl">prodStat</code> 이 자동 생성됩니다.</p>
+  <table class="t">
+    <tr><th>속성</th><th>타입</th><th>값</th></tr>
+    <tr><td><code class="inl">index</code></td><td>정수</td><td>0부터 시작하는 번호</td></tr>
+    <tr><td><code class="inl">count</code></td><td>정수</td><td>1부터 시작하는 번호</td></tr>
+    <tr><td><code class="inl">size</code></td><td>정수</td><td>전체 요소 수</td></tr>
+    <tr><td><code class="inl">current</code></td><td>객체</td><td>현재 반복의 요소(반복 변수와 같음)</td></tr>
+    <tr><td><code class="inl">even</code>, <code class="inl">odd</code></td><td>불리언</td><td>짝수 번째 또는 홀수 번째 여부. <code class="inl">count</code> 기준입니다.</td></tr>
+    <tr><td><code class="inl">first</code>, <code class="inl">last</code></td><td>불리언</td><td>첫 번째 또는 마지막 요소 여부</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: 줄 번호와 홀수 줄 클래스</span><button class="copy">복사</button></div>
+<pre><code>&lt;tr th:each="prod,iterStat : ${prods}" th:class="${iterStat.odd}? 'odd'"&gt;
+  &lt;td th:text="${iterStat.count}"&gt;1&lt;/td&gt;
+  &lt;td th:text="${prod.name}"&gt;Onions&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">${iterStat.odd}</code> 가 참인 줄에만 <code class="inl">class="odd"</code> 가 붙습니다. <code class="inl">iterStat.count</code> 는 1, 2, 3 순으로 번호를 출력합니다.</p>
+  </div>
+
+  <h3 id="optimizing-through-lazy-retrieval-of-data">6.3 지연 로딩 <code class="inl">LazyContextVariable</code></h3>
+  <p><b>지연 로딩(Lazy Loading)</b>은 값이 실제로 사용되는 순간에만 데이터를 가져오는 방식입니다. 데이터베이스 조회는 비용이 크므로, 템플릿에서 사용하지 않는 조건이면 조회를 하지 않습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>자바 코드 예시 (개념 설명용)</span><button class="copy">복사</button></div>
+<pre><code>context.setVariable("users", new LazyContextVariable&lt;List&lt;User&gt;&gt;() {
+    @Override
+    protected List&lt;User&gt; loadValue() {
+        return databaseRepository.findAllUsers();   // 실제로 사용될 때만 호출됩니다
+    }
+});</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">loadValue()</code> 메서드는 템플릿이 <code class="inl">${users}</code> 를 실제로 평가할 때만 호출됩니다. 바깥의 <code class="inl">th:if</code> 조건이 거짓이면 <code class="inl">loadValue()</code> 는 실행되지 않습니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 7</b>
+    <p>상품 목록 화면을 표(<code class="inl">table</code>)로 바꾸고, 열 세 개(번호, 상품명, 재고)를 출력하세요. 번호는 <code class="inl">iterStat.count</code> 로 출력하고, 짝수 번째 줄에만 <code class="inl">th:classappend</code> 로 <code class="inl">even</code> 클래스를 붙입니다.</p>
+    <label><input type="checkbox" data-key="m7"> 미션 7 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q6">
+    <p class="qtext">🧠 퀴즈 6. <code class="inl">th:each="prod,iterStat : ${prods}"</code> 에서 1부터 시작하는 번호를 얻는 속성은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">iterStat.index</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">iterStat.count</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">iterStat.size</code></button>
+    </div>
+    <div class="exp">정답은 ②번 <code class="inl">count</code> 입니다. <code class="inl">index</code> 는 0부터 시작합니다.</div>
+  </div>
+</section>
+
+<!-- ============ 7 Conditional Evaluation ============ -->
+<section class="ch" id="conditional-evaluation">
+  <h2>7 Conditional Evaluation (조건부 출력)</h2>
+  <p>조건에 따라 태그를 출력하거나 출력하지 않는 방법을 배웁니다. 이를 <b>조건 분기(Conditional Branch)</b>라고 합니다.</p>
+
+  <h3 id="simple-conditionals-if-and-unless">7.1 <code class="inl">th:if</code>, <code class="inl">th:unless</code></h3>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: 댓글이 있을 때만 링크 출력</span><button class="copy">복사</button></div>
+<pre><code>&lt;a href="comments.html"
+   th:href="@{/product/comments(prodId=${prod.id})}"
+   th:if="${not #lists.isEmpty(prod.comments)}"&gt;view&lt;/a&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:if="..."</code></td><td>괄호 안의 표현식 결과가 참일 때만 이 태그를 출력합니다. 거짓이면 태그 자체가 출력되지 않습니다.</td></tr>
+      <tr><td><code class="inl">not</code></td><td>논리 부정입니다. 참을 거짓으로, 거짓을 참으로 바꿉니다. 기호 <code class="inl">!</code> 와 같습니다.</td></tr>
+      <tr><td><code class="inl">#lists.isEmpty(prod.comments)</code></td><td><code class="inl">comments</code> 리스트가 비어 있으면 참을 반환하는 유틸리티 메서드입니다.</td></tr>
+      <tr><td><code class="inl">prodId=${prod.id}</code></td><td>주소 뒤에 <code class="inl">?prodId=2</code> 처럼 쿼리 문자열을 붙입니다.</td></tr>
+    </table>
+  </div>
+  <p><code class="inl">th:unless</code> 는 조건이 <b>거짓일 때</b> 출력합니다. 위 예시를 아래처럼 바꿔도 결과가 같습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>같은 결과를 내는 두 표현</span><button class="copy">복사</button></div>
+<pre><code>th:if="${not #lists.isEmpty(prod.comments)}"
+th:unless="${#lists.isEmpty(prod.comments)}"</code></pre>
+  </div>
+
+  <h4>참(true)으로 판단하는 기준</h4>
+  <p><code class="inl">th:if</code> 는 불리언이 아닌 값도 참과 거짓으로 판단합니다.</p>
+  <table class="t">
+    <tr><th>값의 종류</th><th>판단 결과</th></tr>
+    <tr><td><code class="inl">null</code></td><td>거짓</td></tr>
+    <tr><td><code class="inl">true</code></td><td>참</td></tr>
+    <tr><td>0이 아닌 숫자</td><td>참 (0이면 거짓)</td></tr>
+    <tr><td>문자열</td><td><code class="inl">"false"</code>, <code class="inl">"off"</code>, <code class="inl">"no"</code> 이면 거짓, 그 밖에는 참</td></tr>
+    <tr><td>그 밖의 객체</td><td>참</td></tr>
+  </table>
+
+  <h3 id="switch-statements">7.2 여러 경우 분기 <code class="inl">th:switch</code>, <code class="inl">th:case</code></h3>
+  <p>자바의 <code class="inl">switch</code> 문과 같은 역할입니다. 값을 <code class="inl">th:switch</code> 에 지정하고, 각 <code class="inl">th:case</code> 와 비교합니다. 일치하는 첫 번째 <code class="inl">case</code> 만 출력합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:switch="${user.role}"&gt;
+  &lt;p th:case="'admin'"&gt;User is an administrator&lt;/p&gt;
+  &lt;p th:case="#{roles.manager}"&gt;User is a manager&lt;/p&gt;
+  &lt;p th:case="*"&gt;User is some other thing&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">th:case="'admin'"</code> 은 값이 문자열 <code class="inl">admin</code> 과 같은지 비교합니다. <code class="inl">th:case="*"</code> 는 어떤 case에도 해당하지 않을 때 출력하는 기본(default) 경우입니다. 자바의 <code class="inl">default:</code> 와 같습니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 8</b>
+    <p>(1) 컨트롤러에서 <code class="inl">model.addAttribute("isAdmin", true)</code> 를 저장합니다. (2) 템플릿에 <code class="inl">&lt;p th:if="${isAdmin}"&gt;관리자 메뉴&lt;/p&gt;</code> 를 씁니다. (3) 값을 <code class="inl">false</code> 로 바꿔 글이 사라지는지 확인합니다.</p>
+    <label><input type="checkbox" data-key="m8"> 미션 8 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q7">
+    <p class="qtext">🧠 퀴즈 7. <code class="inl">th:unless="${list.isEmpty()}"</code> 는 언제 태그를 출력할까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 리스트가 비어 있을 때</button>
+      <button class="opt" data-ok="1">② 리스트에 요소가 하나 이상 있을 때</button>
+      <button class="opt" data-ok="0">③ 항상</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">isEmpty()</code> 결과가 거짓일 때 <code class="inl">unless</code> 가 참이 되어 출력합니다.</div>
+  </div>
+</section>
+
+<!-- ============ 8 Template Layout ============ -->
+<section class="ch" id="template-layout">
+  <h2>8 Template Layout (조각과 레이아웃)</h2>
+  <p>여러 페이지에 같은 HTML(머리말, 꼬리말, 메뉴)을 반복해서 쓰지 않도록, 공통 부분을 <b>조각(Fragment)</b>으로 한 번만 정의하고 여러 파일에서 가져다 씁니다.</p>
+
+  <h3 id="including-template-fragments">8.1 조각 가져오기</h3>
+  <h4 id="defining-and-referencing-fragments">조각 정의 <code class="inl">th:fragment</code></h4>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/templates/footer.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;body&gt;
+  &lt;div th:fragment="copy"&gt;
+    &amp;copy; 2026 The Good Thymes Virtual Grocery
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:fragment="copy"</code></td><td>이 <code class="inl">div</code> 를 <code class="inl">copy</code> 라는 이름의 조각으로 등록합니다. 파일 단독으로 열어도 화면에 보입니다.</td></tr>
+      <tr><td><code class="inl">&amp;copy;</code></td><td>저작권 기호 ©를 나타내는 HTML 문자 참조입니다.</td></tr>
+    </table>
+  </div>
+
+  <h4>조각 사용 <code class="inl">th:insert</code></h4>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html 의 body 안</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:insert="~{footer :: copy}"&gt;&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">~{footer :: copy}</code> 는 "footer.html 파일에서 <code class="inl">copy</code> 조각을 가져오라"는 뜻입니다. <code class="inl">::</code> 기호 앞은 파일 이름, 뒤는 조각 이름입니다.</p>
+  </div>
+
+  <h4 id="fragment-specification-syntax">조각 지정 형식</h4>
+  <table class="t">
+    <tr><th>형식</th><th>의미</th></tr>
+    <tr><td><code class="inl">~{footer :: copy}</code></td><td>footer 파일의 <code class="inl">copy</code> 조각</td></tr>
+    <tr><td><code class="inl">~{footer}</code></td><td>footer 파일 전체</td></tr>
+    <tr><td><code class="inl">~{::copy}</code></td><td>현재 파일 안에서 <code class="inl">copy</code> 조각을 찾습니다.</td></tr>
+  </table>
+
+  <h4 id="referencing-fragments-without-thfragment">조각 지정: HTML의 id 사용</h4>
+  <p><code class="inl">th:fragment</code> 가 없어도, HTML의 <code class="inl">id</code> 속성으로 조각을 지정할 수 있습니다. CSS 선택자의 <code class="inl">#id</code> 문법과 같습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:insert="~{footer :: #copy-section}"&gt;&lt;/div&gt;</code></pre>
+  </div>
+
+  <h4 id="difference-between-thinsert-and-threplace"><code class="inl">th:insert</code> 와 <code class="inl">th:replace</code> 의 차이</h4>
+  <table class="t">
+    <tr><th>속성</th><th>처리 결과</th></tr>
+    <tr><td><code class="inl">th:insert</code></td><td>현재 태그는 유지하고, 그 안(본문)에 조각을 넣습니다.</td></tr>
+    <tr><td><code class="inl">th:replace</code></td><td>현재 태그 자체를 조각으로 교체합니다.</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>같은 조각을 두 방식으로 사용</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:insert="~{footer :: copy}"&gt;&lt;/div&gt;
+&lt;div th:replace="~{footer :: copy}"&gt;&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 처리 결과</b>
+    <p>첫째 줄은 <code class="inl">&lt;div&gt;</code> 가 남고 그 안에 <code class="inl">&lt;div&gt;</code> 조각이 들어갑니다. 둘째 줄은 <code class="inl">&lt;div&gt;</code> 태그가 사라지고 조각의 <code class="inl">&lt;div&gt;</code> 만 남습니다.</p>
+  </div>
+
+  <h3 id="parameterizable-fragment-signatures">8.2 매개변수가 있는 조각</h3>
+  <div class="codebox">
+    <div class="cb-head"><span>조각 정의와 사용</span><button class="copy">복사</button></div>
+<pre><code>&lt;!-- 정의: onevar, twovar 는 매개변수 이름 --&gt;
+&lt;div th:fragment="frag (onevar,twovar)"&gt;
+    &lt;p th:text="${onevar} + ' - ' + ${twovar}"&gt;...&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- 사용 1: 순서대로 값 전달 --&gt;
+&lt;div th:replace="~{ ::frag (${value1},${value2}) }"&gt;...&lt;/div&gt;
+
+&lt;!-- 사용 2: 이름=값 형식으로 전달 (순서 무관) --&gt;
+&lt;div th:replace="~{ ::frag (twovar=${value2},onevar=${value1}) }"&gt;...&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p>매개변수는 조각 안에서 <code class="inl">${onevar}</code> 처럼 변수로 사용됩니다. 호출하는 쪽이 값을 넘기고, 조각은 그 값으로 HTML을 만듭니다.</p>
+  </div>
+
+  <h4 id="fragment-local-variables-without-fragment-arguments">매개변수 없는 조각에 지역 변수 전달</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:replace="~{::frag (onevar=${value1},twovar=${value2})}"&gt;&lt;/div&gt;</code></pre>
+  </div>
+  <p>조각이 원래 매개변수를 선언하지 않아도 이 형식으로 값을 넘길 수 있습니다. 이 값은 조각 처리 중에만 유효한 <b>지역 변수</b>입니다.</p>
+
+  <h4 id="thassert-for-in-template-assertions"><code class="inl">th:assert</code> 검사</h4>
+  <p><code class="inl">th:assert</code> 는 조건식이 거짓이면 처리를 중단하고 오류를 냅니다. 필수 매개변수가 비어 있는지 확인할 때 씁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;header th:fragment="contentheader(title)" th:assert="${!#strings.isEmpty(title)}"&gt;...&lt;/header&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">#strings.isEmpty(title)</code> 이 참(비어 있음)이면 <code class="inl">!</code> 로 부정되어 거짓이 되므로 오류가 발생합니다. 제목이 있어야 조각이 정상 처리됩니다.</p>
+  </div>
+
+  <h3 id="flexible-layouts-beyond-mere-fragment-insertion">8.3 HTML 태그를 매개변수로 전달하는 레이아웃</h3>
+  <p>조각의 매개변수에는 글자뿐 아니라 HTML 태그 조각도 넘길 수 있습니다. 공통 머리말(head)에 페이지마다 다른 제목과 CSS 링크를 넣을 때 씁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>base.html (공통 머리말 조각)</span><button class="copy">복사</button></div>
+<pre><code>&lt;head th:fragment="common_header(title,links)"&gt;
+  &lt;title th:replace="${title}"&gt;The awesome application&lt;/title&gt;
+  &lt;link rel="stylesheet" th:href="@{/css/awesomeapp.css}"&gt;
+  &lt;!--/* 페이지마다 다른 링크를 넣을 자리 */--&gt;
+  &lt;th:block th:replace="${links}" /&gt;
+&lt;/head&gt;</code></pre>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>main.html (호출하는 페이지)</span><button class="copy">복사</button></div>
+<pre><code>&lt;head th:replace="~{ base :: common_header(~{::title},~{::link}) }"&gt;
+  &lt;title&gt;Awesome - Main&lt;/title&gt;
+  &lt;link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"&gt;
+&lt;/head&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>표현</th><th>의미</th></tr>
+      <tr><td><code class="inl">~{::title}</code></td><td>현재 파일(main.html)에 있는 <code class="inl">title</code> 태그를 가져와 <code class="inl">title</code> 매개변수에 넣습니다.</td></tr>
+      <tr><td><code class="inl">~{::link}</code></td><td>현재 파일의 <code class="inl">link</code> 태그들을 가져와 <code class="inl">links</code> 매개변수에 넣습니다.</td></tr>
+      <tr><td><code class="inl">th:replace="${title}"</code></td><td>매개변수 값으로 <code class="inl">title</code> 태그 자체를 교체합니다.</td></tr>
+    </table>
+    <p>호출 위치와 반환 위치: <code class="inl">main.html</code> 의 <code class="inl">th:replace</code> 가 <code class="inl">base.html</code> 의 조각을 호출하고, 처리된 결과가 <code class="inl">main.html</code> 의 <code class="inl">head</code> 자리에 들어갑니다.</p>
+  </div>
+
+  <h4>특수 표현 3가지</h4>
+  <table class="t">
+    <tr><th>표현</th><th>의미</th><th>결과</th></tr>
+    <tr><td><code class="inl">~{}</code></td><td>빈 조각</td><td>매개변수 자리에 아무 HTML도 들어가지 않습니다.</td></tr>
+    <tr><td><code class="inl">_</code></td><td>무처리 토큰</td><td>조각 안의 원본 태그를 그대로 씁니다. 예: <code class="inl">title</code> 에 <code class="inl">_</code> 를 넘기면 <code class="inl">The awesome application</code> 이 남습니다.</td></tr>
+    <tr><td><code class="inl">~{::title}</code></td><td>현재 파일의 title 태그 참조</td><td>호출하는 페이지의 제목이 들어갑니다.</td></tr>
+  </table>
+
+  <h4 id="advanced-conditional-insertion-of-fragments">조건부 조각 삽입</h4>
+  <div class="codebox">
+    <div class="cb-head"><span>관리자일 때만 조각 삽입</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:insert="${user.isAdmin()} ? ~{common :: adminhead} : ~{}"&gt;...&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">isAdmin()</code> 이 참이면 <code class="inl">common.html</code> 의 <code class="inl">adminhead</code> 조각을 넣습니다. 거짓이면 빈 조각 <code class="inl">~{}</code> 을 넣어 아무것도 넣지 않습니다.</p>
+  </div>
+
+  <h3 id="removing-template-fragments">8.4 태그 제거 <code class="inl">th:remove</code></h3>
+  <p>디자인 확인용으로 만든 샘플 행을 실제 처리 결과에서 지울 때 씁니다. 속성 값에 따라 제거 방식이 다릅니다.</p>
+  <table class="t">
+    <tr><th>값</th><th>제거 대상</th></tr>
+    <tr><td><code class="inl">all</code></td><td>태그와 그 안의 모든 자식 요소</td></tr>
+    <tr><td><code class="inl">body</code></td><td>태그는 남기고 자식 요소만 제거</td></tr>
+    <tr><td><code class="inl">tag</code></td><td>태그만 제거하고 자식 요소는 남김</td></tr>
+    <tr><td><code class="inl">all-but-first</code></td><td>첫 번째 자식만 남기고 나머지 자식 제거</td></tr>
+    <tr><td><code class="inl">none</code></td><td>아무것도 제거하지 않음</td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: 샘플 행 제거</span><button class="copy">복사</button></div>
+<pre><code>&lt;tr class="odd" th:remove="all"&gt;
+  &lt;td&gt;Blue Lettuce&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">th:remove="all"</code> 이 붙은 <code class="inl">tr</code> 과 그 안의 <code class="inl">td</code> 는 처리 결과 HTML에서 모두 사라집니다. 원본 파일을 브라우저로 열면 샘플 행이 보입니다.</p>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: tbody 의 자식을 한 번에 정리</span><button class="copy">복사</button></div>
+<pre><code>&lt;tbody th:remove="all-but-first"&gt;
+  &lt;tr th:each="prod : ${prods}"&gt;...&lt;/tr&gt;
+  &lt;tr&gt;...샘플 행 1...&lt;/tr&gt;
+  &lt;tr&gt;...샘플 행 2...&lt;/tr&gt;
+&lt;/tbody&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">all-but-first</code> 는 첫 번째 자식(반복 행 <code class="inl">tr</code>)은 남기고, 뒤의 샘플 행 두 개를 제거합니다.</p>
+  </div>
+
+  <h3 id="layout-inheritance">8.5 레이아웃 상속</h3>
+  <p>틀이 되는 레이아웃 파일 하나를 만들고, 각 페이지가 이 파일을 호출해 자기 제목과 본문을 넘깁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>layoutFile.html (레이아웃 파일)</span><button class="copy">복사</button></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html th:fragment="layout (title, content)" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+  &lt;title th:replace="${title}"&gt;Layout Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Layout H1&lt;/h1&gt;
+  &lt;div th:replace="${content}"&gt;&lt;p&gt;Layout content&lt;/p&gt;&lt;/div&gt;
+  &lt;footer&gt;Layout footer&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>page.html (각 페이지)</span><button class="copy">복사</button></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html th:replace="~{layoutFile :: layout(~{::title}, ~{::section})}"&gt;
+&lt;head&gt;
+  &lt;title&gt;Page Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;section&gt;
+  &lt;p&gt;Page content&lt;/p&gt;
+&lt;/section&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p>page.html 의 <code class="inl">html</code> 태그가 <code class="inl">layout</code> 조각으로 교체됩니다. 레이아웃의 <code class="inl">title</code> 자리에는 page.html 의 <code class="inl">title</code> 태그가, <code class="inl">content</code> 자리에는 <code class="inl">section</code> 태그가 들어갑니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 9</b>
+    <p><code class="inl">templates/fragments/footer.html</code> 에 <code class="inl">copy</code> 조각을 만듭니다. 홈 화면과 상품 목록 화면 두 곳에서 <code class="inl">th:insert="~{fragments/footer :: copy}"</code> 로 가져와 같은 꼬리말이 보이는지 확인하세요.</p>
+    <label><input type="checkbox" data-key="m9"> 미션 9 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q8a">
+    <p class="qtext">🧠 퀴즈 8-1. <code class="inl">th:replace</code> 와 <code class="inl">th:insert</code> 의 차이로 맞는 설명은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 두 속성은 결과가 같다</button>
+      <button class="opt" data-ok="1">② replace는 현재 태그를 교체하고, insert는 현재 태그 안에 넣는다</button>
+      <button class="opt" data-ok="0">③ insert는 조각을 삭제하고, replace는 조각을 남긴다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. replace는 태그 자체를 바꾸고, insert는 태그 안쪽에 넣습니다.</div>
+  </div>
+  <div class="quiz" data-id="q8b">
+    <p class="qtext">🧠 퀴즈 8-2. 매개변수 자리에 아무 HTML도 넣지 않으려면 어떤 표현을 쓸까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">_</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">~{}</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">null</code></button>
+    </div>
+    <div class="exp">정답은 ②번 빈 조각 <code class="inl">~{}</code> 입니다. <code class="inl">_</code> 는 원본 태그를 그대로 두는 무처리 토큰입니다.</div>
+  </div>
+</section>
+
+<!-- ============ 9 Local Variables ============ -->
+<section class="ch" id="local-variables">
+  <h2>9 Local Variables (지역 변수)</h2>
+  <p><b>지역 변수(Local Variable)</b>는 특정 태그와 그 하위 태그 안에서만 사용할 수 있는 변수입니다. <code class="inl">th:with</code> 로 만듭니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;div th:with="firstPer=${persons[0]},secondPer=${persons[1]}"&gt;
+  &lt;p&gt;The name of the first person is &lt;span th:text="${firstPer.name}"&gt;Julius Caesar&lt;/span&gt;.&lt;/p&gt;
+  &lt;p&gt;But the name of the second person is &lt;span th:text="${secondPer.name}"&gt;Marcus Antonius&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:with="firstPer=${persons[0]}"</code></td><td>변수 <code class="inl">firstPer</code> 에 리스트의 0번 요소를 저장합니다.</td></tr>
+      <tr><td><code class="inl">secondPer=${persons[1]}</code></td><td>쉼표로 구분해 변수를 여러 개 선언합니다. 1번 요소를 저장합니다.</td></tr>
+      <tr><td>범위</td><td>변수는 이 <code class="inl">div</code> 태그와 안쪽 태그에서만 사용할 수 있습니다. 바깥에서 쓰면 오류가 납니다.</td></tr>
+    </table>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html: 날짜 형식을 메시지에서 가져와 사용</span><button class="copy">복사</button></div>
+<pre><code>&lt;p th:with="df=#{date.format}"&gt;
+  Today is: &lt;span th:text="${#calendars.format(today,df)}"&gt;13 February 2011&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">#{date.format}</code> 메시지 값을 <code class="inl">df</code> 에 저장한 뒤, <code class="inl">#calendars.format</code> 의 두 번째 인자로 사용합니다. 언어가 바뀌면 메시지 파일의 날짜 형식도 함께 바뀝니다.</p>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 참고: 처리 순서</b>
+    <p><code class="inl">th:with</code> 는 같은 태그의 <code class="inl">th:text</code> 보다 먼저 실행됩니다. 그래서 <code class="inl">th:text</code> 안에서 <code class="inl">df</code> 를 쓸 수 있습니다. 실행 순서는 10장에서 설명합니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 10</b>
+    <p><code class="inl">th:with="dateText=${#calendars.format(today,'yyyy-MM-dd')}"</code> 로 지역 변수를 만들고, 그 태그 안에서 <code class="inl">th:text="${dateText}"</code> 로 출력해 보세요. 같은 태그 바깥에서 <code class="inl">dateText</code> 를 쓰면 어떤 오류가 나는지도 확인하세요.</p>
+    <label><input type="checkbox" data-key="m10"> 미션 10 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q9">
+    <p class="qtext">🧠 퀴즈 9. <code class="inl">th:with</code> 로 만든 변수를 사용할 수 있는 범위는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 프로젝트 전체</button>
+      <button class="opt" data-ok="1">② 해당 태그와 그 안쪽 태그</button>
+      <button class="opt" data-ok="0">③ 다른 HTML 파일</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 지역 변수는 선언한 태그 범위 안에서만 유효합니다.</div>
+  </div>
+</section>
+
+<!-- ============ 10 Attribute Precedence ============ -->
+<section class="ch" id="attribute-precedence">
+  <h2>10 Attribute Precedence (속성 처리 순서)</h2>
+  <p>한 태그에 <code class="inl">th:</code> 속성이 여러 개 있으면 처리 순서가 중요합니다. HTML에서 속성의 작성 순서는 의미가 없으므로, Thymeleaf는 <b>우선순위(precedence)</b> 표에 따라 처리합니다. 우선순위 숫자가 작은 속성이 먼저 실행됩니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: th:each 와 th:text 를 같은 태그에 사용</span><button class="copy">복사</button></div>
+<pre><code>&lt;li th:each="item : ${items}" th:text="${item.description}"&gt;Item description here...&lt;/li&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">th:each</code>(우선순위 2)가 <code class="inl">th:text</code>(우선순위 7)보다 먼저 실행됩니다. 그래서 각 반복마다 <code class="inl">item</code> 이 정의된 뒤 글자를 출력할 수 있습니다.</p>
+  </div>
+
+  <table class="t">
+    <tr><th>우선순위</th><th>기능</th><th>속성</th></tr>
+    <tr><td>1</td><td>조각 삽입</td><td><code class="inl">th:insert</code>, <code class="inl">th:replace</code></td></tr>
+    <tr><td>2</td><td>반복</td><td><code class="inl">th:each</code></td></tr>
+    <tr><td>3</td><td>조건</td><td><code class="inl">th:if</code>, <code class="inl">th:unless</code>, <code class="inl">th:switch</code>, <code class="inl">th:case</code></td></tr>
+    <tr><td>4</td><td>지역 변수 정의</td><td><code class="inl">th:object</code>, <code class="inl">th:with</code></td></tr>
+    <tr><td>5</td><td>일반 속성 설정</td><td><code class="inl">th:attr</code>, <code class="inl">th:attrprepend</code>, <code class="inl">th:attrappend</code></td></tr>
+    <tr><td>6</td><td>전용 속성 설정</td><td><code class="inl">th:value</code>, <code class="inl">th:href</code>, <code class="inl">th:src</code> 등</td></tr>
+    <tr><td>7</td><td>본문 글자 설정</td><td><code class="inl">th:text</code>, <code class="inl">th:utext</code></td></tr>
+    <tr><td>8</td><td>조각 이름 정의</td><td><code class="inl">th:fragment</code></td></tr>
+    <tr><td>9</td><td>태그 제거</td><td><code class="inl">th:remove</code></td></tr>
+  </table>
+  <div class="codebox">
+    <div class="cb-head"><span>속성 위치를 바꾼 예시 (결과 동일)</span><button class="copy">복사</button></div>
+<pre><code>&lt;li th:text="${item.description}" th:each="item : ${items}"&gt;Item description here...&lt;/li&gt;</code></pre>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 핵심 정리</b>
+    <p>속성을 적는 순서는 결과에 영향을 주지 않습니다. 실행 순서는 위 표로만 결정됩니다. 원인을 찾기 어려운 오류가 나면 이 표를 먼저 확인하세요.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 11</b>
+    <p>한 태그에 <code class="inl">th:if</code> 와 <code class="inl">th:each</code> 를 같이 쓰고, 두 속성의 순서를 바꿔 결과가 같은지 확인하세요. 우선순위 표에 따라 어떤 속성이 먼저 실행되는지 메모하세요.</p>
+    <label><input type="checkbox" data-key="m11"> 미션 11 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q10">
+    <p class="qtext">🧠 퀴즈 10. 같은 태그에 <code class="inl">th:text</code> 와 <code class="inl">th:each</code> 가 있으면 먼저 실행되는 속성은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">th:text</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">th:each</code></button>
+      <button class="opt" data-ok="0">③ 적은 순서대로 실행된다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 우선순위 2번인 <code class="inl">th:each</code> 가 우선순위 7번인 <code class="inl">th:text</code> 보다 먼저 실행됩니다.</div>
+  </div>
+</section>
+
+<!-- ============ 11 Comments and Blocks ============ -->
+<section class="ch" id="comments-and-blocks">
+  <h2>11 Comments and Blocks (주석과 블록)</h2>
+
+  <h3 id="standard-htmlxml-comments">11.1 일반 HTML 주석</h3>
+  <p><code class="inl">&lt;!-- ... --&gt;</code> 는 HTML 주석입니다. 브라우저 화면에 보이지 않습니다. Thymeleaf는 주석 안의 <code class="inl">th:</code> 속성도 <b>처리합니다</b>. 따라서 처리 결과 HTML에도 주석 자체는 남습니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;!-- User info follows --&gt;
+&lt;div th:text="${...}"&gt;...&lt;/div&gt;</code></pre>
+  </div>
+
+  <h3 id="thymeleaf-parser-level-comment-blocks">11.2 파서 단계 주석 <code class="inl">&lt;!--/* ... */--&gt;</code></h3>
+  <p>이 형식은 Thymeleaf가 HTML을 읽는 <b>파싱 단계에서 완전히 제거</b>합니다. 처리 결과 HTML에도 남지 않습니다. 원본 파일을 브라우저로 열었을 때만 보이는 샘플 코드를 넣을 때 씁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;table&gt;
+  &lt;tr th:each="x : ${xs}"&gt;...&lt;/tr&gt;
+  &lt;!--/*--&gt;
+  &lt;tr&gt;...샘플 행...&lt;/tr&gt;
+  &lt;!--*/--&gt;
+&lt;/table&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">&lt;!--/*</code> 와 <code class="inl">*/--&gt;</code> 사이의 내용은 Thymeleaf 처리 단계에서 삭제됩니다. 브라우저는 HTML 주석 <code class="inl">&lt;!-- --&gt;</code> 로 인식하므로 원본 화면에서도 보이지 않습니다. 주석 안의 샘플 행은 어디에서도 보이지 않습니다. 샘플 행을 보려면 앞의 <code class="inl">&lt;!--/*--&gt;</code> 와 <code class="inl">&lt;!--*/--&gt;</code> 를 제거해야 합니다.</p>
+  </div>
+
+  <h3 id="thymeleaf-prototype-only-comment-blocks">11.3 시안 전용 주석 <code class="inl">&lt;!--/*/ ... /*/--&gt;</code></h3>
+  <p>이 형식은 반대입니다. 브라우저에서는 주석이지만, Thymeleaf는 안쪽 내용을 실제 코드로 처리합니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시</span><button class="copy">복사</button></div>
+<pre><code>&lt;span&gt;hello!&lt;/span&gt;
+&lt;!--/*/
+  &lt;div th:text="${...}"&gt;...&lt;/div&gt;
+/*/--&gt;
+&lt;span&gt;goodbye!&lt;/span&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p>Thymeleaf는 <code class="inl">&lt;!--/*/</code> 와 <code class="inl">/*/--&gt;</code> 표시만 제거합니다. 안쪽 <code class="inl">&lt;div&gt;</code> 는 일반 HTML 태그가 되어 처리 대상이 됩니다. 브라우저 원본 화면에서는 <code class="inl">&lt;div&gt;</code> 가 주석 안에 있으므로 보이지 않습니다.</p>
+  </div>
+
+  <h3 id="synthetic-thblock-tag">11.4 가상 태그 <code class="inl">th:block</code></h3>
+  <p><code class="inl">th:block</code> 은 실제 HTML 출력에 남지 않는 Thymeleaf 전용 태그입니다. 속성 처리만 하고 자신은 결과에 나타나지 않습니다. 반복 한 번에 여러 줄을 출력해야 할 때 씁니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>예시: 사용자 한 명당 두 줄 출력</span><button class="copy">복사</button></div>
+<pre><code>&lt;table&gt;
+  &lt;th:block th:each="user : ${users}"&gt;
+    &lt;tr&gt;
+      &lt;td th:text="${user.login}"&gt;...&lt;/td&gt;
+      &lt;td th:text="${user.name}"&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td colspan="2" th:text="${user.address}"&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/th:block&gt;
+&lt;/table&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">th:each</code> 가 <code class="inl">th:block</code> 에 붙어 있으므로, 사용자 수만큼 <code class="inl">th:block</code> 안의 두 <code class="inl">tr</code> 이 함께 반복됩니다. <code class="inl">th:block</code> 태그 자체는 결과에 나타나지 않습니다.</p>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 핵심 정리</b>
+    <p><code class="inl">table</code> 안에 <code class="inl">div</code> 를 넣으면 HTML 규칙 위반입니다. <code class="inl">th:block</code> 은 결과에 남지 않으므로 <code class="inl">table</code> 안에서도 규칙을 지킬 수 있습니다.</p>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 12</b>
+    <p>상품 목록 화면에서 <code class="inl">th:block th:each="prod : ${prods}"</code> 를 사용해 상품 한 개당 "상품명" 행과 "가격" 행, 두 줄을 출력하세요. 처리 후 HTML 소스 보기(Ctrl+U)에서 <code class="inl">th:block</code> 태그가 남아 있지 않은지 확인하세요.</p>
+    <label><input type="checkbox" data-key="m12"> 미션 12 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q11">
+    <p class="qtext">🧠 퀴즈 11. <code class="inl">th:block</code> 에 대한 설명으로 맞는 것은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 처리 결과 HTML에 th:block 태그가 그대로 남는다</button>
+      <button class="opt" data-ok="1">② 처리 결과에 남지 않고, 속성 처리와 안쪽 태그만 출력된다</button>
+      <button class="opt" data-ok="0">③ 파일을 다른 위치로 옮긴다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. <code class="inl">th:block</code> 은 여러 태그를 묶는 용도이며, 결과 HTML에는 나타나지 않습니다.</div>
+  </div>
+</section>
+
+<!-- ============ 12 Inlining ============ -->
+<section class="ch" id="inlining">
+  <h2>12 Inlining (인라인 표현)</h2>
+  <p><b>인라인(Inlining)</b>은 태그 속성 대신 본문 글자 안에 바로 표현식을 적는 방식입니다. 표현식 표기는 <code class="inl">[[...]]</code> 와 <code class="inl">[(...)]</code> 두 가지입니다.</p>
+
+  <h3 id="expression-inlining">12.1 표현식 인라인</h3>
+  <div class="codebox">
+    <div class="cb-head"><span>두 가지 표기 비교</span><button class="copy">복사</button></div>
+<pre><code>&lt;p&gt;Hello, &lt;span th:text="${session.user.name}"&gt;Sebastian&lt;/span&gt;!&lt;/p&gt;
+&lt;p&gt;Hello, [[${session.user.name}]]!&lt;/p&gt;</code></pre>
+  </div>
+  <table class="t">
+    <tr><th>표기</th><th>같은 기능의 속성</th><th>처리 방식</th></tr>
+    <tr><td><code class="inl">[[...]]</code></td><td><code class="inl">th:text</code></td><td>결과 문자열의 특수 기호를 이스케이프합니다.</td></tr>
+    <tr><td><code class="inl">[(...)]</code></td><td><code class="inl">th:utext</code></td><td>이스케이프하지 않고 HTML로 출력합니다.</td></tr>
+  </table>
+  <div class="box why">
+    <b class="bt">💡 이스케이프 예시</b>
+    <p>변수 <code class="inl">msg</code> 의 값이 <code class="inl">This is &lt;b&gt;great!&lt;/b&gt;</code> 라고 가정합니다.</p>
+    <table class="t">
+      <tr><th>표기</th><th>처리 결과 HTML</th><th>브라우저 화면</th></tr>
+      <tr><td><code class="inl">[(${msg})]</code></td><td><code class="inl">This is &lt;b&gt;great!&lt;/b&gt;</code></td><td>This is <b>great!</b> (굵게 표시)</td></tr>
+      <tr><td><code class="inl">[[${msg}]]</code></td><td><code class="inl">This is &amp;lt;b&amp;gt;great!&amp;lt;/b&amp;gt;</code></td><td>This is &lt;b&gt;great!&lt;/b&gt; (태그 글자 그대로)</td></tr>
+    </table>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 주의: 원본 화면에서 표현식이 그대로 보임</b>
+    <p>인라인 표기는 원본 HTML 파일을 브라우저로 직접 열면 <code class="inl">[[${session.user.name}]]</code> 글자가 그대로 보입니다. 디자인 확인용으로 쓰는 파일에는 <code class="inl">th:text</code> 를 쓰는 편이 낫습니다.</p>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>인라인 처리 끄기</span><button class="copy">복사</button></div>
+<pre><code>&lt;p th:inline="none"&gt;A double array looks like this: [[1, 2, 3], [4, 5]]!&lt;/p&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 해석</b>
+    <p><code class="inl">th:inline="none"</code> 이 붙은 태그 안에서는 <code class="inl">[[ ]]</code> 를 표현식으로 처리하지 않고 글자로 출력합니다.</p>
+  </div>
+
+  <h3 id="text-inlining">12.2 텍스트 인라인 <code class="inl">th:inline="text"</code></h3>
+  <p><code class="inl">th:inline="text"</code> 가 붙은 태그의 본문은 <b>TEXT 템플릿 모드</b>로 처리됩니다. 표현식 출력뿐 아니라 반복과 조건 문법(13장)도 쓸 수 있습니다.</p>
+  <div class="box warn">
+    <b class="bt">⚠️ 참고</b>
+    <p>Thymeleaf 3.x에서는 HTML 모드에서도 <code class="inl">[[ ]]</code> 가 기본으로 동작하므로, 대부분의 경우 <code class="inl">th:inline="text"</code> 를 따로 쓸 필요가 없습니다.</p>
+  </div>
+
+  <h3 id="javascript-inlining">12.3 자바스크립트 인라인 <code class="inl">th:inline="javascript"</code></h3>
+  <p>자바스크립트 코드 안에 서버 값을 넣을 때 씁니다. 문자열은 자바스크립트 문법에 맞게 따옴표와 특수 문자가 자동으로 처리됩니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>home.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;script th:inline="javascript"&gt;
+    var username = [[${session.user.name}]];
+    console.log("접속한 사용자: " + username);
+&lt;/script&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>처리 결과</th></tr>
+      <tr><td><code class="inl">var username = [[${session.user.name}]];</code></td><td>이름이 <code class="inl">Sebastian</code> 이면 <code class="inl">var username = "Sebastian";</code> 이 됩니다. 문자열은 큰따옴표로 감싸집니다.</td></tr>
+      <tr><td>이름에 큰따옴표가 있는 경우</td><td>예: <code class="inl">Sebastian "Fruity" Applejuice</code> 는 <code class="inl">"Sebastian \"Fruity\" Applejuice"</code> 로 이스케이프되어 자바스크립트 오류가 나지 않습니다.</td></tr>
+      <tr><td><code class="inl">console.log(...)</code></td><td>브라우저 개발자 도구의 Console 탭에 메시지를 출력하는 자바스크립트 명령입니다.</td></tr>
+    </table>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 13</b>
+    <p>(1) 홈 화면 본문에 <code class="inl">[[${today}]]</code> 를 넣어 날짜가 출력되는지 확인합니다. (2) <code class="inl">th:inline="javascript"</code> 스크립트에서 같은 값을 <code class="inl">console.log</code> 로 출력하고, 개발자 도구(F12)의 Console 탭에서 확인하세요.</p>
+    <label><input type="checkbox" data-key="m13"> 미션 13 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q12">
+    <p class="qtext">🧠 퀴즈 12. <code class="inl">[[${name}]]</code> 와 <code class="inl">[(${name})]</code> 의 차이는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 차이가 없다</button>
+      <button class="opt" data-ok="1">② <code class="inl">[[ ]]</code> 는 특수 기호를 이스케이프하고, <code class="inl">[( )]</code> 는 HTML 그대로 출력한다</button>
+      <button class="opt" data-ok="0">③ <code class="inl">[[ ]]</code> 는 숫자만, <code class="inl">[( )]</code> 는 글자만 출력한다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 보안상 기본적으로 <code class="inl">[[ ]]</code> 를 사용합니다.</div>
+  </div>
+</section>
+
+<!-- ============ 13~21 ============ -->
+<section class="ch" id="next-chapters">
+  <h2>13~21 나머지 장</h2>
+  <div class="box warn">
+    <b class="bt">⚠️ 검증 필요 안내</b>
+    <p>13~17장과 부록은 원문 본문을 끝까지 가져오지 못해, Thymeleaf 공식 문서의 일반 내용을 바탕으로 작성했습니다. 세부 문법은 원문과 대조한 뒤 사용하세요. 1~12장은 원문 본문을 직접 확인하여 작성했습니다.</p>
+  </div>
+
+  <h3 id="textual-template-modes">13 Textual template modes (텍스트 템플릿 모드)</h3>
+  <h4>13.1 텍스트 모드의 문법</h4>
+  <p>TEXT, JAVASCRIPT, CSS 모드는 HTML 태그를 해석하지 않습니다. 대신 Thymeleaf 전용 대괄호 문법을 씁니다. 대괄호 문법은 <code class="inl">[#</code> 로 시작하는 <b>처리 태그</b>와 <code class="inl">[[ ]]</code> 표현식으로 구성됩니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>TEXT 모드 예시 (이메일 본문)</span><button class="copy">복사</button></div>
+<pre><code>[# th:each="item : ${items}"]
+  - [# th:utext="${item}" /]
+[/]</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>줄</th><th>의미</th></tr>
+      <tr><td><code class="inl">[# th:each="item : ${items}"]</code></td><td>반복 구간의 시작입니다. HTML의 <code class="inl">&lt;tr th:each=...&gt;</code> 와 같은 역할을 합니다.</td></tr>
+      <tr><td><code class="inl">- [# th:utext="${item}" /]</code></td><td>각 항목 값을 출력합니다. 끝의 <code class="inl">/]</code> 는 태그를 닫는 표기이며, 처리 태그에 본문이 없을 때 씁니다.</td></tr>
+      <tr><td><code class="inl">[/]</code></td><td>반복 구간의 끝입니다. 시작 처리 태그를 닫습니다.</td></tr>
+    </table>
+  </div>
+  <div class="box warn">
+    <b class="bt">⚠️ 주의</b>
+    <p>TEXT 모드에서는 <code class="inl">&lt;</code> 기호가 태그로 해석되지 않습니다. HTML이 들어 있어도 글자로 취급되므로, 웹 페이지 본문에는 HTML 모드를 쓰세요.</p>
+  </div>
+
+  <h4>13.2 자바스크립트 자연 템플릿</h4>
+  <p>자바스크립트 파일 안에서 주석 형식으로 값을 넣습니다. 파일을 브라우저로 직접 열면 주석 뒤의 기본값이 보이고, Thymeleaf가 처리하면 서버 값으로 바뀝니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>static/js/app.js (또는 templates 안의 .js)</span><button class="copy">복사</button></div>
+<pre><code>var username = /*[[${session.user.name}]]*/ 'Sebastian';</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">/*[[${...}]]*/</code></td><td>자바스크립트 주석 안에 표현식이 있습니다. 브라우저는 주석으로 무시하고, Thymeleaf는 표현식으로 처리합니다.</td></tr>
+      <tr><td><code class="inl">'Sebastian'</code></td><td>처리 전 기본값입니다. Thymeleaf 처리 후에는 표현식 결과로 대체됩니다.</td></tr>
+    </table>
+  </div>
+
+  <div class="mission">
+    <b>🛠️ 미션 14</b>
+    <p><code class="inl">src/main/resources/templates/js/app.js</code> 파일을 만듭니다. 파일 안에 위 자연 템플릿 문법 한 줄을 씁니다. 이 파일을 메모장으로 열었을 때 기본값 <code class="inl">'Sebastian'</code> 이 보이는지 확인하세요. 그다음 서버에서 이 파일을 처리하는 방법은 원문 13장 하단에서 확인하세요.</p>
+    <label><input type="checkbox" data-key="m14"> 미션 14 완료</label>
+  </div>
+
+  <div class="quiz" data-id="q13">
+    <p class="qtext">🧠 퀴즈 13. 태그가 없는 텍스트 템플릿에서 반복 구간을 시작하는 표기는?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">&lt;tr th:each="..."&gt;</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">[# th:each="..."]</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">{{ each }}</code></button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 텍스트 모드는 대괄호 문법을 사용합니다.</div>
+  </div>
+
+  <h3 id="some-more-pages">14 Some more pages for our grocery (주문 목록)</h3>
+  <p>주문 목록 화면을 추가합니다. 각 줄의 링크에 주문 번호를 넣어 상세 페이지 주소로 사용합니다. <code class="inl">th:each</code> 와 <code class="inl">@{...}</code> 를 함께 쓰는 실습입니다.</p>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/templates/order/list.html</span><button class="copy">복사</button></div>
+<pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;주문번호&lt;/th&gt;&lt;th&gt;금액&lt;/th&gt;&lt;th&gt;상세&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr th:each="o : ${orders}"&gt;
+    &lt;td th:text="${o.id}"&gt;1&lt;/td&gt;
+    &lt;td th:text="${o.total}"&gt;0&lt;/td&gt;
+    &lt;td&gt;&lt;a th:href="@{/order/details(orderId=${o.id})}"&gt;보기&lt;/a&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <table class="t">
+      <tr><th>부분</th><th>의미</th></tr>
+      <tr><td><code class="inl">th:each="o : ${orders}"</code></td><td><code class="inl">orders</code> 목록의 요소 수만큼 <code class="inl">tr</code> 을 반복하고, 각 요소를 <code class="inl">o</code> 로 참조합니다.</td></tr>
+      <tr><td><code class="inl">@{/order/details(orderId=${o.id})}</code></td><td>결과 예: <code class="inl">/order/details?orderId=3</code>. 반복마다 <code class="inl">o.id</code> 값이 달라지므로 링크도 달라집니다.</td></tr>
+    </table>
+  </div>
+  <div class="mission">
+    <b>🛠️ 미션 15</b>
+    <p>(1) 컨트롤러에서 <code class="inl">List</code> 로 주문 데이터 2~3건을 만들어 <code class="inl">orders</code> 이름으로 저장합니다. 주문 데이터는 실습용 고정값이면 충분합니다. (2) 위 템플릿으로 목록을 만듭니다. (3) "보기" 링크를 누르면 주소 뒤 번호가 주문마다 다른지 확인합니다.</p>
+    <label><input type="checkbox" data-key="m15"> 미션 15 완료</label>
+  </div>
+  <div class="quiz" data-id="q14">
+    <p class="qtext">🧠 퀴즈 14. 주문 줄마다 다른 주문 번호를 링크에 넣는 방법으로 맞는 것은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 링크 글자 안에 번호를 직접 적는다</button>
+      <button class="opt" data-ok="1">② <code class="inl">@{/order/details(orderId=${o.id})}</code> 처럼 반복 변수 값을 쓴다</button>
+      <button class="opt" data-ok="0">③ 모든 줄에 같은 주소를 쓴다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 반복 변수 <code class="inl">o</code> 는 줄마다 다른 객체를 가리킵니다.</div>
+  </div>
+
+  <h3 id="more-on-configuration">15 More on Configuration (추가 설정)</h3>
+  <div class="box warn">
+    <b class="bt">⚠️ 요약 안내</b>
+    <p>이 장은 원문 본문을 대조하지 않고 요약했습니다. Spring Boot는 기본 설정을 자동으로 구성하므로 입문 단계에서는 건너뛰어도 됩니다.</p>
+  </div>
+  <table class="t">
+    <tr><th>주제</th><th>설명</th></tr>
+    <tr><td>템플릿 리졸버 체인(Chaining)</td><td>여러 리졸버를 순서대로 등록해, 앞의 리졸버가 찾지 못하면 다음 리졸버가 찾도록 합니다.</td></tr>
+    <tr><td>메시지 리졸버(Message Resolver)</td><td>메시지 값을 읽어오는 객체입니다. 기본 구현은 <code class="inl">.properties</code> 파일을 읽습니다.</td></tr>
+    <tr><td>변환 서비스(Conversion Service)</td><td><code class="inl">${{...}}</code> 가 사용하는 값 변환 규칙 모음입니다.</td></tr>
+    <tr><td>로그(Logging)</td><td>처리 과정을 콘솔에 기록합니다. 오류 원인을 찾을 때 사용합니다.</td></tr>
+  </table>
+  <div class="mission">
+    <b>🛠️ 미션 16</b>
+    <p><code class="inl">src/main/resources/application.properties</code> 파일을 열고 설정 항목이 몇 개 있는지 세어 보세요. 메시지 파일 이름을 바꾸는 항목 <code class="inl">spring.messages.basename</code> 이 있는지도 확인합니다. 없다면 기본값 <code class="inl">messages</code> 가 쓰입니다.</p>
+    <label><input type="checkbox" data-key="m16"> 미션 16 완료</label>
+  </div>
+
+  <h3 id="template-cache">16 Template Cache (템플릿 캐시)</h3>
+  <p><b>캐시(Cache)</b>는 이미 처리한 결과를 메모리에 보관해 같은 요청을 빠르게 처리하는 방법입니다. 템플릿을 매번 파일에서 읽지 않으므로 운영 환경 속도가 빨라집니다.</p>
+  <div class="box why">
+    <b class="bt">💡 개발 중 문제</b>
+    <p>캐시가 켜져 있으면 HTML 파일을 수정해도 서버가 예전 결과를 계속 보냅니다. 개발 중에는 캐시를 끄는 설정을 씁니다.</p>
+  </div>
+  <div class="codebox">
+    <div class="cb-head"><span>src/main/resources/application.properties</span><button class="copy">복사</button></div>
+<pre><code>spring.thymeleaf.cache=false</code></pre>
+  </div>
+  <div class="box why">
+    <b class="bt">💡 줄별 해설</b>
+    <p><code class="inl">spring.thymeleaf.cache</code> 는 Thymeleaf 캐시 사용 여부를 정하는 설정 키입니다. <code class="inl">false</code> 이면 요청마다 파일을 다시 읽습니다.</p>
+  </div>
+  <div class="box ok">
+    <b class="bt">✅ 성공 확인</b>
+    <p>설정 후 서버를 다시 실행합니다. HTML 글자를 고치고 브라우저를 새로고침하면 바로 바뀝니다.</p>
+  </div>
+  <div class="mission">
+    <b>🛠️ 미션 17</b>
+    <p>(1) <code class="inl">spring.thymeleaf.cache=false</code> 를 설정하고 서버를 재시작합니다. (2) 홈 화면 글자를 바꾸고 새로고침하여 반영되는지 확인합니다. (3) 확인 후 설정을 지우거나 <code class="inl">true</code> 로 바꿉니다.</p>
+    <label><input type="checkbox" data-key="m17"> 미션 17 완료</label>
+  </div>
+  <div class="quiz" data-id="q15">
+    <p class="qtext">🧠 퀴즈 15. HTML 파일을 수정했을 때 서버 재시작 없이 바로 반영되게 하려면 무엇을 설정해야 할까요?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① 브라우저의 캐시를 삭제한다</button>
+      <button class="opt" data-ok="1">② <code class="inl">spring.thymeleaf.cache=false</code> 를 설정한다</button>
+      <button class="opt" data-ok="0">③ Java 버전을 낮춘다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 템플릿 캐시를 끄면 요청마다 파일을 다시 읽습니다.</div>
+  </div>
+
+  <h3 id="decoupled-template-logic">17 Decoupled Template Logic (분리된 템플릿 로직)</h3>
+  <div class="box warn">
+    <b class="bt">⚠️ 요약 안내</b>
+    <p>이 장도 원문 본문을 대조하지 않고 요약했습니다. 개념을 이해하는 수준으로만 읽고, 실제 적용 전에 원문에서 설정 방법을 확인하세요.</p>
+  </div>
+  <p>보통은 HTML 파일 안에 <code class="inl">th:*</code> 속성을 직접 씁니다. <b>분리된 템플릿 로직(Decoupled Template Logic)</b>은 이 처리 명령을 HTML 파일 밖의 별도 파일에 적는 방식입니다. HTML에는 처리 명령이 없으므로 디자이너가 순수 HTML만 다룰 수 있습니다.</p>
+  <table class="t">
+    <tr><th>방식</th><th>처리 명령의 위치</th></tr>
+    <tr><td>결합된 로직(Coupled)</td><td>HTML 태그의 <code class="inl">th:*</code> 속성</td></tr>
+    <tr><td>분리된 로직(Decoupled)</td><td>별도 로직 파일, HTML에서는 <code class="inl">th:ref</code> 속성으로 연결</td></tr>
+  </table>
+  <div class="box why">
+    <b class="bt">💡 입문자 권장</b>
+    <p>처음에는 지금까지 배운 <code class="inl">th:*</code> 방식만 쓰면 충분합니다. 분리 방식은 원문의 성능 영향 항목을 읽은 뒤 필요할 때 도입하세요.</p>
+  </div>
+  <div class="quiz" data-id="q16">
+    <p class="qtext">🧠 퀴즈 16. 분리된 템플릿 로직 방식의 핵심 특징은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① HTML을 이미지 파일로 저장한다</button>
+      <button class="opt" data-ok="1">② 처리 명령을 HTML 밖의 별도 파일에 둔다</button>
+      <button class="opt" data-ok="0">③ 데이터베이스 내용을 HTML 안에 넣는다</button>
+    </div>
+    <div class="exp">정답은 ②번입니다. HTML에 남는 처리 명령을 줄이는 방식입니다.</div>
+  </div>
+
+  <h3 id="appendices">18~21 부록 요약</h3>
+  <p>부록은 필요할 때 찾아보는 참고 자료입니다. 처음부터 모두 외울 필요는 없습니다.</p>
+  <table class="t">
+    <tr><th>부록</th><th>내용</th></tr>
+    <tr><td>18 Expression Basic Objects</td><td><code class="inl">#ctx</code>, <code class="inl">#vars</code>, <code class="inl">#locale</code> 등 기본 객체. 요청 파라미터 <code class="inl">${param.x}</code>, 세션 속성 <code class="inl">${session.x}</code>, 애플리케이션 속성 <code class="inl">${application.x}</code> 접근 방법.</td></tr>
+    <tr><td>19 Expression Utility Objects</td><td>날짜(<code class="inl">#dates</code>, <code class="inl">#calendars</code>, <code class="inl">#temporals</code>), 숫자(<code class="inl">#numbers</code>), 문자열(<code class="inl">#strings</code>), 목록(<code class="inl">#lists</code>, <code class="inl">#sets</code>, <code class="inl">#maps</code>) 등 유틸리티 객체 전체 목록.</td></tr>
+    <tr><td>20 Markup Selector Syntax</td><td><code class="inl">~{footer :: #copy-section}</code> 처럼 HTML 조각을 고르는 선택자 문법. CSS 선택자와 비슷한 형식입니다.</td></tr>
+    <tr><td>21 Expression Restrictions</td><td>보안을 위해 <code class="inl">th:utext</code>, <code class="inl">th:href</code>, <code class="inl">th:src</code>, <code class="inl">th:on*</code>, 조각 표현식, 전처리(<code class="inl">__ __</code>)는 사용 제한이 더 엄격합니다.</td></tr>
+  </table>
+  <div class="quiz" data-id="q17">
+    <p class="qtext">🧠 퀴즈 17. 다음 중 보안 제한이 더 엄격하게 적용되는 속성은?</p>
+    <div class="opts">
+      <button class="opt" data-ok="0">① <code class="inl">th:text</code></button>
+      <button class="opt" data-ok="1">② <code class="inl">th:utext</code></button>
+      <button class="opt" data-ok="0">③ <code class="inl">th:if</code></button>
+    </div>
+    <div class="exp">정답은 ②번입니다. 태그를 이스케이프하지 않고 출력하므로 XSS 위험이 있어 제한이 더 많습니다.</div>
+  </div>
+  <div class="mission">
+    <b>🛠️ 미션 18</b>
+    <p>부록 21의 제한 목록 중 하나를 골라, 그 속성이 왜 위험할 수 있는지 두 문장으로 설명해 보세요.</p>
+    <label><input type="checkbox" data-key="m18"> 미션 18 완료</label>
+  </div>
+
+  <h3>원문 전체 목차 요약</h3>
+  <table class="t">
+    <tr><th>장</th><th>원문 제목</th><th>주요 내용</th></tr>
+    <tr><td>13</td><td>Textual template modes</td><td>TEXT, JAVASCRIPT, CSS 템플릿 문법</td></tr>
+    <tr><td>14</td><td>Some more pages for our grocery</td><td>주문 목록, 주문 상세 페이지</td></tr>
+    <tr><td>15</td><td>More on Configuration</td><td>템플릿 리졸버, 메시지 리졸버, 변환 서비스, 로그</td></tr>
+    <tr><td>16</td><td>Template Cache</td><td>템플릿 캐시 동작과 설정</td></tr>
+    <tr><td>17</td><td>Decoupled Template Logic</td><td>처리 명령을 HTML 밖으로 분리하는 방식</td></tr>
+    <tr><td>18</td><td>Appendix A: Expression Basic Objects</td><td>기본 객체 전체 목록</td></tr>
+    <tr><td>19</td><td>Appendix B: Expression Utility Objects</td><td>유틸리티 객체 전체 목록</td></tr>
+    <tr><td>20</td><td>Appendix C: Markup Selector Syntax</td><td>조각 선택자 문법</td></tr>
+    <tr><td>21</td><td>Appendix D: Expression Restrictions</td><td>표현식 보안 제한</td></tr>
+  </table>
+  <div class="box term">
+    <b class="bt">📖 원문 링크</b>
+    <p><a href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html" target="_blank" rel="noopener">https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html</a></p>
+  </div>
+</section>
+
+<!-- ============ 수료 체크 ============ -->
+<section id="finish">
+  <h2>수료 체크</h2>
+  <p>체크 상태는 브라우저에 저장됩니다. 모든 미션과 퀴즈를 마치면 오른쪽 아래 달성률이 100%가 됩니다.</p>
+  <div class="box ok">
+    <b class="bt">✅ 실습 흐름 요약 (기술 순서)</b>
+    <p>① Spring Boot 프로젝트 생성 → ② @Controller 클래스와 @GetMapping 메서드 작성 → ③ Model에 값 저장 → ④ 템플릿 파일에 th: 속성 작성 → ⑤ 반복(th:each), 조건(th:if), 조각(th:insert), 레이아웃 적용 → ⑥ 브라우저에서 응답 HTML 확인</p>
+  </div>
+  <div class="mission">
+    <b>🏁 최종 미션</b>
+    <p>상품 목록 화면을 완성하세요. (1) 컨트롤러에서 상품명, 가격, 재고 여부(boolean)를 가진 상품 객체 목록을 Model에 저장합니다. (2) 템플릿에서 <code class="inl">th:each</code> 로 표 행을 반복합니다. (3) 재고가 <code class="inl">true</code> 이면 "있음", <code class="inl">false</code> 이면 "없음"을 출력합니다. (4) 짝수 행에 <code class="inl">th:classappend</code> 로 클래스를 붙입니다. (5) 목록이 비어 있으면 "등록된 상품이 없습니다."를 출력합니다. (6) 꼬리말 조각을 <code class="inl">th:insert</code> 로 넣습니다.</p>
+    <label><input type="checkbox" data-key="mfinal"> 최종 미션 완료</label>
+  </div>
+  <p class="ch-end">문서 버전 v2 · 2026-10-15 · 원문 Thymeleaf 3.1 튜토리얼(문서 20260422, 프로젝트 3.1.5.RELEASE) 기준</p>
+</section>
+
+</main>
+</div>
+
+<!-- 진행 대시보드 -->
+<div id="dash" class="dash" aria-live="polite">
+  <div class="dash-title">📊 나의 진행률</div>
+  <div id="ring" class="ring"><span id="pct">0%</span></div>
+  <div class="dash-row"><span>☑️ 미션</span><span id="mCount">0/0</span></div>
+  <div class="dash-row"><span>🧠 퀴즈 정답</span><span id="qCount">0/0</span></div>
+  <button id="resetBtn" class="reset">진행 기록 지우기</button>
+</div>
+
+<script>
+(function(){
+  var KEY = 'thymeleaf-beginner-v2';
+  var S = {};
+  try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { S = {}; }
+
+  function persist(){
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) { }
+  }
+
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      var txt = btn.closest('.codebox').querySelector('code').innerText;
+      var ok = false;
+      try {
+        await navigator.clipboard.writeText(txt);
+        ok = true;
+      } catch(e) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = txt;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand('copy');
+          ta.remove();
+        } catch(e2) { ok = false; }
+      }
+      btn.textContent = ok ? '복사됨 ✔' : '드래그해서 복사';
+      setTimeout(function(){ btn.textContent = '복사'; }, 1600);
+    });
+  });
+
+  document.querySelectorAll('input[data-key]').forEach(function(cb){
+    cb.checked = !!S[cb.dataset.key];
+    cb.addEventListener('change', function(){
+      S[cb.dataset.key] = cb.checked;
+      persist();
+      dash();
+    });
+  });
+
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var id = 'quiz:' + q.dataset.id;
+    var opts = q.querySelectorAll('.opt');
+
+    function show(idx){
+      opts.forEach(function(o, i){
+        o.disabled = true;
+        if (o.dataset.ok === '1') o.classList.add('ok');
+        if (i === idx && o.dataset.ok !== '1') o.classList.add('no');
+      });
+      q.classList.add('done');
+    }
+
+    if (S[id] !== undefined) show(S[id]);
+
+    opts.forEach(function(o, i){
+      o.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        S[id] = i;
+        persist();
+        show(i);
+        dash();
+      });
+    });
+  });
+
+  function dash(){
+    var ms = Array.prototype.slice.call(document.querySelectorAll('input[data-key]'));
+    var qs = Array.prototype.slice.call(document.querySelectorAll('.quiz'));
+    var mDone = ms.filter(function(c){ return c.checked; }).length;
+    var qAnswered = qs.filter(function(q){ return S['quiz:' + q.dataset.id] !== undefined; }).length;
+    var qRight = qs.filter(function(q){
+      var v = S['quiz:' + q.dataset.id];
+      return v !== undefined && q.querySelectorAll('.opt')[v].dataset.ok === '1';
+    }).length;
+    var total = ms.length + qs.length;
+    var done = mDone + qAnswered;
+    var pct = total ? Math.round(done / total * 100) : 0;
+
+    document.getElementById('ring').style.background =
+      'conic-gradient(#2e7d5b ' + (pct * 3.6) + 'deg, #e5e7eb 0deg)';
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('mCount').textContent = mDone + '/' + ms.length;
+    document.getElementById('qCount').textContent = qRight + '/' + qs.length;
+  }
+  dash();
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if (!confirm('미션과 퀴즈 기록을 모두 지울까요?')) return;
+    try { localStorage.removeItem(KEY); } catch(e) {}
+    location.reload();
+  });
+
+  document.getElementById('dlBtn').addEventListener('click', function(){
+    try {
+      var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Thymeleaf-비전공자-자습서-v2.html';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    } catch(e) {
+      alert('다운로드가 안 되면 Ctrl+S(저장)를 눌러 주세요.');
+    }
+  });
+
+  var toc = document.getElementById('toc');
+  document.getElementById('menuBtn').addEventListener('click', function(){
+    toc.classList.toggle('open');
+  });
+  toc.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ toc.classList.remove('open'); });
+  });
+})();
+</script>
+</body>
+</html>

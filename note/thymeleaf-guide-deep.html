@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>타임리프(Thymeleaf) 문법 심화 가이드</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --sub: #6b7280;
+    --accent: #4f46e5;
+    --accent-soft: #eef2ff;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --border: #e5e7eb;
+    --ok: #047857;
+    --ok-soft: #ecfdf5;
+    --warn-bg: #fef3c7;
+    --warn-text: #78350f;
+    --warn-border: #d97706;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b1120;
+      --card: #111827;
+      --text: #e5e7eb;
+      --sub: #9ca3af;
+      --accent: #818cf8;
+      --accent-soft: #1e1b4b;
+      --code-bg: #020617;
+      --code-text: #e2e8f0;
+      --border: #1f2937;
+      --ok: #6ee7b7;
+      --ok-soft: #064e3b;
+      --warn-bg: #3b2a0a;
+      --warn-text: #fde68a;
+      --warn-border: #f59e0b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1120;
+    --card: #111827;
+    --text: #e5e7eb;
+    --sub: #9ca3af;
+    --accent: #818cf8;
+    --accent-soft: #1e1b4b;
+    --code-bg: #020617;
+    --code-text: #e2e8f0;
+    --border: #1f2937;
+    --ok: #6ee7b7;
+    --ok-soft: #064e3b;
+    --warn-bg: #3b2a0a;
+    --warn-text: #fde68a;
+    --warn-border: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    line-height: 1.75;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+  header {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  header h1 { margin: 0 0 6px; font-size: 1.5rem; }
+  header p { margin: 0; opacity: 0.92; font-size: 0.95rem; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .toolbar button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .toolbar button:active { transform: scale(0.98); }
+  .toolbar button.secondary {
+    background: var(--card);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  nav.toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+  }
+  nav.toc h2 { margin: 0 0 8px; font-size: 1rem; }
+  nav.toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+  }
+  nav.toc a { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  section h2 { margin: 0 0 6px; font-size: 1.25rem; color: var(--accent); }
+  section > p.lead { color: var(--sub); margin: 0 0 14px; }
+  h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+  h4 { font-size: 0.98rem; margin: 16px 0 6px; color: var(--text); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 4px;
+    display: block;
+    overflow-x: auto;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--accent-soft); }
+  code {
+    font-family: Consolas, "D2Coding", monospace;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 5px;
+    font-size: 0.88em;
+    word-break: break-all;
+  }
+  pre {
+    position: relative;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: 12px;
+    padding: 14px;
+    padding-top: 40px;
+    overflow-x: auto;
+    font-family: Consolas, "D2Coding", monospace;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    margin: 10px 0;
+  }
+  pre code { background: none; color: inherit; padding: 0; word-break: normal; }
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #334155;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+  .tip {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.93rem;
+  }
+  .warn {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    color: var(--warn-text);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.93rem;
+  }
+  .ok {
+    background: var(--ok-soft);
+    border-left: 4px solid var(--ok);
+    color: var(--ok);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.93rem;
+  }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .compare > div { border-radius: 10px; padding: 10px; border: 1px solid var(--border); }
+  .compare .before-box h4 { color: #b91c1c; margin-top: 0; }
+  .compare .after-box h4 { color: var(--ok); margin-top: 0; }
+  .flow {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.93rem;
+    margin: 10px 0;
+  }
+  .flow ol { margin: 0; padding-left: 20px; }
+  .quiz {
+    border: 1px dashed var(--accent);
+    border-radius: 12px;
+    padding: 14px;
+    margin: 12px 0;
+  }
+  .quiz details { margin-top: 8px; }
+  .quiz summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  footer { text-align: center; color: var(--sub); font-size: 0.85rem; padding: 20px 0 40px; }
+  @media (max-width: 640px) {
+    .wrap { padding: 10px; }
+    header h1 { font-size: 1.2rem; }
+    section { padding: 14px; }
+    section h2 { font-size: 1.1rem; }
+    th, td { padding: 6px 8px; font-size: 0.85rem; }
+    .compare { grid-template-columns: 1fr; }
+    nav.toc ul { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🍃 타임리프(Thymeleaf) 문법 심화 가이드</h1>
+  <p>동작 원리 → 컨트롤러 연결 → 실행 결과 비교 → 흔한 오류 해결 → 실습 문제까지 한 번에 익히는 자료입니다.</p>
+</header>
+
+<div class="toolbar">
+  <button onclick="downloadHtml()">⬇️ 이 문서 다운로드</button>
+  <button class="secondary" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
+  <button class="secondary" onclick="toggleTheme()">🌓 테마 전환</button>
+</div>
+
+<nav class="toc">
+  <h2>📑 목차</h2>
+  <ul>
+    <li><a href="#s1">1. 타임리프란 무엇인가</a></li>
+    <li><a href="#s2">2. 동작 원리 (서버 렌더링 흐름)</a></li>
+    <li><a href="#s3">3. 프로젝트 준비와 기본 설정</a></li>
+    <li><a href="#s4">4. 표준 표현식 ${} *{} #{} @{} ~{}</a></li>
+    <li><a href="#s5">5. 리터럴·연산자·문자열 연결</a></li>
+    <li><a href="#s6">6. 텍스트 출력 th:text / th:utext</a></li>
+    <li><a href="#s7">7. 속성 설정 th:href, th:class, th:attr</a></li>
+    <li><a href="#s8">8. 반복문 th:each와 상태 변수</a></li>
+    <li><a href="#s9">9. 조건문 th:if, th:unless, th:switch</a></li>
+    <li><a href="#s10">10. URL 표현식 @{...} 심화</a></li>
+    <li><a href="#s11">11. 지역 변수 th:with</a></li>
+    <li><a href="#s12">12. 폼 처리 th:object, th:field, th:errors</a></li>
+    <li><a href="#s13">13. 레이아웃 th:fragment, th:insert, th:replace</a></li>
+    <li><a href="#s14">14. 유틸리티 객체 #dates, #temporals 등</a></li>
+    <li><a href="#s15">15. 기타 th:block, th:remove, th:inline</a></li>
+    <li><a href="#s16">16. 흔한 오류 진단과 해결</a></li>
+    <li><a href="#s17">17. 실습 문제 (질문 게시판 예제)</a></li>
+    <li><a href="#s18">18. 최종 체크리스트</a></li>
+  </ul>
+</nav>
+
+<!-- ============================================================ -->
+<section id="s1">
+  <h2>1. 타임리프란 무엇인가</h2>
+  <p class="lead">타임리프(Thymeleaf)는 Java 웹 프로젝트에서 HTML을 만들 때 쓰는 <strong>서버 사이드 템플릿 엔진</strong>입니다.</p>
+
+  <h3>1-1. 핵심 특징</h3>
+  <table>
+    <tr><th>특징</th><th>설명</th></tr>
+    <tr><td>내추럴 템플릿</td><td>HTML 파일 그대로 브라우저에서 열어도 화면이 깨지지 않습니다. 디자이너와 개발자가 같은 파일로 작업할 수 있습니다.</td></tr>
+    <tr><td>속성 기반 문법</td><td>태그 안에 <code>th:</code> 속성을 붙이는 방식이라 HTML 구조를 해치지 않습니다.</td></tr>
+    <tr><td>Spring과 결합</td><td>Spring MVC의 <code>Model</code>에 담긴 데이터를 그대로 꺼내 씁니다.</td></tr>
+    <tr><td>자동 이스케이프</td><td><code>th:text</code>는 HTML 기호를 자동으로 바꿔 XSS 공격을 막습니다.</td></tr>
+  </table>
+
+  <h3>1-2. JSP와 비교</h3>
+  <table>
+    <tr><th>구분</th><th>JSP</th><th>타임리프</th></tr>
+    <tr><td>문법 형태</td><td><code>&lt;% %&gt;</code>, <code>&lt;c:forEach&gt;</code> 같은 태그</td><td>HTML 속성 <code>th:each</code></td></tr>
+    <tr><td>파일만 열면</td><td>화면이 깨지거나 코드가 그대로 보임</td><td>샘플 글자가 보여 디자인 확인 가능</td></tr>
+    <tr><td>실행 환경</td><td>서블릿 컨테이너 (Tomcat)</td><td>Spring Boot 내장 엔진으로 실행</td></tr>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<section id="s2">
+  <h2>2. 동작 원리 (서버 렌더링 흐름)</h2>
+  <p class="lead">브라우저 요청부터 화면이 나오기까지의 순서를 이해하면 오류 원인을 빨리 찾을 수 있습니다.</p>
+
+  <div class="flow">
+    <ol>
+      <li>브라우저가 <code>/question/list</code> 주소를 요청합니다.</li>
+      <li>Spring이 <code>QuestionController</code>의 <code>list()</code> 메서드를 호출합니다.</li>
+      <li>메서드 안에서 DB 데이터를 조회해 <code>List&lt;Question&gt;</code>을 만듭니다.</li>
+      <li><code>model.addAttribute("questionList", questionList)</code>로 이름표를 붙여 Model에 담습니다.</li>
+      <li>메서드가 <code>"question/list"</code>라는 뷰 이름을 반환합니다.</li>
+      <li>타임리프가 <code>templates/question/list.html</code>을 읽고 <code>th:</code> 속성을 처리합니다.</li>
+      <li>처리가 끝난 순수 HTML이 브라우저에 전달됩니다.</li>
+    </ol>
+  </div>
+
+  <h3>2-1. 컨트롤러 예제</h3>
+  <pre><code>@Controller
+@RequiredArgsConstructor
+@RequestMapping("/question")
+public class QuestionController {
+
+    private final QuestionService questionService;
+
+    @GetMapping("/list")
+    public String list(Model model) {
+        // 1) DB에서 질문 목록 조회
+        List&lt;Question&gt; questionList = questionService.getList();
+
+        // 2) Model에 "questionList"라는 이름으로 저장
+        //    → 타임리프에서는 ${questionList}로 읽습니다.
+        model.addAttribute("questionList", questionList);
+
+        // 3) 뷰 이름 반환 → templates/question/list.html 을 렌더링
+        return "question/list";
+    }
+}</code></pre>
+
+  <div class="tip">💡 <strong>Model 이름과 템플릿의 ${이름}은 글자 하나까지 같아야 합니다.</strong> 대소문자가 다르면 값이 비어서 화면에 아무것도 나오지 않습니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s3">
+  <h2>3. 프로젝트 준비와 기본 설정</h2>
+  <p class="lead">Spring Boot에서 타임리프를 쓰려면 의존성과 파일 위치만 맞으면 됩니다.</p>
+
+  <h3>3-1. Gradle 의존성</h3>
+  <pre><code>dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+}</code></pre>
+
+  <h3>3-2. Maven 의존성</h3>
+  <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+  <h3>3-3. 폴더 구조</h3>
+  <pre><code>src/main/resources/
+ ├─ templates/            ← 타임리프 HTML 파일 위치
+ │   ├─ question/
+ │   │   ├─ list.html
+ │   │   └─ detail.html
+ │   └─ fragments/
+ │       └─ header.html   ← 공통 조각
+ └─ static/               ← css, js, 이미지 (정적 파일)
+     ├─ css/
+     └─ js/</code></pre>
+
+  <h3>3-4. 뷰 이름 규칙</h3>
+  <table>
+    <tr><th>컨트롤러 반환값</th><th>실제 파일 경로</th></tr>
+    <tr><td><code>"question/list"</code></td><td><code>templates/question/list.html</code></td></tr>
+    <tr><td><code>"index"</code></td><td><code>templates/index.html</code></td></tr>
+  </table>
+  <div class="warn">⚠️ 반환값 앞에 <code>/</code>를 붙이거나 <code>.html</code> 확장자를 붙이지 마세요. 접두사와 접미사는 자동으로 붙습니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s4">
+  <h2>4. 표준 표현식</h2>
+  <p class="lead">타임리프 표현식은 다섯 종류이며, 각각 꺼내 오는 대상이 다릅니다.</p>
+  <table>
+    <tr><th>표현식</th><th>형식</th><th>꺼내 오는 대상</th><th>예시</th></tr>
+    <tr><td>변수</td><td><code>${...}</code></td><td>Model에 담긴 값, 객체, 컬렉션</td><td><code>${questionList}</code></td></tr>
+    <tr><td>선택 변수</td><td><code>*{...}</code></td><td><code>th:object</code>로 지정한 객체의 필드</td><td><code>*{subject}</code></td></tr>
+    <tr><td>메시지</td><td><code>#{...}</code></td><td>messages.properties의 다국어 글자</td><td><code>#{main.title}</code></td></tr>
+    <tr><td>링크</td><td><code>@{...}</code></td><td>URL 경로 (컨텍스트 경로 자동 포함)</td><td><code>@{/css/style.css}</code></td></tr>
+    <tr><td>조각</td><td><code>~{...}</code></td><td>다른 파일의 fragment</td><td><code>~{fragments/header :: header}</code></td></tr>
+  </table>
+
+  <h3>4-1. ${} 변수 표현식 심화</h3>
+  <p>객체의 필드에 접근하면 타임리프는 <strong>getter 메서드</strong>를 호출합니다.</p>
+  <table>
+    <tr><th>템플릿 표기</th><th>실제 Java 호출</th></tr>
+    <tr><td><code>${question.subject}</code></td><td><code>question.getSubject()</code></td></tr>
+    <tr><td><code>${question.createDate}</code></td><td><code>question.getCreateDate()</code></td></tr>
+    <tr><td><code>${questionList.size()}</code></td><td><code>questionList.size()</code></td></tr>
+    <tr><td><code>${questionList[0]}</code></td><td><code>questionList.get(0)</code></td></tr>
+    <tr><td><code>${map['key']}</code></td><td><code>map.get("key")</code></td></tr>
+  </table>
+  <div class="tip">💡 Lombok의 <code>@Getter</code>가 없으면 <code>subject</code>를 읽지 못해 오류가 납니다. 엔티티에는 반드시 getter가 있어야 합니다.</div>
+
+  <h3>4-2. *{} 선택 변수 표현식</h3>
+  <p><code>th:object</code>로 객체를 한 번 지정하면, 그 안에서는 <code>*{필드}</code>만 쓸 수 있습니다.</p>
+  <div class="compare">
+    <div class="before-box">
+      <h4>❌ ${} 로 반복 작성</h4>
+      <pre><code>&lt;form th:object="${question}"&gt;
+  &lt;input th:field="${question.subject}"&gt;
+  &lt;textarea th:field="${question.content}"&gt;&lt;/textarea&gt;
+&lt;/form&gt;</code></pre>
+    </div>
+    <div class="after-box">
+      <h4>✅ *{} 로 간결하게</h4>
+      <pre><code>&lt;form th:object="${question}"&gt;
+  &lt;input th:field="*{subject}"&gt;
+  &lt;textarea th:field="*{content}"&gt;&lt;/textarea&gt;
+&lt;/form&gt;</code></pre>
+    </div>
+  </div>
+
+  <h3>4-3. #{} 메시지 표현식</h3>
+  <pre><code>// src/main/resources/messages.properties
+main.title=질문 게시판
+main.empty=등록된 질문이 없습니다.
+
+&lt;!-- 템플릿 --&gt;
+&lt;h1 th:text="#{main.title}"&gt;샘플 제목&lt;/h1&gt;
+&lt;p th:text="#{main.empty}"&gt;샘플 문구&lt;/p&gt;</code></pre>
+  <div class="tip">💡 다국어 지원을 하려면 <code>messages_en.properties</code>, <code>messages_ko.properties</code>처럼 파일을 나눠 두면 됩니다.</div>
+
+  <h3>4-4. ~{} 조각 표현식</h3>
+  <pre><code>&lt;!-- templates/fragments/header.html 의 th:fragment="header" 를 가져옴 --&gt;
+&lt;div th:replace="~{fragments/header :: header}"&gt;&lt;/div&gt;</code></pre>
+  <p>자세한 사용법은 13번 섹션에서 다룹니다.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="s5">
+  <h2>5. 리터럴·연산자·문자열 연결</h2>
+  <p class="lead">표현식 안에서 쓰는 값과 계산 방법입니다.</p>
+
+  <h3>5-1. 리터럴 종류</h3>
+  <table>
+    <tr><th>종류</th><th>예시</th><th>주의점</th></tr>
+    <tr><td>문자열</td><td><code>'안녕'</code></td><td>작은따옴표를 씁니다. 큰따옴표는 HTML 속성 값과 충돌할 수 있습니다.</td></tr>
+    <tr><td>숫자</td><td><code>10</code>, <code>3.14</code></td><td>그대로 씁니다.</td></tr>
+    <tr><td>불리언</td><td><code>true</code>, <code>false</code></td><td>소문자로 씁니다.</td></tr>
+    <tr><td>null</td><td><code>null</code></td><td>비교할 때 <code>${x == null}</code>을 씁니다.</td></tr>
+    <tr><td>토큰</td><td><code>on</code>, <code>off</code>, <code>any</code></td><td>특정 기능에서만 쓰는 예약어입니다.</td></tr>
+  </table>
+
+  <h3>5-2. 문자열 연결 두 가지</h3>
+  <div class="compare">
+    <div class="before-box">
+      <h4>방법 1: + 기호</h4>
+      <pre><code>&lt;p th:text="'안녕하세요, ' + ${user.name} + '님'"&gt;&lt;/p&gt;</code></pre>
+      <p>따옴표 짝을 맞춰야 해서 실수하기 쉽습니다.</p>
+    </div>
+    <div class="after-box">
+      <h4>방법 2: | | 리터럴 치환 (권장)</h4>
+      <pre><code>&lt;p th:text="|안녕하세요, ${user.name}님|"&gt;&lt;/p&gt;</code></pre>
+      <p>문장 안에 바로 <code>${}</code>를 넣을 수 있어 가독성이 좋습니다.</p>
+    </div>
+  </div>
+
+  <h3>5-3. 연산자 전체 목록</h3>
+  <table>
+    <tr><th>분류</th><th>연산자</th><th>예시</th><th>설명</th></tr>
+    <tr><td>산술</td><td><code>+ - * / %</code></td><td><code>${price * 0.9}</code></td><td>사칙연산과 나머지</td></tr>
+    <tr><td>비교</td><td><code>&gt; &lt; &gt;= &lt;=</code></td><td><code>${count &gt; 0}</code></td><td>속성 안에서는 아래 별칭 사용</td></tr>
+    <tr><td>비교 별칭</td><td><code>gt lt ge le</code></td><td><code>${count gt 0}</code></td><td>HTML 속성 안에서 안전</td></tr>
+    <tr><td>같음</td><td><code>== !=</code>, <code>eq ne</code></td><td><code>${status == 'OK'}</code></td><td>문자열은 <code>equals</code>처럼 동작</td></tr>
+    <tr><td>논리</td><td><code>and or not</code>, <code>! &amp;&amp; ||</code></td><td><code>${a and b}</code></td><td>둘 다 쓸 수 있으나 속성 안에서는 <code>and</code>, <code>or</code> 권장</td></tr>
+    <tr><td>삼항</td><td><code>조건 ? 참 : 거짓</code></td><td><code>${ok ? 'Y' : 'N'}</code></td><td>한 줄 분기</td></tr>
+    <tr><td>기본값</td><td><code>?:</code></td><td><code>${nick ?: '익명'}</code></td><td>값이 null이면 오른쪽 값</td></tr>
+    <tr><td>안전 탐색</td><td><code>?.</code></td><td><code>${user?.address?.city}</code></td><td>중간에 null이 있어도 오류 없음</td></tr>
+    <tr><td>무(無) 연산</td><td><code>_</code></td><td><code>th:text="${x} ?: _"</code></td><td>값이 없을 때 원래 샘플 글자 유지</td></tr>
+  </table>
+
+  <div class="warn">⚠️ <code>&lt;</code>는 HTML 태그 시작 기호와 겹칩니다. 속성 안에서 <code>&lt;</code>를 쓰면 파싱 오류가 날 수 있으니 <code>lt</code>로 바꿔 쓰세요.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s6">
+  <h2>6. 텍스트 출력 th:text / th:utext</h2>
+  <p class="lead">태그 안의 글자를 값으로 바꿉니다. 보안과 직결되는 중요한 속성입니다.</p>
+
+  <h3>6-1. 차이점 비교</h3>
+  <table>
+    <tr><th>속성</th><th>처리 방식</th><th>예: 값이 <code>&lt;b&gt;굵게&lt;/b&gt;</code>일 때</th><th>보안</th></tr>
+    <tr><td><code>th:text</code></td><td>HTML 기호를 이스케이프합니다.</td><td>화면에 <code>&lt;b&gt;굵게&lt;/b&gt;</code> 글자 그대로 보임</td><td>✅ 안전</td></tr>
+    <tr><td><code>th:utext</code></td><td>HTML로 해석합니다.</td><td>화면에 <strong>굵게</strong> 보임</td><td>⚠️ XSS 위험</td></tr>
+  </table>
+
+  <h3>6-2. 이스케이프 원리</h3>
+  <pre><code>원본 값          출력 시 바뀌는 형태
+&lt;        →   &amp;lt;
+&gt;        →   &amp;gt;
+&quot;       →   &amp;quot;
+&amp;        →   &amp;amp;</code></pre>
+
+  <h3>6-3. 악성 스크립트 예시</h3>
+  <pre><code>// 사용자가 제목에 이렇게 입력했다고 가정
+// &lt;script&gt;alert('해킹!')&lt;/script&gt;
+
+&lt;!-- th:text 사용: 스크립트가 글자로만 출력됨 (안전) --&gt;
+&lt;p th:text="${question.subject}"&gt;&lt;/p&gt;
+
+&lt;!-- th:utext 사용: 스크립트가 실제로 실행됨 (위험) --&gt;
+&lt;p th:utext="${question.subject}"&gt;&lt;/p&gt;</code></pre>
+  <div class="ok">✅ 사용자가 입력한 값은 항상 <code>th:text</code>로 출력하세요. <code>th:utext</code>는 관리자가 직접 작성한 신뢰된 HTML 조각에만 씁니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s7">
+  <h2>7. 속성 설정 th:href, th:class, th:attr</h2>
+  <p class="lead">HTML 속성 값을 데이터에 따라 바꿉니다. 원래 속성 이름 앞에 <code>th:</code>를 붙이는 방식입니다.</p>
+
+  <h3>7-1. 전용 속성 표</h3>
+  <table>
+    <tr><th>타임리프 속성</th><th>바뀌는 HTML 속성</th><th>예시</th></tr>
+    <tr><td><code>th:href</code></td><td><code>href</code></td><td><code>th:href="@{/home}"</code></td></tr>
+    <tr><td><code>th:src</code></td><td><code>src</code></td><td><code>th:src="@{/img/logo.png}"</code></td></tr>
+    <tr><td><code>th:action</code></td><td><code>action</code></td><td><code>th:action="@{/question/create}"</code></td></tr>
+    <tr><td><code>th:value</code></td><td><code>value</code></td><td><code>th:value="${name}"</code></td></tr>
+    <tr><td><code>th:id</code>, <code>th:name</code></td><td><code>id</code>, <code>name</code></td><td><code>th:id="|q-${q.id}|"</code></td></tr>
+    <tr><td><code>th:class</code></td><td><code>class</code> (덮어씀)</td><td><code>th:class="${on} ? 'a' : 'b'"</code></td></tr>
+    <tr><td><code>th:classappend</code></td><td><code>class</code> (추가)</td><td><code>th:classappend="${urgent} ? 'red'"</code></td></tr>
+    <tr><td><code>th:style</code></td><td><code>style</code></td><td><code>th:style="|color:${color}|"</code></td></tr>
+    <tr><td><code>th:checked</code>, <code>th:selected</code>, <code>th:disabled</code></td><td>체크, 선택, 비활성</td><td><code>th:checked="${agree}"</code></td></tr>
+  </table>
+
+  <h3>7-2. th:class와 th:classappend의 차이</h3>
+  <div class="compare">
+    <div class="before-box">
+      <h4>th:class (덮어쓰기)</h4>
+      <pre><code>&lt;button class="btn" th:class="${main} ? 'primary'"&gt;
+결과: class="primary"   ← btn이 사라짐</code></pre>
+    </div>
+    <div class="after-box">
+      <h4>th:classappend (추가)</h4>
+      <pre><code>&lt;button class="btn" th:classappend="${main} ? 'primary'"&gt;
+결과: class="btn primary"   ← btn 유지</code></pre>
+    </div>
+  </div>
+  <div class="tip">💡 기존 클래스를 유지하고 싶을 때는 거의 항상 <code>th:classappend</code>를 쓰세요.</div>
+
+  <h3>7-3. th:attr로 여러 속성 한 번에 설정</h3>
+  <pre><code>&lt;!-- 쉼표로 구분 --&gt;
+&lt;img th:attr="src=@{/img/a.png}, alt=${title}, width=200" /&gt;
+
+&lt;!-- data-* 속성 --&gt;
+&lt;li th:attr="data-id=${item.id}, data-kind='notice'"&gt;&lt;/li&gt;</code></pre>
+
+  <h3>7-4. 불리언 속성 주의</h3>
+  <pre><code>&lt;!-- 값이 true면 checked="checked", false면 속성 자체가 사라짐 --&gt;
+&lt;input type="checkbox" th:checked="${question.secret}"&gt;</code></pre>
+</section>
+
+<!-- ============================================================ -->
+<section id="s8">
+  <h2>8. 반복문 th:each와 상태 변수</h2>
+  <p class="lead">리스트를 하나씩 꺼내 태그를 여러 번 만듭니다. 질문 목록 화면의 핵심 문법입니다.</p>
+
+  <h3>8-1. 기본 형식</h3>
+  <pre><code>&lt;tr th:each="question : ${questionList}"&gt;
+    &lt;td th:text="${question.subject}"&gt;질문제목&lt;/td&gt;
+    &lt;td th:text="${question.createDate}"&gt;작성일&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+
+  <div class="flow">
+    <strong>실행 과정 (질문이 3개인 경우)</strong>
+    <ol>
+      <li>1번째: <code>question</code>에 첫 번째 객체를 넣고 <code>&lt;tr&gt;</code> 하나를 만듭니다.</li>
+      <li>2번째: <code>question</code>에 두 번째 객체를 넣고 <code>&lt;tr&gt;</code>을 또 만듭니다.</li>
+      <li>3번째: 같은 방식으로 세 번째 <code>&lt;tr&gt;</code>을 만듭니다.</li>
+      <li>결과: 같은 모양의 행이 3개 나옵니다.</li>
+    </ol>
+  </div>
+
+  <h3>8-2. 상태 변수 (iterStat)</h3>
+  <p>두 번째 변수를 적으면 반복 상태 정보를 함께 받을 수 있습니다. 변수 이름은 자유롭게 정합니다.</p>
+  <pre><code>&lt;tr th:each="q, stat : ${questionList}"&gt;
+    &lt;td th:text="${stat.count}"&gt;1&lt;/td&gt;
+    &lt;td th:text="${q.subject}"&gt;&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+  <table>
+    <tr><th>속성</th><th>값</th><th>예시 (3개 중)</th></tr>
+    <tr><td><code>index</code></td><td>0부터 시작</td><td>0, 1, 2</td></tr>
+    <tr><td><code>count</code></td><td>1부터 시작</td><td>1, 2, 3</td></tr>
+    <tr><td><code>size</code></td><td>전체 개수</td><td>3, 3, 3</td></tr>
+    <tr><td><code>current</code></td><td>현재 객체</td><td>question과 같음</td></tr>
+    <tr><td><code>even</code> / <code>odd</code></td><td>짝수·홀수 행 여부</td><td>odd: true, false, true</td></tr>
+    <tr><td><code>first</code> / <code>last</code></td><td>첫 번째·마지막 여부</td><td>first: true (1번째만)</td></tr>
+  </table>
+
+  <h3>8-3. 줄무늬 표 만들기 (실전 예)</h3>
+  <pre><code>&lt;style&gt;
+  .striped { background: #f3f4f6; }
+&lt;/style&gt;
+&lt;tr th:each="q, stat : ${questionList}"
+    th:classappend="${stat.odd} ? 'striped'"&gt;
+    &lt;td th:text="${stat.count}"&gt;&lt;/td&gt;
+    &lt;td th:text="${q.subject}"&gt;&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+
+  <h3>8-4. Map 반복</h3>
+  <pre><code>// 컨트롤러: model.addAttribute("scoreMap", map);  // Map&lt;String, Integer&gt;
+&lt;li th:each="entry : ${scoreMap}"
+    th:text="|${entry.key} : ${entry.value}점|"&gt;&lt;/li&gt;</code></pre>
+
+  <h3>8-5. 빈 리스트일 때 처리</h3>
+  <pre><code>&lt;!-- 리스트가 비어 있으면 아래 행을 출력 --&gt;
+&lt;tr th:if="${#lists.isEmpty(questionList)}"&gt;
+    &lt;td colspan="2"&gt;등록된 질문이 없습니다.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr th:each="question : ${questionList}"&gt;
+    ...
+&lt;/tr&gt;</code></pre>
+
+  <div class="warn">⚠️ 한 태그에 <code>th:each</code>와 <code>th:if</code>를 같이 쓰면 <strong>th:each가 먼저</strong> 실행됩니다. 그래서 각 항목마다 조건을 검사하게 됩니다. 빈 리스트 검사는 위처럼 별도 태그로 분리하는 것이 안전합니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s9">
+  <h2>9. 조건문 th:if, th:unless, th:switch</h2>
+  <p class="lead">조건에 따라 태그를 보이거나 숨깁니다.</p>
+
+  <h3>9-1. th:if와 th:unless</h3>
+  <pre><code>&lt;p th:if="${questionList.size() gt 0}"&gt;질문이 있습니다.&lt;/p&gt;
+&lt;p th:unless="${questionList.size() gt 0}"&gt;등록된 질문이 없습니다.&lt;/p&gt;</code></pre>
+
+  <h3>9-2. 거짓으로 취급되는 값</h3>
+  <table>
+    <tr><th>값</th><th>th:if 결과</th></tr>
+    <tr><td><code>true</code></td><td>참</td></tr>
+    <tr><td><code>false</code>, <code>null</code></td><td>거짓</td></tr>
+    <tr><td><code>0</code></td><td>거짓</td></tr>
+    <tr><td><code>""</code> (빈 문자열)</td><td>거짓</td></tr>
+    <tr><td>빈 리스트, 빈 Map</td><td>거짓</td></tr>
+    <tr><td>그 밖의 모든 값</td><td>참</td></tr>
+  </table>
+  <div class="tip">💡 <code>th:if="${question.content}"</code>처럼 쓰면 내용이 비어 있는지 한 번에 확인할 수 있습니다.</div>
+
+  <h3>9-3. 권한별 메뉴 예시</h3>
+  <pre><code>&lt;!-- 로그인한 사용자만 글쓰기 버튼 표시 --&gt;
+&lt;a th:if="${session.loginUser != null}" th:href="@{/question/create}"&gt;질문 등록&lt;/a&gt;
+
+&lt;!-- 로그인하지 않은 사용자에게 로그인 버튼 표시 --&gt;
+&lt;a th:unless="${session.loginUser != null}" th:href="@{/user/login}"&gt;로그인&lt;/a&gt;</code></pre>
+
+  <h3>9-4. th:switch / th:case</h3>
+  <pre><code>&lt;div th:switch="${question.status}"&gt;
+    &lt;span th:case="'OPEN'"&gt;답변 대기&lt;/span&gt;
+    &lt;span th:case="'CLOSED'"&gt;답변 완료&lt;/span&gt;
+    &lt;span th:case="*"&gt;알 수 없음&lt;/span&gt;   &lt;!-- 기본값 --&gt;
+&lt;/div&gt;</code></pre>
+  <div class="warn">⚠️ <code>th:switch</code>의 부모 태그에는 <code>th:switch</code>만 있어야 하며, 자식은 반드시 <code>th:case</code>로 조건을 줘야 합니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s10">
+  <h2>10. URL 표현식 @{...} 심화</h2>
+  <p class="lead">링크 주소를 만들 때 쓰며, 프로젝트 경로(context path)를 자동으로 붙여 줍니다.</p>
+
+  <h3>10-1. 기본 형태</h3>
+  <pre><code>&lt;a th:href="@{/question/list}"&gt;목록&lt;/a&gt;
+&lt;!-- 결과: /question/list --&gt;
+
+&lt;!-- 프로젝트 경로가 /myapp 이라면 결과: /myapp/question/list --&gt;</code></pre>
+
+  <h3>10-2. 경로 변수 두 가지 방법</h3>
+  <div class="compare">
+    <div class="before-box">
+      <h4>방법 A: 파이프 결합 (권장)</h4>
+      <pre><code>&lt;a th:href="@{|/question/detail/${q.id}|}"&gt;
+결과: /question/detail/5</code></pre>
+    </div>
+    <div class="after-box">
+      <h4>방법 B: 중괄호 치환</h4>
+      <pre><code>&lt;a th:href="@{/question/detail/{id}(id=${q.id})}"&gt;
+결과: /question/detail/5</code></pre>
+    </div>
+  </div>
+
+  <h3>10-3. 쿼리 파라미터</h3>
+  <pre><code>&lt;a th:href="@{/question/list(page=${page}, keyword=${kw})}"&gt;검색&lt;/a&gt;
+&lt;!-- 결과 예: /question/list?page=2&amp;keyword=java --&gt;</code></pre>
+
+  <h3>10-4. 흔한 실수</h3>
+  <div class="warn">⚠️ <code>@{/detail/${id}}</code>처럼 파이프 없이 쓰면 <code>${id}</code>가 그대로 글자로 나옵니다. 반드시 <code>|...|</code>로 감싸거나 방법 B를 쓰세요.</div>
+
+  <h3>10-5. 정적 리소스</h3>
+  <pre><code>&lt;link rel="stylesheet" th:href="@{/css/style.css}"&gt;
+&lt;script th:src="@{/js/app.js}"&gt;&lt;/script&gt;</code></pre>
+</section>
+
+<!-- ============================================================ -->
+<section id="s11">
+  <h2>11. 지역 변수 th:with</h2>
+  <p class="lead">템플릿 안에서 임시 변수를 만듭니다. 같은 계산을 여러 번 하지 않으려고 씁니다.</p>
+  <pre><code>&lt;div th:with="total=${price * count}, label='합계'"&gt;
+    &lt;p th:text="|${label} : ${total}원|"&gt;&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  <div class="tip">💡 <code>th:with</code>로 만든 변수는 그 태그와 안쪽 자식 태그에서만 씁니다. 범위 밖에서는 사용할 수 없습니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s12">
+  <h2>12. 폼 처리 th:object, th:field, th:errors</h2>
+  <p class="lead">입력 폼과 객체를 자동으로 연결합니다. 입력값이 객체에 담기고, 실패하면 입력값이 그대로 유지됩니다.</p>
+
+  <h3>12-1. 등록 폼 전체 예제</h3>
+  <pre><code>// 컨트롤러
+@GetMapping("/create")
+public String createForm(Model model) {
+    model.addAttribute("questionForm", new QuestionForm());
+    return "question/form";
+}
+
+@PostMapping("/create")
+public String create(@Valid QuestionForm questionForm,
+                     BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+        return "question/form";   // 오류가 있으면 입력 화면으로 되돌림
+    }
+    questionService.create(questionForm.getSubject(), questionForm.getContent());
+    return "redirect:/question/list";
+}</code></pre>
+
+<pre><code>&lt;!-- templates/question/form.html --&gt;
+&lt;form th:action="@{/question/create}" th:object="${questionForm}" method="post"&gt;
+    &lt;label&gt;제목&lt;/label&gt;
+    &lt;input type="text" th:field="*{subject}"&gt;
+    &lt;span th:if="${#fields.hasErrors('subject')}"
+          th:errors="*{subject}" style="color:red;"&gt;오류&lt;/span&gt;
+
+    &lt;label&gt;내용&lt;/label&gt;
+    &lt;textarea th:field="*{content}"&gt;&lt;/textarea&gt;
+    &lt;span th:if="${#fields.hasErrors('content')}"
+          th:errors="*{content}" style="color:red;"&gt;오류&lt;/span&gt;
+
+    &lt;button type="submit"&gt;등록&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+  <h3>12-2. th:field가 해 주는 일</h3>
+  <table>
+    <tr><th>자동으로 채워지는 것</th><th>설명</th></tr>
+    <tr><td><code>id</code></td><td>필드 이름과 같은 값이 들어갑니다.</td></tr>
+    <tr><td><code>name</code></td><td>컨트롤러의 필드 이름과 맞춰집니다. 제출할 때 이 이름으로 값이 전달됩니다.</td></tr>
+    <tr><td><code>value</code></td><td>객체에 들어 있던 값을 넣습니다. 수정 화면에서 기존 값이 보입니다.</td></tr>
+  </table>
+
+  <h3>12-3. 검증 어노테이션과 메시지</h3>
+  <pre><code>public class QuestionForm {
+    @NotBlank(message = "제목을 입력해 주세요.")
+    @Size(max = 200, message = "제목은 200자 이하로 입력해 주세요.")
+    private String subject;
+
+    @NotBlank(message = "내용을 입력해 주세요.")
+    private String content;
+
+    // getter, setter 생략
+}</code></pre>
+  <div class="tip">💡 <code>@Valid</code>를 쓰려면 <code>spring-boot-starter-validation</code> 의존성이 필요합니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s13">
+  <h2>13. 레이아웃 th:fragment, th:insert, th:replace</h2>
+  <p class="lead">공통 헤더, 푸터, 메뉴를 한 번만 만들고 여러 페이지에서 가져다 씁니다.</p>
+
+  <h3>13-1. 조각 정의</h3>
+  <pre><code>&lt;!-- templates/fragments/header.html --&gt;
+&lt;header th:fragment="header"&gt;
+    &lt;h1&gt;질문 게시판&lt;/h1&gt;
+&lt;/header&gt;
+
+&lt;!-- 인자를 받는 조각 --&gt;
+&lt;nav th:fragment="menu(activeMenu)"&gt;
+    &lt;a th:classappend="${activeMenu == 'list'} ? 'on'"
+       th:href="@{/question/list}"&gt;목록&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+
+  <h3>13-2. insert와 replace 차이</h3>
+  <div class="compare">
+    <div class="before-box">
+      <h4>th:insert</h4>
+      <pre><code>&lt;div class="box" th:insert="~{fragments/header :: header}"&gt;&lt;/div&gt;
+
+결과:
+&lt;div class="box"&gt;
+  &lt;header&gt;...&lt;/header&gt;
+&lt;/div&gt;</code></pre>
+      <p>자기 태그는 남고 안에 조각이 들어갑니다.</p>
+    </div>
+    <div class="after-box">
+      <h4>th:replace</h4>
+      <pre><code>&lt;div class="box" th:replace="~{fragments/header :: header}"&gt;&lt;/div&gt;
+
+결과:
+&lt;header&gt;...&lt;/header&gt;</code></pre>
+      <p>자기 태그가 조각으로 통째로 바뀝니다.</p>
+    </div>
+  </div>
+
+  <h3>13-3. 레이아웃 적용 예</h3>
+  <pre><code>&lt;!-- 페이지에서 조각 사용 --&gt;
+&lt;body&gt;
+    &lt;div th:replace="~{fragments/header :: header}"&gt;&lt;/div&gt;
+    &lt;div th:replace="~{fragments/nav :: menu('list')}"&gt;&lt;/div&gt;
+
+    &lt;main&gt; 본문 &lt;/main&gt;
+&lt;/body&gt;</code></pre>
+
+  <div class="tip">💡 <code>~{파일경로 :: 조각이름}</code>에서 <code>::</code> 앞은 파일 경로, 뒤는 fragment 이름입니다. 같은 파일 안이면 <code>~{:: header}</code>처럼 앞을 생략합니다.</div>
+  <div class="warn">⚠️ <code>th:include</code>는 구버전 방식이며 Thymeleaf 3.0부터 권장되지 않습니다. <code>th:insert</code> 또는 <code>th:replace</code>를 쓰세요.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s14">
+  <h2>14. 유틸리티 객체 #dates, #temporals 등</h2>
+  <p class="lead">#으로 시작하는 내장 객체로 날짜, 문자열, 숫자, 리스트를 다룹니다.</p>
+
+  <h3>14-1. 객체 목록</h3>
+  <table>
+    <tr><th>객체</th><th>대상 타입</th><th>예시</th></tr>
+    <tr><td><code>#dates</code></td><td><code>java.util.Date</code></td><td><code>${#dates.format(d, 'yyyy-MM-dd')}</code></td></tr>
+    <tr><td><code>#temporals</code></td><td><code>java.time</code> (LocalDateTime 등)</td><td><code>${#temporals.format(d, 'yyyy-MM-dd HH:mm')}</code></td></tr>
+    <tr><td><code>#strings</code></td><td>문자열</td><td><code>${#strings.isEmpty(s)}</code>, <code>${#strings.abbreviate(s, 10)}</code></td></tr>
+    <tr><td><code>#numbers</code></td><td>숫자</td><td><code>${#numbers.formatInteger(n, 3, 'COMMA')}</code></td></tr>
+    <tr><td><code>#lists</code></td><td>List</td><td><code>${#lists.isEmpty(list)}</code>, <code>${#lists.size(list)}</code></td></tr>
+    <tr><td><code>#arrays</code></td><td>배열</td><td><code>${#arrays.length(arr)}</code></td></tr>
+    <tr><td><code>#fields</code></td><td>폼 검증</td><td><code>${#fields.hasErrors('subject')}</code></td></tr>
+    <tr><td><code>#objects</code></td><td>모든 객체</td><td><code>${#objects.nullSafe(obj, '기본값')}</code></td></tr>
+  </table>
+
+  <h3>14-2. 날짜 포맷 실전</h3>
+  <pre><code>&lt;!-- LocalDateTime 이면 #temporals 사용 --&gt;
+&lt;td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"&gt;&lt;/td&gt;
+
+&lt;!-- java.util.Date 이면 #dates 사용 --&gt;
+&lt;td th:text="${#dates.format(question.createDate, 'yyyy.MM.dd')}"&gt;&lt;/td&gt;</code></pre>
+
+  <h3>14-3. 긴 제목 줄이기</h3>
+  <pre><code>&lt;a th:text="${#strings.abbreviate(question.subject, 20)}"&gt;&lt;/a&gt;
+&lt;!-- 20자를 넘으면 뒤를 ...으로 줄임 --&gt;</code></pre>
+
+  <div class="warn">⚠️ <code>#temporals</code>는 Java 8 날짜 API를 쓸 때 사용합니다. 엔티티 필드가 <code>Date</code> 타입이면 <code>#dates</code>를 씁니다. 타입과 맞지 않으면 오류가 납니다.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s15">
+  <h2>15. 기타 th:block, th:remove, th:inline</h2>
+
+  <h3>15-1. th:block (가상 태그)</h3>
+  <p>화면에 남지 않는 빈 태그입니다. 여러 태그에 한꺼번에 반복이나 조건을 걸 때 씁니다.</p>
+  <pre><code>&lt;table&gt;
+  &lt;th:block th:each="q : ${questionList}"&gt;
+    &lt;tr&gt;
+      &lt;td th:text="${q.subject}"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr class="divider"&gt;
+      &lt;td colspan="2"&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/th:block&gt;
+&lt;/table&gt;</code></pre>
+  <div class="tip">💡 <code>th:block</code>은 반복 대상이 되는 자식 태그 여러 개를 묶을 때 편리합니다.</div>
+
+  <h3>15-2. th:remove</h3>
+  <pre><code>&lt;!-- 렌더링할 때 이 태그 자체를 지움 (디자인 확인용 샘플을 숨김) --&gt;
+&lt;tr th:remove="all"&gt;
+    &lt;td&gt;샘플 행입니다. 실제 화면에는 나오지 않습니다.&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+  <table>
+    <tr><th>값</th><th>동작</th></tr>
+    <tr><td><code>all</code></td><td>태그와 안의 내용을 모두 지웁니다.</td></tr>
+    <tr><td><code>body</code></td><td>안의 내용만 지우고 태그는 남깁니다.</td></tr>
+    <tr><td><code>tag</code></td><td>태그만 지우고 안의 내용은 남깁니다.</td></tr>
+    <tr><td><code>all-but-first</code></td><td>첫 번째 자식만 남기고 나머지를 지웁니다.</td></tr>
+  </table>
+
+  <h3>15-3. th:inline (자바스크립트 값 사용)</h3>
+  <pre><code>&lt;script th:inline="javascript"&gt;
+    const subject = [[${question.subject}]];     // 문자열: 자동으로 따옴표 처리
+    const count   = [[${questionList.size()}]];  // 숫자
+    const list    = [[${questionList}]];         // 객체는 JSON으로 변환
+&lt;/script&gt;</code></pre>
+  <div class="warn">⚠️ <code>th:inline</code>을 쓰면 값이 JavaScript 안에서 안전하게 이스케이프됩니다. 그래도 사용자 입력을 스크립트에 바로 넣을 때는 주의하세요.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s16">
+  <h2>16. 흔한 오류 진단과 해결</h2>
+  <p class="lead">실제로 가장 많이 만나는 오류 상황을 증상별로 정리했습니다.</p>
+
+  <table>
+    <tr><th>증상</th><th>원인</th><th>해결</th></tr>
+    <tr>
+      <td>화면에 <code>${questionList}</code> 글자가 그대로 보임</td>
+      <td>타임리프가 처리하지 않음 (HTML 파일을 직접 열었거나 xmlns:th 누락)</td>
+      <td>서버를 통해 접속하고, 정상 실행 여부를 확인</td>
+    </tr>
+    <tr>
+      <td>목록이 비어 있음</td>
+      <td>Model 이름 불일치 또는 DB 조회 결과가 0건</td>
+      <td>addAttribute 이름과 ${} 이름을 맞추고, 컨트롤러에서 size 출력</td>
+    </tr>
+    <tr>
+      <td><code>Property or field 'subject' cannot be found</code></td>
+      <td>getter가 없거나 객체가 null</td>
+      <td>엔티티에 getter 추가, 객체가 Model에 들어 있는지 확인</td>
+    </tr>
+    <tr>
+      <td><code>Exception evaluating SpringEL expression</code></td>
+      <td>null 객체의 필드에 접근</td>
+      <td><code>${question?.subject}</code>처럼 안전 탐색 사용</td>
+    </tr>
+    <tr>
+      <td>링크가 <code>/detail/${id}</code>처럼 나옴</td>
+      <td><code>@{}</code>에서 파이프 누락</td>
+      <td><code>@{|/detail/${id}|}</code>로 수정</td>
+    </tr>
+    <tr>
+      <td>부분만 보이고 뒤가 잘림</td>
+      <td>HTML 속성 안에서 <code>&lt;</code>, <code>&gt;</code> 사용</td>
+      <td><code>gt</code>, <code>lt</code> 별칭 사용</td>
+    </tr>
+    <tr>
+      <td>화면 디자인이 깨짐</td>
+      <td>th:class로 덮어써서 기존 클래스 소실</td>
+      <td>th:classappend로 변경</td>
+    </tr>
+    <tr>
+      <td>날짜가 <code>2026-10-15T12:30:00</code>처럼 길게 나옴</td>
+      <td>포맷 없이 출력</td>
+      <td><code>#temporals.format</code> 적용</td>
+    </tr>
+    <tr>
+      <td>폼 입력값이 제출 후 사라짐</td>
+      <td>th:field 대신 name만 씀</td>
+      <td><code>th:field="*{필드}"</code>로 변경</td>
+    </tr>
+    <tr>
+      <td>수정 화면에서 기존 값이 안 보임</td>
+      <td>th:object 또는 th:field 누락</td>
+      <td>컨트롤러에서 기존 객체를 Model에 담고 th:object로 연결</td>
+    </tr>
+  </table>
+
+  <h3>16-1. 디버깅 팁</h3>
+  <pre><code>&lt;!-- 임시로 Model 값을 화면에 찍어 확인 --&gt;
+&lt;pre th:text="${questionList}"&gt;&lt;/pre&gt;
+
+&lt;!-- 개수 확인 --&gt;
+&lt;p th:text="|목록 개수: ${#lists.size(questionList)}|"&gt;&lt;/p&gt;</code></pre>
+  <div class="tip">💡 디버깅이 끝나면 임시로 넣은 줄은 반드시 지우세요.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s17">
+  <h2>17. 실습 문제 (질문 게시판 예제)</h2>
+  <p class="lead">직접 작성해 보고, 아래 정답을 펼쳐 확인하세요.</p>
+
+  <div class="quiz">
+    <strong>문제 1.</strong> 질문 목록에서 제목을 누르면 <code>/question/detail/{id}</code>로 이동하도록 링크를 만드세요.
+    <details>
+      <summary>정답 보기</summary>
+      <pre><code>&lt;a th:href="@{|/question/detail/${question.id}|}"
+   th:text="${question.subject}"&gt;질문제목&lt;/a&gt;</code></pre>
+    </details>
+  </div>
+
+  <div class="quiz">
+    <strong>문제 2.</strong> 질문이 없을 때 "등록된 질문이 없습니다."를 표시하고, 있을 때는 목록을 보여주세요.
+    <details>
+      <summary>정답 보기</summary>
+      <pre><code>&lt;tr th:if="${#lists.isEmpty(questionList)}"&gt;
+    &lt;td colspan="2"&gt;등록된 질문이 없습니다.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr th:each="question : ${questionList}"&gt;
+    &lt;td&gt;&lt;a th:href="@{|/question/detail/${question.id}|}"
+           th:text="${question.subject}"&gt;&lt;/a&gt;&lt;/td&gt;
+    &lt;td th:text="${question.createDate}"&gt;&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+    </details>
+  </div>
+
+  <div class="quiz">
+    <strong>문제 3.</strong> 작성일을 <code>2026-10-15 12:30</code> 형식으로 출력하세요.
+    <details>
+      <summary>정답 보기</summary>
+      <pre><code>&lt;td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"&gt;&lt;/td&gt;</code></pre>
+    </details>
+  </div>
+
+  <div class="quiz">
+    <strong>문제 4.</strong> 짝수 번째 행에만 <code>even-row</code> 클래스를 붙이고, 기존 <code>row</code> 클래스는 유지하세요.
+    <details>
+      <summary>정답 보기</summary>
+      <pre><code>&lt;tr class="row" th:each="q, stat : ${questionList}"
+    th:classappend="${stat.even} ? 'even-row'"&gt;
+    ...
+&lt;/tr&gt;</code></pre>
+    </details>
+  </div>
+
+  <div class="quiz">
+    <strong>문제 5.</strong> 질문 제목이 20자를 넘으면 20자까지만 보이고 뒤에 ...을 붙이세요.
+    <details>
+      <summary>정답 보기</summary>
+      <pre><code>&lt;a th:text="${#strings.abbreviate(question.subject, 20)}"&gt;&lt;/a&gt;</code></pre>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s18">
+  <h2>18. 최종 체크리스트</h2>
+  <p class="lead">템플릿을 완성한 뒤 아래 항목을 하나씩 확인하세요.</p>
+  <table>
+    <tr><th>✔</th><th>확인 항목</th></tr>
+    <tr><td>☐</td><td><code>xmlns:th</code> 선언이 있는가</td></tr>
+    <tr><td>☐</td><td>파일이 <code>templates/</code> 아래에 있고, 뷰 이름 경로가 맞는가</td></tr>
+    <tr><td>☐</td><td>Model 이름과 <code>${}</code> 이름이 같은가</td></tr>
+    <tr><td>☐</td><td>사용자 입력은 <code>th:text</code>로 출력하는가</td></tr>
+    <tr><td>☐</td><td>URL 안의 변수는 <code>|...|</code> 또는 <code>{id}</code> 방식을 쓰는가</td></tr>
+    <tr><td>☐</td><td>기존 클래스를 지우지 않도록 <code>th:classappend</code>를 썼는가</td></tr>
+    <tr><td>☐</td><td>날짜 포맷을 지정했는가</td></tr>
+    <tr><td>☐</td><td>빈 목록일 때의 화면을 준비했는가</td></tr>
+    <tr><td>☐</td><td>폼은 <code>th:object</code>와 <code>th:field</code>로 연결했는가</td></tr>
+    <tr><td>☐</td><td>공통 영역은 fragment로 분리했는가</td></tr>
+  </table>
+</section>
+
+<footer>
+  <p>© 타임리프 심화 가이드 · 파일 하나로 언제든 열람 가능합니다.</p>
+</footer>
+
+</div>
+
+<script>
+  // 코드 블록마다 복사 버튼 추가
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '복사';
+    btn.addEventListener('click', function () {
+      var code = pre.querySelector('code');
+      var text = code ? code.innerText : pre.innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = '완료!';
+          setTimeout(function () { btn.textContent = '복사'; }, 1200);
+        });
+      }
+    });
+    pre.appendChild(btn);
+  });
+
+  // 현재 문서를 HTML 파일로 다운로드
+  function downloadHtml() {
+    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'thymeleaf-guide-deep.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // 라이트/다크 테마 수동 전환
+  function toggleTheme() {
+    var root = document.documentElement;
+    var current = root.getAttribute('data-theme');
+    var isDark = current === 'dark' ||
+      (!current && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  }
+</script>
+</body>
+</html>

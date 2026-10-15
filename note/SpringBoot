@@ -240,9 +240,26 @@ dependencies {
     // H2: 파일 기반의 가벼운 자바 데이터베이스 (실행할 때만 필요, 직접 import 하지 않음)
     runtimeOnly 'com.h2database:h2'
     
-    
     // H2 웹 콘솔(/h2-console) 모듈 - Spring Boot 4 부터 별도 모듈로 분리됨
 	// 이 줄이 없으면 /h2-console 경로가 만들어지지 않아 404 에러가 발생한다.
 	// (Spring Boot 3 기준 교재에는 없는 설정)
 	// implementation 'org.springframework.boot:spring-boot-h2console'
+
+    // JPA(Spring Data JPA + Hibernate) : 자바 객체를 DB 테이블로 다루게 해 주는 기능
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter' 
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// Thymeleaf: 서버에서 HTML 화면을 만들어 주는 템플릿 엔진 (th:text, th:href 등의 문법)
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	
+	// 레이아웃 기능: 공통 틀(layout.html)에 여러 화면을 끼워 넣는 기능 (layout:decorate, layout:fragment)
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+}
+}
+
+// 테스트를 실행할 때 JUnit 5 플랫폼을 사용하도록 설정합니다.
+tasks.named('test') {
+	useJUnitPlatform()
 }
