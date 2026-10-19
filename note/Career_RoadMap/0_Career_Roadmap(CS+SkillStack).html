@@ -1,0 +1,1358 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Security + DevOps 개발자 커리어 로드맵 (호주 IT 과정 통합)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a3a52 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a3a52 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.85;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .profile-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #64b5f6;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .profile-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .profile-item strong {
+            color: #ffeb3b;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f5e9 100%);
+            padding: 25px;
+            border-left: 5px solid #1976d2;
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+
+        .intro-section h2 {
+            color: #0d47a1;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .intro-section p {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .phase-container {
+            margin-bottom: 50px;
+        }
+
+        .phase-header {
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 6px solid #0d1b2a;
+        }
+
+        .phase-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .phase-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .phase-period {
+            font-size: 13px;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .phase-content {
+            background: #fafafa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #1565c0;
+        }
+
+        .section-box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1565c0;
+        }
+
+        .section-title {
+            color: #0d47a1;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title-icon {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #1565c0;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .cs-connection {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #7c4dff;
+        }
+
+        .cs-connection-title {
+            color: #4a148c;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .cs-connection p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .review-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6f00;
+        }
+
+        .review-section-title {
+            color: #e65100;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .review-section p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .review-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 8px;
+        }
+
+        .review-section li {
+            color: #3e2723;
+            font-size: 13px;
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .review-section li:before {
+            content: "📚";
+            position: absolute;
+            left: 0;
+        }
+
+        .security-integration {
+            background: linear-gradient(135deg, #ffebee 0%, #f8bbd0 100%);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c2185b;
+        }
+
+        .security-integration-title {
+            color: #880e4f;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .security-integration p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .learning-content {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 3px solid #1565c0;
+        }
+
+        .learning-content-title {
+            color: #0d47a1;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .learning-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .learning-content li {
+            color: #555;
+            font-size: 13px;
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .learning-content li:before {
+            content: "▹";
+            position: absolute;
+            left: 8px;
+            color: #1565c0;
+            font-weight: bold;
+        }
+
+        .project-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #7c4dff;
+            margin-bottom: 15px;
+        }
+
+        .project-box-title {
+            color: #4a148c;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .project-box p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            background: white;
+            border: 1px solid #1565c0;
+            color: #1565c0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .phase-summary {
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 4px solid #00695c;
+        }
+
+        .phase-summary-title {
+            color: #004d40;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .phase-summary p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, #fff9c4 0%, #ffeb3b 100%);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #f57f17;
+            margin-top: 20px;
+        }
+
+        .key-insight-title {
+            color: #f57f17;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .key-insight p {
+            color: #3e2723;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        .footer strong {
+            color: #0d47a1;
+        }
+
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            }
+
+            .container {
+                background: #1e1e1e;
+                box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7);
+            }
+
+            .intro-section {
+                background: linear-gradient(135deg, #1a237e 0%, #1b5e20 100%);
+                border-left-color: #64b5f6;
+            }
+
+            .intro-section h2 {
+                color: #90caf9;
+            }
+
+            .intro-section p {
+                color: #d0d0d0;
+            }
+
+            .phase-content {
+                background: #2d2d2d;
+            }
+
+            .section-box {
+                background: #3a3a3a;
+                border-left-color: #90caf9;
+            }
+
+            .section-title {
+                color: #90caf9;
+            }
+
+            .section-title-icon {
+                background: #90caf9;
+            }
+
+            .cs-connection {
+                background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+                border-left-color: #ce93d8;
+            }
+
+            .cs-connection-title {
+                color: #ce93d8;
+            }
+
+            .cs-connection p {
+                color: #e0e0e0;
+            }
+
+            .review-section {
+                background: linear-gradient(135deg, #663c00 0%, #8d5c00 100%);
+                border-left-color: #ffb74d;
+            }
+
+            .review-section-title {
+                color: #ffb74d;
+            }
+
+            .review-section p,
+            .review-section li {
+                color: #e0e0e0;
+            }
+
+            .security-integration {
+                background: linear-gradient(135deg, #4a0e4e 0%, #6a1b6a 100%);
+                border-left-color: #f06292;
+            }
+
+            .security-integration-title {
+                color: #f06292;
+            }
+
+            .security-integration p {
+                color: #e0e0e0;
+            }
+
+            .learning-content {
+                background: #3a3a3a;
+                border-left-color: #90caf9;
+            }
+
+            .learning-content-title {
+                color: #90caf9;
+            }
+
+            .learning-content li {
+                color: #c0c0c0;
+            }
+
+            .learning-content li:before {
+                color: #90caf9;
+            }
+
+            .project-box {
+                background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+                border-left-color: #ce93d8;
+            }
+
+            .project-box-title {
+                color: #ce93d8;
+            }
+
+            .project-box p {
+                color: #e0e0e0;
+            }
+
+            .skill-tag {
+                background: #3a3a3a;
+                border-color: #90caf9;
+                color: #90caf9;
+            }
+
+            .phase-summary {
+                background: linear-gradient(135deg, #004d40 0%, #006064 100%);
+                border-left-color: #4db6ac;
+            }
+
+            .phase-summary-title {
+                color: #4db6ac;
+            }
+
+            .phase-summary p {
+                color: #e0e0e0;
+            }
+
+            .key-insight {
+                background: linear-gradient(135deg, #4a4a00 0%, #6b6b00 100%);
+                border-left-color: #ffd54f;
+            }
+
+            .key-insight-title {
+                color: #ffd54f;
+            }
+
+            .key-insight p {
+                color: #e0e0e0;
+            }
+
+            .footer {
+                background: #2d2d2d;
+                border-top-color: #444;
+            }
+
+            .footer p {
+                color: #b0bec5;
+            }
+
+            .footer strong {
+                color: #90caf9;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .phase-container {
+                margin-bottom: 30px;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profile-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔒 AI Security + DevOps 개발자 커리어 로드맵</h1>
+            <p>CS 기초 + 풀스택 개발 + AI 어플리케이션 + 네트워크 보안</p>
+            <p style="font-size: 14px; margin-top: 15px;">호주 IT Network Security 과정 + Phase 1-10 통합</p>
+
+            <div class="profile-box">
+                <div class="profile-item">
+                    <strong>✅ CS 기초</strong><br>메모리, 자료구조, 알고리즘, OS
+                </div>
+                <div class="profile-item">
+                    <strong>✅ 풀스택 개발</strong><br>JS → Java → SQL → Spring → React → Python
+                </div>
+                <div class="profile-item">
+                    <strong>✅ AI Application</strong><br>LLM, RAG, Prompt Engineering
+                </div>
+                <div class="profile-item">
+                    <strong>✅ DevOps & Cloud</strong><br>Docker, K8s, AWS, CI/CD
+                </div>
+                <div class="profile-item">
+                    <strong>✅ Network Security</strong><br>CCNA, CCNP, Crypto, Linux
+                </div>
+                <div class="profile-item">
+                    <strong>🎯 목표</strong><br>Secure AI Application Developer
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Introduction -->
+            <div class="intro-section">
+                <h2>🎓 호주 IT 과정 + AI 개발 = 강력한 차별화!</h2>
+                <p>
+                    당신은 이미 <strong>CCNA, CCNP, Cyber Security, Crypto, Linux, Networking</strong>을 배웠습니다.
+                    이것들은 단순한 "IT 자격증"이 아니라, <strong>AI 시대의 필수 보안 기초</strong>입니다.
+                    이 로드맵에서는 호주에서 배운 모든 것을 AI 개발자로서의 새로운 맥락에서 복습하고 심화합니다.
+                </p>
+                <p style="margin-top: 15px; font-weight: 600;">
+                    🔑 핵심: "현재 나와있는 AI를 안전하게 운영하는 개발자" = 대형 기업이 가장 원하는 인재! 💎
+                </p>
+            </div>
+
+            <!-- Phase 1: JavaScript ES6+ -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 1</div>
+                    <div class="phase-title">JavaScript ES6+ & 프로토타입</div>
+                    <div class="phase-period">⏱️ 3-4주 | 난이도: 초급~중급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 메모리 구조 (Stack vs Heap)</div>
+                        <p><strong>문제:</strong> 왜 JavaScript에서 객체를 복사하면 "같은 곳을 가리키는" 일이 발생할까?</p>
+                        <p><strong>원리:</strong> 원시타입은 Stack에, 참조타입은 Heap에 저장됩니다. 변수는 주소만 가지고 있어서 두 변수가 같은 Heap 공간을 가리킵니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>ES6+ 문법:</strong> const/let, 화살표 함수, 템플릿 리터럴</li>
+                            <li><strong>구조분해:</strong> 배열/객체 구조분해, 스프레드 연산자</li>
+                            <li><strong>고차 함수:</strong> map, filter, reduce로 함수형 프로그래밍</li>
+                            <li><strong>클로저:</strong> 함수가 외부 스코프 변수에 접근</li>
+                            <li><strong>비동기 처리:</strong> Promise, async/await의 원리</li>
+                        </ul>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p>메모리 추적 미션 + 고차 함수 유틸리티 + 클로저 기반 카운터</p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div style="margin-top: 15px;">
+                        <div class="learning-content-title" style="margin-bottom: 10px;">🎯 핵심 스킬</div>
+                        <div class="skills-grid">
+                            <div class="skill-tag">const/let</div>
+                            <div class="skill-tag">구조분해</div>
+                            <div class="skill-tag">클로저</div>
+                            <div class="skill-tag">비동기</div>
+                        </div>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔄 호주 IT 과정 복습 & 연결</div>
+                        <p><strong>관련 과목:</strong> S1 Programming</p>
+                        <p>S1 Programming에서 배운 기본 프로그래밍 개념(변수, 타입, 루프, 함수)을 JavaScript의 현대적 문법으로 다시 정리합니다.
+                        클로저와 프로토타입은 JavaScript의 독특한 특성으로, 나중에 Spring Boot의 싱글톤 패턴과 비교하면 설계 패턴의 본질을 더 잘 이해할 수 있습니다.</p>
+                    </div>
+
+                    <!-- Key Insight -->
+                    <div class="key-insight">
+                        <div class="key-insight-title">💡 핵심 인사이트</div>
+                        <p>JavaScript는 "간단한 스크립팅 언어"가 아닙니다. 메모리 구조, 프로토타입, 비동기 처리의 본질을 이해하면
+                        이후 Java, Python, Spring Boot 같은 언어를 배울 때 훨씬 수월해집니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Java & OOP -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 2</div>
+                    <div class="phase-title">Java & 객체지향 프로그래밍 (OOP)</div>
+                    <div class="phase-period">⏱️ 4-5주 | 난이도: 중급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 자료구조 (ArrayList vs LinkedList 성능 차이)</div>
+                        <p><strong>원리:</strong> ArrayList는 연속 메모리 접근 O(1), LinkedList는 포인터 순회 O(N).
+                        검색이 많으면 ArrayList, 중간 삽입/삭제가 많으면 LinkedList를 선택합니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>OOP 4대 특성:</strong> 캡슐화, 상속, 다형성, 추상화</li>
+                            <li><strong>접근제어자:</strong> public, private, protected와 보안</li>
+                            <li><strong>상속과 인터페이스:</strong> 다형성 구현</li>
+                            <li><strong>예외 처리:</strong> try-catch-finally, Checked vs Unchecked</li>
+                            <li><strong>컬렉션:</strong> ArrayList, LinkedList, HashMap 동작 원리</li>
+                        </ul>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔄 호주 IT 과정 복습 & 연결</div>
+                        <p><strong>관련 과목:</strong> IT Tech (AA, Asim)</p>
+                        <p>IT Tech 과정에서 배운 프로그래밍 개념을 Java의 강타입 시스템으로 다시 학습합니다.
+                        OOP 설계는 나중에 Spring Boot의 의존성 주입(DI), 싱글톤 패턴과 직결됩니다.
+                        컬렉션의 성능 차이는 나중에 데이터베이스 인덱싱과도 연결됩니다.</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 2 완료 체크리스트</div>
+                        <p>✓ 클래스와 객체를 설계하고 구현할 수 있는가?</p>
+                        <p>✓ ArrayList vs LinkedList의 성능 차이를 설명할 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: SQL & Database -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 3</div>
+                    <div class="phase-title">SQL & 관계형 데이터베이스</div>
+                    <div class="phase-period">⏱️ 3-4주 | 난이도: 중급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 알고리즘 (B-Tree INDEX로 O(N)을 O(log N)으로)</div>
+                        <p><strong>원리:</strong> INDEX는 B-Tree 자료구조로 검색을 O(log N)으로 최적화합니다.
+                        100만 행에서 선형 탐색은 100만 번, B-Tree는 약 20번 비교.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>기본 SQL:</strong> SELECT, WHERE, JOIN, GROUP BY, HAVING</li>
+                            <li><strong>JOIN 최적화:</strong> INNER, LEFT, RIGHT, FULL OUTER의 성능</li>
+                            <li><strong>정규화:</strong> 1NF, 2NF, 3NF, BCNF로 데이터 중복 제거</li>
+                            <li><strong>INDEX:</strong> B-Tree 자료구조, COMPOSITE INDEX 설계</li>
+                            <li><strong>트랜잭션:</strong> ACID 원칙, 동시성 제어</li>
+                        </ul>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔄 호주 IT 과정 복습 & 연결</div>
+                        <p><strong>관련 과목:</strong> Data Structure (Peter), ICT50415 Diploma Networking, Net Fund</p>
+                        <p>Data Structure 과정에서 배운 자료구조 개념이 실제 데이터베이스에서 어떻게 활용되는지 확인합니다.
+                        JOIN의 성능 최적화는 네트워킹의 프로토콜 설계와 비슷한 원리입니다 (경로 선택과 성능).</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 3 완료 체크리스트</div>
+                        <p>✓ 정규화를 적용해서 테이블을 설계할 수 있는가?</p>
+                        <p>✓ INDEX의 B-Tree 구조를 설명할 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4: Spring Boot & Backend -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 4</div>
+                    <div class="phase-title">Spring Boot & 백엔드 아키텍처</div>
+                    <div class="phase-period">⏱️ 5-6주 | 난이도: 중급~상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 멀티스레딩과 운영체제 (Thread Pool & Context Switching)</div>
+                        <p><strong>원리:</strong> Spring Boot는 스레드 풀로 동시 요청을 처리합니다.
+                        각 스레드는 운영체제의 컨텍스트 스위칭으로 번갈아 실행되고, 동기화로 메모리 경합을 방지합니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>Spring Framework 핵심:</strong> IoC, Dependency Injection, AOP</li>
+                            <li><strong>REST API 설계:</strong> @Controller, @RestController, @RequestMapping</li>
+                            <li><strong>데이터베이스 연동:</strong> JPA, Hibernate, Repository 패턴</li>
+                            <li><strong>스레드 풀 관리:</strong> Tomcat 설정, 동시성 문제 해결</li>
+                            <li><strong>Spring Security:</strong> 권한 관리, JWT 토큰, 인증</li>
+                            <li><strong>Spring Legacy (JSP, Jasper):</strong> 중견기업 취직 대비</li>
+                        </ul>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔄 호주 IT 과정 복습 & 연결</div>
+                        <p><strong>관련 과목:</strong> IT Tech (AA, Asim), Server Mgmt (Ara, PD), OS 1-AY, OS 2-SD</p>
+                        <p>Server Management와 OS 과정에서 배운 프로세스/스레드 개념이 실제로 Spring Boot에서 어떻게 동작하는지 확인합니다.
+                        Tomcat의 스레드 풀 설정은 운영체제의 컨텍스트 스위칭 원리를 기반으로 합니다.</p>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p><strong>📌 학원 팀 프로젝트 기초:</strong> Spring Boot REST API 백엔드 구축</p>
+                        <p>이 단계에서 배우는 Spring Boot, JPA, REST API 설계가 Phase 7의 AI 챗봇 프로젝트로 확장됩니다.
+                        팀 프로젝트로 협업 경험을 쌓고, 나중에 AI 기능을 추가할 기초를 다집니다.</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 4 완료 체크리스트</div>
+                        <p>✓ IoC와 DI를 이해하고 구현할 수 있는가?</p>
+                        <p>✓ REST API와 데이터베이스를 연동할 수 있는가?</p>
+                        <p>✓ 멀티스레딩 문제를 해결할 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 5: Frontend TypeScript/React -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 5</div>
+                    <div class="phase-title">TypeScript & React 프론트엔드</div>
+                    <div class="phase-period">⏱️ 4-5주 | 난이도: 중급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: Virtual DOM과 Garbage Collection (메모리 효율)</div>
+                        <p><strong>원리:</strong> Virtual DOM은 메모리상에서 변경사항을 계산하고, 필요한 부분만 실제 DOM에 반영합니다.
+                        이후 GC가 불필요한 메모리를 정리합니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>TypeScript:</strong> 타입 시스템, Interface, Generic</li>
+                            <li><strong>React Hook:</strong> useState, useEffect, 커스텀 Hook</li>
+                            <li><strong>Virtual DOM:</strong> reconciliation 알고리즘, 성능 최적화</li>
+                            <li><strong>상태 관리:</strong> Context API, Redux</li>
+                            <li><strong>비동기:</strong> fetch, axios, async/await로 API 연동</li>
+                            <li><strong>DOM & 이벤트:</strong> DOM 조작, addEventListener, 이벤트 위임 (React 이전의 바닥 원리)</li>
+                            <li><strong>jQuery:</strong> 레거시 프로젝트 유지보수 대응, 크로스 브라우징 기초</li>
+                            <li><strong>AI 스트리밍 UI:</strong> 타다닥 글자가 나오는 Chat UI 표현</li>
+                        </ul>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 5 완료 체크리스트</div>
+                        <p>✓ TypeScript 타입 시스템을 이해하고 사용할 수 있는가?</p>
+                        <p>✓ React Hook으로 상태 관리를 할 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 6: Python Backend (FastAPI, Django) -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 6</div>
+                    <div class="phase-title">Python Backend (FastAPI, Django)</div>
+                    <div class="phase-period">⏱️ 4-5주 | 난이도: 중급~상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: Python GIL과 멀티스레딩 vs Asyncio</div>
+                        <p><strong>원리:</strong> Python의 GIL(Global Interpreter Lock)은 한 번에 한 스레드만 실행하므로,
+                        CPU 바운드 작업에서 멀티스레딩 효과 없음. 대신 asyncio나 multiprocessing 사용.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>FastAPI:</strong> 비동기 웹 프레임워크, @app.get, @app.post</li>
+                            <li><strong>Django:</strong> 풀 스택 프레임워크, ORM, Admin 패널</li>
+                            <li><strong>ORM:</strong> SQLAlchemy, Django ORM으로 데이터베이스 연동</li>
+                            <li><strong>비동기 처리:</strong> asyncio, async/await</li>
+                            <li><strong>GIL 이해:</strong> 멀티스레딩 vs asyncio vs multiprocessing 선택</li>
+                        </ul>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔄 호주 IT 과정 복습 & 연결</div>
+                        <p><strong>관련 과목:</strong> S1 Programming, IT Tech, Server Mgmt</p>
+                        <p>Python은 다양한 운영체제에서 실행되는데, 호주 IT 과정의 다양한 OS 경험(Linux, Windows 등)이
+                        Python의 크로스 플랫폼 특성을 이해하는 데 도움됩니다.</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 6 완료 체크리스트</div>
+                        <p>✓ FastAPI와 Django의 차이를 이해하고 선택할 수 있는가?</p>
+                        <p>✓ Python GIL의 영향과 asyncio의 필요성을 설명할 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 7: LLM API & Prompt Engineering -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 7</div>
+                    <div class="phase-title">LLM API & Prompt Engineering</div>
+                    <div class="phase-period">⏱️ 3-4주 | 난이도: 중급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 벡터 임베딩과 메모리 (Floating Point 연산)</div>
+                        <p><strong>원리:</strong> 텍스트를 벡터(수백~수천 개 숫자 배열)로 변환합니다.
+                        유사한 단어끼리 벡터 공간에서 가깝게 위치합니다. 메모리 효율적 관리 필수.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>Java LLM 통합:</strong> <strong>Spring AI</strong> 또는 <strong>LangChain4j</strong> 프레임워크로 OpenAI/Claude API 자바 연동</li>
+                            <li><strong>Function Calling:</strong> AI가 자바 백엔드 메서드를 스스로 호출하도록 설계 (자동화의 핵심!)</li>
+                            <li><strong>Chat Completion:</strong> 대화형 AI 구현, 스트리밍 응답 처리</li>
+                            <li><strong>API 보안:</strong> API 키 관리, Rate Limiting, 비용 추적</li>
+                            <li><strong>Prompt Engineering:</strong> Few-shot, Chain of Thought, Role-playing</li>
+                            <li><strong>임베딩:</strong> 텍스트를 벡터로 변환, 유사도 계산</li>
+                            <li><strong>토큰화:</strong> 텍스트를 토큰으로 분할, 비용 계산</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Integration -->
+                    <div class="security-integration">
+                        <div class="security-integration-title">🔐 보안 통합: API 키 관리와 Rate Limiting</div>
+                        <p>LLM API 호출은 비용이 발생하고, 악의적 사용으로부터 보호해야 합니다.
+                        호주 IT 과정의 "Enterprise Security" 개념을 API 보안에 적용합니다.
+                        API 키는 환경변수로 관리하고, Rate Limiting으로 남용을 방지합니다.</p>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p><strong>📌 학원 팀 프로젝트: Spring AI 챗봇</strong></p>
+                        <p>Phase 4에서 구축한 Spring Boot REST API를 기반으로, OpenAI/Claude LLM API를 연동하는 프로젝트입니다.
+                        Function Calling으로 AI가 자바 백엔드 메서드를 호출하고, React 프론트엔드(Phase 5)에서
+                        스트리밍 방식의 Chat UI를 구현합니다.
+                        이 프로젝트는 Phase 8(RAG) → Phase 9(AI Security) → Phase 10(DevOps 배포)로 계속 확장됩니다.</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 7 완료 체크리스트</div>
+                        <p>✓ LLM API를 안전하게 호출하고 비용을 추적할 수 있는가?</p>
+                        <p>✓ Prompt Engineering으로 원하는 결과를 얻을 수 있는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 8: RAG & Vector Database -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 8</div>
+                    <div class="phase-title">RAG & Vector Database</div>
+                    <div class="phase-period">⏱️ 3-4주 | 난이도: 상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 검색 알고리즘 (KNN, HNSW로 O(N)을 O(log N)으로)</div>
+                        <p><strong>원리:</strong> 벡터 DB는 HNSW(Hierarchical Navigable Small Worlds) 알고리즘으로
+                        100만 개 벡터에서 유사한 것을 20번 정도 비교로 찾습니다. 이는 INDEX와 유사한 원리입니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>RAG 아키텍처:</strong> Retrieval + Augmented Generation</li>
+                            <li><strong>벡터 임베딩:</strong> 텍스트를 벡터로 변환</li>
+                            <li><strong>벡터 DB 선택:</strong> <strong>pgvector (PostgreSQL)</strong>로 가벼운 구현 또는 Pinecone, Weaviate, Qdrant (대규모)</li>
+                            <li><strong>유사도 검색:</strong> Cosine Similarity, HNSW, IVF 알고리즘</li>
+                            <li><strong>청킹 전략:</strong> 긴 문서 효율적 분할, 중복 제거</li>
+                            <li><strong>Pandas 기초:</strong> RAG에 넣을 CSV/문서 데이터 정제 (필요할 때 1-2일 학습)</li>
+                            <li><strong>사내 문서 관리:</strong> RAG 기반 자사 문서 AI 지식 시스템</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Integration -->
+                    <div class="security-integration">
+                        <div class="security-integration-title">🔐 보안 통합: 벡터 DB 접근 제어</div>
+                        <p>RAG 시스템에서 벡터 DB에 저장된 데이터는 민감할 수 있습니다.
+                        호주 과정의 "권한 관리" 개념을 벡터 DB에 적용:
+                        사용자별로 접근 가능한 벡터만 검색하도록 필터링합니다.</p>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 8 완료 체크리스트</div>
+                        <p>✓ RAG의 전체 흐름을 구현할 수 있는가?</p>
+                        <p>✓ 벡터 DB의 검색 알고리즘을 이해하는가?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 9: AI Security -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 9</div>
+                    <div class="phase-title">AI Security & Prompt Injection 방어</div>
+                    <div class="phase-period">⏱️ 4-5주 | 난이도: 상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 암호화, 해싱, 권한 관리 (RBAC)</div>
+                        <p><strong>원리:</strong> Prompt Injection은 SQL Injection과 유사합니다.
+                        방어: 입력 검증, 출력 필터링, 권한 기반 제어 (RBAC).</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>Prompt Injection:</strong> 공격 방식과 방어 전략</li>
+                            <li><strong>입력 검증:</strong> 길이 제한, 패턴 매칭, 악의적 입력 탐지</li>
+                            <li><strong>출력 필터링:</strong> LLM 응답에서 민감 정보 제거</li>
+                            <li><strong>API 보안:</strong> API 키 관리, Rate Limiting, IP 필터링</li>
+                            <li><strong>RBAC:</strong> 사용자별 권한, 역할 기반 접근 제어</li>
+                            <li><strong>암호화:</strong> AES 데이터 암호화, TLS 전송 암호화</li>
+                            <li><strong>해싱:</strong> bcrypt, Argon2로 비밀번호 저장</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Integration -->
+                    <div class="security-integration">
+                        <div class="security-integration-title">🔐 호주 IT 보안 과정 직접 통합!</div>
+                        <p><strong>관련 과목:</strong> CCNP Security (Adnan), S1 Crypto, S2 Advanced Network Security,
+                        Cyber Security resources (Adnan), S1 Ent Security</p>
+                        <p>이 Phase는 호주에서 배운 보안 지식을 AI 컨텍스트에 적용하는 것입니다:</p>
+                        <ul style="margin-top: 10px;">
+                            <li>📚 <strong>CCNP Security (Adnan)</strong> → Prompt Injection 방어 (네트워크 침입처럼 입력 검증)</li>
+                            <li>📚 <strong>S1 Crypto</strong> → API 호출 데이터 암호화, JWT 토큰 서명</li>
+                            <li>📚 <strong>S2 Advanced Network Security</strong> → API Rate Limiting, DDoS 방어</li>
+                            <li>📚 <strong>Cyber Security resources</strong> → 취약점 분석, 침투 테스트 사고방식</li>
+                            <li>📚 <strong>S1 Ent Security</strong> → 기업 규모의 보안 정책, 감사 로깅</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>핵심:</strong> 호주 보안 과정은 "네트워크/시스템" 관점이었다면,
+                        이제 "AI 어플리케이션" 관점에서 같은 개념을 다시 학습하고 적용합니다.</p>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p><strong>1. Prompt Injection 방어:</strong> 다양한 공격 시도에 대한 탐지 및 필터링 구현</p>
+                        <p><strong>2. RBAC 구현:</strong> 사용자 권한에 따라 LLM 접근 제한</p>
+                        <p><strong>3. 데이터 암호화:</strong> 민감 데이터를 AES로 암호화해서 저장</p>
+                        <p><strong>4. API 보안:</strong> Rate Limiting, IP 필터링, 감시 로깅</p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div style="margin-top: 15px;">
+                        <div class="learning-content-title" style="margin-bottom: 10px;">🎯 핵심 스킬</div>
+                        <div class="skills-grid">
+                            <div class="skill-tag">Prompt Injection 방어</div>
+                            <div class="skill-tag">RBAC</div>
+                            <div class="skill-tag">암호화/해싱</div>
+                            <div class="skill-tag">API 보안</div>
+                            <div class="skill-tag">감시 로깅</div>
+                            <div class="skill-tag">취약점 분석</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 9 완료 체크리스트</div>
+                        <p>✓ Prompt Injection 공격과 방어를 설명할 수 있는가?</p>
+                        <p>✓ RBAC로 권한 기반 접근 제어를 구현할 수 있는가?</p>
+                        <p>✓ 민감 데이터를 암호화/해싱해서 저장할 수 있는가?</p>
+                        <p>✓ 호주 보안 과정의 개념을 AI 보안에 적용할 수 있는가?</p>
+                    </div>
+
+                    <!-- Key Insight -->
+                    <div class="key-insight">
+                        <div class="key-insight-title">💡 핵심 인사이트</div>
+                        <p>당신의 "CCNP Security, Cyber Security" 배경은 정말 강력한 자산입니다!
+                        많은 AI 개발자들이 "보안"을 나중에 생각하는데, 당신은 처음부터
+                        "보안을 먼저 설계"할 수 있습니다. 이것이 엔터프라이즈 AI의 핵심 경쟁력입니다!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 10: DevOps & Cloud -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 10</div>
+                    <div class="phase-title">DevOps & Cloud Infrastructure</div>
+                    <div class="phase-period">⏱️ 5-6주 | 난이도: 상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 분산 시스템과 스케일링</div>
+                        <p><strong>원리:</strong> Docker는 애플리케이션을 컨테이너에 패킹.
+                        Kubernetes는 여러 서버에 자동 배치하고, 트래픽에 따라 자동 스케일링합니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>Docker:</strong> Dockerfile, Image, Container, 레이어, Docker Compose</li>
+                            <li><strong>Kubernetes:</strong> Pod, Service, Deployment, StatefulSet</li>
+                            <li><strong>자동 스케일링:</strong> HPA, 메트릭 기반 확장</li>
+                            <li><strong>CI/CD 파이프라인:</strong> <strong>GitHub Actions</strong>로 자동 빌드 & 배포 (커밋 → 테스트 → 배포)</li>
+                            <li><strong>작업 스케줄링:</strong> <strong>Spring Scheduler (@Scheduled)</strong> 또는 Quartz로 주기적 크론 작업</li>
+                            <li><strong>자동화 통합:</strong> <strong>Slack Webhook</strong> (장애 알림), <strong>Notion API</strong> (자동 보고서), Gmail 연동</li>
+                            <li><strong>AWS:</strong> EC2, S3, RDS, Lambda</li>
+                            <li><strong>Nginx & SSL:</strong> Reverse Proxy, Certbot으로 HTTPS 적용</li>
+                            <li><strong>모니터링 & 로깅:</strong> Prometheus, Grafana, <strong>ELK Stack (Elasticsearch/Logstash/Kibana)</strong>로 실시간 로그 분석 및 대시보드</li>
+                            <li><strong>캐싱 전략:</strong> <strong>Redis</strong>를 활용한 세션/데이터 캐싱, 성능 최적화</li>
+                            <li><strong>Infrastructure as Code:</strong> <strong>Ansible, Vagrant</strong>로 인프라 자동화, CloudFormation 기반 AWS 리소스 관리</li>
+                            <li><strong>실시간 메시지 큐:</strong> <strong>Kafka</strong> 기초 (메시지 발행/구독 아키텍처, 비동기 처리)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Integration -->
+                    <div class="security-integration">
+                        <div class="security-integration-title">🔐 호주 IT 인프라 과정 직접 통합!</div>
+                        <p><strong>관련 과목:</strong> Linux (SE, Sheila), Cloud & Virtual (Sheila),
+                        Network Project (Philip), ICT50415 Diploma Networking, Server Mgmt (Ara, PD),
+                        Enterprise VoIP (Ashraf), CCNP Routing (KyuRhee), CCNP Switch (Adnan)</p>
+                        <p>호주 IT 과정에서 배운 인프라 개념을 현대적 클라우드 환경에 적용합니다:</p>
+                        <ul style="margin-top: 10px;">
+                            <li>📚 <strong>Linux (SE, Sheila)</strong> → Docker 기반 OS, 컨테이너 내부 운영체제</li>
+                            <li>📚 <strong>Cloud & Virtual (Sheila)</strong> → Kubernetes 오케스트레이션, 가상화</li>
+                            <li>📚 <strong>Server Mgmt</strong> → AWS EC2 인스턴스 관리, 자동 스케일링</li>
+                            <li>📚 <strong>ICT50415 Diploma Networking</strong> → Kubernetes 네트워킹, 서비스 메시 (Istio)</li>
+                            <li>📚 <strong>CCNP Routing/Switch</strong> → 클라우드 네트워크 아키텍처, VPC 설정</li>
+                            <li>📚 <strong>Enterprise VoIP</strong> → 마이크로서비스 아키텍처에서의 통신 패턴</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>핵심:</strong> 호주 과정은 "온프레미스" 인프라였다면,
+                        이제 "클라우드 네이티브" 인프라로 업그레이드합니다. 같은 원리, 다른 도구!</p>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p><strong>1. Docker 컨테이너화:</strong> Spring Boot + Python + React 각각 Dockerfile 작성</p>
+                        <p><strong>2. Kubernetes 배포:</strong> 로컬 K8s (Minikube)에서 Multi-Pod 배포</p>
+                        <p><strong>3. 자동 스케일링:</strong> HPA로 트래픽에 따른 Pod 자동 확장 관찰</p>
+                        <p><strong>4. CI/CD 파이프라인:</strong> GitHub 푸시 → 자동 테스트 → 자동 배포</p>
+                        <p><strong>5. AWS 배포 (선택):</strong> EC2에 애플리케이션 배포, S3에 파일 저장</p>
+                        <p><strong>6. ELK 스택 모니터링:</strong> Elasticsearch에 로그 수집, Kibana 대시보드로 실시간 모니터링</p>
+                        <p><strong>7. Redis 캐싱:</strong> LLM API 응답 캐싱, 세션 관리로 성능 최적화</p>
+                        <p><strong>8. Ansible 자동화:</strong> Ansible Playbook으로 인프라 배포 자동화, 무중단 배포</p>
+                        <p><strong>9. Kafka 기초 (선택):</strong> Kafka 클러스터 구축, 메시지 발행/구독 패턴 실습</p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div style="margin-top: 15px;">
+                        <div class="learning-content-title" style="margin-bottom: 10px;">🎯 핵심 스킬</div>
+                        <div class="skills-grid">
+                            <div class="skill-tag">Docker</div>
+                            <div class="skill-tag">Kubernetes</div>
+                            <div class="skill-tag">CI/CD</div>
+                            <div class="skill-tag">AWS</div>
+                            <div class="skill-tag">자동 스케일링</div>
+                            <div class="skill-tag">ELK Stack</div>
+                            <div class="skill-tag">Redis</div>
+                            <div class="skill-tag">Ansible/IaC</div>
+                            <div class="skill-tag">Kafka</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 10 완료 체크리스트</div>
+                        <p>✓ Dockerfile을 작성하고 이미지를 빌드할 수 있는가?</p>
+                        <p>✓ Kubernetes에 여러 Pod을 배포하고 관리할 수 있는가?</p>
+                        <p>✓ 자동 스케일링을 설정하고 모니터링할 수 있는가?</p>
+                        <p>✓ 호주 인프라 과정의 개념을 클라우드 환경에 적용할 수 있는가?</p>
+                    </div>
+
+                    <!-- Key Insight -->
+                    <div class="key-insight">
+                        <div class="key-insight-title">💡 핵심 인사이트</div>
+                        <p>당신의 Linux, Networking, Server Management 경험은 DevOps의 핵심 기초입니다!
+                        많은 AI 개발자들이 "클라우드는 마법"이라고 생각하는데, 당신은
+                        "온프레미스에서 클라우드로의 자연스러운 진화"를 이해할 수 있습니다.
+                        이것이 신뢰받는 인프라 엔지니어를 만듭니다! 🚀</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 11: Data Engineering -->
+            <div class="phase-container">
+                <div class="phase-header">
+                    <div class="phase-number">Phase 11</div>
+                    <div class="phase-title">Data Engineering: 파이프라인 & 검색엔진</div>
+                    <div class="phase-period">⏱️ 4-5주 | 난이도: 상급</div>
+                </div>
+                <div class="phase-content">
+                    <!-- CS Connection -->
+                    <div class="cs-connection">
+                        <div class="cs-connection-title">🧠 CS 기초와의 연결: 분산 처리와 로그 구조 (Partition & Map-Reduce)</div>
+                        <p><strong>원리:</strong> Kafka는 로그를 Partition으로 나눠 병렬로 처리하고, Spark는 데이터를 나눠서 여러 노드에서 계산합니다.
+                        Elasticsearch는 역색인(Inverted Index)으로 텍스트 검색을 빠르게 합니다. 모두 "나누고, 모으고, 찾는" 자료구조와 분산 처리의 응용입니다.</p>
+                    </div>
+
+                    <!-- Learning Content -->
+                    <div class="learning-content">
+                        <div class="learning-content-title">📖 학습 내용</div>
+                        <ul>
+                            <li><strong>ETL 파이프라인:</strong> 추출 → 변환 → 적재, Pandas로 데이터 정제 후 DB 적재</li>
+                            <li><strong>Kafka 심화:</strong> Topic, Partition, Consumer Group, 메시지 순서와 재처리 전략</li>
+                            <li><strong>Apache Spark:</strong> RDD와 DataFrame 개념, PySpark / Spark SQL로 대량 데이터 집계</li>
+                            <li><strong>Hadoop/HDFS 개념:</strong> 분산 저장과 블록 복제 원리 (실습보다 구조 이해 중심)</li>
+                            <li><strong>Elasticsearch:</strong> 인덱스와 매핑, 한국어 형태소 분석기, Query DSL로 검색 API 구현</li>
+                            <li><strong>ELK 파이프라인:</strong> Logstash 수집 → Elasticsearch 저장 → Kibana 대시보드</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Integration -->
+                    <div class="security-integration">
+                        <div class="security-integration-title">🔐 데이터 파이프라인 보안</div>
+                        <p>수집한 데이터에는 개인정보가 섞이기 쉽습니다. 호주 Cyber Security 과정에서 배운 데이터 보호 개념을 적용합니다:
+                        개인정보 마스킹, 파이프라인 접근 권한 분리(RBAC), 처리 이력의 감사 로그 기록.</p>
+                    </div>
+
+                    <!-- Project -->
+                    <div class="project-box">
+                        <div class="project-box-title">💻 실습 프로젝트</div>
+                        <p><strong>1. 배치 ETL:</strong> 공공 데이터 CSV를 Pandas로 정제 → PostgreSQL 적재</p>
+                        <p><strong>2. 실시간 로그 파이프라인:</strong> AI 챗봇 요청 로그를 Kafka로 발행 → Spark로 사용 패턴 집계</p>
+                        <p><strong>3. 검색 API:</strong> Elasticsearch에 문서를 색인하고, Spring Boot에서 검색 API 제공</p>
+                        <p><strong>4. 운영 대시보드:</strong> Logstash → Elasticsearch → Kibana로 AI 사용량과 에러율 시각화</p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div style="margin-top: 15px;">
+                        <div class="learning-content-title" style="margin-bottom: 10px;">🎯 핵심 스킬</div>
+                        <div class="skills-grid">
+                            <div class="skill-tag">ETL</div>
+                            <div class="skill-tag">Kafka</div>
+                            <div class="skill-tag">Apache Spark</div>
+                            <div class="skill-tag">Elasticsearch</div>
+                            <div class="skill-tag">Logstash/Kibana</div>
+                            <div class="skill-tag">Hadoop 개념</div>
+                        </div>
+                    </div>
+
+                    <!-- Phase Summary -->
+                    <div class="phase-summary">
+                        <div class="phase-summary-title">✅ Phase 11 완료 체크리스트</div>
+                        <p>✓ 데이터를 추출, 정제, 적재하는 ETL 파이프라인을 만들 수 있는가?</p>
+                        <p>✓ Kafka 메시지를 Consumer Group으로 나눠 처리하고 재처리할 수 있는가?</p>
+                        <p>✓ Elasticsearch로 검색 API를 구현할 수 있는가?</p>
+                    </div>
+
+                    <!-- Key Insight -->
+                    <div class="key-insight">
+                        <div class="key-insight-title">💡 핵심 인사이트</div>
+                        <p>AI 서비스의 성능은 모델만으로 결정되지 않습니다. 데이터가 어떻게 모이고, 검색되고, 관찰되는지가 함께 결정합니다.
+                        Phase 11은 RAG 검색 품질과 운영 모니터링을 한 단계 끌어올리는 단계입니다! 🚀</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Summary -->
+            <div class="intro-section" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: #2e7d32; margin-top: 50px;">
+                <h2>🎯 최종: 당신의 Full-Stack AI Engineer 프로필 (Phase 1-11)</h2>
+                <p style="margin-top: 15px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ CS 기초 역량:</strong><br>
+                    메모리 구조 • 자료구조 • 알고리즘 • 운영체제 • 멀티스레딩 • 분산 시스템
+                </p>
+                <p style="margin-top: 10px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ 풀스택 개발 역량:</strong><br>
+                    JavaScript → Java → SQL → Spring Boot → React/TypeScript → Python (FastAPI/Django)
+                </p>
+                <p style="margin-top: 10px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ AI Application 역량:</strong><br>
+                    LLM API (OpenAI/Claude) • RAG (Retrieval-Augmented Generation) • Prompt Engineering • 임베딩 • Vector Database • Function Calling
+                </p>
+                <p style="margin-top: 10px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ 보안 역량 (호주 IT 과정 재활용):</strong><br>
+                    CCNP Security • Prompt Injection 방어 • RBAC • 암호화/해싱 • API 보안 • 감시 로깅
+                </p>
+                <p style="margin-top: 10px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ DevOps & 인프라 역량 (호주 IT 과정 재활용):</strong><br>
+                    Linux • Docker • Kubernetes • AWS (EC2, S3, RDS, Lambda) • CI/CD (GitHub Actions) • 모니터링 (ELK Stack) • 캐싱 (Redis) • 인프라 자동화 (Ansible/IaC) • 메시지 큐 (Kafka)
+                </p>
+                <p style="margin-top: 10px; font-size: 14px; line-height: 1.8;">
+                    <strong>✅ 데이터 엔지니어링 역량:</strong><br>
+                    ETL • Kafka 심화 • Apache Spark • Elasticsearch 검색 • Logstash/Kibana 대시보드 • Hadoop 개념
+                </p>
+                <p style="margin-top: 20px; font-size: 15px; font-weight: 600; color: #2e7d32;">
+                    🔥 최종 프로필: "데이터를 파이프라인으로 다루고, AI를 안전하고 확장 가능하게 운영하는 Full-Stack AI Engineer"
+                </p>
+                <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                    취업 전에도, 취업 후에도 계속 쌓아 갈 수 있는 역량 조합입니다. 💎
+                </p>
+
+            </div>
+
+            <!-- Timeline -->
+            <div class="intro-section" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left-color: #e65100;">
+                <h2>⏱️ 현실적인 전체 타임라인</h2>
+                <p style="margin-top: 15px; font-size: 14px;">
+                    <strong>✅ Phase 1-11 (필수 트랙):</strong><br>
+                    <strong>Phase 1-2:</strong> 7-9주 (JS, Java 기초)<br>
+                    <strong>Phase 3-4:</strong> 8-10주 (SQL, Spring Boot)<br>
+                    <strong>Phase 5-6:</strong> 8-10주 (React, Python)<br>
+                    <strong>Phase 7-8:</strong> 6-8주 (LLM, RAG)<br>
+                    <strong>Phase 9-10:</strong> 7-9주 (AI Security, DevOps + Redis/ELK/Kafka/Ansible)<br>
+                    <strong>Phase 11:</strong> 4-5주 (ETL, Kafka 심화, Spark, Elasticsearch)<br>
+                    <strong style="color: #d32f2f;">→ Phase 1-11 총 소요 기간: 약 10-13개월 (주 15-20시간 투자 기준)</strong>
+                </p>
+
+                <p style="margin-top: 25px; font-weight: 600; font-size: 14px; background: #fff9c4; padding: 15px; border-radius: 6px;">
+                    <strong>📊 타임라인 요약:</strong><br>
+                    • Phase 1-11: 약 10-13개월 → Full-Stack AI Engineer (데이터 엔지니어링 포함)<br>
+                    • 각 Phase마다 1-2주 복습/정리 기간 포함<br>
+                    • 포트폴리오 프로젝트는 Phase 5-10에서 진행<br>
+                    • 이 로드맵은 취업용이 아니라 평생 이어 가는 개인 역량 투자 (몸값 올리기 목적)
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>🚀 이 로드맵의 핵심 철학</strong></p>
+            <p>"당신의 호주 IT 보안 배경은 낭비될 가치가 없습니다. 그것을 AI 시대의 가장 강력한 무기로!"</p>
+            <p style="margin-top: 20px; font-size: 13px;">
+                <strong>📚 로드맵 구성:</strong><br>
+                ✅ Phase 1-11: Full-Stack AI Engineer (필수 트랙)<br>
+            </p>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">
+                2026년 10월 제작 | Full-Stack AI Engineer 커리어 로드맵<br>
+                호주 IT Network Security 과정 + K-디지털 과정 기술 스택 통합<br>
+                Phase 1-11 (필수 트랙)<br>
+                데미스 하사비스(Google DeepMind), 젠슨 황(NVIDIA), 한국은행 분석 기반
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+</body></html>

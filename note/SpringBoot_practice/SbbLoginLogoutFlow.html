@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark" style="color-scheme: dark;"><head><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"v":1,"cred":"cookie","capabilities":{"artifact":"artifact.C83eZcTi.js","assets":"assets.DOAjpBS9.js","comments":"comments.CFMy0ayq.js","db":"db.zFlAA4qL.js","dictation":"dictation.f3j7VXQ8.js","downloads":"downloads.axDW2QAi.js","embed":"embed.SWCZLzn6.js","endpoints":"endpoints.BPfoKaE1.js","files":"files.IkpCjcgM.js","mcp":"mcp.kl0G36TA.js","network":"network.B5UA9Su4.js","paste":"paste.DeKNLIxx.js","permissions":"permissions.6yWoDecA.js","reads":"reads.Bgov9hIw.js","room":"room.CBw289Md.js","sample":"sample.D5wHJkl_.js","self":"artifact.C83eZcTi.js","tts":"tts.iS74i_mi.js","user":"user.uKicftX-.js"},"transforms":"_transforms.BC793lKi.js","comments":"_comments.D8v6wTdi.js","translate":"_translate.DqxC5ek1.js","ldx":"_ldx.B4FSryPi.js"}                                                                                                                                                                                                                                                                                                                                                                 </script><script>(function(){"use strict";function dr(t){return t==="cookie"||t==="query"?t:void 0}function hr(t){return typeof t=="number"&&Number.isSafeInteger(t)&&t>0?t:void 0}var to=3e5;function pr(t,e){try{const r=t("navigation")[0],n=[r.responseStart,r.redirectEnd-r.redirectStart,r.domContentLoadedEventStart,e(),r.connectEnd-r.domainLookupStart,r.responseStart-r.requestStart];r.requestStart>0||(n.length=4);for(let a=0;a<n.length;a++)if(n[a]>=0&&n[a]<=3e5)n[a]=n[a]|0;else{if(a<4)return;n.length=4}return n}catch{return}}var mr=["light","dark","system"],vr=/^[A-Za-z0-9_-]{1,64}$/,Mt=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,_r=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function yr(t){const e=t.toLowerCase();return e.startsWith("data-")||e.startsWith("aria-")||_r.has(e)}var Pt="data-ldx-props";function gr(t,e){if(e.toLowerCase()===Pt)return!0;const r=t.getAttribute(Pt);if(r===null)return!1;try{const n=JSON.parse(r);if(n===null||typeof n!="object"||Array.isArray(n))return!0;const a=e.toLowerCase();return Object.keys(n).some(s=>s.toLowerCase()===a)}catch{return!0}}var ro="http://www.w3.org/1999/xhtml",wr="http://www.w3.org/2000/svg",br=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),Er=new Set(["script","style"]);function Sr(t){const e=t.localName.toLowerCase();return t.namespaceURI==="http://www.w3.org/1999/xhtml"?!br.has(e):t.namespaceURI===wr?!Er.has(e):!1}function ot(t,e){return t===e||(t===160||t===32)&&(e===160||e===32)}function kr(t,e){const r=t.length,n=e.length;let a=0;for(;a<r&&a<n&&ot(t.charCodeAt(a),e.charCodeAt(a));)a++;let s=0;for(;s<r-a&&s<n-a&&ot(t.charCodeAt(r-1-s),e.charCodeAt(n-1-s));)s++;return{p:a,s}}function Ar(t,e){const r=t.firstChild;if(t.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){t.textContent=e;return}const n=r.data,a=n.length,s=e.length,{p:l,s:u}=kr(n,e);l===a&&u===0&&a===s||r.replaceData(l,a-l-u,e.slice(l,s-u));const R=r.data,b=t.ownerDocument.getSelection?.()??null,y=b!==null&&b.rangeCount>0&&(b.anchorNode===r||b.focusNode===r)?{anchor:b.anchorNode,anchorOffset:b.anchorOffset,focus:b.focusNode,focusOffset:b.focusOffset}:null;let p=-1,k=-1;for(let m=0;m<R.length&&m<e.length;m++){const j=R.charCodeAt(m),A=e.charCodeAt(m);j!==A&&ot(j,A)&&(p<0&&(p=m),k=m)}const L=p>=0;if(L&&r.replaceData(p,k-p+1,e.slice(p,k+1)),L&&y!==null&&y.anchor!==null&&y.focus!==null)try{b.setBaseAndExtent(y.anchor,y.anchorOffset,y.focus,y.focusOffset)}catch{}}var Rr=new Set(["html","head","body","frameset"]);function Tr(t){return t.namespaceURI==="http://www.w3.org/1999/xhtml"&&Rr.has(t.localName)}function Lr(t){if(t===null||typeof t!="object")return!1;const e=t;if(typeof e.target!="string"||!vr.test(e.target)||e.text!==void 0&&typeof e.text!="string")return!1;if(e.attrsSet!==void 0){if(e.attrsSet===null||typeof e.attrsSet!="object")return!1;for(const[r,n]of Object.entries(e.attrsSet))if(!Mt.test(r)||typeof n!="string")return!1}if(e.attrsRemoved!==void 0){if(!Array.isArray(e.attrsRemoved))return!1;for(const r of e.attrsRemoved)if(typeof r!="string"||!Mt.test(r))return!1}return!0}function Or(t,e){if(t===null||typeof t!="object")return!1;const{seq:r,elements:n}=t;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let a=0;a<n.length;a++)if(!e(n[a]))return!1;return!0}function Mr(t){return t===null||typeof t!="object"?!1:Or(t.__frame_patch,Lr)}function Pr(t){if(t===null||typeof t!="object")return!1;const e=t.__frame_init;return e!==null&&typeof e=="object"}function Nr(t){return t!==null&&typeof t=="object"&&t.__frame_size_poke===!0}function Cr(t){if(t===null||typeof t!="object")return!1;const e=t.__frame_host_visible;return e!==null&&typeof e=="object"&&typeof e.visible=="boolean"}function Fr(t){if(t===null||typeof t!="object")return!1;const e=t.__frame_theme;if(e===null||typeof e!="object")return!1;const r=e.theme;return typeof r=="string"&&mr.includes(r)}var xr=["ok","empty","snapshot_error","snapshot_timeout","unclonable","oversize","unavailable","restore_error","withheld"],jr=["TypeError","RangeError","ReferenceError","SyntaxError","DataCloneError","QuotaExceededError","AbortError","TimeoutError","SecurityError","Error","other"];function Ir(t){return typeof t=="string"&&jr.includes(t)?t:"other"}var Dr=Object.freeze({until:null,now:!1}),Hr="__claude_hot",Br="__claude_hot_in",qr=/^__claude_hot(?:_in)?(?::|$)/,Nt=/^[0-9a-z]{1,32}$/,at=t=>t===void 0?Hr:"__claude_hot:"+t,Oe=t=>t===void 0?Br:"__claude_hot_in:"+t;function Ur(t,e){const r=[];for(let n=0;n<t.length;n++){const a=t.key(n);a!==null&&a!==e&&qr.test(a)&&r.push(a)}for(const n of r)t.removeItem(n)}function Kr(t){let e=null;try{e=U(JSON.parse(t)?.hot)}catch{return null}return e===null||typeof e.k!="string"||!Nt.test(e.k)?null:he(e.g)?{k:e.k,g:e.g}:{k:e.k}}var no=262144,Gr=3e3,$r=5e3,Ct=/^[a-z0-9._:-]{1,64}$/,zr=["none","hot-restart","hard-reload"],Wr=["asset","doc","added","removed"],Vr=1500,Xr=/^[0-9a-f]{64}$/;function U(t){return t!==null&&typeof t=="object"?t:null}function he(t){return typeof t=="number"&&Number.isInteger(t)&&t>=0&&t<2**31}function Ft(t){return t===void 0||typeof t=="number"&&Number.isFinite(t)}function Yr(t){return t===void 0||typeof t=="string"&&Ct.test(t)}function xt(t){const e=U(t);return e!==null&&(e.until===null||typeof e.until=="number"&&Number.isFinite(e.until))&&typeof e.now=="boolean"}function st(t){const e=U(t);return e!==null&&typeof e.ver=="string"&&e.ver.length<=128&&Ft(e.seq)&&typeof e.handoff=="string"&&xr.includes(e.handoff)&&Yr(e.note)}function jt(t){const e=U(t);return e!==null&&he(e.gen)&&(e.phase==="final"||e.phase==="pending")&&(e.from===null||st(e.from))}function Jr(t){const e=U(t);return e!==null&&e.kv===1&&he(e.gen)&&st(e.from)&&Object.hasOwn(e,"data")}function Zr(t){const e=U(t);return e!==null&&e.__frame_hot_snapshot===!0&&he(e.gen)&&typeof e.timeoutMs=="number"&&e.timeoutMs>=0&&e.timeoutMs<=6e4&&(e.handoff===void 0||typeof e.handoff=="boolean")&&(e.deadline===void 0||xt(e.deadline))&&Ft(e.seq)&&(e.note===void 0||typeof e.note=="string")&&(e.key===void 0||typeof e.key=="string")}function Qr(t){const e=U(t);return e!==null&&e.__frame_hot_start===!0&&he(e.gen)&&st(e.from)}function en(t){return typeof t=="string"&&t.length>=1&&t.length<=128}function It(t){return U(t)!==null&&!Array.isArray(t)}function tn(t){const e=U(t);return e!==null&&e.__frame_cap_grant===!0&&typeof e.cap=="string"&&en(e.ver)&&(e.grant===void 0||It(e.grant))&&(e.budgets===void 0||It(e.budgets)&&Object.values(e.budgets).every(Number.isFinite))&&(e.brokerGen===void 0||he(e.brokerGen))}function rn(t){const e=U(t);return e!==null&&e.__frame_cap_rewired===!0&&(e.caps===void 0||Array.isArray(e.caps)&&e.caps.every(r=>typeof r=="string"))&&(e.brokerGen===void 0||he(e.brokerGen))}function Ge(t){const e=U(t);return e!==null&&typeof e.ver=="string"&&e.ver.length<=128&&Number.isFinite(e.seq)}function Dt(t){if(t==null||typeof t=="string")return!0;const e=U(t);return e!==null&&typeof e.doc=="string"&&typeof e.profile=="string"}function nn(t){const e=U(t);return e!==null&&typeof e.path=="string"&&Wr.includes(e.kind)&&Dt(e.from)&&Dt(e.to)}function on(t){return t===null?null:Object.freeze(t.filter(nn))}function an(t){const e=U(t);return e!==null&&e.__frame_hot_update===!0&&Number.isFinite(e.id)&&Ge(e.from)&&Ge(e.to)&&(e.changed===null||Array.isArray(e.changed))&&zr.includes(e.required)&&xt(e.deadline)&&typeof e.verdictTimeoutMs=="number"&&e.verdictTimeoutMs>=0&&e.verdictTimeoutMs<=6e4&&(e.preflight===void 0||typeof e.preflight=="string"&&Xr.test(e.preflight))}function sn(t){const e=U(t);return e!==null&&e.__frame_hot_readdress===!0&&Ge(e.from)&&Ge(e.to)}var pe=/^[\w.-]+\.js$/;function ln(t,e,r){return r?"inert":typeof e=="string"&&pe.test(e)?t?[e]:"inert":t?"inert":"framed"}var Ht=Object.freeze({[Symbol("claude.hot.restart")]:!0});function Bt(t,e){let r;try{r=t??sessionStorage}catch{return null}const n=at(e?.k),a=Oe(e?.k);let s=null;try{s=r.getItem(n)}catch{}try{r.removeItem(n)}catch{}try{Ur(r,a)}catch{}let l=null;if(s!==null&&!(e!==null&&e.g===void 0))try{const u=JSON.parse(s);Jr(u)&&(e===null||u.gen===e.g)&&(l=u)}catch{}if(l===null)try{r.removeItem(a)}catch{}return l}function qt(){const t=/^\/_f\/([^/]{1,128})\//.exec(location.pathname);return t?t[1]:""}var cn=/^[^/\\?#]{1,128}$/,it=t=>cn.test(t)&&t!=="."&&t!=="..";function Ut(t,e,r){const n=new URL(t),a="/_f/"+e+"/";if(!e||!n.pathname.startsWith(a)||!it(r))return null;const s=n.search.slice(1).split("&").filter(l=>!/^__frame_t(?:=|$)/.test(l)).join("&");return n.origin+"/_f/"+r+"/"+n.pathname.slice(a.length)+(s?"?"+s:"")+n.hash}var $e="{}";function Me(t){if(!t)return null;const e={ver:t.ver,handoff:t.handoff};return t.seq!==void 0&&(e.seq=t.seq),t.note!==void 0&&(e.note=t.note),e}function Kt(t,e){return t!==null&&t.note===void 0&&e?.note!==void 0?{...t,note:e.note}:t}function Gt(t){const e=t?.k;return e!==null&&typeof e=="object"?e:void 0}function un(t,e,r,n=null){const a=setTimeout,s=clearTimeout,l=queueMicrotask,u=performance.now.bind(performance),R=new TextEncoder;let b=null,y=null;try{b=history,y=b.replaceState.bind(b)}catch{}const p=(...o)=>{try{console.warn(...o)}catch{}};let k=qt(),L=null;try{L=sessionStorage}catch{}const m={storage:L,fetch:typeof fetch=="function"?fetch.bind(globalThis):null,entry:location.origin+location.pathname+location.search,ver:k,priors:[],key:n?.k};let j=n?.k;const A=typeof requestAnimationFrame=="function"?requestAnimationFrame:o=>a(()=>o(u()),16);let _=e?.data??{},E=Me(e?.from),I=e?.gen??0,D=e!==null,q=!1,$=!1,H=null,xe=!1;const be=new AbortController;let je=null,K=null,Ee=null,Ie=!1,le=()=>{};const te=new Promise(o=>{le=o});let ve=!1,Je=!1,Se=!1,c,h=null,g=!1,C=!1,O=!1,z=!1,B=!1,J=!1;const ce=o=>{for(const f of[at(o),Oe(o)])try{L?.removeItem(f)}catch{}},G=(o,f)=>{try{f!==null&&r.post(o,f)}catch{}},_e=()=>B||=O&&(K===null||z),Q=()=>{const o={__frame_hot:!0,ready:K!==null,accept:Ee!==null,demand:!0};J=!B,J&&(o.booting=!0),ve&&(o.readData=!0),Se&&(o.threw=!0),h?.assess&&(o.preflight=!0),G(o,H)};let De=!1,He=!1,ue=!1,re=!1;const Be=()=>{De||!xe||ue||(De=!0,G({__frame_reveal_hold:!0},"*"))},ke=()=>new Promise(o=>{let f,d=0;const v=P=>{if(f===void 0)f=P;else if(P!==f||++d>=8){o();return}try{A(v)}catch{o()}};try{A(v)}catch{o()}}),Ze=()=>{ue=!0,G({__frame_reveal_ready:!0},"*")},ye=o=>{He||(He=!0,o.then(f=>{if(f===!1)return;let d=null;try{d=h?.settle?.()??null}catch{}return(d===null?ke():new Promise(v=>{a(v,50),Promise.resolve(d).then(v,v)}).then(ke)).then(Ze)}))},Qe=()=>{if(re||!ue)return;re=!0;const o=()=>{try{h?.afterReveal?.()}catch{}};o(),ke().then(()=>{o(),Ze()})},ge=(o=!1)=>{if(Ie||K===null||!D||!$)return;Ie=!0;const f=K,d=_;l(()=>{let v;try{v=f(d)}catch(N){throw le(!1),N}let P=!1;try{P=typeof v?.then=="function"}catch{}if(!P){le(!0);return}Promise.resolve(v).then(()=>le(!0),N=>{le(!1),l(()=>{throw N})})}),ye(o?te:r.dcl.then(()=>te))},Ae=o=>typeof o=="string"&&Ct.test(o)?o:void 0,qe=o=>{const f={__frame_hot_restart:!0},d=Ae(o?.note);d!==void 0&&(f.note=d),o?.required==="hard-reload"&&(f.required="hard-reload"),G(f,H)},fe=Object.freeze({get data(){return $||(Je=!0),!D&&!ve&&(ve=!0,$&&Q()),_},get from(){return E},get gen(){return I},signal:be.signal,snapshot(o){typeof o=="function"&&(je=o)},ready(o){typeof o!="function"||K!==null||(K=o,Be(),Q(),q&&G({__frame_hot_ready:!0,gen:I},H),ge())},accept(o){typeof o=="function"&&(Ee=o,Q())},restart(o){const f={note:o?.note,required:o?.required};if($){qe(f);return}const d=c;c={note:Ae(d?.note)??f.note,required:d?.required==="hard-reload"||f.required==="hard-reload"?"hard-reload":void 0}}});let de=null,Ue=()=>{};const et=new Promise(o=>{Ue=o});let i=null;const S=()=>i??=r.dcl.then(()=>{let o=!1;try{o=de!==null&&de.expect()}catch{}if(!o)return;const f=de.maxMs;return new Promise(d=>{et.then(d),a(d,f)})}),w=()=>{if(!g||C||h===null)return;C=!0;const o=h;S().then(()=>{try{ue||o.afterStart(Gt(e),!1)}catch{}})},M=o=>{e!==null&&Je&&(ve=!0),_={},E=null,I=0;try{L?.removeItem(Oe(n?.k))}catch{}e!==null&&!o&&ye(r.dcl.then(()=>K!==null?te:void 0))},ee=()=>{g=!0,ye(S().then(()=>K!==null?te:void 0)),w()};try{addEventListener("error",()=>{Se||K!==null||(Se=!0,Q())})}catch{}const Z=()=>{a(()=>{!B&&_e()&&J&&Q()},0)};try{O=document.readyState==="complete",O||addEventListener("load",()=>{O=!0,Z()},{once:!0})}catch{O=!0}_e(),te.then(()=>{z=!0,Z()});let W=-1,Et,St,Ke=!0,kt=!1,At,tt=null;const Rt=o=>{const f=tt===null;tt=Ke&&o[0]!=="withheld"?o:["withheld",o[1],$e];let d=o[0];if(Ke&&d!=="withheld"){const P={ver:k,handoff:d};Et!==void 0&&(P.seq=Et),St!==void 0&&(P.note=St);try{if(L===null)throw new Error("no storage");L.setItem(at(j),'{"kv":1,"gen":'+W+',"from":'+JSON.stringify(P)+(At!==void 0?',"k":'+JSON.stringify(At):"")+',"data":'+(d==="ok"?o[2]:$e)+"}")}catch{d="unavailable"}}else{d="withheld",ce(j);try{h?.release?.()}catch{}}const v={__frame_hot_snapshotted:!0,gen:W,handoff:d,bytes:o[1]};o[3]!==void 0&&(v.errName=o[3]),G(v,H),f&&(d==="snapshot_error"||d==="unclonable"||d==="oversize")&&p("claude.hot: snapshot",d,o[3])},Re=o=>{try{return Ir(o?.name)}catch{return"other"}},Te=(o,f,d=0)=>Rt(f===void 0?[o,d,$e]:[o,d,$e,Re(f)]),zn=o=>{if(o.gen<=W)return;const f=W>=0;if(W=o.gen,Et=o.seq,St=Ae(o.note),typeof o.key=="string"&&Nt.test(o.key)&&o.key!==j&&(ce(j),j=o.key),Ke&&=o.handoff!==!1,f){tt!==null?Rt(tt):kt&&G({__frame_hot_held:!0,gen:W},H);return}be.abort();const d=Object.freeze({handoff:Ke,timeoutMs:o.timeoutMs,deadline:o.deadline??Dr}),v=je,P=()=>{if(Ke)try{At=h?.capture()}catch{}if(v===null){Te("empty");return}let T=!1;const V=a(()=>{T||(T=!0,Te("snapshot_timeout"))},Math.max(0,d.timeoutMs));Promise.resolve().then(()=>v(d)).then(Le=>{if(T)return;T=!0,s(V);let ne;try{ne=JSON.stringify(Le)}catch(Tt){Te("unclonable",Tt);return}if(typeof ne!="string"){Te("unclonable");return}let oe=ne.length;try{oe=R.encode(ne).length}catch{}if(oe>262144){Te("oversize",void 0,oe);return}Rt(["ok",oe,ne])},Le=>{T||(T=!0,s(V),Te("snapshot_error",Le))})};let N=null;try{N=h?.holdForIme()??null}catch{}if(N===null)P();else{kt=!0,G({__frame_hot_held:!0,gen:W},H);const T=()=>{kt=!1,P()};N.then(T,T)}},Wn=o=>{if(!q||D||K===null||o.gen!==I)return;let f=null;try{f=Bt(L,n&&{k:n.k,g:o.gen})}catch{}if(f!==null&&f.gen!==o.gen){f=null;try{L?.removeItem(Oe(n?.k))}catch{}}_=f?.data??{},E=Kt(Me(f?.from??o.from),Me(o.from)),f!==null&&(I=f.gen),D=!0,q=!1;const d=Gt(f);te.then(v=>{try{v&&h?.afterStart(d,!0)}catch{}}),ge(!0)},lr=o=>{const f=k,d=m.entry;let v="",P,N=null;try{if(v=location.href,P=b.state,N=Ut(v,f,o),N!==null)if(y(P,"",N),location.pathname.startsWith("/_f/"+o+"/"))N=location.href;else return{failed:"navigate event canceled"}}catch(T){return{failed:Re(T)}}k=m.ver=o,m.priors.push(f)>8&&m.priors.splice(1,1);try{m.entry=Ut(d,f,o)??d}catch{}return[N,f,d,v,P]},Vn=({from:o,to:f})=>{let d,v;if(!it(f.ver))d="adopt_failed",v="not a version path segment";else if(f.ver===k)d="adopted";else if(!k||o.ver!==k)d="stale";else{const N=lr(f.ver);"failed"in N?(d="adopt_failed",v=N.failed):d=N[0]===null?"adopt_skipped":"adopted"}v!==void 0&&p(`claude.hot: could not move this page's URL to its new version folder /_f/${f.ver}/ (${v})`);const P={__frame_hot_readdressed:!0,to:f.ver,at:k,outcome:d};G(P,H)};let rt=0;const Xn=o=>{const f=Ee;if(f===null||o.id<=rt)return;rt=o.id;const d=h?.assess;if(o.preflight===void 0||d===void 0){cr(o,f);return}let v=!1;const P=V=>{v||(v=!0,s(T),o.id===rt&&cr(o,f,V))},N=()=>P(d.timeout(o)),T=a(N,Vr+100);d.run(o,window).then(P,N)},cr=(o,f,d)=>{let v,P=!1,N=!1,T,V,Le=null;const ne=F=>{if(N)return!1;if(T!==void 0&&T!==F)return p(`claude.hot: u.${F}() ignored - u.${T}() was called first`),!1;const ae=T===void 0;return T=F,ae},oe=F=>{T="restart",p(`claude.hot: ${F} - restarting`)},Tt=()=>{if(!ne("adopt")||o.id!==rt)return;const F=o.to.ver;if(nt.required!=="none"){oe(`u.adopt() needs required 'none', it is '${nt.required}'`);return}if(!it(F)){oe("u.adopt() cannot address this version");return}if(!k||F===k)return;const ae=lr(F);if("failed"in ae){V="adopt_failed",oe(`adopt_failed ${ae.failed}; URL not changed`);return}const[Y,Ot,Zn,fr,Qn]=ae;Y===null?(V="adopt_skipped",p(`claude.hot: adopt_skipped - page already left /_f/${Ot}/; URL not changed, update still applied`)):V="adopted",Le=()=>{if(k===F){if(Y!==null)try{if(location.href!==Y)p("claude.hot: adopt_revert_skipped - update not applied; URL left where the page navigated");else{if(y(Qn,"",fr),location.href!==fr){p("claude.hot: adopt_revert_failed navigate event canceled - URL still at the new version");return}V="adopt_reverted",p("claude.hot: adopt_reverted - adopt() was called but the handler threw; URL restored")}}catch(eo){p(`claude.hot: adopt_revert_failed ${Re(eo)} - URL still at the new version`);return}k=m.ver=Ot,m.entry=Zn,m.priors[m.priors.length-1]===Ot&&m.priors.pop(),Y===null&&(V=void 0)}}},nt=Object.freeze({from:{ver:o.from.ver,seq:o.from.seq},to:{ver:o.to.ver,seq:o.to.seq},changed:on(o.changed),required:o.required,deadline:o.deadline,adopt:Tt,defer(){return ne("defer")&&nt.deadline.now&&oe("u.defer() past the deadline"),Ht},restart(F){return ne("restart"),T==="restart"&&!N&&(v??=Ae(F?.note),P||=F?.required==="hard-reload"),Ht},...d?.update}),Yn=(F,ae)=>{N=!0,F==="threw"?(Le?.(),v??=Re(ae).toLowerCase()):T===void 0&&p(F==="timeout"?"claude.hot: accept handler did not answer in time - restarting":"claude.hot: accept handler settled without defer/restart/adopt - restarting");const Y={__frame_hot_verdict:!0,id:o.id};Y.verdict=F==="threw"||T===void 0||T==="restart"?"restart":T==="adopt"?"applied":"deferred",Y.verdict==="restart"&&(P&&(Y.required="hard-reload"),v!==void 0&&(Y.note=v)),V!==void 0&&(Y.verdict==="applied"||V!=="adopted")&&(Y.adopt=V),G(Object.assign(Y,d?.verdict),H)};let ur=!1;const Lt=(F,ae)=>ur?!1:(ur=!0,s(Jn),Yn(F,ae),!0),Jn=a(()=>Lt("timeout"),o.verdictTimeoutMs);Promise.resolve().then(()=>f(nt)).then(()=>Lt("settled"),F=>{!Lt("threw",F)&&T==="adopt"&&qe({note:Re(F).toLowerCase()}),p("claude.hot: accept",Re(F))})};try{t.hot===void 0&&Object.defineProperty(t,"hot",{value:fe,writable:!1,configurable:!1,enumerable:!1})}catch{}return{hot:fe,boot:m,afterConnect(){xe=!0,(e!==null||K!==null)&&Be()},onInit(o,f){H=f,$=!0;const d=jt(o)?o:null;d?.phase==="final"&&e!==null&&e.gen===d.gen?(D=!0,E=Kt(E,Me(d.from)),ee()):(q=d?.phase==="pending",M(q),D=!q,I=d?.gen??0,E=Me(d?.from)),Q(),J&&a(()=>{B||(B=!0,Q())},$r),q&&K!==null&&G({__frame_hot_ready:!0,gen:I},f),c!==void 0&&(qe(c),c=void 0),ge()},onNoInit(){$=!0,M(!1),D=!0,ge()},onShell(o){return o?.__frame_revealed===!0?(Qe(),!1):Zr(o)?(zn(o),!0):Qr(o)?(Wn(o),!0):an(o)?(Xn(o),!0):sn(o)?(Vn(o),!0):!1},attachExtras(o){h=o,w(),o.assess&&Q()},inSlot:()=>Oe(j),hydration(o,f){de??={expect:o,maxMs:f}},hydrated(){Ue()},carried(){return D?_:{}},presented:()=>ue}}var oo="frame_ldx_runtime",fn="frame_ldx_build",ao="script#an-form",dn=256;function lt(t,e,r){for(const n of t)r(n)&&t.delete(n);t.size>=dn&&!t.has(e)&&t.delete(t.values().next().value),t.add(e)}function Pe(t,e,r,n){try{const a=t[e];if(typeof a!="function")return;t[e]=function(...s){if(n){let u;try{u=n(this)}catch{}if(u!==void 0)return u}const l=a.apply(this,s);try{r?.(this)}catch{}return l}}catch{}}var hn=()=>{},ct;function pn(){if(ct)return ct;const t={media:new Set,contexts:new Set,wakeLocks:new Set,gate:null,refuse:null,onStart:null,onStop:null};ct=t;const e=l=>t.gate?.(l),r=l=>{t.onStop?.(l)},n=window.HTMLMediaElement?.prototype;n&&(Pe(n,"play",l=>{lt(t.media,l,u=>u.paused),t.onStart?.(l)},e),Pe(n,"pause",r));const a=window.AudioContext,s=window.AudioNode?.prototype;a&&s&&(Pe(s,"connect",l=>{const u=l.context;u instanceof a&&(lt(t.contexts,u,R=>R.state==="closed"),t.onStart?.(u))}),Pe(a.prototype,"resume",void 0,e),Pe(a.prototype,"suspend",r));try{const l=window.WakeLock?.prototype,u=l?.request;l&&typeof u=="function"&&(l.request=function(...R){if(t.refuse)return t.refuse();const b=u.apply(this,R);return Promise.resolve(b).then(y=>{lt(t.wakeLocks,y,p=>p.released),t.onStart?.(y)},hn),b})}catch{}return t}function mn(t){let e=window;for(let r=0;e.parent&&e.parent!==e&&r<8;r++)if(e=e.parent,t(e))return!0;return!1}function vn(){let t=null;const e=()=>t??parent,r=n=>t?n===t:mn(a=>a===n);return{post(n,a){if(t){e().postMessage(n,a);return}let s=parent;for(let l=0;l<8&&(s.postMessage(n,a),!(!s.parent||s.parent===s));l++)s=s.parent},on(n){const a=s=>{const l=s.source;r(l)&&n(s.data,s.origin,s.isTrusted,()=>{t??=l})};return addEventListener("message",a),()=>removeEventListener("message",a)},port:n=>({post(a,s){if(s?.activation){e().postMessage(a,{targetOrigin:n,includeUserActivation:!0});return}if(s?.transfer){e().postMessage(a,n,s.transfer);return}e().postMessage(a,n)},on(a,s){const l=u=>{r(u.source)&&u.origin===n&&a(u.data,u)};return addEventListener("message",l,s),()=>removeEventListener("message",l,s)}})}}function _n(){const t={post:()=>{},on:()=>()=>{}};return{...t,port:()=>t}}var yn=500,gn=2e4,wn="data-token-reads",bn="data-frame-refused-watch",En="data-frame-unsupported",Sn=/(?:^|\s)stylesheet(?:\s|$)/i;function kn(t,e){let r="";if(t instanceof HTMLScriptElement?r=t.src:t instanceof HTMLLinkElement&&Sn.test(t.rel)&&(r=t.href),!r)return null;try{const n=new URL(r);return n.origin===location.origin&&n.pathname.startsWith(e)?n.origin+n.pathname:null}catch{return null}}function An(t,e,r){if(!t||e!=="query")return;const n="/_f/"+t+"/";document.documentElement.setAttribute(bn,"");const a=location.href,s=fetch,l=setTimeout,u={method:"HEAD",cache:"no-store",credentials:"same-origin"},R=m=>m.ok||m.status===304;let b=!1,y=!1;const p=()=>removeEventListener("error",L,!0),k=async m=>{const j=await s(m,u);if(R(j))y=!0;else if(j.status===403){const A=await s(a,u);if(R(A)){const _=(await s(m,u)).status;_===403?(y=!0,document.documentElement.setAttribute(En,""),r()):_<500&&(y=!0)}else A.status>=400&&A.status<500&&(y=!0)}},L=m=>{if(y||b)return;if(document.documentElement.hasAttribute(wn)){y=!0,p();return}const j=kn(m.target,n);j&&(b=!0,l(()=>{k(j).catch(()=>{}).finally(()=>{b=!1,y&&p()})},yn))};addEventListener("error",L,!0),addEventListener("load",p,{once:!0}),l(p,gn)}var ut="__frame_scroll",Rn=150,Tn=310,Ln=160,On=3e4,$t="p,h1,h2,h3,h4,h5,h6,li,pre,blockquote,tr,dt,dd,figcaption,summary",zt=()=>innerWidth<=Tn&&innerHeight<=Ln,Wt=t=>{const e=document.createTreeWalker(t,NodeFilter.SHOW_TEXT);let r="";for(;r.length<600&&e.nextNode();)r+=e.currentNode.nodeValue.slice(0,600-r.length);const n=r.replace(/\s+/g," ").trim().slice(0,120);let a=2166136261;for(let s=0;s<n.length;s++)a=Math.imul(a^n.charCodeAt(s),16777619);return n.length>11?a>>>0||1:0},Vt=t=>{for(let e=t;e&&e!==document.scrollingElement;e=e.parentElement){const r=getComputedStyle(e).position;if(r==="fixed"||r==="sticky"||e!==t&&e.scrollTop)return!1}return!0},Mn=()=>{const t=[],e=[];try{for(let r=0;r<16;r++){const n=document.elementFromPoint(innerWidth/(r%2?4:2),innerHeight*(r>>1)/8+1);let a=n?.closest($t)??n;for(;a&&!a.matches($t)&&![...a.childNodes].some(l=>l.nodeType===3&&l.nodeValue?.trim());)a=a.parentElement;const s=a&&!e.includes(a)?Wt(a):0;s&&!t.some(l=>l[0]===s&&l[2]===a.tagName)&&Vt(a)&&(e.push(a),t.push([s,Math.round(a.getBoundingClientRect().top),a.tagName]))}}catch{}return t.sort((r,n)=>+(r[1]<0)-+(n[1]<0)),t.length?t.slice(0,3):void 0},Pn=t=>{try{for(const[e,r,n]of t.a??[]){const a=document.getElementsByTagName(n);let s;for(let u=0;u<a.length&&a.length<5e3;u++)Wt(a[u])===e&&(s=s===void 0||s?.contains(a[u])?a[u]:null);const l=s?.getBoundingClientRect();if(l?.height&&s.checkVisibility?.()!==!1&&Vt(s)&&isFinite(r))return Math.max(0,Math.round(scrollY+l.top-r))}}catch{}return t.y};function Nn(){let t=0,e=!1,r=!1,n=!1,a={y:0},s=null;const l=E=>{try{sessionStorage.setItem(ut,JSON.stringify(E))}catch{}},u=E=>{if(clearTimeout(t),s===null)return;const I=s;s=null,l({y:I,a:E&&I>0?Mn():void 0})},R=()=>{if(e){e=!1;return}r=!0,s=scrollY,clearTimeout(t),t=setTimeout(u,Rn,!0)};try{addEventListener("scroll",R,{passive:!0}),addEventListener("pagehide",()=>u())}catch{}const b=()=>{let E;try{E=sessionStorage.getItem(ut)}catch{return null}if(E===null)return null;let I;try{I=JSON.parse(E)}catch{I=null}const{y:D,a:q}=I??{};if(!(typeof D=="number"&&Number.isFinite(D)&&D>=0)){try{sessionStorage.removeItem(ut)}catch{}return null}const $=H=>Array.isArray(H)&&typeof H[0]=="number"&&Number.isFinite(H[1])&&typeof H[2]=="string";return{y:D,a:Array.isArray(q)&&q.length<4&&q.every($)?q:void 0}};let y=!1,p=-1;const k=E=>{try{const I=scrollY,D=Pn(E);scrollTo({top:D,left:0,behavior:"instant"}),a=zt()?E:{y:D,a:E.a},n=!0,clearTimeout(t),s=null,l(a),p=scrollY,p!==I&&(e=!0);const q=D!==E.y&&document.readyState!=="complete";(p!==D||q)&&!y&&(y=!0,addEventListener("load",()=>{try{scrollY===p&&k(b()??a)}catch{}},{once:!0}))}catch{}},L=()=>{try{return!!location.hash}catch{return!0}};let m=!1;const j=()=>{try{if(m||!zt())return;m=!0;const E=Date.now(),I=()=>{try{removeEventListener("resize",I)}catch{}Date.now()-E>On||r||L()||k(b()??a)};addEventListener("resize",I)}catch{}};let A=!1,_=!1;return{restore(){if(A||(A=!0,L()))return;const E=b();E!==null&&(k(E),j())},promoted(){if(_||(_=!0,L()))return;const E=b();E!==null?(k(E),j()):n&&k(a)}}}function Cn(t,e,r,n){let a=null;try{a=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:R=>R})??null}catch{}const s=window.Worker,l=s?.prototype,u=Object.freeze({Worker:s,workerOn:l?.addEventListener,workerPost:l?.postMessage,workerTerminate:l?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,now:Date.now,policy:a,origins:e});r(t).then(R=>R?.bootTopLevel?R.bootTopLevel(u,n):n.settle()).catch(()=>n.settle())}var so="modulepreload",io=function(t){return"/"+t},lo={},Fn=function(e,r,n){let a=Promise.resolve();function s(l){const u=new Event("vite:preloadError",{cancelable:!0});if(u.payload=l,window.dispatchEvent(u),!u.defaultPrevented)throw l}return a.then(l=>{for(const u of l||[])u.status==="rejected"&&s(u.reason);return e().catch(s)})},xn=window===top,Xt=Object.getOwnPropertyDescriptor(window,"claude"),ze=ln(xn,window.__FRAME_PREAMBLE?.topLevel,Xt?.writable===!1),ft=typeof ze=="object"&&ze[0],x=ft?_n():vn();(function(){const t=Object.defineProperty,e=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let a=0;a<r.length;a++){const s=r[a];try{t(e,s,{value:void 0,writable:!1,configurable:!1})}catch{try{delete e[s]}catch{}try{t(e,s,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof e[s]=="function"&&n++}if(n&&ze==="framed")try{x.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Yt=1e4,jn=2e3,dt=2e3,ht=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function Jt(t){for(const e of ht)if(e.endsWith(":*"))try{const r=new URL(t);if(`${r.protocol}//${r.hostname}:*`===e)return!0}catch{}else if(t===e)return!0;return!1}var Ne=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),Ce=window.__FRAME_PREAMBLE?.transforms,pt=window.__FRAME_PREAMBLE?.comments,mt=window.__FRAME_PREAMBLE?.translate,me=window.__FRAME_PREAMBLE?.ldx,We=dr(window.__FRAME_PREAMBLE?.cred),Zt=(()=>{try{const[t]=performance.getEntriesByType("navigation"),e=t?.serverTiming?.find(r=>r.name==="frame-cred-exp");return e!==void 0&&/^\d{1,15}$/.test(e.description)?hr(Number(e.description)):void 0}catch{return}})();function Qt(t){return Fn(()=>import("/_runtime/"+t),void 0)}var Fe=new Set,er=setTimeout,In=fetch,Dn=AbortController,Hn=800+800*Math.random(),Bn=3e3,Ve=null,tr=new Map;function qn(t,e){let r=tr.get(t);return r||tr.set(t,r=Un(t,e)),r}function Un(t,e){if(Ve?.has(t))return Promise.resolve("csp");if(navigator.onLine===!1)return Promise.resolve("offline");const r=new Dn;let n=!1;return er(()=>{n=!0,r.abort()},Bn),In("/_runtime/"+t,{signal:r.signal}).then(a=>(r.abort(),a.ok?/javascript/i.test(a.headers.get("content-type")??"")?e instanceof Error&&/:\d+:\d+\)?$/m.test(e.stack??"")?"eval":"served":"mime":"http"),()=>n?"timeout":Ve?.has(t)?"csp":"net")}function se(t){if(!Ve){const e=Ve=new Set;try{document.addEventListener("securitypolicyviolation",r=>{const n=/\/_runtime\/([^/?#]+)/.exec(r.blockedURI);n&&r.disposition!=="report"&&e.add(n[1])})}catch{}}return Qt(t).catch(()=>new Promise(e=>er(e,Hn)).then(()=>Qt(t+"?r=1")).then(e=>(e!==void 0&&Fe.add(t),e)))}function rr(t,e,r){return{contract:t.contract,changes:new Set(t.changes??[]),flags:new Set(t.flags??[]),capabilities:t.capabilities??{},capBudgets:t.capBudgets??{},brokerGen:t.brokerGen,transforms:new Map,shellOrigin:e,shell:r,mount:bt,hooks:Xe,pipe:()=>({wrap:(n,a)=>(...s)=>{try{return a(...s)}catch(l){return Promise.reject(l)}}})}}var we=null,X=null;function nr(t,e,r){try{Object.defineProperty(t,e,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(t,e,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var vt=!1,Xe={editBefore:null,edit:null};function Kn(t,e,r=!1){const n=[];let a;if(r)try{Xe.editBefore?.(t)}catch{}for(const s of t.elements){const l=document.querySelector(`[data-id="${s.target}"]`);if(!l){a=s.target;break}if([...Object.keys(s.attrsSet??{}),...s.attrsRemoved??[]].some(u=>!yr(u)||gr(l,u))){a=s.target;break}if(s.text!==void 0&&(!Sr(l)||Tr(l))){a=s.target;break}for(const[u,R]of Object.entries(s.attrsSet??{}))if(!ar(l,u)){try{l.setAttribute(u,R)}catch{}or(l,u,R)}for(const u of s.attrsRemoved??[])ar(l,u)||(l.removeAttribute(u),or(l,u,null));typeof s.text=="string"&&Ar(l,s.text),n.push(s.target)}if(r)try{Xe.edit?.(t.seq,n,a)}catch{}if(a!==void 0){x.post({__frame_patch_miss:{seq:t.seq}},e);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:t.seq,targets:n}}))}catch{}}function or(t,e,r){if(!(t instanceof HTMLInputElement))return;const n=e.toLowerCase();n==="checked"?t.checked=r!==null:n==="value"&&t.type!=="file"&&(t.value=r??"")}function ar(t,e){const r=e.toLowerCase(),n=t;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${t.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function sr(t){const e=document.documentElement;t==="light"||t==="dark"?(e.dataset.theme=t,e.style.colorScheme=t,vt=!0):vt&&(delete e.dataset.theme,e.style.colorScheme="",vt=!1)}var ie=new Map,_t=null;function yt(){let t;const e={u:new Promise(r=>{t=r}),r:r=>{e.done=!0,t(r)},done:!1,nulled:!1};return e}function Ye(t,e){t.nulled=!0,t.ver=e,t.r(null)}function gt(t,e){for(const[r,n]of ie)n.done||(e&&n.asked?e(r,n):Ye(n,t))}function Gn(){for(const t of ie.values())if(t.asked&&!t.done)return!0;return!1}var $n=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),wt=!1,bt=(t,e)=>{let r=ie.get(t);if(r?.nulled&&wt)r=yt(),ie.set(t,r);else if(!r||r.done){r?.nulled&&X&&x.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:t,phase:"install"}},X);return}const n=typeof e=="function"?Object.setPrototypeOf(e,$n):Object.assign(Object.create(null),e);typeof n.then=="function"&&delete n.then,r.want=void 0,r.r(Object.freeze(n))};function ir(){const t=Xt?.value??{};nr(window,"claude",t);for(const e of Object.keys(Ne)){if(t[e]!==void 0){nr(t,e,t[e]);continue}ie.set(e,yt())}if(t.use===void 0){const e=r=>{if(typeof r!="string"||!Object.hasOwn(Ne,r))return Promise.resolve(null);let n=ie.get(r);return n?(_t&&(n.nulled||n.want!==void 0)&&(n=_t(r,n)),n.asked=!0,n.u):Promise.resolve(t[r]??null)};try{Object.defineProperty(t,"use",{value:e,writable:!0,configurable:!0,enumerable:!1})}catch{}}return t}if(ze==="framed"){let t;const e=Ce&&pe.test(Ce)?se(Ce).catch(c=>{t={f:Ce,e:c}}):Promise.resolve(void 0),r=c=>{if(c.type==="auxclick"&&c.button!==1)return;const h=c.target,g=h&&h.closest?h.closest("a[href],area[href]"):null;if(!g)return;const C=g.getAttribute("href");if(!C)return;let O;try{O=new URL(C,document.baseURI)}catch{return}if((O.protocol==="http:"||O.protocol==="https:")&&O.origin!==location.origin){c.preventDefault();const z=(g.getAttribute("target")??"").toLowerCase(),B=c.type==="auxclick"||c.metaKey||c.ctrlKey||c.shiftKey||c.altKey||!["","_self","_top","_parent"].includes(z);x.post({__frame_nav:!0,url:O.href,newTab:B},"*")}};addEventListener("click",r,!0),addEventListener("auxclick",r,!0);const n={},a=c=>{c.isTrusted&&(n.pointer=!0)},s=c=>{c.isTrusted&&(n.click=!0)};addEventListener("pointermove",a,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0});const l={cb:null};addEventListener("keydown",c=>l.cb?.(c),!0);const u={cb:null};addEventListener("keydown",c=>u.cb?.(c));const R=pn();e.then(c=>c?.installEscapeForward?.(l,h=>{X&&x.post(h,X)})),e.then(c=>{try{c?.installFocusKeep?.()}catch{}}),e.then(c=>{if(!c?.wireNav)return;const h=x.port("*");c.wireNav(h),removeEventListener("click",r,!0),removeEventListener("auxclick",r,!0),removeEventListener("pointermove",a,!0),removeEventListener("click",s,!0),c.wireEngagement?.(n,h,R)});let b=null;try{b=Nn()}catch{}const y=document.readyState==="loading"?new Promise(c=>document.addEventListener("DOMContentLoaded",()=>c(),{once:!0})):Promise.resolve();let p="dcl",k=!1;y.then(()=>{k=!0});let L=null,m=null;try{m=Kr(window.name),L=Bt(null,m)}catch{}const j=ir();let A=null;try{A=un(j,L,{post:(c,h)=>x.post(c,h),dcl:y},m)}catch{}e.then(c=>{try{A&&c?.installHotExtras?.(A)}catch{}});let _=null;const E=()=>Array.isArray(_?.flags)&&_.flags.includes("frame_ldx_runtime")&&!!me&&pe.test(me)&&document.querySelector("script#an-form")!==null;try{A?.hydration(E,Gr)}catch{}let I=null,D=0;const q=x.on((c,h,g,C)=>{Jt(h)&&Pr(c)&&(C(),_=c.__frame_init,X=h,q(),clearTimeout(D),I?.())});if(We){const c=Zt===void 0?{__frame_cred:We}:{__frame_cred:We,exp:Zt};for(const h of ht)try{h.endsWith(":*")||x.post(c,h)}catch{}}x.post({__frame_connect:!0},"*");try{A?.afterConnect()}catch{}const $=setTimeout,H=clearTimeout,xe=()=>new Promise(c=>$(c,0));let be=()=>NaN,je=()=>[];try{be=performance.now.bind(performance),je=performance.getEntriesByType.bind(performance)}catch{}let K=0;const Ee=()=>{try{x.post({__frame_alive:!0},"*")}catch{}K=$(Ee,jn)},Ie=()=>H(K);Ee(),addEventListener("load",Ie,{once:!0});const le=new Promise(c=>{I=c,D=setTimeout(()=>{q(),c()},Yt)}),te=new WeakSet;addEventListener("error",c=>{c.target&&te.add(c.target)},!0);try{An(qt(),We,()=>{e.then(c=>{try{c?.drawRefusedNotice?.()}catch{}})})}catch{}const ve=()=>{let c=[];try{c=[...document.querySelectorAll("link[rel~=stylesheet]:not([rel~=alternate])")].filter(g=>!g.sheet&&!g.disabled&&!te.has(g)&&g.getAttribute("href")&&URL.canParse(g.href)&&(!g.media||matchMedia(g.media).matches))}catch{}let h=c.length;return h===0?Promise.resolve():new Promise(g=>{try{const C=dt-be();C>0&&(p="sheets");const O=$(g,C>0?C<dt?C:dt:0),z=()=>{--h===0&&(H(O),g())};for(const B of c)B.addEventListener("load",z,{once:!0}),B.addEventListener("error",z,{once:!0})}catch{g()}})};y.then(()=>{try{b?.restore()}catch{}});const Je=Promise.all([le,y,e]).then(c=>{if(_?.hostOverlays!==!0||!X)return;const h=c[2],g=B=>{try{return B?.()===!0}catch{return!1}},C=g(h?.declaresCover),O=_.hostSides===!0?{cover:C,sides:g(h?.declaresSides)}:{cover:C};if(x.post({__frame_layout:O},X),_.hostBackground!==!0)return;const z=X;return xe().then(ve).then(()=>{try{h?.watchBackground?.(B=>x.post({__frame_layout:{...O,background:B}},z))}catch{}})}),Se={cb:null};x.on((c,h)=>{if(Jt(h)&&Nr(c)){try{b?.promoted()}catch{}Se.cb?.()}}),le.then(async()=>{if(!_||!X){gt();try{A?.onNoInit()}catch{}return}if(sr(_.theme),_.hostVisible===!1&&e.then(i=>i?.applyHostVisible?.(!1,R)),_.hostKeys!==void 0){const i=X,S=_.hostKeys;e.then(w=>w?.installHostKeyForward?.(u,S,M=>x.post(M,i)))}try{A?.onInit(_.hot,X)}catch{}let c;const h=()=>{try{!c&&me&&E()&&(c=se(me),c.then(i=>i?.prefetch?.()).catch(()=>{}))}catch{}};h(),y.then(h);const g=X,C=x.port(g),O=(i,S)=>x.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:i,phase:S}},g),z=(i,S,w)=>{new Promise(M=>M(qn(S,w))).then(M=>O(i,M),()=>O(i))},B=i=>x.post({__frame_cap_recovered:{cap:i}},g);let J=_.brokerGen;const ce=()=>A?.boot.ver??"",G=ce(),_e=(i,S)=>{const w=ce();H(S.t),S.want=w,S.t=$(()=>{S.done||Ye(S,w)},Yt),x.post({__frame_cap_want:!0,cap:i,ver:w},g)},Q=(i,S)=>{const w=ie.get(i.cap),M=Ne[i.cap];if(!S||!w||w.done||w.want!==i.ver||!pe.test(M))return;if(H(w.t),w.want=void 0,J=i.brokerGen??J,i.ver!==ce()){_e(i.cap,w);return}if(!i.grant||i.cap==="network"){Ye(w,i.ver);return}const ee=we,Z=we={...ee,capabilities:{...ee.capabilities,[i.cap]:i.grant},capBudgets:{...ee.capBudgets,[i.cap]:{...ee.capBudgets[i.cap],...i.budgets}}};se(M).then(W=>{Fe.has(M)&&B(i.cap),Z.brokerGen=J,wt=!0;try{W?.install?.(Z)}catch{O(i.cap,"install")}finally{wt=!1}},W=>z(i.cap,M,W)).then(()=>{w.done||Ye(w,i.ver)})};let De=!1,He=!1;x.on((i,S,w)=>{if(S!==g)return;try{if(A?.onShell(i))return}catch{}if(Fr(i)&&sr(i.__frame_theme.theme),tn(i)&&Q(i,w),w&&rn(i)&&(J=i.brokerGen??J),Cr(i)){const Z=i.__frame_host_visible.visible;e.then(W=>W?.applyHostVisible?.(Z,R))}Mr(i)&&Kn(i.__frame_patch,g,w);const M=i?.__fc_mode;M&&typeof M=="object"&&!De&&pt&&pe.test(pt)&&(De=!0,se(pt).then(Z=>Z.install?.(g,M.on===!0,C)).catch(()=>{}));const ee=i?.__ft_cmd;ee&&typeof ee=="object"&&!He&&mt&&pe.test(mt)&&(He=!0,se(mt).then(Z=>Z.install?.(g,ee,C)).catch(()=>{}))});const ue=Object.keys(_.capabilities??{}).filter(i=>Object.hasOwn(Ne,i)).map(i=>[i,Ne[i]]).filter(i=>typeof i[1]=="string"&&pe.test(i[1])),re=g;let Be=!1,ke=()=>{};const Ze=new Promise(i=>{ke=()=>{Be=!0,i()}}),ye=()=>(Be||(p="caps"),Ze),Qe=L!==null||jt(_.hot)||_.hostVisible===!1||_.hostOverlays===!0;k&&(p="init");const ge=_.hostBackground===!0,Ae=y.then(()=>(ge&&ye(),ge?Je:void 0)).then(()=>Qe?ye():xe()).then(ve).then(()=>{let i=!0;try{i=Qe||Gn()}catch{}return i?ye():void 0}).then(()=>{Ie();const i=pr(je,be);x.post(i?{__frame_ready:!0,nav:i,gate:p}:{__frame_ready:!0,gate:p},re),e.then(S=>{S?.installSizeReporter?.(re,Se,C),S?.installPaintReporter?.(C)})}),qe=await Promise.allSettled(ue.map(([,i])=>se(i))),fe=await e;if(fe?.buildBoot||(t?z("_transforms",t.f,t.e):O("_transforms")),fe?.buildBoot)try{we=fe.buildBoot(_,fe.TRANSFORMS??{},{shellOrigin:re,mount:bt,hooks:Xe,shell:C},i=>x.post({__frame_cap_telemetry:i},re))}catch{O("_transforms","install"),we=rr(_,re,C)}else we=rr(_,re,C);fe?.buildBoot&&Fe.has(Ce??"")&&B("_transforms");const de=we;de.brokerGen=J,qe.forEach((i,S)=>{const[w,M]=ue[S];if(i.status!=="fulfilled"){z(w,M,i.reason);return}Fe.has(M)&&B(w);try{i.value?.install?.(de)}catch{O(w,"install")}});const Ue=_.capWants===!0;Ue&&(_t=(i,S)=>{const w=ce();if(!w)return S;if(!S.nulled)return S.want!==w&&_e(i,S),S;if(w===S.ver)return S;const M=yt();return ie.set(i,M),_e(i,M),M}),gt(G,Ue&&ce()!==G?_e:void 0),ke(),await Ae;let et=!1;try{et=E()}catch{}me&&et?(c??se(me)).then(i=>i?.boot?.({shellOrigin:g,build:de.flags.has(fn),hot:A?.hot??null,carried:A?.carried(),presented:()=>A?.presented()??!0})).catch(()=>!1).then(i=>{A?.hydrated(),i!==!0?O("_ldx"):Fe.has(me)&&B("_ldx")}):A?.hydrated()})}else ft&&(ir(),Cn(ft,ht,se,{settle:gt,mount:bt}))})();</script><!-- /frame-runtime -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SBB 로그인·로그아웃 요청과 응답 흐름</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#6b6458; --line:#ddd5c6;
+  --accent:#d9480f; --accent-soft:#ffe8d9; --go:#2b8a3e; --go-soft:#e3f6e6;
+  --warn:#c92a2a; --warn-soft:#ffe3e3; --blue:#1864ab; --blue-soft:#e0efff;
+  --code-bg:#1f1d1a; --code-ink:#ece6da; --code-hl:#4a3a1c; --code-dim:#8c8476;
+  --shadow:0 2px 0 rgba(0,0,0,.06);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#16140f; --panel:#201d17; --ink:#efe9dd; --muted:#a59d8e; --line:#3a352b;
+    --accent:#ff8a4c; --accent-soft:#3d2414; --go:#69db7c; --go-soft:#1b3322;
+    --warn:#ff8787; --warn-soft:#3b1d1d; --blue:#74c0fc; --blue-soft:#14283d;
+    --code-bg:#0f0e0b; --code-ink:#ece6da; --code-hl:#4a3a1c; --code-dim:#7d7566;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16140f; --panel:#201d17; --ink:#efe9dd; --muted:#a59d8e; --line:#3a352b;
+  --accent:#ff8a4c; --accent-soft:#3d2414; --go:#69db7c; --go-soft:#1b3322;
+  --warn:#ff8787; --warn-soft:#3b1d1d; --blue:#74c0fc; --blue-soft:#14283d;
+  --code-bg:#0f0e0b; --code-ink:#ece6da; --code-hl:#4a3a1c; --code-dim:#7d7566;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6;font-size:15px}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 120px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:16px}
+.kicker{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;color:var(--accent);letter-spacing:.08em}
+h1{margin:2px 0 0;font-size:clamp(22px,4vw,34px);font-weight:900;letter-spacing:-.02em;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.btn{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:10px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{font:inherit;font-weight:700;padding:10px 14px;border-radius:999px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.tab[aria-selected="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.legend{font-size:13px;color:var(--muted);margin:0 0 10px}
+.legend b.f{color:var(--blue)} .legend b.t{color:var(--accent)}
+/* stage */
+.stage{position:relative;overflow:hidden;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px 10px;padding:16px 10px 10px}
+.node{position:relative;border:2px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;background:var(--bg);min-height:86px;display:flex;flex-direction:column;justify-content:center;transition:all .3s}
+.node .ic{font-size:22px;line-height:1}
+.node .nm{font-weight:700;font-size:13px;margin-top:4px;line-height:1.3;overflow-wrap:anywhere}
+.node .fl{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;color:var(--muted);margin-top:2px;word-break:break-all}
+.node.from{border-color:var(--blue);background:var(--blue-soft)}
+.node.to{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.04)}
+.node.dim{opacity:.45}
+.node .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;padding:1px 8px;border-radius:999px;color:#fff;white-space:nowrap}
+.node.from .badge{background:var(--blue)} .node.to .badge{background:var(--accent)}
+.packet{position:absolute;z-index:5;pointer-events:none;padding:3px 9px;border-radius:999px;background:var(--ink);color:var(--bg);font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;white-space:nowrap;transform:translate(-50%,-50%);transition:left .9s cubic-bezier(.6,.05,.3,1),top .9s cubic-bezier(.6,.05,.3,1),opacity .3s;opacity:0;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.packet.show{opacity:1}
+/* step header */
+.stephead{display:flex;align-items:center;gap:12px;margin:16px 0 10px}
+.stepno{flex:none;width:52px;height:52px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px;border:2px solid var(--ink)}
+.steptitle{font-size:clamp(17px,2.6vw,22px);font-weight:900;line-height:1.3}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 4px}
+.dot{width:22px;height:8px;border-radius:4px;background:var(--line);border:0;padding:0;cursor:pointer}
+.dot.done{background:var(--muted)} .dot.cur{background:var(--accent)}
+/* main grid */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:14px;margin-bottom:10px}
+.meta dt{font-weight:700;white-space:nowrap}
+.meta dd{margin:0;word-break:keep-all}
+.meta code,.desc code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.9em;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+.desc{margin:0;padding-left:20px}
+.desc li{margin:4px 0;word-break:keep-all}
+.note{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px;border-left:5px solid var(--warn);background:var(--warn-soft)}
+.note.ok{border-color:var(--go);background:var(--go-soft)}
+/* code */
+.codebox{background:var(--code-bg);color:var(--code-ink);border-radius:12px;overflow:hidden;border:2px solid var(--ink)}
+.codebar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.06);font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px}
+.codebar .fn{color:#ffc078;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy{font:inherit;font-size:12px;border:1px solid #6b6458;background:transparent;color:#ece6da;border-radius:6px;padding:3px 9px;cursor:pointer;flex:none}
+.codescroll{overflow-x:auto}
+pre.code{margin:0;padding:10px 0;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.65;min-width:max-content}
+pre.code .ln{display:block;padding:0 14px 0 0;white-space:pre}
+pre.code .ln .no{display:inline-block;width:34px;text-align:right;margin-right:12px;color:var(--code-dim);user-select:none}
+pre.code .ln.hl{background:var(--code-hl);box-shadow:inset 4px 0 0 #ff8a4c}
+pre.code .ln.hl .no{color:#ffc078}
+/* fake browser */
+.browser{border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#fff;color:#212529;margin-bottom:12px}
+.bbar{display:flex;align-items:center;gap:8px;background:#e9ecef;padding:7px 10px}
+.bdots span{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;background:#adb5bd}
+.url{flex:1;background:#fff;border-radius:6px;padding:2px 10px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;color:#495057;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .4s}
+.url.flash{background:#fff3bf}
+.bnav{display:flex;gap:14px;align-items:center;padding:8px 12px;border-bottom:1px solid #dee2e6;background:#f8f9fa;font-size:13px}
+.bnav b{font-size:15px}
+.bnav .lk{color:#6c757d}
+.bnav .lk.on{color:#0d6efd;font-weight:700;outline:2px dashed #fd7e14;outline-offset:3px;border-radius:3px}
+.bbody{padding:12px;min-height:150px;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#212529;color:#fff;padding:5px;text-align:left}
+.tbl td{border-bottom:1px solid #dee2e6;padding:5px}
+.fld{margin-bottom:8px}
+.fld label{display:block;font-size:12px;margin-bottom:2px}
+.fld .in{border:1px solid #ced4da;border-radius:5px;padding:4px 8px;min-height:28px;font-family:"JetBrains Mono",monospace;font-size:12px;background:#fff}
+.bbtn{display:inline-block;background:#0d6efd;color:#fff;border-radius:5px;padding:4px 12px;font-size:12px}
+.alert{background:#f8d7da;color:#842029;border:1px solid #f5c2c7;border-radius:5px;padding:6px 10px;margin-bottom:8px;font-size:12px}
+.wait{display:flex;align-items:center;justify-content:center;gap:8px;color:#6c757d;min-height:120px}
+.spin{width:16px;height:16px;border:3px solid #dee2e6;border-top-color:#0d6efd;border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hidden-csrf{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#adb5bd;margin-top:6px}
+/* controls */
+.controls{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--panel);border-top:3px solid var(--ink);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
+.controls .in{max-width:1240px;margin:0 auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.controls .prog{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;min-width:70px;text-align:center;font-weight:600}
+.controls select{font:inherit;border:2px solid var(--ink);border-radius:8px;background:var(--panel);color:var(--ink);padding:6px}
+.pbar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;max-width:1240px;margin:0 auto 8px}
+.pbar i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s}
+/* bottom sections */
+section.more{margin-top:26px}
+h2{font-size:20px;font-weight:900;border-bottom:2px solid var(--ink);padding-bottom:4px;margin:0 0 12px}
+.tw{overflow-x:auto}
+table.sum{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+table.sum th,table.sum td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+table.sum th{background:var(--ink);color:var(--bg)}
+table.sum td code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px}
+.quiz{margin-bottom:12px}
+.quiz .q{font-weight:700;margin-bottom:6px;overflow-wrap:anywhere}
+.quiz button.opt{white-space:normal;overflow-wrap:anywhere;display:block;width:100%;text-align:left;font:inherit;margin:5px 0;padding:8px 12px;border-radius:9px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.quiz button.opt.right{border-color:var(--go);background:var(--go-soft)}
+.quiz button.opt.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.quiz .ex{display:none;margin-top:6px;font-size:14px;color:var(--muted)}
+.quiz.done .ex{display:block}
+.toast{white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:50;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+@media (max-width:900px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .stage{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px;padding:14px 6px 8px}
+  .node{min-height:78px;padding:8px 4px}
+  .node .nm{font-size:11px}
+  .node .fl{display:none}
+}
+@media (max-width:420px){
+  .controls .btn{padding:7px 10px;font-size:14px}
+  .controls select{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <div class="kicker">점프 투 스프링부트 3-05 ~ 3-07 · SBB</div>
+    <h1>🔐 로그인·로그아웃 요청과 응답 흐름</h1>
+    <div class="sub">버튼을 누를 때마다 한 단계씩, 어떤 파일의 어떤 코드가 실행되는지 보여 줍니다.</div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn" type="button">🌓 화면 색</button>
+    <button class="btn primary" id="dlBtn" type="button">⬇️ HTML 다운로드</button>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" id="tabs"><button class="tab" type="button" role="tab" data-k="login" aria-selected="true">✅ 로그인 성공</button><button class="tab" type="button" role="tab" data-k="fail" aria-selected="false">❌ 로그인 실패</button><button class="tab" type="button" role="tab" data-k="logout" aria-selected="false">🚪 로그아웃</button></div>
+
+<div class="card">
+  <p class="legend"><b class="f">파란색</b> = 요청을 보내는 쪽(호출하는 곳) · <b class="t">주황색</b> = 요청을 받는 쪽(지금 실행되는 곳) · 검은 알약 = 오가는 데이터</p>
+  <div class="stage" id="stage"><div class="node dim" id="n-browser"><span class="badge"></span><div class="ic">🌐</div><div class="nm">브라우저</div><div class="fl">사용자 화면</div></div><div class="node to" id="n-filter"><span class="badge">실행 중</span><div class="ic">🛡️</div><div class="nm">Security 필터</div><div class="fl">SecurityConfig.java</div></div><div class="node dim" id="n-ctrl"><span class="badge"></span><div class="ic">🎮</div><div class="nm">Controller</div><div class="fl">UserController 등</div></div><div class="node dim" id="n-tpl"><span class="badge"></span><div class="ic">📄</div><div class="nm">템플릿</div><div class="fl">login_form / navbar.html</div></div><div class="node dim" id="n-session"><span class="badge"></span><div class="ic">🗂️</div><div class="nm">세션</div><div class="fl">HttpSession</div></div><div class="node dim" id="n-authm"><span class="badge"></span><div class="ic">🔑</div><div class="nm">AuthenticationManager + PasswordEncoder</div><div class="fl">SecurityConfig.java</div></div><div class="node dim" id="n-uss"><span class="badge"></span><div class="ic">🧑‍💼</div><div class="nm">UserSecurityService</div><div class="fl">UserSecurityService.java</div></div><div class="node dim" id="n-repo"><span class="badge"></span><div class="ic">📚</div><div class="nm">UserRepository</div><div class="fl">UserRepository.java</div></div><div class="node dim" id="n-db"><span class="badge"></span><div class="ic">💾</div><div class="nm">DB</div><div class="fl">SITE_USER 테이블</div></div><div class="packet show" style="left: 280.492px; top: 77px;">설정 등록</div></div>
+</div>
+
+<div class="stephead">
+  <div class="stepno" id="stepNo">1</div>
+  <div>
+    <div class="steptitle" id="stepTitle">서버 시작: 보안 설정이 먼저 등록됩니다</div>
+    <div class="dots" id="dots"><button type="button" class="dot cur" aria-label="1단계로 이동"></button><button type="button" class="dot" aria-label="2단계로 이동"></button><button type="button" class="dot" aria-label="3단계로 이동"></button><button type="button" class="dot" aria-label="4단계로 이동"></button><button type="button" class="dot" aria-label="5단계로 이동"></button><button type="button" class="dot" aria-label="6단계로 이동"></button><button type="button" class="dot" aria-label="7단계로 이동"></button><button type="button" class="dot" aria-label="8단계로 이동"></button><button type="button" class="dot" aria-label="9단계로 이동"></button><button type="button" class="dot" aria-label="10단계로 이동"></button><button type="button" class="dot" aria-label="11단계로 이동"></button><button type="button" class="dot" aria-label="12단계로 이동"></button><button type="button" class="dot" aria-label="13단계로 이동"></button><button type="button" class="dot" aria-label="14단계로 이동"></button><button type="button" class="dot" aria-label="15단계로 이동"></button><button type="button" class="dot" aria-label="16단계로 이동"></button><button type="button" class="dot" aria-label="17단계로 이동"></button></div>
+  </div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="browser" aria-label="브라우저 화면 예시">
+      <div class="bbar"><div class="bdots"><span></span><span></span><span></span></div><div class="url" id="url">localhost:8080/question/list</div></div>
+      <div class="bnav"><b>SBB</b><span class="lk" id="navLogin">로그인</span><span class="lk" id="navLogout" style="display: none;">로그아웃</span><span class="lk">회원가입</span></div>
+      <div class="bbody" id="bbody"><table class="tbl"><tbody><tr><th>번호</th><th>제목</th><th>작성일시</th></tr><tr><td>3</td><td>스프링부트 질문입니다</td><td>2026-10-19</td></tr><tr><td>2</td><td>JPA가 무엇인가요?</td><td>2026-10-18</td></tr><tr><td>1</td><td>sbb가 무엇인가요?</td><td>2026-10-17</td></tr></tbody></table></div>
+    </div>
+    <div class="card">
+      <dl class="meta">
+        <dt>📂 파일</dt><dd id="mFile"><code>SecurityConfig.java</code></dd>
+        <dt>▶ 호출하는 곳</dt><dd id="mCaller">프로그램을 시작하면 Spring이 <code>filterChain()</code> 메서드를 호출합니다.</dd>
+        <dt>↩ 리턴하는 곳</dt><dd id="mReturn"><code>return http.build()</code>로 만든 <code>SecurityFilterChain</code> 객체를 Spring에 리턴하고, Spring이 보관합니다.</dd>
+      </dl>
+      <ol class="desc" id="desc"><li>이 단계는 사용자가 요청을 보내기 전, 서버가 켜질 때 한 번 실행됩니다.</li><li><code>formLogin</code>은 로그인 화면 주소와 로그인 성공 후 이동 주소를 등록합니다.</li><li><code>logout</code>은 로그아웃 주소, 로그아웃 후 이동 주소, 세션 삭제 여부를 등록합니다.</li><li>같은 시점에 <code>passwordEncoder()</code>, <code>authenticationManager()</code> 메서드도 호출되어 객체가 등록됩니다.</li><li><code>@Service</code>가 붙은 <code>UserSecurityService</code> 객체도 이때 만들어집니다.</li></ol>
+      <div id="note"></div>
+    </div>
+  </div>
+  <div>
+    <div class="codebox">
+      <div class="codebar"><span class="fn" id="codeFile">📂 SecurityConfig.java</span><button class="copy" id="copyBtn" type="button">📋 복사</button></div>
+      <div class="codescroll"><pre class="code" id="code"><span class="ln"><span class="no">1</span>@Bean</span><span class="ln"><span class="no">2</span>SecurityFilterChain filterChain(HttpSecurity http) throws Exception {</span><span class="ln"><span class="no">3</span>    http</span><span class="ln"><span class="no">4</span>        .authorizeHttpRequests((authorizeHttpRequests) -&gt; authorizeHttpRequests</span><span class="ln"><span class="no">5</span>            .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())</span><span class="ln hl"><span class="no">6</span>        .formLogin((formLogin) -&gt; formLogin</span><span class="ln hl"><span class="no">7</span>            .loginPage("/user/login")</span><span class="ln hl"><span class="no">8</span>            .defaultSuccessUrl("/"))</span><span class="ln hl"><span class="no">9</span>        .logout((logout) -&gt; logout</span><span class="ln hl"><span class="no">10</span>            .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))</span><span class="ln hl"><span class="no">11</span>            .logoutSuccessUrl("/")</span><span class="ln hl"><span class="no">12</span>            .invalidateHttpSession(true));</span><span class="ln hl"><span class="no">13</span>    return http.build();</span><span class="ln"><span class="no">14</span>}</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<section class="more">
+  <h2>📋 파일별 역할 정리</h2>
+  <div class="tw">
+  <table class="sum">
+    <thead><tr><th>파일</th><th>실행되는 코드</th><th>언제 실행되나</th><th>누가 호출하나</th></tr></thead>
+    <tbody>
+      <tr><td><code>SecurityConfig.java</code></td><td><code>filterChain()</code>, <code>passwordEncoder()</code>, <code>authenticationManager()</code></td><td>서버가 시작될 때 한 번</td><td>Spring</td></tr>
+      <tr><td><code>navbar.html</code></td><td><code>sec:authorize="isAnonymous()"</code> / <code>isAuthenticated()</code></td><td>화면을 만들 때마다</td><td>Thymeleaf</td></tr>
+      <tr><td><code>UserController.java</code></td><td><code>login()</code> → <code>"login_form"</code></td><td><code>GET /user/login</code> 요청 때</td><td>DispatcherServlet</td></tr>
+      <tr><td><code>login_form.html</code></td><td><code>&lt;form method="post"&gt;</code>, <code>${param.error}</code></td><td>로그인 화면을 만들 때</td><td>Thymeleaf</td></tr>
+      <tr><td>Spring Security 필터</td><td>CsrfFilter, UsernamePasswordAuthenticationFilter, LogoutFilter</td><td><code>POST /user/login</code>, <code>/user/logout</code> 요청 때</td><td>요청이 들어오면 자동</td></tr>
+      <tr><td><code>UserSecurityService.java</code></td><td><code>loadUserByUsername(username)</code></td><td>로그인 검사 때</td><td>AuthenticationManager</td></tr>
+      <tr><td><code>UserRepository.java</code></td><td><code>findByusername(username)</code></td><td>로그인 검사 때</td><td>UserSecurityService</td></tr>
+      <tr><td><code>UserRole.java</code></td><td><code>UserRole.USER.getValue()</code> → <code>"ROLE_USER"</code></td><td>권한 목록을 만들 때</td><td>UserSecurityService</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="more">
+  <h2>🧠 확인 퀴즈</h2>
+  <div id="quizBox"><div class="quiz card"><div class="q">1. 로그인 버튼을 눌렀을 때 오는 POST /user/login 요청은 어디서 처리하나요?</div><button type="button" class="opt">UserController의 @PostMapping 메서드</button><button type="button" class="opt">Spring Security의 필터(UsernamePasswordAuthenticationFilter)</button><button type="button" class="opt">QuestionController</button><div class="ex">💡 loginPage("/user/login")로 정한 주소의 POST 요청은 Security 필터가 가로채 처리합니다. 그래서 Controller에 POST 메서드를 만들지 않습니다.</div></div><div class="quiz card"><div class="q">2. loadUserByUsername() 메서드를 호출하는 곳은 어디인가요?</div><button type="button" class="opt">login_form.html</button><button type="button" class="opt">UserController.login()</button><button type="button" class="opt">AuthenticationManager(DaoAuthenticationProvider)</button><div class="ex">💡 AuthenticationManager는 UserDetailsService를 구현한 UserSecurityService 객체를 자동으로 연결해 두고, 로그인 검사 때 이 메서드를 호출합니다.</div></div><div class="quiz card"><div class="q">3. 로그인 후 navbar에 [로그아웃] 링크가 보이는 이유는 무엇인가요?</div><button type="button" class="opt">세션에 인증 정보가 저장되어 isAuthenticated()가 true이기 때문</button><button type="button" class="opt">UserController가 로그아웃 링크를 추가하기 때문</button><button type="button" class="opt">브라우저가 링크를 바꾸기 때문</button><div class="ex">💡 인증 성공 시 세션에 저장된 정보 때문에 sec:authorize="isAuthenticated()"가 true가 됩니다.</div></div><div class="quiz card"><div class="q">4. 로그아웃 때 로그인 정보를 지우는 설정은 무엇인가요?</div><button type="button" class="opt">logoutSuccessUrl("/")</button><button type="button" class="opt">invalidateHttpSession(true)</button><button type="button" class="opt">defaultSuccessUrl("/")</button><div class="ex">💡 invalidateHttpSession(true)가 세션을 삭제합니다. 세션 안의 로그인 정보도 함께 사라집니다.</div></div></div>
+</section>
+
+</div>
+
+<div class="controls">
+  <div class="pbar"><i id="pbar" style="width: 6%;"></i></div>
+  <div class="in">
+    <button class="btn" id="firstBtn" type="button">⏮ 처음</button>
+    <button class="btn" id="prevBtn" type="button" disabled="">◀ 이전</button>
+    <span class="prog" id="prog">1 / 17</span>
+    <button class="btn primary" id="nextBtn" type="button">다음 ▶</button>
+    <button class="btn" id="playBtn" type="button">⏯ 자동 재생</button>
+    <select id="speed" aria-label="자동 재생 속도"><option value="5000">느리게</option><option value="3500" selected="">보통</option><option value="2200">빠르게</option></select>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+var NODES = [
+  {id:"browser", ic:"🌐", nm:"브라우저", fl:"사용자 화면"},
+  {id:"filter", ic:"🛡️", nm:"Security 필터", fl:"SecurityConfig.java"},
+  {id:"ctrl", ic:"🎮", nm:"Controller", fl:"UserController 등"},
+  {id:"tpl", ic:"📄", nm:"템플릿", fl:"login_form / navbar.html"},
+  {id:"session", ic:"🗂️", nm:"세션", fl:"HttpSession"},
+  {id:"authm", ic:"🔑", nm:"AuthenticationManager + PasswordEncoder", fl:"SecurityConfig.java"},
+  {id:"uss", ic:"🧑‍💼", nm:"UserSecurityService", fl:"UserSecurityService.java"},
+  {id:"repo", ic:"📚", nm:"UserRepository", fl:"UserRepository.java"},
+  {id:"db", ic:"💾", nm:"DB", fl:"SITE_USER 테이블"}
+];
+
+var NAV_TPL = [
+  '<li class="nav-item">',
+  '    <a class="nav-link" sec:authorize="isAnonymous()"',
+  '       th:href="@{/user/login}">로그인</a>',
+  '    <a class="nav-link" sec:authorize="isAuthenticated()"',
+  '       th:href="@{/user/logout}">로그아웃</a>',
+  '</li>'
+];
+
+var S = {
+  login: { name:"✅ 로그인 성공", steps:[
+    {from:"filter", to:"filter", pk:"설정 등록", t:"서버 시작: 보안 설정이 먼저 등록됩니다",
+     file:"SecurityConfig.java", caller:"프로그램을 시작하면 Spring이 <code>filterChain()</code> 메서드를 호출합니다.",
+     ret:"<code>return http.build()</code>로 만든 <code>SecurityFilterChain</code> 객체를 Spring에 리턴하고, Spring이 보관합니다.",
+     code:["@Bean","SecurityFilterChain filterChain(HttpSecurity http) throws Exception {","    http","        .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests","            .requestMatchers(new AntPathRequestMatcher(\"/**\")).permitAll())","        .formLogin((formLogin) -> formLogin","            .loginPage(\"/user/login\")","            .defaultSuccessUrl(\"/\"))","        .logout((logout) -> logout","            .logoutRequestMatcher(new AntPathRequestMatcher(\"/user/logout\"))","            .logoutSuccessUrl(\"/\")","            .invalidateHttpSession(true));","    return http.build();","}"],
+     hl:[5,6,7,8,9,10,11,12],
+     d:["이 단계는 사용자가 요청을 보내기 전, 서버가 켜질 때 한 번 실행됩니다.","<code>formLogin</code>은 로그인 화면 주소와 로그인 성공 후 이동 주소를 등록합니다.","<code>logout</code>은 로그아웃 주소, 로그아웃 후 이동 주소, 세션 삭제 여부를 등록합니다.","같은 시점에 <code>passwordEncoder()</code>, <code>authenticationManager()</code> 메서드도 호출되어 객체가 등록됩니다.","<code>@Service</code>가 붙은 <code>UserSecurityService</code> 객체도 이때 만들어집니다."],
+     scr:{url:"localhost:8080/question/list", nav:"in", body:"list"}},
+    {from:"browser", to:"filter", pk:"GET /user/login", t:"사용자가 내비게이션 바의 [로그인] 링크를 클릭합니다",
+     file:"templates/navbar.html", caller:"사용자가 브라우저에서 링크를 클릭합니다.",
+     ret:"브라우저가 서버로 <code>GET /user/login</code> 요청을 보냅니다. 서버에서는 Security 필터가 이 요청을 가장 먼저 받습니다.",
+     code:NAV_TPL, hl:[1,2],
+     d:["아직 로그인하지 않았으므로 <code>isAnonymous()</code>가 true입니다. 그래서 [로그인] 링크만 화면에 있습니다.","<code>th:href=\"@{/user/login}\"</code>는 화면을 만들 때 <code>href=\"/user/login\"</code>으로 바뀌어 있습니다.","링크 클릭은 GET 방식 요청입니다. GET은 화면을 보여 달라는 요청입니다."],
+     scr:{url:"localhost:8080/question/list", nav:"in", body:"list", click:"login"}},
+    {from:"filter", to:"ctrl", pk:"통과", t:"Security 필터가 요청을 검사한 뒤 Controller로 넘깁니다",
+     file:"SecurityConfig.java", caller:"Spring Security 필터들이 요청을 차례로 검사합니다.",
+     ret:"검사를 통과하면 Spring(DispatcherServlet)이 <code>UserController.login()</code> 메서드를 호출합니다.",
+     code:[".authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests","    .requestMatchers(new AntPathRequestMatcher(\"/**\")).permitAll())",".formLogin((formLogin) -> formLogin","    .loginPage(\"/user/login\")","    .defaultSuccessUrl(\"/\"))"],
+     hl:[0,1],
+     d:["<code>\"/**\"</code>는 모든 주소입니다. <code>permitAll()</code>이므로 로그인하지 않아도 통과합니다.","GET 요청이므로 CSRF 토큰 검사를 하지 않습니다.","로그인 검사 필터는 POST 방식의 <code>/user/login</code>만 처리합니다. GET 요청은 처리하지 않고 Controller로 넘깁니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"ctrl", to:"tpl", pk:"\"login_form\"", t:"UserController.login()이 화면 이름을 리턴합니다",
+     file:"user/UserController.java", caller:"Spring(DispatcherServlet)이 주소 <code>/user/login</code>과 GET 방식을 보고 이 메서드를 호출합니다.",
+     ret:"문자열 <code>\"login_form\"</code>을 리턴합니다. Thymeleaf가 <code>templates/login_form.html</code> 파일을 찾습니다.",
+     code:["@RequestMapping(\"/user\")","@RequiredArgsConstructor","@Controller","public class UserController {","","    @GetMapping(\"/login\")","    public String login() {","        return \"login_form\";","    }","}"],
+     hl:[0,5,6,7],
+     d:["클래스의 <code>@RequestMapping(\"/user\")</code>와 메서드의 <code>@GetMapping(\"/login\")</code>이 합쳐져 <code>/user/login</code> 주소가 됩니다.","이 메서드는 DB 조회 같은 처리를 하지 않습니다. 보여 줄 화면 파일 이름만 리턴합니다.","로그인 버튼을 누를 때 오는 POST 요청은 이 Controller에 메서드가 없습니다. Spring Security가 처리합니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"tpl", to:"browser", pk:"HTML 응답", t:"login_form.html이 HTML로 만들어져 브라우저에 표시됩니다",
+     file:"templates/login_form.html", caller:"Thymeleaf가 템플릿 파일을 읽어 HTML 문서로 만듭니다.",
+     ret:"완성된 HTML이 HTTP 응답으로 브라우저에 전달되고, 브라우저가 로그인 화면을 그립니다.",
+     code:["<form th:action=\"@{/user/login}\" method=\"post\">","    <div th:if=\"${param.error}\">","        <div class=\"alert alert-danger\">","            사용자ID 또는 비밀번호를 확인해 주세요.","        </div>","    </div>","    <input type=\"text\" name=\"username\" id=\"username\">","    <input type=\"password\" name=\"password\" id=\"password\">","    <button type=\"submit\">로그인</button>","</form>","","<!-- Thymeleaf가 form 안에 자동으로 추가하는 줄 -->","<input type=\"hidden\" name=\"_csrf\" value=\"ELCsIKgK...\"/>"],
+     hl:[0,6,7,12],
+     d:["<code>method=\"post\"</code>이므로 로그인 버튼을 누르면 <code>POST /user/login</code> 요청이 갑니다.","입력칸 이름 <code>username</code>, <code>password</code>는 Spring Security가 값을 꺼낼 때 쓰는 기본 이름입니다. 다른 이름으로 바꾸면 로그인이 되지 않습니다.","Thymeleaf가 CSRF 토큰 값을 hidden 입력칸으로 자동 추가합니다.","주소에 <code>error</code>가 없으므로 <code>${param.error}</code>는 거짓이고, 오류 문구는 HTML에 들어가지 않습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"login"}},
+    {from:"browser", to:"filter", pk:"POST /user/login", t:"아이디·비밀번호를 입력하고 [로그인] 버튼을 누릅니다",
+     file:"브라우저가 보내는 HTTP 요청 내용", caller:"사용자가 login_form.html 화면의 [로그인] 버튼을 누릅니다.",
+     ret:"아이디, 비밀번호, CSRF 토큰이 담긴 POST 요청이 서버의 Security 필터로 갑니다.",
+     code:["POST /user/login HTTP/1.1","Host: localhost:8080","Content-Type: application/x-www-form-urlencoded","Cookie: JSESSIONID=8F2A...","","username=user1&password=1234&_csrf=ELCsIKgK..."],
+     hl:[0,5],
+     d:["요청 본문에 <code>username</code>, <code>password</code>, <code>_csrf</code> 세 값이 함께 갑니다.","비밀번호는 이 단계에서 입력한 글자 그대로 전송됩니다. 그래서 실제 서비스는 HTTPS를 사용합니다.","<code>JSESSIONID</code> 쿠키는 서버의 세션을 찾는 번호입니다. CSRF 토큰도 그 세션에 저장되어 있습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"loginFilled"}},
+    {from:"filter", to:"authm", pk:"아이디 + 비밀번호", t:"Security 필터가 POST 요청을 가로채 로그인 검사를 맡깁니다",
+     file:"SecurityConfig.java (설정) + Spring Security 내부 필터", caller:"CsrfFilter → UsernamePasswordAuthenticationFilter 순서로 실행됩니다. (Spring Security 내부 클래스)",
+     ret:"아이디와 비밀번호를 담은 객체를 만들어 <code>AuthenticationManager.authenticate()</code>를 호출합니다.",
+     code:[".csrf((csrf) -> csrf","    .ignoringRequestMatchers(new AntPathRequestMatcher(\"/h2-console/**\")))",".formLogin((formLogin) -> formLogin","    .loginPage(\"/user/login\")","    .defaultSuccessUrl(\"/\"))"],
+     hl:[0,2,3],
+     d:["CsrfFilter가 요청의 <code>_csrf</code> 값과 세션에 저장된 토큰을 비교합니다. 다르면 403 오류로 거절합니다.","<code>loginPage(\"/user/login\")</code>로 정한 주소에 POST 요청이 오면 UsernamePasswordAuthenticationFilter가 처리합니다.","이 필터가 요청에서 <code>username</code>, <code>password</code> 값을 꺼냅니다.","이 요청은 Controller로 전달되지 않습니다. 그래서 로그인 처리용 <code>@PostMapping</code> 메서드를 만들지 않습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"authm", to:"uss", pk:"loadUserByUsername(\"user1\")", t:"AuthenticationManager가 UserSecurityService를 호출합니다",
+     file:"SecurityConfig.java + user/UserSecurityService.java", caller:"AuthenticationManager 안의 검사 객체(DaoAuthenticationProvider)가 호출합니다.",
+     ret:"입력한 아이디를 매개변수 <code>username</code>으로 넘겨 <code>loadUserByUsername()</code>을 실행합니다.",
+     code:["// SecurityConfig.java","@Bean","AuthenticationManager authenticationManager(","        AuthenticationConfiguration authenticationConfiguration) throws Exception {","    return authenticationConfiguration.getAuthenticationManager();","}","","// UserSecurityService.java","@Service","public class UserSecurityService implements UserDetailsService {","    @Override","    public UserDetails loadUserByUsername(String username) {"],
+     hl:[4,9,11],
+     d:["<code>getAuthenticationManager()</code>가 돌려준 객체에는 두 객체가 자동으로 연결되어 있습니다.","첫째, <code>UserDetailsService</code> 인터페이스를 구현한 <code>UserSecurityService</code> 객체입니다.","둘째, <code>passwordEncoder()</code> 메서드가 등록한 <code>BCryptPasswordEncoder</code> 객체입니다.","그래서 AuthenticationManager는 아이디로 회원을 찾을 때 <code>UserSecurityService.loadUserByUsername()</code>을 호출합니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"uss", to:"repo", pk:"findByusername(\"user1\")", t:"UserSecurityService가 UserRepository로 회원을 찾습니다",
+     file:"user/UserSecurityService.java + user/UserRepository.java", caller:"<code>UserSecurityService.loadUserByUsername()</code> 메서드 안의 첫 줄에서 호출합니다.",
+     ret:"Spring Data JPA가 메서드 이름을 보고 SQL을 만들어 DB로 보냅니다.",
+     code:["// UserSecurityService.java","Optional<SiteUser> _siteUser = this.userRepository.findByusername(username);","","// UserRepository.java","public interface UserRepository extends JpaRepository<SiteUser, Long> {","    Optional<SiteUser> findByusername(String username);","}"],
+     hl:[1,5],
+     d:["<code>findBy</code> + <code>username</code>은 username 컬럼 값으로 행을 찾는 조회 메서드라는 뜻입니다.","이 메서드의 실행 코드는 개발자가 작성하지 않습니다. Spring Data JPA가 자동으로 만들어 줍니다.","결과는 <code>Optional&lt;SiteUser&gt;</code>입니다. 회원이 있으면 SiteUser가 들어 있고, 없으면 비어 있습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"repo", to:"db", pk:"SELECT ... WHERE username=?", t:"DB에 SELECT 문이 실행됩니다",
+     file:"콘솔 로그에 출력되는 SQL", caller:"Hibernate(JPA)가 <code>findByusername()</code> 호출을 SQL로 바꿉니다.",
+     ret:"DB가 조건에 맞는 SITE_USER 행을 찾아 결과를 돌려줍니다.",
+     code:["select","    s1_0.id,","    s1_0.email,","    s1_0.password,","    s1_0.username","from","    site_user s1_0","where","    s1_0.username=?"],
+     hl:[3,8],
+     d:["<code>?</code> 자리에 입력한 아이디 <code>user1</code>이 들어갑니다.","<code>password</code> 컬럼에는 회원가입 때 <code>passwordEncoder.encode()</code>로 암호화한 값이 저장되어 있습니다.","저장된 값은 <code>$2a$10$...</code>처럼 시작하는 BCrypt 암호문입니다. 원래 비밀번호는 DB에 없습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"db", to:"uss", pk:"SiteUser 객체", t:"조회 결과가 UserSecurityService로 돌아옵니다",
+     file:"user/UserSecurityService.java", caller:"DB 결과가 Repository를 거쳐 <code>Optional&lt;SiteUser&gt;</code>로 리턴됩니다.",
+     ret:"회원이 있으므로 <code>_siteUser.get()</code>으로 SiteUser 객체를 꺼내 <code>siteUser</code> 변수에 저장합니다.",
+     code:["Optional<SiteUser> _siteUser = this.userRepository.findByusername(username);","if (_siteUser.isEmpty()) {","    throw new UsernameNotFoundException(\"사용자를 찾을수 없습니다.\");","}","SiteUser siteUser = _siteUser.get();"],
+     hl:[1,4],
+     d:["<code>isEmpty()</code>는 Optional이 비어 있으면 true를 리턴합니다.","이번에는 회원이 있으므로 if 문 안의 <code>throw</code>는 실행되지 않습니다.","<code>siteUser</code> 변수에는 id, username, password(암호문), email 값이 들어 있습니다."],
+     note:{ok:true, h:"회원이 없었다면 <code>UsernameNotFoundException</code>이 발생하고 로그인 실패로 처리됩니다. ‘❌ 로그인 실패’ 탭에서 확인하세요."},
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"uss", to:"authm", pk:"User(아이디, 암호문, [ROLE_USER])", t:"권한 목록을 만들고 User 객체를 리턴합니다",
+     file:"user/UserSecurityService.java + user/UserRole.java", caller:"<code>loadUserByUsername()</code> 메서드의 마지막 부분입니다.",
+     ret:"<code>return new User(...)</code>로 만든 객체를 AuthenticationManager(DaoAuthenticationProvider)에 리턴합니다.",
+     code:["List<GrantedAuthority> authorities = new ArrayList<>();","if (\"admin\".equals(username)) {","    authorities.add(new SimpleGrantedAuthority(UserRole.ADMIN.getValue()));","} else {","    authorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));","}","return new User(siteUser.getUsername(), siteUser.getPassword(), authorities);"],
+     hl:[4,6],
+     d:["아이디가 <code>admin</code>이 아니므로 else 블록이 실행됩니다.","<code>UserRole.USER.getValue()</code>는 UserRole.java에서 USER 상수에 저장한 문자열 <code>\"ROLE_USER\"</code>를 리턴합니다.","<code>User</code>는 Spring Security의 클래스입니다. 우리가 만든 SiteUser와 다른 클래스입니다.","User 객체에는 아이디, DB에 저장된 암호문, 권한 목록이 들어갑니다. 이 메서드에서는 비밀번호를 비교하지 않습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"authm", to:"authm", pk:"matches() → true", t:"PasswordEncoder가 비밀번호를 비교합니다",
+     file:"SecurityConfig.java (passwordEncoder 메서드) + Spring Security 내부", caller:"DaoAuthenticationProvider가 리턴받은 User 객체를 가지고 비교합니다.",
+     ret:"비교 결과가 true이면 인증 성공 객체를 만들어 Security 필터로 리턴합니다.",
+     code:["// SecurityConfig.java","@Bean","PasswordEncoder passwordEncoder() {","    return new BCryptPasswordEncoder();","}","","// Spring Security 내부에서 실행되는 비교 (직접 작성하지 않음)","passwordEncoder.matches(\"1234\", \"$2a$10$Xk3...\");","//                      입력한 비밀번호   DB에 저장된 암호문"],
+     hl:[3,7],
+     d:["<code>matches(입력값, 저장된 암호문)</code>는 입력값을 같은 BCrypt 방식으로 계산해 저장된 암호문과 맞는지 확인합니다.","결과가 true이면 인증 성공입니다.","결과가 false이면 <code>BadCredentialsException</code>이 발생하고 로그인 실패로 처리됩니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"authm", to:"session", pk:"인증 정보 저장", t:"인증 결과가 세션에 저장됩니다",
+     file:"Spring Security 내부 동작 (직접 작성하지 않음)", caller:"인증에 성공하면 UsernamePasswordAuthenticationFilter가 처리합니다.",
+     ret:"아이디와 권한이 담긴 인증 정보가 HttpSession에 저장됩니다.",
+     code:["// 아래는 Spring Security 내부 동작을 줄여서 표현한 코드입니다.","SecurityContext context = SecurityContextHolder.createEmptyContext();","context.setAuthentication(인증성공객체);   // 아이디 user1, 권한 ROLE_USER","session.setAttribute(\"SPRING_SECURITY_CONTEXT\", context);"],
+     hl:[2,3],
+     d:["세션은 서버가 브라우저별로 정보를 보관하는 저장 공간입니다.","브라우저는 <code>JSESSIONID</code> 쿠키를 가지고 있어서, 다음 요청 때 같은 세션을 찾을 수 있습니다.","이후 요청에서 <code>isAuthenticated()</code>가 true가 되는 근거가 이 세션 정보입니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"filter", to:"browser", pk:"302 → /", t:"로그인 성공 후 \"/\" 주소로 다시 요청하라고 응답합니다",
+     file:"SecurityConfig.java", caller:"인증 성공 처리 객체가 <code>defaultSuccessUrl</code> 설정 값을 읽습니다.",
+     ret:"브라우저에 302 응답을 보냅니다. 브라우저는 Location 주소로 새 요청을 보냅니다.",
+     code:[".formLogin((formLogin) -> formLogin","    .loginPage(\"/user/login\")","    .defaultSuccessUrl(\"/\"))","","// 브라우저가 받는 HTTP 응답","HTTP/1.1 302 Found","Location: /"],
+     hl:[2,5,6],
+     d:["302는 ‘Location에 적힌 주소로 다시 요청하라’는 HTTP 응답 코드입니다.","로그인 화면을 보기 전에 원래 가려던 주소가 있었다면 그 주소로 보냅니다. 없으면 <code>\"/\"</code>로 보냅니다."],
+     scr:{url:"localhost:8080/", nav:"in", body:"wait"}},
+    {from:"browser", to:"ctrl", pk:"GET /", t:"브라우저가 \"/\"를 요청하고 질문 목록 화면으로 이어집니다",
+     file:"MainController.java → question/QuestionController.java", caller:"브라우저가 302 응답을 받고 자동으로 <code>GET /</code> 요청을 보냅니다.",
+     ret:"MainController.root()가 다시 <code>/question/list</code>로 리다이렉트하고, QuestionController.list()가 <code>\"question_list\"</code>를 리턴합니다.",
+     code:["// MainController.java","@GetMapping(\"/\")","public String root() {","    return \"redirect:/question/list\";","}","","// QuestionController.java","@GetMapping(\"/list\")","public String list(Model model, @RequestParam(value=\"page\", defaultValue=\"0\") int page) {","    ...","    return \"question_list\";","}"],
+     hl:[3,10],
+     d:["이 요청에는 <code>JSESSIONID</code> 쿠키가 함께 갑니다.","Security 필터가 그 쿠키로 세션을 찾고, 세션에서 로그인 정보를 꺼내 현재 요청에 연결합니다.","그래서 이 요청을 처리하는 동안 서버는 사용자가 로그인한 상태라는 것을 압니다."],
+     scr:{url:"localhost:8080/question/list", nav:"in", body:"wait"}},
+    {from:"tpl", to:"browser", pk:"HTML 응답", t:"navbar.html에 [로그아웃] 링크가 표시됩니다",
+     file:"templates/navbar.html", caller:"question_list.html → layout.html → navbar.html 순서로 Thymeleaf가 화면을 합쳐 만듭니다.",
+     ret:"로그아웃 링크가 들어간 HTML이 브라우저로 전달됩니다.",
+     code:NAV_TPL, hl:[3,4],
+     d:["세션에 로그인 정보가 있으므로 <code>isAuthenticated()</code>가 true입니다. [로그아웃] 링크가 HTML에 들어갑니다.","<code>isAnonymous()</code>는 false이므로 [로그인] 링크는 HTML에서 빠집니다.","<code>sec:authorize</code> 문법은 build.gradle의 <code>thymeleaf-extras-springsecurity6</code> 라이브러리가 처리합니다."],
+     note:{ok:true, h:"✅ 로그인 완료. 같은 브라우저로 다음 요청을 보내도 세션이 유지되므로 로그인 상태가 계속됩니다."},
+     scr:{url:"localhost:8080/question/list", nav:"out", body:"list"}}
+  ]},
+  fail: { name:"❌ 로그인 실패", steps:[
+    {from:"browser", to:"filter", pk:"POST /user/login", t:"잘못된 비밀번호로 [로그인] 버튼을 누릅니다",
+     file:"브라우저가 보내는 HTTP 요청 내용", caller:"사용자가 login_form.html 화면의 [로그인] 버튼을 누릅니다.",
+     ret:"POST 요청이 Security 필터로 갑니다. 여기까지는 로그인 성공 흐름과 같습니다.",
+     code:["POST /user/login HTTP/1.1","Content-Type: application/x-www-form-urlencoded","","username=user1&password=9999&_csrf=ELCsIKgK..."],
+     hl:[3],
+     d:["비밀번호를 <code>9999</code>로 잘못 입력한 경우입니다.","아이디가 DB에 없는 경우도 이 탭에서 함께 설명합니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"loginWrong"}},
+    {from:"filter", to:"authm", pk:"아이디 + 비밀번호", t:"필터 → AuthenticationManager → UserSecurityService 순서로 호출됩니다",
+     file:"Spring Security 내부 필터 + SecurityConfig.java", caller:"UsernamePasswordAuthenticationFilter가 호출합니다.",
+     ret:"AuthenticationManager가 <code>loadUserByUsername()</code>을 호출합니다.",
+     code:[".formLogin((formLogin) -> formLogin","    .loginPage(\"/user/login\")","    .defaultSuccessUrl(\"/\"))"],
+     hl:[1],
+     d:["CSRF 토큰 검사, 아이디·비밀번호 꺼내기, AuthenticationManager 호출까지는 성공 흐름과 같습니다.","실패는 다음 두 곳 중 한 곳에서 결정됩니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"uss", to:"authm", pk:"UsernameNotFoundException", t:"경우 1: 아이디가 DB에 없으면 예외가 발생합니다",
+     file:"user/UserSecurityService.java", caller:"AuthenticationManager가 <code>loadUserByUsername()</code>을 호출했습니다.",
+     ret:"<code>throw</code>로 예외를 AuthenticationManager에 던지고 메서드가 바로 끝납니다.",
+     code:["Optional<SiteUser> _siteUser = this.userRepository.findByusername(username);","if (_siteUser.isEmpty()) {","    throw new UsernameNotFoundException(\"사용자를 찾을수 없습니다.\");","}"],
+     hl:[1,2],
+     d:["DB에 해당 아이디가 없으면 <code>findByusername()</code>은 빈 Optional을 리턴합니다.","<code>isEmpty()</code>가 true이므로 <code>UsernameNotFoundException</code>이 발생합니다.","<code>throw</code> 아래의 코드는 실행되지 않습니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"authm", to:"authm", pk:"matches() → false", t:"경우 2: 비밀번호가 다르면 비교 결과가 false입니다",
+     file:"Spring Security 내부 (PasswordEncoder 사용)", caller:"DaoAuthenticationProvider가 User 객체를 받은 뒤 비교합니다.",
+     ret:"<code>BadCredentialsException</code>을 발생시켜 Security 필터로 돌려보냅니다.",
+     code:["// Spring Security 내부에서 실행되는 비교 (직접 작성하지 않음)","passwordEncoder.matches(\"9999\", \"$2a$10$Xk3...\");   // false"],
+     hl:[1],
+     d:["입력한 <code>9999</code>를 BCrypt로 계산한 결과가 저장된 암호문과 맞지 않습니다.","두 경우 모두 사용자에게는 같은 오류 문구를 보여 줍니다. 아이디가 있는지 없는지를 알려 주지 않기 위해서입니다."],
+     scr:{url:"localhost:8080/user/login", nav:"in", body:"wait"}},
+    {from:"filter", to:"browser", pk:"302 → /user/login?error", t:"로그인 화면 주소에 ?error를 붙여 다시 요청하게 합니다",
+     file:"SecurityConfig.java + Spring Security 기본 규칙", caller:"인증 실패 처리 객체가 실행됩니다.",
+     ret:"브라우저에 302 응답을 보냅니다. Location은 <code>/user/login?error</code>입니다.",
+     code:[".formLogin((formLogin) -> formLogin","    .loginPage(\"/user/login\")","","// 브라우저가 받는 HTTP 응답","HTTP/1.1 302 Found","Location: /user/login?error"],
+     hl:[1,5],
+     d:["로그인 실패 시 이동 주소를 따로 정하지 않으면, Spring Security는 <code>loginPage 주소 + \"?error\"</code>로 보냅니다.","세션에는 로그인 정보가 저장되지 않습니다."],
+     scr:{url:"localhost:8080/user/login?error", nav:"in", body:"wait"}},
+    {from:"browser", to:"ctrl", pk:"GET /user/login?error", t:"UserController.login()이 다시 실행됩니다",
+     file:"user/UserController.java", caller:"브라우저가 302 응답을 받고 자동으로 GET 요청을 보냅니다.",
+     ret:"<code>\"login_form\"</code>을 리턴합니다.",
+     code:["@GetMapping(\"/login\")","public String login() {","    return \"login_form\";","}"],
+     hl:[0,2],
+     d:["주소 뒤의 <code>?error</code>는 요청 매개변수입니다. 메서드 코드는 변하지 않습니다.","Controller는 오류 여부를 확인하지 않습니다. 확인은 템플릿에서 합니다."],
+     scr:{url:"localhost:8080/user/login?error", nav:"in", body:"wait"}},
+    {from:"tpl", to:"browser", pk:"HTML 응답 (오류 문구 포함)", t:"login_form.html이 오류 문구를 보여 줍니다",
+     file:"templates/login_form.html", caller:"Thymeleaf가 템플릿을 HTML로 만듭니다.",
+     ret:"오류 문구가 들어간 로그인 화면이 브라우저에 표시됩니다.",
+     code:["<form th:action=\"@{/user/login}\" method=\"post\">","    <div th:if=\"${param.error}\">","        <div class=\"alert alert-danger\">","            사용자ID 또는 비밀번호를 확인해 주세요.","        </div>","    </div>"],
+     hl:[1,2,3],
+     d:["<code>${param.error}</code>는 요청 주소에 <code>error</code> 매개변수가 있는지 확인합니다.","이번 요청 주소에는 <code>?error</code>가 있으므로 true입니다. 빨간 오류 문구가 HTML에 들어갑니다."],
+     note:{ok:false, h:"❌ 로그인 실패. 세션에 로그인 정보가 없으므로 내비게이션 바에는 계속 [로그인] 링크가 보입니다."},
+     scr:{url:"localhost:8080/user/login?error", nav:"in", body:"loginError"}}
+  ]},
+  logout: { name:"🚪 로그아웃", steps:[
+    {from:"browser", to:"filter", pk:"GET /user/logout", t:"로그인 상태에서 [로그아웃] 링크를 클릭합니다",
+     file:"templates/navbar.html", caller:"사용자가 브라우저에서 링크를 클릭합니다.",
+     ret:"브라우저가 <code>GET /user/logout</code> 요청을 보냅니다. JSESSIONID 쿠키도 함께 갑니다.",
+     code:NAV_TPL, hl:[3,4],
+     d:["로그인 상태이므로 <code>isAuthenticated()</code>가 true입니다. [로그아웃] 링크가 보입니다.","<code>th:href=\"@{/user/logout}\"</code>는 <code>href=\"/user/logout\"</code>으로 바뀌어 있습니다."],
+     scr:{url:"localhost:8080/question/list", nav:"out", body:"list", click:"logout"}},
+    {from:"filter", to:"filter", pk:"주소 일치 확인", t:"LogoutFilter가 로그아웃 주소인지 확인합니다",
+     file:"SecurityConfig.java", caller:"Spring Security의 LogoutFilter가 요청 주소를 검사합니다.",
+     ret:"주소가 일치하므로 로그아웃 처리를 시작합니다. 요청은 Controller로 가지 않습니다.",
+     code:[".logout((logout) -> logout","    .logoutRequestMatcher(new AntPathRequestMatcher(\"/user/logout\"))","    .logoutSuccessUrl(\"/\")","    .invalidateHttpSession(true))"],
+     hl:[1],
+     d:["<code>logoutRequestMatcher</code>에 적은 주소와 요청 주소가 같은지 비교합니다.","그래서 UserController에 <code>/user/logout</code> 메서드를 만들지 않아도 됩니다.","<code>AntPathRequestMatcher</code>에 방식(GET/POST)을 정하지 않았으므로 GET 요청으로도 로그아웃됩니다."],
+     note:{ok:false, h:"⚠️ GET 요청으로도 로그아웃되므로, 다른 사이트의 링크 하나로 사용자를 로그아웃시킬 수 있습니다. 실제 서비스에서는 POST 방식으로 바꾸는 것이 안전합니다."},
+     scr:{url:"localhost:8080/user/logout", nav:"out", body:"wait"}},
+    {from:"filter", to:"session", pk:"세션 삭제", t:"세션을 삭제해 로그인 정보를 지웁니다",
+     file:"SecurityConfig.java", caller:"LogoutFilter 안의 로그아웃 처리 객체가 실행합니다.",
+     ret:"세션이 무효화되고, 현재 요청에 연결된 로그인 정보도 비워집니다.",
+     code:[".logout((logout) -> logout","    .logoutRequestMatcher(new AntPathRequestMatcher(\"/user/logout\"))","    .logoutSuccessUrl(\"/\")","    .invalidateHttpSession(true))","","// Spring Security 내부 동작을 줄여서 표현한 코드","session.invalidate();","SecurityContextHolder.clearContext();"],
+     hl:[3,6,7],
+     d:["<code>invalidateHttpSession(true)</code>이므로 세션 전체를 삭제합니다.","세션에 저장되어 있던 <code>SPRING_SECURITY_CONTEXT</code>(아이디, 권한)도 함께 사라집니다.","이제 서버는 이 브라우저를 로그인하지 않은 사용자로 봅니다."],
+     scr:{url:"localhost:8080/user/logout", nav:"out", body:"wait"}},
+    {from:"session", to:"browser", pk:"302 → /", t:"로그아웃 후 \"/\" 주소로 다시 요청하라고 응답합니다",
+     file:"SecurityConfig.java", caller:"로그아웃 성공 처리 객체가 <code>logoutSuccessUrl</code> 설정 값을 읽습니다.",
+     ret:"브라우저에 302 응답을 보냅니다. Location은 <code>/</code>입니다.",
+     code:["    .logoutSuccessUrl(\"/\")","","// 브라우저가 받는 HTTP 응답","HTTP/1.1 302 Found","Location: /"],
+     hl:[0,3,4],
+     d:["브라우저는 Location 주소인 <code>/</code>로 자동 요청합니다."],
+     scr:{url:"localhost:8080/", nav:"out", body:"wait"}},
+    {from:"browser", to:"ctrl", pk:"GET /", t:"\"/\" 요청이 질문 목록 화면으로 이어집니다",
+     file:"MainController.java → question/QuestionController.java", caller:"브라우저가 302 응답을 받고 자동으로 요청합니다.",
+     ret:"MainController.root()가 <code>/question/list</code>로 리다이렉트하고, QuestionController.list()가 <code>\"question_list\"</code>를 리턴합니다.",
+     code:["// MainController.java","@GetMapping(\"/\")","public String root() {","    return \"redirect:/question/list\";","}"],
+     hl:[3],
+     d:["이번 요청에서 Security 필터가 세션을 찾으면 로그인 정보가 없습니다.","그래서 이 요청은 로그인하지 않은 사용자(익명 사용자)의 요청으로 처리됩니다."],
+     scr:{url:"localhost:8080/question/list", nav:"out", body:"wait"}},
+    {from:"tpl", to:"browser", pk:"HTML 응답", t:"navbar.html에 다시 [로그인] 링크가 표시됩니다",
+     file:"templates/navbar.html", caller:"Thymeleaf가 question_list.html → layout.html → navbar.html을 합쳐 만듭니다.",
+     ret:"로그인 링크가 들어간 HTML이 브라우저로 전달됩니다.",
+     code:NAV_TPL, hl:[1,2],
+     d:["로그인 정보가 없으므로 <code>isAnonymous()</code>가 true입니다. [로그인] 링크가 HTML에 들어갑니다.","<code>isAuthenticated()</code>는 false이므로 [로그아웃] 링크는 HTML에서 빠집니다."],
+     note:{ok:true, h:"✅ 로그아웃 완료. 다시 로그인하려면 ‘✅ 로그인 성공’ 탭의 흐름을 반복합니다."},
+     scr:{url:"localhost:8080/question/list", nav:"in", body:"list"}}
+  ]}
+};
+
+var QUIZ = [
+  {q:"로그인 버튼을 눌렀을 때 오는 POST /user/login 요청은 어디서 처리하나요?",
+   o:["UserController의 @PostMapping 메서드","Spring Security의 필터(UsernamePasswordAuthenticationFilter)","QuestionController"], a:1,
+   e:"loginPage(\"/user/login\")로 정한 주소의 POST 요청은 Security 필터가 가로채 처리합니다. 그래서 Controller에 POST 메서드를 만들지 않습니다."},
+  {q:"loadUserByUsername() 메서드를 호출하는 곳은 어디인가요?",
+   o:["login_form.html","UserController.login()","AuthenticationManager(DaoAuthenticationProvider)"], a:2,
+   e:"AuthenticationManager는 UserDetailsService를 구현한 UserSecurityService 객체를 자동으로 연결해 두고, 로그인 검사 때 이 메서드를 호출합니다."},
+  {q:"로그인 후 navbar에 [로그아웃] 링크가 보이는 이유는 무엇인가요?",
+   o:["세션에 인증 정보가 저장되어 isAuthenticated()가 true이기 때문","UserController가 로그아웃 링크를 추가하기 때문","브라우저가 링크를 바꾸기 때문"], a:0,
+   e:"인증 성공 시 세션에 저장된 정보 때문에 sec:authorize=\"isAuthenticated()\"가 true가 됩니다."},
+  {q:"로그아웃 때 로그인 정보를 지우는 설정은 무엇인가요?",
+   o:["logoutSuccessUrl(\"/\")","invalidateHttpSession(true)","defaultSuccessUrl(\"/\")"], a:1,
+   e:"invalidateHttpSession(true)가 세션을 삭제합니다. 세션 안의 로그인 정보도 함께 사라집니다."}
+];
+
+/* ---------- elements ---------- */
+var $ = function(id){return document.getElementById(id);};
+var stage=$("stage"), tabs=$("tabs");
+var scen="login", idx=0, timer=null;
+
+NODES.forEach(function(n){
+  var d=document.createElement("div");
+  d.className="node"; d.id="n-"+n.id;
+  d.innerHTML='<span class="badge"></span><div class="ic"></div><div class="nm"></div><div class="fl"></div>';
+  d.querySelector(".ic").textContent=n.ic;
+  d.querySelector(".nm").textContent=n.nm;
+  d.querySelector(".fl").textContent=n.fl;
+  stage.appendChild(d);
+});
+var packet=document.createElement("div"); packet.className="packet"; stage.appendChild(packet);
+
+Object.keys(S).forEach(function(k){
+  var b=document.createElement("button");
+  b.className="tab"; b.type="button"; b.setAttribute("role","tab");
+  b.textContent=S[k].name; b.dataset.k=k;
+  b.addEventListener("click",function(){stop(); scen=k; idx=0; render(true);});
+  tabs.appendChild(b);
+});
+
+function center(el){
+  var s=stage.getBoundingClientRect(), r=el.getBoundingClientRect();
+  return {x:r.left-s.left+r.width/2, y:r.top-s.top+r.height/2};
+}
+
+function screenHTML(sc){
+  var b=sc.body;
+  if(b==="list"){
+    return '<table class="tbl"><tr><th>번호</th><th>제목</th><th>작성일시</th></tr>'+
+      '<tr><td>3</td><td>스프링부트 질문입니다</td><td>2026-10-19</td></tr>'+
+      '<tr><td>2</td><td>JPA가 무엇인가요?</td><td>2026-10-18</td></tr>'+
+      '<tr><td>1</td><td>sbb가 무엇인가요?</td><td>2026-10-17</td></tr></table>';
+  }
+  if(b==="wait"){ return '<div class="wait"><span class="spin"></span>서버가 요청을 처리하는 중…</div>'; }
+  var u="", p="", err="";
+  if(b==="loginFilled"){u="user1";p="••••";}
+  if(b==="loginWrong"){u="user1";p="••••";}
+  if(b==="loginError"){err='<div class="alert">사용자ID 또는 비밀번호를 확인해 주세요.</div>';}
+  return err+'<div class="fld"><label>사용자ID</label><div class="in">'+u+'</div></div>'+
+    '<div class="fld"><label>비밀번호</label><div class="in">'+p+'</div></div>'+
+    '<span class="bbtn">로그인</span>'+
+    '<div class="hidden-csrf">&lt;input type="hidden" name="_csrf" value="ELCs…"&gt; (화면에는 보이지 않음)</div>';
+}
+
+function render(fromTab){
+  var steps=S[scen].steps, st=steps[idx];
+  Array.prototype.forEach.call(tabs.children,function(t){t.setAttribute("aria-selected", t.dataset.k===scen?"true":"false");});
+
+  NODES.forEach(function(n){
+    var el=$("n-"+n.id); el.classList.remove("from","to","dim");
+    var bd=el.querySelector(".badge"); bd.textContent="";
+    if(n.id===st.to){el.classList.add("to"); bd.textContent= st.from===st.to ? "실행 중" : "받는 쪽";}
+    else if(n.id===st.from){el.classList.add("from"); bd.textContent="보내는 쪽";}
+    else el.classList.add("dim");
+  });
+
+  var a=center($("n-"+st.from)), b=center($("n-"+st.to));
+  packet.textContent=st.pk;
+  packet.style.transition="none";
+  packet.classList.remove("show");
+  packet.style.left=a.x+"px"; packet.style.top=(a.y+24)+"px";
+  void packet.offsetWidth;
+  packet.style.transition="";
+  requestAnimationFrame(function(){
+    packet.classList.add("show");
+    packet.style.left=b.x+"px"; packet.style.top=(b.y+24)+"px";
+  });
+
+  $("stepNo").textContent=idx+1;
+  $("stepTitle").textContent=st.t;
+  $("mFile").innerHTML="<code>"+st.file+"</code>";
+  $("mCaller").innerHTML=st.caller;
+  $("mReturn").innerHTML=st.ret;
+  var dl=$("desc"); dl.innerHTML="";
+  st.d.forEach(function(x){var li=document.createElement("li"); li.innerHTML=x; dl.appendChild(li);});
+  var nt=$("note"); nt.innerHTML="";
+  if(st.note){var nd=document.createElement("div"); nd.className="note"+(st.note.ok?" ok":""); nd.innerHTML=st.note.h; nt.appendChild(nd);}
+
+  $("codeFile").textContent="📂 "+st.file.replace(/<[^>]+>/g,"");
+  var pre=$("code"); pre.innerHTML="";
+  st.code.forEach(function(line,i){
+    var sp=document.createElement("span"); sp.className="ln"+(st.hl.indexOf(i)>-1?" hl":"");
+    var no=document.createElement("span"); no.className="no"; no.textContent=i+1;
+    sp.appendChild(no); sp.appendChild(document.createTextNode(line||" "));
+    pre.appendChild(sp);
+  });
+
+  var sc=st.scr, url=$("url");
+  if(url.textContent!==sc.url){url.classList.add("flash"); setTimeout(function(){url.classList.remove("flash");},500);}
+  url.textContent=sc.url;
+  $("navLogin").style.display= sc.nav==="in" ? "" : "none";
+  $("navLogout").style.display= sc.nav==="out" ? "" : "none";
+  $("navLogin").classList.toggle("on", sc.click==="login");
+  $("navLogout").classList.toggle("on", sc.click==="logout");
+  $("bbody").innerHTML=screenHTML(sc);
+
+  var dots=$("dots"); dots.innerHTML="";
+  steps.forEach(function(_,i){
+    var d=document.createElement("button"); d.type="button";
+    d.className="dot"+(i<idx?" done":"")+(i===idx?" cur":"");
+    d.setAttribute("aria-label",(i+1)+"단계로 이동");
+    d.addEventListener("click",function(){stop(); idx=i; render();});
+    dots.appendChild(d);
+  });
+  $("prog").textContent=(idx+1)+" / "+steps.length;
+  $("pbar").style.width=Math.round((idx+1)/steps.length*100)+"%";
+  $("prevBtn").disabled= idx===0;
+  $("nextBtn").textContent= idx===steps.length-1 ? "완료 ✓" : "다음 ▶";
+}
+
+function next(){
+  var n=S[scen].steps.length;
+  if(idx<n-1){idx++; render(); return true;}
+  var keys=Object.keys(S), k=keys.indexOf(scen);
+  if(timer && k<keys.length-1){scen=keys[k+1]; idx=0; render(true); return true;}
+  stop(); toast("🎉 이 흐름의 마지막 단계입니다"); return false;
+}
+function prev(){ if(idx>0){idx--; render();} }
+function stop(){ if(timer){clearInterval(timer); timer=null;} $("playBtn").textContent="⏯ 자동 재생"; }
+function play(){
+  if(timer){stop(); return;}
+  $("playBtn").textContent="⏸ 멈춤";
+  timer=setInterval(next, +$("speed").value);
+}
+$("nextBtn").addEventListener("click",function(){stop(); next();});
+$("prevBtn").addEventListener("click",function(){stop(); prev();});
+$("firstBtn").addEventListener("click",function(){stop(); idx=0; render();});
+$("playBtn").addEventListener("click",play);
+$("speed").addEventListener("change",function(){ if(timer){stop(); play();} });
+document.addEventListener("keydown",function(e){
+  if(e.key==="ArrowRight"){stop(); next();}
+  if(e.key==="ArrowLeft"){stop(); prev();}
+});
+window.addEventListener("resize",function(){ render(); });
+
+/* copy */
+function toast(msg){var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},1800);}
+$("copyBtn").addEventListener("click",function(){
+  var txt=S[scen].steps[idx].code.join("\n");
+  function fallback(){
+    try{var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); var ok=document.execCommand("copy"); document.body.removeChild(ta); toast(ok?"📋 복사했습니다":"코드를 길게 눌러 직접 복사해 주세요");}
+    catch(e){toast("코드를 길게 눌러 직접 복사해 주세요");}
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){toast("📋 복사했습니다");},fallback);
+  } else fallback();
+});
+
+/* theme */
+$("themeBtn").addEventListener("click",function(){
+  var r=document.documentElement, cur=r.getAttribute("data-theme");
+  var dark = cur ? cur==="dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  r.setAttribute("data-theme", dark ? "light" : "dark");
+});
+
+/* download */
+function pageHTML(){ return "<!DOCTYPE html>\n"+document.documentElement.outerHTML; }
+function blobDownload(){
+  try{
+    var blob=new Blob([pageHTML()],{type:"text/html"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="SbbLoginLogoutFlow.html";
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},500);
+    toast("⬇️ 다운로드를 시작했습니다");
+  }catch(e){ toast("이 화면에서는 다운로드할 수 없습니다"); }
+}
+var dlApi=null;
+if(window.claude && typeof window.claude.use==="function"){
+  window.claude.use("downloads").then(function(d){dlApi=d;}).catch(function(){dlApi=null;});
+}
+$("dlBtn").addEventListener("click",function(){
+  if(dlApi){
+    dlApi.save({filename:"SbbLoginLogoutFlow.html", data:pageHTML()})
+      .then(function(){toast("⬇️ 저장했습니다");})
+      .catch(function(e){ if(e && e.code==="declined") toast("저장을 취소했습니다"); else blobDownload(); });
+  } else blobDownload();
+});
+
+/* quiz */
+var qb=$("quizBox");
+QUIZ.forEach(function(q,qi){
+  var box=document.createElement("div"); box.className="quiz card";
+  var h=document.createElement("div"); h.className="q"; h.textContent=(qi+1)+". "+q.q; box.appendChild(h);
+  q.o.forEach(function(o,oi){
+    var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o;
+    b.addEventListener("click",function(){
+      if(box.classList.contains("done")) return;
+      box.classList.add("done");
+      b.classList.add(oi===q.a?"right":"wrong");
+      box.querySelectorAll(".opt")[q.a].classList.add("right");
+    });
+    box.appendChild(b);
+  });
+  var ex=document.createElement("div"); ex.className="ex"; ex.textContent="💡 "+q.e; box.appendChild(ex);
+  qb.appendChild(box);
+});
+
+render(true);
+})();
+</script>
+
+
+</body></html>
