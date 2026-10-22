@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- v2 · 2026-10-09 · 백엔드 입문 4장 재작성 · JUnit·AssertJ·Mockito·MockMvc 새 예제 · 책 문장·그림 미사용 -->
+<title>백엔드 입문 4장 · 스프링 부트 4와 테스트 · 쉬운 설명서 v2</title>
+<style>
+  :root{--main:#0f7a5a;--main2:#e8f6f0;--ink:#1d2430;--mute:#5b6572;--line:#dfe5ea;--warn:#f0a33a;--warnbg:#fff4e0;--tipbg:#eaf2ff;--tipb:#4a86e8;--bad:#e0565b;--badbg:#fde8e9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#f4f7f9;line-height:1.8;font-size:16px}
+  .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(135deg,#0f7a5a,#2fbf8f);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:20}
+  .topbar h1{font-size:1.05rem;margin:0;flex:1}
+  .btn{background:#fff;color:var(--main);border:0;border-radius:8px;padding:8px 12px;font-size:.9rem;cursor:pointer;font-weight:bold}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+  #menuBtn{display:none}
+  .side{position:fixed;top:56px;left:0;bottom:0;width:270px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;padding:16px 12px;z-index:10}
+  .side h2{font-size:.9rem;color:var(--mute);margin:6px 8px 10px}
+  .side a{display:block;color:var(--ink);text-decoration:none;padding:9px 12px;border-radius:8px;margin-bottom:4px;font-size:.93rem}
+  .side a:hover{background:var(--main2)}
+  .side a.active{background:var(--main);color:#fff;font-weight:bold}
+  .side small{display:block;color:var(--mute);font-size:.78rem;font-weight:normal}
+  .side a.active small{color:#dff5ec}
+  main{margin-left:270px;margin-top:56px;min-height:calc(100vh - 56px);padding:24px 28px 60px}
+  .page{display:none;max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 26px 20px}
+  .page.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .page h2{margin:0 0 10px;color:var(--main);font-size:1.4rem}
+  .page h3{margin:24px 0 8px;font-size:1.1rem;border-left:4px solid var(--main);padding-left:10px}
+  .page p{margin:8px 0}
+  .page ul,.page ol{padding-left:22px}
+  .page li{margin:4px 0}
+  .box{border-radius:10px;padding:12px 14px;margin:14px 0;font-size:.95rem}
+  .box strong{display:block;margin-bottom:4px}
+  .tip{background:var(--tipbg);border-left:4px solid var(--tipb)}
+  .warn{background:var(--warnbg);border-left:4px solid var(--warn)}
+  .key{background:var(--main2);border-left:4px solid var(--main)}
+  .bad{background:var(--badbg);border-left:4px solid var(--bad)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--main2)}
+  code{background:#f0f3f6;border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:.9em}
+  .eg{background:#1e2530;color:#e6edf3;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:.85rem;overflow-x:auto;white-space:pre;line-height:1.6}
+  .eg .c{color:#8b98a8}
+  .stepper{border:2px solid var(--main2);border-radius:14px;padding:12px;margin:16px 0;background:#fbfdfc}
+  .stage{width:100%;height:auto;display:block}
+  .el{opacity:0;transition:opacity .45s ease}
+  .el.on{opacity:1}
+  .ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;margin:10px 0}
+  .ctrl button{background:var(--main);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.92rem}
+  .ctrl button.alt{background:#fff;color:var(--main);border:1px solid var(--main)}
+  .ctrl button:disabled{opacity:.35;cursor:default}
+  .ctrl .lbl{min-width:90px;text-align:center;font-weight:bold;color:var(--main)}
+  .caps{margin:6px 0 0;padding:0}
+  .caps li{list-style:none;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem;margin:0}
+  .caps li.on{display:block;border-color:var(--warn);background:var(--warnbg)}
+  .quiz{background:#fafafa;border:1px dashed #b8c2cc;border-radius:10px;padding:12px 14px;margin-top:18px}
+  .quiz summary{cursor:pointer;color:var(--main);font-weight:bold}
+  .check{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .check input{margin-top:6px}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin:14px auto 0;max-width:860px}
+  .pager button{background:#fff;border:1px solid var(--main);color:var(--main);border-radius:8px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+  .pager button:hover{background:var(--main2)}
+  @media (max-width:900px){
+    #menuBtn{display:inline-block}
+    .side{transform:translateX(-100%);transition:transform .25s;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+    .side.open{transform:none}
+    main{margin-left:0;padding:16px 12px 60px}
+    .page{padding:18px 14px}
+  }
+
+  .url{font-family:Consolas,monospace;background:#f1f4f6;padding:1px 6px;border-radius:5px;font-size:.9em}
+  .kw{display:inline-block;background:#e8f6f0;border-radius:14px;padding:3px 12px;margin:3px 4px 3px 0;font-size:.9rem;color:#0f7a5a;font-weight:bold}
+  .step{display:inline-block;background:#0f7a5a;color:#fff;border-radius:6px;padding:1px 8px;font-size:.85rem;margin-right:6px;font-weight:bold}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;font-size:.92rem}
+  .flow span{background:#e8f6f0;border:1px solid #bfe3d4;border-radius:8px;padding:5px 10px}
+  .eg .cm{color:#8fd19e}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="btn ghost" id="menuBtn" onclick="toggleMenu()">☰ 목차</button>
+  <h1>백엔드 입문 · 4장 스프링 부트 4와 테스트 (v2)</h1>
+  <button class="btn" onclick="downloadPage()">⬇️ 다운로드</button>
+</div>
+
+<aside class="side" id="side">
+  <h2>📚 목차 (순서대로 따라 하세요)</h2>
+  <a href="#p0" data-p="p0">0. 4장 지도<small>테스트가 우리 대신 확인하는 방법</small></a>
+  <a href="#p1" data-p="p1">1. 왜 테스트가 필요한가<small>고친 뒤 자동으로 다시 확인하기</small></a>
+  <a href="#p2" data-p="p2">2. 테스트 종류<small>단위, 통합, 웹 테스트</small></a>
+  <a href="#p3" data-p="p3">3. JUnit 5 기본<small>@Test, @BeforeEach, @AfterEach</small></a>
+  <a href="#p4" data-p="p4">4. AssertJ 검사<small>assertThat으로 결과 확인하기</small></a>
+  <a href="#p5" data-p="p5">5. Given-When-Then<small>준비, 실행, 확인의 세 칸</small></a>
+  <a href="#p6" data-p="p6">6. Mockito 가짜 객체<small>저장소를 가짜로 바꿔 서비스만 검사</small></a>
+  <a href="#p7" data-p="p7">7. MockMvc 웹 테스트<small>요청을 흉내 내고 응답을 검사하기</small></a>
+  <a href="#p8" data-p="p8">8. 테스트 범위 고르기<small>@SpringBootTest와 슬라이스 테스트</small></a>
+  <a href="#p9" data-p="p9">9. 실습: 계산기 테스트<small>add와 0 나누기 예외 테스트</small></a>
+  <a href="#p10" data-p="p10">10. 실패 메시지 읽기<small>Expected와 but was 비교</small></a>
+  <a href="#p11" data-p="p11">11. 정리와 연습<small>요약, 직접 해 보기, 체크리스트</small></a>
+</aside>
+
+<main>
+<section class="page" id="p0">
+  <h2>0. 4장 지도</h2>
+
+<p>지금까지 우리는 서버를 실행하고 브라우저에서 눌러 보며 확인했습니다. 이 방법은 <b>사람이 매번 해야 하고, 빠뜨리기 쉽습니다.</b> 테스트 코드는 이 확인 과정을 <b>프로그램이 스스로 반복</b>하도록 만든 것입니다.</p>
+<h3>🎬 애니메이션: 이 장에서 쓰는 도구 네 가지</h3>
+<div class="stepper" data-steps="4">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="10" y="85" width="150" height="70" rx="10" fill="#ffffff" stroke="#1d2430" stroke-width="2"/><text x="85.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">왜 테스트?</text><text x="85.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">자동으로 확인</text><rect x="175" y="85" width="150" height="70" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="250.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">JUnit 5</text><text x="250.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">@Test 실행</text><rect x="340" y="85" width="150" height="70" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="415.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">AssertJ</text><text x="415.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">결과 검사</text><rect x="505" y="85" width="125" height="70" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="567.5" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">MockMvc</text><text x="567.5" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">웹 요청 흉내</text><g class="el" data-show="1" data-hide="99"><text x="320" y="200" text-anchor="middle" font-size="13">네 도구가 차례로 등장합니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">이 장은 테스트 도구 네 가지를 차례로 익힙니다.</li><li data-show="1">1단계: 테스트가 왜 필요한지 확인합니다.</li><li data-show="2">2단계: JUnit 5가 테스트 메서드를 실행합니다.</li><li data-show="3">3단계: AssertJ가 실행 결과가 기대한 값인지 검사합니다.</li><li data-show="4">4단계: MockMvc가 웹 요청을 흉내 내어 컨트롤러를 검사합니다.</li></ol>
+</div>
+<table>
+<tr><th>도구</th><th>하는 일</th><th>주로 쓰는 곳</th></tr>
+<tr><td>JUnit 5</td><td>테스트 메서드를 찾아 실행</td><td>모든 테스트의 뼈대</td></tr>
+<tr><td>AssertJ</td><td>결과를 읽기 쉬운 문장으로 검사</td><td>값 비교, 예외 확인</td></tr>
+<tr><td>Mockito</td><td>가짜 객체를 만들어 대신 세움</td><td>다른 계층과 분리해 검사</td></tr>
+<tr><td>MockMvc</td><td>실제 서버 없이 웹 요청을 흉내 냄</td><td>컨트롤러 검사</td></tr>
+</table>
+
+</section>
+
+<section class="page" id="p1">
+  <h2>1. 왜 테스트가 필요한가</h2>
+
+<p>코드를 한 군데 고치면, 전혀 관계없어 보이는 다른 기능이 깨지는 일이 흔합니다. 이를 <b>회귀(Regression) 버그</b>라고 부릅니다. 테스트 코드가 있으면 고친 뒤 버튼 한 번으로 모든 기능을 다시 확인할 수 있습니다.</p>
+<h3>🎬 애니메이션: 테스트가 없을 때와 있을 때</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="180" height="100" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="110.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">수정</text><text x="110.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">기능 하나 고침</text><g class="el" data-show="1" data-hide="99"><line x1="200" y1="110" x2="240" y2="110" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="60" width="180" height="100" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="330.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">다른 기능 확인</text><text x="330.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">사람이 매번 클릭</text></g><g class="el" data-show="2" data-hide="99"><line x1="420" y1="110" x2="460" y2="110" stroke="#e0565b" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="60" width="160" height="100" rx="10" fill="#fde8e9" stroke="#e0565b" stroke-width="2"/><text x="540.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">뒤늦게 발견</text><text x="540.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">이미 배포 후</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="200" text-anchor="middle" font-size="13" fill="#0f7a5a" font-weight="bold">테스트가 있으면 수정 직후 바로 알 수 있습니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">같은 수정을 해도 결과를 아는 시점이 다릅니다.</li><li data-show="1">1단계: 기능 하나를 고칩니다.</li><li data-show="2">2단계: 테스트가 없으면 다른 기능이 깨졌는지 모른 채 넘어갈 수 있습니다.</li><li data-show="3">3단계: 테스트가 있으면 수정 직후 실패 메시지로 바로 알 수 있습니다.</li></ol>
+</div>
+<table>
+<tr><th>구분</th><th>수동 확인</th><th>자동 테스트</th></tr>
+<tr><td>반복 속도</td><td>느림</td><td>빠름</td></tr>
+<tr><td>빠뜨림</td><td>사람이라 생길 수 있음</td><td>정해진 것은 항상 확인</td></tr>
+<tr><td>기록</td><td>남기기 어려움</td><td>코드로 남아 누구나 다시 실행</td></tr>
+</table>
+<div class="box key"><strong>💡 테스트의 목적</strong>테스트는 "버그가 없다"를 증명하지 않습니다. "이미 확인한 약속이 아직 지켜지고 있다"를 계속 알려 주는 도구입니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 1</summary>
+    <p>Q. 수정한 기능과 무관한 다른 기능이 깨지는 현상을 무엇이라고 부르나요?</p>
+    <p>A. 회귀(Regression) 버그라고 합니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p2">
+  <h2>2. 테스트 종류</h2>
+
+<p>테스트는 확인하는 범위에 따라 여러 종류로 나눕니다. 범위가 작을수록 빠르고 원인을 찾기 쉽고, 범위가 클수록 실제 상황에 가깝습니다.</p>
+<h3>🎬 애니메이션: 작은 범위에서 큰 범위로</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="80" width="190" height="70" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="115.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">단위 테스트</text><text x="115.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">메서드 하나</text><g class="el" data-show="1" data-hide="99"><line x1="210" y1="115" x2="240" y2="115" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="80" width="190" height="70" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="335.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">통합 테스트</text><text x="335.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">여러 계층 함께</text></g><g class="el" data-show="2" data-hide="99"><line x1="430" y1="115" x2="460" y2="115" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="80" width="170" height="70" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="545.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">웹 테스트</text><text x="545.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">요청과 응답</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">테스트는 작은 조각에서 큰 조각으로 넓혀 갑니다.</li><li data-show="1">1단계: 단위 테스트는 메서드 하나만 따로 확인하고, 통합 테스트는 여러 계층을 함께 확인합니다.</li><li data-show="2">2단계: 웹 테스트는 요청을 보내고 응답이 맞는지 확인합니다.</li></ol>
+</div>
+<table>
+<tr><th>종류</th><th>범위</th><th>속도</th><th>이 장에서</th></tr>
+<tr><td>단위(Unit)</td><td>메서드 하나</td><td>매우 빠름</td><td>계산기 예제</td></tr>
+<tr><td>통합(Integration)</td><td>여러 계층</td><td>보통</td><td>스프링 부트 테스트 소개</td></tr>
+<tr><td>웹(Web)</td><td>요청에서 응답까지</td><td>보통</td><td>MockMvc 예제</td></tr>
+</table>
+<div class="box tip"><strong>📌 대부분은 작은 테스트로</strong>테스트를 많이 쓰되, 작은 단위 테스트를 기본으로 하고 넓은 테스트는 중요한 흐름에만 씁니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 2</summary>
+    <p>Q. 메서드 하나만 따로 떼어 확인하는 테스트 종류는 무엇인가요?</p>
+    <p>A. 단위 테스트(Unit Test)입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p3">
+  <h2>3. JUnit 5 기본</h2>
+
+<p>JUnit 5는 테스트 메서드를 찾아 실행하는 도구입니다. 메서드 위에 <b>@Test</b>를 붙이면 테스트로 인식합니다. 또 <b>@BeforeEach</b>는 각 테스트 전에, <b>@AfterEach</b>는 각 테스트 후에 실행됩니다.</p>
+<h3>🎬 애니메이션: 테스트 한 개가 도는 순서</h3>
+<div class="stepper" data-steps="4">
+<svg class="stage" viewBox="0 0 640 230" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="140" height="90" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="90.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@BeforeEach</text><text x="90.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">준비 실행</text><g class="el" data-show="1" data-hide="1"><line x1="160" y1="105" x2="200" y2="105" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="1"><rect x="200" y="60" width="140" height="90" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="270.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@Test 1</text><text x="270.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">첫 검사</text></g><g class="el" data-show="2" data-hide="2"><line x1="340" y1="105" x2="380" y2="105" stroke="#f0a33a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="2"><rect x="380" y="60" width="140" height="90" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="450.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@AfterEach</text><text x="450.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">정리 실행</text></g><g class="el" data-show="3" data-hide="3"><rect x="200" y="165" width="140" height="40" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="270.0" y="181.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@Test 2</text><text x="270.0" y="199.0" text-anchor="middle" font-size="10" fill="#5b6572">다음 검사</text></g><g class="el" data-show="4" data-hide="4"><text x="320" y="225" text-anchor="middle" font-size="13">테스트마다 준비와 정리가 한 번씩 반복됩니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">@Test 메서드 하나가 실행될 때 주변 메서드가 함께 움직입니다.</li><li data-show="1">1단계: 테스트 전에 @BeforeEach가 준비 작업을 합니다.</li><li data-show="2">2단계: @Test 메서드가 실행되어 검사합니다.</li><li data-show="3">3단계: 다음 테스트가 시작될 때는 준비가 다시 실행됩니다.</li><li data-show="4">4단계: 테스트마다 준비와 정리가 반복되어 서로 영향을 주지 않습니다.</li></ol>
+</div>
+<h3>코드: 계산기 테스트의 뼈대</h3>
+<div class="eg">import org.junit.jupiter.api.BeforeEach;   // 각 테스트 전에 실행할 메서드 표시
+import org.junit.jupiter.api.Test;          // 테스트 메서드 표시
+
+class CalculatorServiceTest {
+
+    private CalculatorService calculator;   // 테스트에서 쓸 계산기 객체를 담아 둘 칸
+
+    @BeforeEach                             // 테스트 메서드 하나가 실행되기 직전마다 아래 메서드가 실행된다
+    void setUp() {
+        calculator = new CalculatorService(); // 매번 새 계산기 객체를 만들어 이전 테스트의 영향을 없앤다
+    }
+
+    @Test                                   // 이 메서드는 테스트로 실행된다
+    void addTwoNumbers() {
+        int result = calculator.add(2, 3);  // 계산기의 add를 호출하고, 결과를 받는다
+<span class="cm">        // 결과 검사는 다음 페이지의 AssertJ에서 다룬다</span>
+    }
+}</div>
+<div class="box warn"><strong>⚠️ 테스트끼리 순서에 기대지 마세요</strong>JUnit은 테스트 실행 순서를 보장하지 않습니다. 각 테스트는 혼자서도 통과할 수 있게 @BeforeEach에서 준비하는 것이 원칙입니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 3</summary>
+    <p>Q. 테스트마다 실행 전에 준비 작업을 하고 싶을 때 쓰는 표시는 무엇인가요?</p>
+    <p>A. @BeforeEach입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p4">
+  <h2>4. AssertJ 검사</h2>
+
+<p><b>AssertJ</b>는 "결과가 이래야 한다"를 <b>읽기 쉬운 문장</b>으로 쓰게 해 주는 검사 도구입니다. assertThat에 실제 값을 넣고, 뒤에 기대하는 조건을 이어 씁니다.</p>
+<h3>🎬 애니메이션: 실제 값과 기대 값 비교</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="180" height="100" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="110.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">실제 값</text><text x="110.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">calculator.add(2,3) → 5</text><g class="el" data-show="1" data-hide="99"><line x1="200" y1="110" x2="240" y2="110" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="60" width="180" height="100" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="330.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">assertThat(…)</text><text x="330.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">값을 감싸서 검사 시작</text></g><g class="el" data-show="2" data-hide="99"><line x1="420" y1="110" x2="460" y2="110" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="60" width="160" height="100" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="540.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">isEqualTo(5)</text><text x="540.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">기대 값과 비교</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="200" text-anchor="middle" font-size="14" fill="#0f7a5a" font-weight="bold">✅ 같으면 통과 (초록)</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="225" text-anchor="middle" font-size="12" fill="#a33a3f">다르면 실패 (빨강)에 두 값을 함께 보여 줌</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">검사는 실제 값을 감싸고, 기대 값과 비교하는 순서입니다.</li><li data-show="1">1단계: 계산기가 돌려준 실제 값이 준비됩니다.</li><li data-show="2">2단계: assertThat으로 감싸고 isEqualTo로 기대 값을 이어 씁니다.</li><li data-show="3">3단계: 같으면 초록으로 통과하고, 다르면 실패 메시지에 두 값을 보여 줍니다.</li></ol>
+</div>
+<h3>코드: 자주 쓰는 검사 문장</h3>
+<div class="eg">import static org.assertj.core.api.Assertions.assertThat;            // assertThat을 바로 쓰기 위해 가져온다
+import static org.assertj.core.api.Assertions.assertThatThrownBy;     // 예외 검사용 문장을 가져온다
+
+@Test
+void assertionExamples() {
+    int sum = calculator.add(2, 3);                    // 실제 계산 결과를 받는다
+    assertThat(sum).isEqualTo(5);                      // sum이 5와 같은지 검사한다
+
+    String name = "memo-app";                          // 검사할 문자열을 준비한다
+    assertThat(name).startsWith("memo");               // 문자열이 memo로 시작하는지 검사한다
+
+    java.util.List&lt;String&gt; list = java.util.List.of("a", "b");  // 검사할 목록을 준비한다
+    assertThat(list).hasSize(2).contains("a");          // 크기가 2이고 "a"를 포함하는지 검사한다
+
+    assertThatThrownBy(() -&gt; calculator.divide(10, 0))  // 0으로 나누는 호출을 실행해 본다
+            .isInstanceOf(IllegalArgumentException.class); // 그 때 예외 종류가 맞는지 검사한다
+}</div>
+<div class="box tip"><strong>📌 AssertJ가 좋은 이유</strong>assertEquals(5, sum)처럼 쓰면 순서를 헷갈리기 쉽습니다. AssertJ는 "무엇을 검사하는가"가 앞에 와서 문장이 자연스럽습니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 4</summary>
+    <p>Q. assertThat(sum).isEqualTo(5)는 무엇을 검사하나요?</p>
+    <p>A. sum 값이 5와 같은지 검사합니다. 같지 않으면 테스트가 실패합니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p5">
+  <h2>5. Given-When-Then</h2>
+
+<p>테스트 코드를 읽기 쉽게 쓰는 규칙이 <b>Given-When-Then</b>입니다. 순서대로 <b>준비(given)</b>, <b>실행(when)</b>, <b>확인(then)</b>을 나누어 적습니다.</p>
+<h3>🎬 애니메이션: 세 칸으로 나누어 읽기</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="190" height="100" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="115.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">given</text><text x="115.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">준비: 조건 만들기</text><g class="el" data-show="1" data-hide="99"><line x1="210" y1="110" x2="240" y2="110" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="60" width="190" height="100" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="335.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">when</text><text x="335.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">행동: 기능 실행</text></g><g class="el" data-show="2" data-hide="99"><line x1="430" y1="110" x2="460" y2="110" stroke="#f0a33a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="60" width="160" height="100" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="540.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">then</text><text x="540.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">확인: 결과 검사</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="215" text-anchor="middle" font-size="13" font-weight="bold">세 칸을 주석으로 나누면 누구나 한눈에 읽습니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">세 칸은 항상 같은 순서로 나타납니다.</li><li data-show="1">1단계: given에서 테스트에 필요한 값과 상황을 준비합니다.</li><li data-show="2">2단계: when에서 검사할 기능을 한 번 실행합니다.</li><li data-show="3">3단계: then에서 결과가 기대와 같은지 확인합니다.</li></ol>
+</div>
+<h3>코드: Given-When-Then 예시</h3>
+<div class="eg">@Test
+void divideNormally() {
+<span class="cm">    // given: 나누어질 수와 나눌 수를 준비한다</span>
+    int dividend = 10;
+    int divisor = 2;
+
+<span class="cm">    // when: 나눗셈을 한 번 실행하고 결과를 받는다</span>
+    int result = calculator.divide(dividend, divisor);
+
+<span class="cm">    // then: 결과가 5인지 확인한다</span>
+    assertThat(result).isEqualTo(5);
+}</div>
+<div class="box key"><strong>💡 한 테스트에는 한 가지만</strong>검사 항목을 많이 넣으면 실패했을 때 어느 부분이 문제인지 헷갈립니다. 상황 하나당 테스트 하나를 권장합니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 5</summary>
+    <p>Q. Given-When-Then에서 when 칸에는 무엇을 쓰나요?</p>
+    <p>A. 검사할 기능을 실행하는 행동을 씁니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p6">
+  <h2>6. Mockito 가짜 객체</h2>
+
+<p>서비스는 저장소(Repository)에게 데이터를 달라고 부릅니다. 테스트에서 실제 데이터베이스까지 연결하면 느리고 준비가 복잡합니다. 그래서 <b>Mockito</b>로 저장소를 <b>가짜 객체(Mock)</b>로 바꿔 "이렇게 대답하라"고 정해 줍니다.</p>
+<h3>🎬 애니메이션: 가짜 저장소가 대신 대답하는 흐름</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="180" height="100" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="110.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">MemoService</text><text x="110.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">검사 대상</text><g class="el" data-show="1" data-hide="99"><line x1="200" y1="110" x2="240" y2="110" stroke="#f0a33a" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="60" width="180" height="100" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="330.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">가짜 Repository</text><text x="330.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">Mock 객체</text></g><g class="el" data-show="2" data-hide="99"><line x1="420" y1="110" x2="460" y2="110" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="60" width="160" height="100" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="540.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">정해진 값 반환</text><text x="540.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">when … thenReturn</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="210" text-anchor="middle" font-size="13">실제 DB 없이 서비스 로직만 검사합니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">서비스는 진짜 저장소 대신 가짜 저장소를 받습니다.</li><li data-show="1">1단계: 테스트는 MemoService를 검사 대상으로 준비합니다.</li><li data-show="2">2단계: 가짜 저장소에게 "목록을 달라고 하면 이 두 개를 돌려줘"라고 정해 둡니다.</li><li data-show="3">3단계: 서비스가 호출하면 가짜가 정해진 값을 돌려주고, 서비스 로직만 검사됩니다.</li></ol>
+</div>
+<h3>코드: 가짜 저장소로 서비스 검사하기</h3>
+<div class="eg">import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;                       // 가짜 객체의 대답을 정하는 기능
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;                               // 가짜 객체를 서비스에 넣어 주는 표시
+import org.mockito.Mock;                                      // 가짜 객체를 만드는 표시
+import org.mockito.junit.jupiter.MockitoExtension;            // Mockito를 JUnit과 함께 켜는 설정
+
+@ExtendWith(MockitoExtension.class)                           // 이 테스트에서 Mockito 기능을 켠다
+class MemoServiceTest {
+
+    @Mock
+    MemoRepository memoRepository;                            // 진짜 대신 쓰는 가짜 저장소
+
+    @InjectMocks
+    MemoService memoService;                                  // 위 가짜 저장소를 생성자로 넣은 서비스
+
+    @Test
+    void countMemos() {
+<span class="cm">        // given: 저장소가 목록을 달라고 하면 두 개짜리 목록을 돌려주도록 정해 둔다</span>
+        when(memoRepository.findAllTitles()).thenReturn(List.of("장보기", "운동"));
+
+<span class="cm">        // when: 서비스의 개수 세기 기능을 실행한다</span>
+        int count = memoService.countMemos();
+
+<span class="cm">        // then: 서비스가 목록 크기 2를 올바르게 돌려주는지 확인한다</span>
+        assertThat(count).isEqualTo(2);
+    }
+}</div>
+<div class="box warn"><strong>⚠️ 가짜는 정해진 것만 대답합니다</strong>정해 두지 않은 메서드를 부르면 null이나 0을 돌려줍니다. 그 때문에 테스트가 이상하게 통과하거나 실패할 수 있으니 필요한 대답은 빠짐없이 정하세요.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 6</summary>
+    <p>Q. Mockito의 Mock 객체는 무엇을 대신하나요?</p>
+    <p>A. 진짜 의존 객체(예: 데이터베이스 저장소)를 대신하는 가짜 객체입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p7">
+  <h2>7. MockMvc 웹 테스트</h2>
+
+<p><b>MockMvc</b>는 실제 서버를 켜지 않고도 <b>웹 요청을 흉내</b> 내서 컨트롤러가 올바른 상태 코드와 데이터를 돌려주는지 확인하게 해 줍니다. 1장에서 배운 요청과 응답을 코드로 다시 만나는 셈입니다.</p>
+<h3>🎬 애니메이션: 가짜 요청이 컨트롤러까지 가는 길</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="70" width="150" height="80" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="95.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">perform</text><text x="95.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">GET /memos/count</text><g class="el" data-show="1" data-hide="99"><line x1="170" y1="110" x2="210" y2="110" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="210" y="70" width="150" height="80" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="285.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">컨트롤러</text><text x="285.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">count() 실행</text></g><g class="el" data-show="2" data-hide="99"><line x1="360" y1="110" x2="400" y2="110" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="400" y="70" width="220" height="80" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="510.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">status · jsonPath</text><text x="510.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">200 OK, count = 2</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="200" text-anchor="middle" font-size="13">실제 서버를 띄우지 않고 요청과 응답을 검사합니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">MockMvc는 요청을 만들어 컨트롤러에 전달하고, 응답을 검사합니다.</li><li data-show="1">1단계: perform으로 GET /memos/count 요청을 만듭니다.</li><li data-show="2">2단계: 컨트롤러가 실행되어 응답을 만듭니다.</li><li data-show="3">3단계: status와 jsonPath로 상태 코드와 응답 내용을 검사합니다.</li></ol>
+</div>
+<h3>코드: 컨트롤러 추가 부분과 테스트</h3>
+<div class="eg"><span class="cm">// 컨트롤러에 추가할 메서드 (MemoController)</span>
+@GetMapping("/count")                                   // GET /memos/count 요청을 받는다
+public Map&lt;String, Integer&gt; count() {
+    int total = memoService.countMemos();                // 서비스에서 개수를 받는다
+    return Map.of("count", total);                       // {"count": 개수} 모양의 JSON으로 돌려준다
+}</div>
+<div class="eg">import static org.mockito.BDDMockito.given;                     // 가짜 서비스의 대답을 정하는 기능
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(MemoController.class)                          // 이 컨트롤러 하나만 올려서 웹 테스트를 한다
+class MemoControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;                                       // 요청을 흉내 내는 도구를 스프링이 넣어 준다
+
+    @MockitoBean
+    MemoService memoService;                               // 실제 서비스 대신 쓰는 가짜 서비스
+
+    @Test
+    void countEndpoint() throws Exception {
+        given(memoService.countMemos()).willReturn(2);     // 서비스가 2를 돌려주도록 정한다
+
+        mockMvc.perform(get("/memos/count"))               // GET /memos/count 요청을 보낸다
+                .andExpect(status().isOk())                // 응답 상태 코드가 200인지 검사한다
+                .andExpect(jsonPath("$.count").value(2));  // 응답 JSON의 count 값이 2인지 검사한다
+    }
+}</div>
+<div class="box tip"><strong>📌 어노테이션 패키지 주의</strong>스프링 부트 4에서는 @WebMvcTest 같은 테스트 어노테이션의 패키지 경로가 모듈별로 나뉘어 바뀌었습니다. IDE의 Alt + Enter(import 추가)로 현재 버전 경로를 가져오세요.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 7</summary>
+    <p>Q. MockMvc의 jsonPath("$.count")는 응답의 무엇을 검사하나요?</p>
+    <p>A. 응답 JSON 안에서 count라는 이름의 값을 찾아 검사합니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p8">
+  <h2>8. 테스트 범위 고르기</h2>
+
+<p>스프링 테스트에는 <b>프로그램 전체를 올리는</b> 방식과 <b>일부 계층만 올리는</b> 방식이 있습니다. 목적에 맞게 골라야 테스트가 빠르고 정확해집니다.</p>
+<h3>🎬 애니메이션: 얼마나 많이 올릴 것인가</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="290" height="110" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="165.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@SpringBootTest</text><text x="165.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">프로그램 전체를 올림 · 느림</text><rect x="330" y="60" width="290" height="110" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="475.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">@WebMvcTest 등 슬라이스</text><text x="475.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">웹 계층만 올림 · 빠름</text><g class="el" data-show="1" data-hide="1"><text x="160" y="200" text-anchor="middle" font-size="12">실제 환경에 가까운 확인</text></g><g class="el" data-show="2" data-hide="2"><text x="475" y="200" text-anchor="middle" font-size="12">필요한 계층만 골라 빠르게 확인</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">테스트에 올리는 범위에 따라 속도와 확인 범위가 달라집니다.</li><li data-show="1">1단계: @SpringBootTest는 프로그램 전체를 올려 실제에 가깝게 확인합니다.</li><li data-show="2">2단계: 슬라이스 테스트는 웹 계층처럼 필요한 부분만 올려 빠르게 확인합니다.</li></ol>
+</div>
+<table>
+<tr><th>구분</th><th>@SpringBootTest</th><th>슬라이스(@WebMvcTest 등)</th></tr>
+<tr><td>올리는 범위</td><td>전체 빈</td><td>필요한 계층만</td></tr>
+<tr><td>속도</td><td>느림</td><td>빠름</td></tr>
+<tr><td>잘 맞는 곳</td><td>여러 계층이 함께 도는 흐름</td><td>컨트롤러 하나, 저장소 하나</td></tr>
+</table>
+<div class="box key"><strong>💡 선택 기준</strong>평소에는 작은 단위와 슬라이스로 빠르게 확인하고, 전체 흐름이 중요한 곳에만 @SpringBootTest를 씁니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 8</summary>
+    <p>Q. 컨트롤러만 빠르게 확인하고 싶을 때 적합한 방식은 무엇인가요?</p>
+    <p>A. @WebMvcTest 같은 슬라이스 테스트입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p9">
+  <h2>9. 실습: 계산기 테스트</h2>
+
+<p>이제 직접 작성합니다. 계산기 서비스의 더하기와 0 나누기 예외를 테스트합니다. 작은 단위 테스트를 연습하는 가장 좋은 예입니다.</p>
+<h3>🎬 애니메이션: 작성 → 실행 → 결과</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="70" width="180" height="80" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="110.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">CalculatorServiceTest</text><text x="110.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">테스트 작성</text><g class="el" data-show="1" data-hide="99"><line x1="200" y1="110" x2="240" y2="110" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="240" y="70" width="180" height="80" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="330.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">테스트 실행</text><text x="330.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">▶ 버튼 클릭</text></g><g class="el" data-show="2" data-hide="99"><line x1="420" y1="110" x2="460" y2="110" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="460" y="70" width="160" height="80" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="540.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">초록 막대</text><text x="540.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">모두 통과</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">테스트 작성부터 결과 확인까지 세 단계입니다.</li><li data-show="1">1단계: 테스트 클래스를 만들고 실행 버튼을 누릅니다.</li><li data-show="2">2단계: 모든 테스트가 통과하면 초록 막대가 보입니다.</li></ol>
+</div>
+<h3>코드: 계산기 서비스</h3>
+<div class="eg">public class CalculatorService {
+
+    public int add(int a, int b) {                      // 두 수를 받아 합을 돌려준다
+        return a + b;
+    }
+
+    public int divide(int a, int b) {                   // 나눗셈을 한다
+        if (b == 0) {                                   // 0으로 나누려 하면
+            throw new IllegalArgumentException("0으로 나눌 수 없습니다");  // 예외를 던진다
+        }
+        return a / b;                                   // 정상이면 몫을 돌려준다
+    }
+}</div>
+<h3>코드: 계산기 테스트</h3>
+<div class="eg">import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+class CalculatorServiceTest {
+
+    private CalculatorService calculator;
+
+    @BeforeEach
+    void setUp() {
+        calculator = new CalculatorService();           // 매 테스트마다 새 계산기를 준비한다
+    }
+
+    @Test
+    @DisplayName("두 수를 더하면 합이 나온다")            // 실행 결과에 보일 설명 문장
+    void add() {
+<span class="cm">        // given</span>
+        int a = 2;
+        int b = 3;
+
+<span class="cm">        // when</span>
+        int result = calculator.add(a, b);             // 더하기 기능을 실행한다
+
+<span class="cm">        // then</span>
+        assertThat(result).isEqualTo(5);               // 결과가 5인지 확인한다
+    }
+
+    @Test
+    @DisplayName("0으로 나누면 예외가 발생한다")
+    void divideByZeroThrows() {
+        assertThatThrownBy(() -&gt; calculator.divide(10, 0))  // 0으로 나누는 호출을 실행해 본다
+                .isInstanceOf(IllegalArgumentException.class)  // 예외 종류가 맞는지 확인한다
+                .hasMessage("0으로 나눌 수 없습니다");          // 예외 메시지가 맞는지 확인한다
+    }
+}</div>
+<div class="box tip"><strong>📌 실행 방법</strong>테스트 클래스 이름이나 메서드 옆의 ▶ 버튼을 누르면 해당 테스트만 실행됩니다. 전체를 실행하려면 src/test/java 폴더를 우클릭해 Run을 누르세요.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 9</summary>
+    <p>Q. @DisplayName은 무엇을 위해 쓰나요?</p>
+    <p>A. 테스트 실행 결과 화면에 보일 읽기 쉬운 설명을 적기 위해 씁니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p10">
+  <h2>10. 실패 메시지 읽기</h2>
+
+<p>테스트가 실패하면 빨간색 메시지가 나옵니다. 이 메시지를 읽는 것이 테스트를 잘 쓰는 핵심 기술입니다. 대부분 <b>기대한 값</b>과 <b>실제 값</b>이 함께 적혀 있습니다.</p>
+<h3>🎬 애니메이션: 실패 메시지에서 원인 찾기</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="300" height="110" rx="10" fill="#fde8e9" stroke="#e0565b" stroke-width="2"/><text x="170.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">❌ 실패 메시지</text><text x="170.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">Expected: 5 · but was: 6</text><g class="el" data-show="1" data-hide="99"><line x1="340" y1="115" x2="380" y2="115" stroke="#a33a3f" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="380" y="60" width="240" height="110" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="500.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">원인 찾기</text><text x="500.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">코드와 기대 값을 비교</text></g><g class="el" data-show="2" data-hide="99"><text x="320" y="210" text-anchor="middle" font-size="13">고칠 곳을 찾은 뒤 다시 실행해 초록으로 바꿉니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">빨간 메시지는 힌트 그 자체입니다.</li><li data-show="1">1단계: Expected(기대)와 but was(실제) 값을 나란히 봅니다.</li><li data-show="2">2단계: 차이가 나는 코드를 고치고 테스트를 다시 실행합니다.</li></ol>
+</div>
+<h3>자주 보는 실패 메시지</h3>
+<table>
+<tr><th>메시지 일부</th><th>뜻</th><th>확인할 곳</th></tr>
+<tr><td>Expected: 5 but was: 6</td><td>계산 결과가 기대와 다름</td><td>계산 로직</td></tr>
+<tr><td>NullPointerException</td><td>가짜 객체가 값을 정해 주지 않음</td><td>when 설정 누락</td></tr>
+<tr><td>Expecting code to raise a throwable</td><td>예외가 나야 하는데 안 남</td><td>예외 처리 조건</td></tr>
+<tr><td>UnnecessaryStubbingException</td><td>정해 둔 대답을 쓰지 않음</td><td>불필요한 when 설정</td></tr>
+</table>
+<div class="box warn"><strong>⚠️ 테스트를 고쳐서 통과시키는 것이 목적이 아닙니다</strong>기대 값이 틀린 것인지, 코드가 틀린 것인지 먼저 판단하세요. 기대 값이 맞다면 코드를 고치는 것이 맞습니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 10</summary>
+    <p>Q. 테스트 실패 메시지에서 가장 먼저 봐야 할 두 가지는 무엇인가요?</p>
+    <p>A. Expected(기대 값)와 but was(실제 값)입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p11">
+  <h2>11. 정리와 연습</h2>
+
+<h3>📝 한눈에 정리</h3>
+<table>
+<tr><th>주제</th><th>핵심</th></tr>
+<tr><td>테스트의 필요성</td><td>고친 뒤 다른 기능이 깨졌는지 자동으로 확인</td></tr>
+<tr><td>테스트 종류</td><td>단위, 통합, 웹 테스트 (작은 범위부터)</td></tr>
+<tr><td>JUnit 5</td><td>@Test로 실행, @BeforeEach로 준비</td></tr>
+<tr><td>AssertJ</td><td>assertThat으로 읽기 쉬운 검사</td></tr>
+<tr><td>Given-When-Then</td><td>준비, 실행, 확인을 세 칸으로 나눔</td></tr>
+<tr><td>Mockito</td><td>저장소를 가짜로 바꿔 서비스만 검사</td></tr>
+<tr><td>MockMvc</td><td>요청을 흉내 내 컨트롤러 응답을 검사</td></tr>
+</table>
+<h3>✍️ 직접 해 보기</h3>
+<ol>
+<li>계산기에 곱하기 메서드를 추가하고, 곱셈 테스트를 Given-When-Then 형식으로 작성해 보세요.</li>
+<li>MemoService의 countMemos를 일부러 틀리게 고쳐 보고, 실패 메시지를 읽어 보세요.</li>
+<li>/memos/count 테스트에서 given을 지우면 어떤 결과가 나오는지 관찰하고 이유를 적어 보세요.</li>
+</ol>
+<div class="box key"><strong>💡 다음 단계 예고</strong>5장에서는 이 테스트 방식을 데이터베이스와 연결하는 @DataJpaTest로 확장합니다.</div>
+<h3>✅ 학습 체크리스트</h3>
+<div class="check"><input type="checkbox" id="ck4-1"><label for="ck4-1">테스트가 회귀 버그를 막는 이유를 설명할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck4-2"><label for="ck4-2">@Test, @BeforeEach의 역할을 구분할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck4-3"><label for="ck4-3">assertThat과 isEqualTo로 결과를 검사할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck4-4"><label for="ck4-4">Given-When-Then 세 칸으로 테스트를 나눌 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck4-5"><label for="ck4-5">Mockito로 가짜 객체를 만들고 정해진 값을 돌려줄 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck4-6"><label for="ck4-6">MockMvc로 /memos/count 응답을 검사해 보았다</label></div>
+<div class="check"><input type="checkbox" id="ck4-7"><label for="ck4-7">계산기 테스트를 작성하고 모두 초록으로 통과시켰다</label></div>
+
+</section>
+
+<div class="pager" id="pager"></div>
+
+</main>
+
+<script>
+var PAGES = ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10", "p11"];
+var TITLES = {"p0": "0. 4장 지도", "p1": "1. 왜 테스트가 필요한가", "p2": "2. 테스트 종류", "p3": "3. JUnit 5 기본", "p4": "4. AssertJ 검사", "p5": "5. Given-When-Then", "p6": "6. Mockito 가짜 객체", "p7": "7. MockMvc 웹 테스트", "p8": "8. 테스트 범위 고르기", "p9": "9. 실습: 계산기 테스트", "p10": "10. 실패 메시지 읽기", "p11": "11. 정리와 연습"};
+
+function showPage(id){
+  if(PAGES.indexOf(id)<0) id='p0';
+  PAGES.forEach(function(p){ document.getElementById(p).classList.toggle('active', p===id); });
+  document.querySelectorAll('.side a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-p')===id); });
+  buildPager(id);
+  window.scrollTo(0,0);
+  document.getElementById(id).querySelectorAll('.stepper').forEach(function(st){ render(st); });
+  if(window.innerWidth<=900) document.getElementById('side').classList.remove('open');
+}
+function buildPager(id){
+  var i = PAGES.indexOf(id), pg = document.getElementById('pager');
+  pg.innerHTML='';
+  if(i>0){ var b=document.createElement('button'); b.textContent='◀ 이전: '+TITLES[PAGES[i-1]]; b.onclick=function(){location.hash='#'+PAGES[i-1]}; pg.appendChild(b); }
+  else pg.appendChild(document.createElement('span'));
+  if(i<PAGES.length-1){ var b2=document.createElement('button'); b2.textContent='다음: '+TITLES[PAGES[i+1]]+' ▶'; b2.style.textAlign='right'; b2.onclick=function(){location.hash='#'+PAGES[i+1]}; pg.appendChild(b2); }
+}
+function route(){ showPage((location.hash||'#p0').slice(1)); }
+window.addEventListener('hashchange', route);
+function toggleMenu(){ document.getElementById('side').classList.toggle('open'); }
+
+function render(st){
+  var n = +st.getAttribute('data-steps'), s = st.step||0;
+  st.querySelectorAll('.el').forEach(function(e){
+    var lo = e.hasAttribute('data-show') ? +e.getAttribute('data-show') : 0;
+    var hi = e.hasAttribute('data-hide') ? +e.getAttribute('data-hide') : 99;
+    e.classList.toggle('on', s>=lo && s<=hi);
+  });
+  st.querySelectorAll('.caps li').forEach(function(li){ li.classList.toggle('on', s===+li.getAttribute('data-show')); });
+  var lbl = st.querySelector('.lbl'); if(lbl) lbl.textContent=(s+1)+' / '+(n+1)+' 단계';
+  var pv = st.querySelector('[data-act="prev"]'), nx = st.querySelector('[data-act="next"]');
+  if(pv) pv.disabled = s===0; if(nx) nx.disabled = s===n;
+}
+function stopAuto(st){
+  if(st._timer){ clearInterval(st._timer); st._timer=null; }
+  var pb = st.querySelector('[data-act="play"]'); if(pb) pb.textContent='▶ 자동 재생';
+}
+document.querySelectorAll('.stepper').forEach(function(st){
+  st.step = 0;
+  st.querySelector('[data-act="prev"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.max(0,st.step-1); render(st); });
+  st.querySelector('[data-act="next"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.min(+st.getAttribute('data-steps'),st.step+1); render(st); });
+  st.querySelector('[data-act="play"]').addEventListener('click', function(){
+    if(st._timer){ stopAuto(st); return; }
+    if(st.step>=+st.getAttribute('data-steps')) st.step=0;
+    this.textContent='⏸ 일시정지';
+    st._timer = setInterval(function(){
+      st.step++;
+      if(st.step>=+st.getAttribute('data-steps')){ st.step=+st.getAttribute('data-steps'); render(st); stopAuto(st); return; }
+      render(st);
+    }, 2400);
+    render(st);
+  });
+  render(st);
+});
+
+document.querySelectorAll('.check input').forEach(function(cb){
+  try{ cb.checked = localStorage.getItem('ch4v2_'+cb.id)==='1'; }catch(e){}
+  cb.addEventListener('change', function(){ try{ localStorage.setItem('ch4v2_'+cb.id, cb.checked?'1':'0'); }catch(e){} });
+});
+
+function downloadPage(){
+  try{
+    var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "BackendBasics_Ch4_v2.html";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }catch(e){ alert("다운로드에 실패했습니다. 브라우저 메뉴에서 '페이지 저장'을 이용해 주세요."); }
+}
+
+route();
+</script>
+</body>
+</html>

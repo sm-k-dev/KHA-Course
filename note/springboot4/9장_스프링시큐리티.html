@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<!-- v4 · 2026-10-08 · 9장 스프링 시큐리티 비전공자 튜토리얼 (전체 통합 및 내부 동작 상세 보충 버전) -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🔐 9장 스프링 시큐리티 – 로그인/로그아웃/회원가입</title>
+<style>
+:root {
+  --g0:#1b4332;--g1:#2d6a4f;--g2:#40916c;--g3:#52b788;--g4:#95d5b2;
+  --acc:#f77f00;--err:#e63946;--warn-bg:#fff3cd;--warn-bd:#ffc107;
+  --ok-bg:#d1fae5;--ok-bd:#40916c;
+  --bg:#f0f4f0;--card:#fff;--text:#1a1a2e;--muted:#6c757d;
+  --code-bg:#1e2030;--code-text:#cdd6f4;
+  --border:#c8e6c9;--sidebar-w:270px;--header-h:60px;
+  --kw:#89b4fa;--str:#a6e3a1;--ann:#cba6f7;--cm:#6c7086;--cls:#89dceb;--num:#fab387;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0d1117;--card:#161b22;--text:#e6edf3;--muted:#8b949e;--border:#2d4a3e;
+  --warn-bg:#2a2000;--ok-bg:#0a2e1a;
+}}
+:root[data-theme=dark]{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--muted:#8b949e;--border:#2d4a3e;--warn-bg:#2a2000;--ok-bg:#0a2e1a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.75;padding-top:var(--header-h);}
+
+/* ── HEADER ── */
+header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--g0);color:#fff;z-index:200;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.hbg{background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px 8px;border-radius:6px;}
+.hbg:hover{background:rgba(255,255,255,.15);}
+.h-title{font-size:18px;font-weight:700;flex:1;}
+.h-sub{font-size:12px;opacity:.7;display:none;}
+@media(min-width:600px){.h-sub{display:inline;}}
+.dl-btn{background:var(--acc);border:none;color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;}
+.dl-btn:hover{opacity:.9;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--g0);color:#fff;overflow-y:auto;z-index:150;transform:translateX(-100%);transition:transform .3s ease;}
+.sidebar.open{transform:translateX(0);}
+@media(min-width:900px){.sidebar{transform:translateX(0);}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:140;}
+.overlay.show{display:block;}
+@media(min-width:900px){.overlay{display:none!important;}}
+.sb-inner{padding:16px 0 100px;}
+.sb-title{padding:12px 20px 8px;font-size:12px;opacity:.6;text-transform:uppercase;letter-spacing:.05em;}
+.nav-a{display:flex;align-items:center;gap:8px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:14px;border-left:3px solid transparent;transition:all .2s;}
+.nav-a:hover,.nav-a.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--g3);}
+.nav-a .badge-num{background:rgba(255,255,255,.2);border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.sb-progress{padding:16px 20px;border-top:1px solid rgba(255,255,255,.15);margin-top:8px;}
+.sb-progress-label{font-size:12px;opacity:.7;margin-bottom:6px;}
+.prog-bar{background:rgba(255,255,255,.2);border-radius:99px;height:8px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--g3);border-radius:99px;transition:width .5s ease;width:0%;}
+.prog-pct{font-size:13px;font-weight:600;margin-top:4px;}
+
+/* ── MAIN ── */
+.main{padding:24px 16px 120px;max-width:820px;margin:0 auto;}
+@media(min-width:900px){.main{margin-left:var(--sidebar-w);}}
+@media(min-width:1160px){.main{margin-left:calc(var(--sidebar-w) + (100vw - var(--sidebar-w) - 820px)/2);}}
+
+/* ── SECTION ── */
+.section{background:var(--card);border-radius:16px;padding:28px 24px;margin-bottom:28px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border);}
+.sec-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border);}
+.lesson-badge{background:var(--g1);color:#fff;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap;}
+.sec-header h2{font-size:22px;font-weight:700;color:var(--g0);}
+.sub-h{font-size:17px;font-weight:700;margin:24px 0 12px;color:var(--g1);}
+
+/* ── BOXES ── */
+.why-box{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-left:4px solid var(--g2);border-radius:0 10px 10px 0;padding:16px 18px;margin:12px 0 20px;}
+.why-box h3{font-size:15px;margin-bottom:6px;color:var(--g0);}
+.ok-box{background:var(--ok-bg);border:1px solid var(--ok-bd);border-radius:10px;padding:14px 18px;margin:14px 0;}
+.ok-box h4{color:var(--g0);margin-bottom:8px;}
+.warn-box{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:14px 18px;margin:14px 0;}
+.warn-box h4{color:#856404;margin-bottom:8px;}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;}
+@media(max-width:560px){.concept-grid{grid-template-columns:1fr;}}
+.concept-card{background:linear-gradient(135deg,#e8f5e9,#f0fdf4);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.concept-icon{font-size:32px;margin-bottom:8px;}
+.concept-card h4{color:var(--g0);margin-bottom:6px;}
+
+/* ── CODE ── */
+.code-wrap{margin:14px 0;border-radius:12px;overflow:hidden;border:1px solid #30363d;}
+.code-hdr{background:#2a2a3e;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;}
+.file-badge{color:#94a3b8;font-size:12px;font-family:monospace;}
+.copy-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;}
+.copy-btn:hover{background:rgba(255,255,255,.2);}
+.copy-btn.ok{background:#40916c;border-color:#40916c;color:#fff;}
+pre.code-block{background:var(--code-bg);color:var(--code-text);padding:18px;overflow-x:auto;font-size:13px;font-family:'JetBrains Mono','Fira Code',monospace;line-height:1.7;tab-size:4;}
+.kw{color:var(--kw);}
+.str{color:var(--str);}
+.ann{color:var(--ann);}
+.cm{color:var(--cm);font-style:italic;}
+.cls{color:var(--cls);}
+.meth{color:#f8c8d4;}
+.num{color:var(--num);}
+.hl{background:rgba(255,255,0,.1);display:block;}
+
+/* ── EXPLAIN TABLE ── */
+.explain-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;}
+.explain-table th{background:var(--g1);color:#fff;padding:8px 12px;text-align:left;}
+.explain-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.explain-table tr:nth-child(even)td{background:rgba(0,0,0,.02);}
+.line-num{color:var(--muted);font-family:monospace;font-size:12px;min-width:24px;display:inline-block;}
+
+/* ── SHOT (mock screen) ── */
+.shot{background:#1a1a2e;border-radius:10px;overflow:hidden;margin:12px 0;font-family:monospace;font-size:13px;}
+.shot-bar{background:#2d2d44;padding:8px 12px;display:flex;align-items:center;gap:6px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.y{background:#febc2e;}.dot.g{background:#28c840;}
+.shot-title{color:#8b8ba0;font-size:11px;margin-left:6px;}
+.shot-body{padding:12px 16px;color:#cdd6f4;}
+.shot-body .ok{color:#a6e3a1;}.shot-body .dim{color:#6c7086;}.shot-body .warn{color:#f9e2af;}.shot-body .err{color:#f38ba8;}
+
+/* ── ANIMATIONS & TRACKER ── */
+.auth-demo{margin:16px 0;}
+.auth-scene{display:flex;align-items:center;gap:20px;padding:20px;background:linear-gradient(135deg,#e8f5e9,#dceefb);border-radius:12px;min-height:120px;flex-wrap:wrap;}
+.person{font-size:40px;transition:transform .5s ease;cursor:default;}
+.person.move{transform:translateX(60px);}
+.building{display:flex;flex-direction:column;gap:6px;}
+.floor{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;transition:all .4s;}
+.floor.admin{background:#ffddd2;color:#9d0208;opacity:.4;}
+.floor.user{background:#b7e4c7;color:#1b4332;opacity:.4;}
+.floor.active-admin{opacity:1;box-shadow:0 0 0 3px #9d0208;}
+.floor.active-user{opacity:1;box-shadow:0 0 0 3px var(--g2);}
+.door{font-size:32px;transition:transform .3s;}
+.door.open{transform:rotateY(45deg);}
+.auth-btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.auth-msg{background:rgba(255,255,255,.8);border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;margin-top:8px;min-height:40px;}
+
+.filter-chain{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:14px 0;}
+.filter-chain-hdr{background:var(--g1);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.req-label{font-size:13px;}
+.filter-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:all .3s;background:var(--card);}
+.filter-item.active{background:linear-gradient(90deg,#d1fae5,var(--card));border-left:4px solid var(--g2);}
+.filter-item.done{background:linear-gradient(90deg,#f0fdf4,var(--card));opacity:.6;}
+.f-num{background:var(--g1);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;font-weight:700;}
+.filter-item.active .f-num{background:var(--g3);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+.f-info strong{display:block;font-size:14px;}
+.f-info span{font-size:12px;color:var(--muted);}
+.f-status{margin-left:auto;font-size:18px;transition:all .3s;}
+.filter-result{padding:12px 16px;background:var(--ok-bg);font-weight:700;font-size:14px;display:none;}
+.filter-result.show{display:block;}
+
+.flow-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.flow-steps-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:10px 0;}
+.flow-step{border:2px solid var(--border);border-radius:10px;padding:10px;text-align:center;font-size:12px;transition:all .4s;opacity:.35;}
+.flow-step.active{opacity:1;border-color:var(--g2);background:var(--ok-bg);transform:scale(1.04);}
+.flow-step.done{opacity:.7;border-color:var(--g3);}
+.flow-step-num{font-size:18px;font-weight:700;color:var(--g2);}
+.flow-step-name{font-size:11px;color:var(--muted);margin:3px 0;}
+.flow-step-desc{font-size:11px;font-weight:600;}
+.flow-msg{background:linear-gradient(90deg,var(--g1),var(--g2));color:#fff;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;margin-top:10px;}
+
+/* ── TRACKER TABS (Lesson 8) ── */
+.track-tabs { display:flex; gap:10px; margin-bottom:16px; }
+.track-tab { flex:1; padding:14px; text-align:center; background:var(--bg); border:2px solid var(--border); border-radius:10px; cursor:pointer; font-weight:700; color:var(--muted); transition:all 0.3s; font-size:15px; }
+.track-tab.active { background:var(--ok-bg); border-color:var(--g2); color:var(--g0); box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.track-pane { display:none; animation: fadeIn 0.4s ease; }
+.track-pane.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.t-step { display:flex; margin-bottom:20px; gap:16px; position:relative; }
+.t-step:not(:last-child)::after { content:''; position:absolute; left:19px; top:40px; bottom:-20px; width:2px; background:var(--border); z-index:1; }
+.t-num { width:40px; height:40px; background:var(--g1); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0; z-index:2; box-shadow:0 0 0 4px var(--card); }
+.t-content { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; flex:1; box-shadow:0 4px 6px rgba(0,0,0,0.02); }
+.t-file { font-family:monospace; color:var(--g3); font-weight:700; margin-bottom:10px; display:inline-block; background:var(--code-bg); padding:6px 12px; border-radius:6px; font-size:14px; }
+.t-desc { font-size:14px; line-height:1.6; }
+.t-desc strong { color:var(--g1); }
+.t-code { background:#1e2030; color:#cdd6f4; padding:12px; border-radius:8px; font-family:monospace; font-size:13px; margin-top:12px; border-left:4px solid var(--g2); }
+.t-badge { display:inline-block; background:var(--acc); color:#fff; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold; margin-left:8px; vertical-align:middle; }
+
+/* ── FILE TREE ── */
+.file-tree{background:var(--code-bg);border-radius:10px;padding:16px;font-family:monospace;font-size:13px;color:var(--code-text);line-height:2;}
+.tree-dir{color:var(--cls);}
+.tree-file{color:var(--str);}
+.tree-new{color:#f38ba8;font-weight:700;}
+.tree-new::after{content:" ← 새로 만들기";color:var(--num);font-size:11px;}
+
+/* ── MISSION & QUIZ ── */
+.do{background:linear-gradient(135deg,#e3f2fd,#e8f5e9);border-radius:12px;padding:20px;margin:18px 0;border:1px solid #90caf9;}
+.do h3{color:#1565c0;margin-bottom:12px;font-size:16px;}
+.do ol{padding-left:20px;}
+.do li{margin-bottom:6px;font-size:14px;}
+.check-btn{background:var(--g1);color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;margin-top:14px;transition:all .3s;}
+.check-btn:hover{background:var(--g2);}
+.check-btn.done{background:#40916c;cursor:default;}
+.check-btn.done::before{content:"✅ ";}
+
+.quiz{background:linear-gradient(135deg,#f3e5f5,#e8eaf6);border-radius:12px;padding:20px;margin:18px 0;border:1px solid #ce93d8;}
+.quiz h3{color:#6a1b9a;margin-bottom:12px;font-size:16px;}
+.quiz-q{margin-bottom:12px;font-size:14px;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{background:#fff;border:2px solid #ce93d8;border-radius:8px;padding:10px 16px;cursor:pointer;text-align:left;font-size:14px;transition:all .25s;}
+.quiz-opt:hover{background:#f3e5f5;}
+.quiz-opt.correct{background:#d1fae5;border-color:#40916c;color:#1b4332;}
+.quiz-opt.wrong{background:#fee2e2;border-color:#e63946;color:#9d0208;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-exp{display:none;background:#fff;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;border-left:4px solid #40916c;line-height:1.6;}
+.quiz-exp.show{display:block;}
+
+.demo-btn{background:var(--g1);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+.demo-btn:hover{background:var(--g2);}
+.demo-btn.sec{background:var(--muted);}
+.demo-btn.sec:hover{background:#495057;}
+
+/* ── DASHBOARD ── */
+.dashboard{position:fixed;bottom:20px;right:16px;background:var(--g0);color:#fff;border-radius:14px;padding:12px 18px;box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:300;min-width:160px;font-size:13px;}
+.dash-title{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.dash-ring{text-align:center;font-size:28px;font-weight:700;color:var(--g3);line-height:1;}
+.dash-detail{font-size:11px;opacity:.75;text-align:center;margin-top:4px;}
+.dash-row{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;}
+.dash-val{font-weight:700;color:var(--g3);}
+
+.step-row{display:flex;gap:10px;margin:6px 0;align-items:flex-start;}
+.step-n{background:var(--g1);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.file-path-lbl{background:var(--code-bg);color:var(--g3);padding:6px 14px;border-radius:8px;font-family:monospace;font-size:13px;display:inline-block;margin:8px 0;}
+p{margin-bottom:8px;}
+strong{color:inherit;}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.scroll-top{position:fixed;bottom:90px;right:16px;background:var(--g1);color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;z-index:250;}
+.scroll-top.show{display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<header>
+  <button class="hbg" id="hbg" onclick="toggleSidebar()" aria-label="메뉴 열기">☰</button>
+  <div style="flex:1;">
+    <div class="h-title">🔐 9장 스프링 시큐리티</div>
+    <div class="h-sub">로그인 / 로그아웃 / 회원가입 완전 정복</div>
+  </div>
+  <button class="dl-btn" onclick="downloadSelf()">⬇️ 다운로드</button>
+</header>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-inner">
+    <div class="sb-title">📚 학습 목차</div>
+    <a class="nav-a" href="#s1"><span class="badge-num">1</span> 🧩 스프링 시큐리티란?</a>
+    <a class="nav-a" href="#s2"><span class="badge-num">2</span> 📦 의존성 추가하기</a>
+    <a class="nav-a" href="#s3"><span class="badge-num">3</span> 👤 회원 도메인 만들기</a>
+    <a class="nav-a" href="#s4"><span class="badge-num">4</span> ⚙️ 서비스 계층 만들기</a>
+    <a class="nav-a" href="#s5"><span class="badge-num">5</span> 🛡️ 시큐리티 설정하기</a>
+    <a class="nav-a" href="#s6"><span class="badge-num">6</span> 📝 회원가입 구현하기</a>
+    <a class="nav-a" href="#s7"><span class="badge-num">7</span> 🚪 뷰 & 로그아웃 & 테스트</a>
+    <a class="nav-a" href="#s8" style="background:rgba(247, 127, 0, 0.15); border-left-color:var(--acc);"><span class="badge-num" style="background:var(--acc);">8</span> 🔍 파일 실행 흐름 추적기</a>
+    <div class="sb-progress">
+      <div class="sb-progress-label">📊 전체 진행률</div>
+      <div class="prog-bar"><div class="prog-fill" id="sbFill"></div></div>
+      <div class="prog-pct" id="sbPct">0%</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- LESSON 1 -->
+<section class="section" id="s1">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 1</span>
+    <h2>🧩 스프링 시큐리티란?</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 이 레슨에서 배우는 것</h3>
+    <p><strong>인증</strong>과 <strong>인가</strong>의 차이, 스프링 시큐리티가 내부에서 어떻게 동작하는지 애니메이션으로 이해합니다.</p>
+  </div>
+  <h3 class="sub-h">🏢 인증(Authentication) vs 인가(Authorization)</h3>
+  <div class="auth-demo">
+    <div class="auth-scene" id="authScene">
+      <div><div class="person" id="authPerson">🧑</div><div style="font-size:11px;color:var(--muted);text-align:center;">사용자</div></div>
+      <div style="font-size:28px;">→</div>
+      <div><div class="door" id="authDoor">🚪</div><div style="font-size:11px;color:var(--muted);text-align:center;">입구</div></div>
+      <div class="building">
+        <div class="floor admin" id="floorAdmin">👑 관리자 전용</div>
+        <div class="floor user" id="floorUser">👤 일반 사용자</div>
+      </div>
+    </div>
+    <div class="auth-btns">
+      <button class="demo-btn" onclick="authStep('auth')">① 인증: 신원 확인</button>
+      <button class="demo-btn" onclick="authStep('user')">② 인가: 일반 접근</button>
+      <button class="demo-btn" onclick="authStep('admin')">② 인가: 관리자 접근</button>
+      <button class="demo-btn sec" onclick="authStep('reset')">🔄 리셋</button>
+    </div>
+    <div class="auth-msg" id="authMsg">▶ 버튼을 눌러 인증과 인가를 체험해보세요!</div>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🪪</div><h4>인증 (Authentication)</h4><p><strong>"넌 누구니?"</strong> 신원 확인[cite: 2].</p></div>
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>인가 (Authorization)</h4><p><strong>"여기 들어가도 되니?"</strong> 권한 확인[cite: 2].</p></div>
+  </div>
+</section>
+
+<!-- LESSON 2 -->
+<section class="section" id="s2">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 2</span>
+    <h2>📦 의존성 추가하기</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 왜 필요한가요?</h3>
+    <p>스프링 시큐리티 핵심 기능 및 타임리프 시큐리티 연동 라이브러리를 추가합니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 build.gradle</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">build.gradle</span><button class="copy-btn" onclick="doCopy(this,'c2')">📋 복사</button></div>
+    <pre class="code-block" id="c2"><code><span class="cls">dependencies</span> {
+    <span class="kw">implementation</span> <span class="str">'org.springframework.boot:spring-boot-starter-security'</span>
+    <span class="kw">implementation</span> <span class="str">'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'</span>
+    <span class="kw">testImplementation</span> <span class="str">'org.springframework.security:spring-security-test'</span>
+}</code></pre>
+  </div>
+  <div class="do" id="do2">
+    <h3>🛠️ 미션 2: 의존성 추가하기</h3>
+    <ol>
+      <li><code>build.gradle</code>에 위 3줄을 추가합니다[cite: 2].</li>
+      <li>🐘 코끼리 아이콘(Gradle 새로고침)을 클릭합니다.</li>
+    </ol>
+    <button class="check-btn" id="do2b" onclick="checkDo('do2b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 3 -->
+<section class="section" id="s3">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 3</span>
+    <h2>👤 회원 도메인 만들기</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 왜 필요한가요?</h3>
+    <p>스프링 시큐리티가 인증 객체로 사용할 수 있도록 <strong>UserDetails</strong> 인터페이스를 구현한 User 클래스를 만듭니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 domain/User.java</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">domain/User.java</span><button class="copy-btn" onclick="doCopy(this,'c3a')">📋 복사</button></div>
+    <pre class="code-block" id="c3a"><code><span class="ann">@Table</span>(name = <span class="str">"users"</span>)
+<span class="ann">@NoArgsConstructor</span>(access = AccessLevel.PROTECTED)
+<span class="ann">@Getter</span>
+<span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="cls">User</span> <span class="kw">implements</span> <span class="cls">UserDetails</span> {
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)
+    <span class="kw">private</span> Long id;
+    <span class="ann">@Column</span>(name = <span class="str">"email"</span>, nullable = <span class="num">false</span>, unique = <span class="num">true</span>)
+    <span class="kw">private</span> String email;
+    <span class="ann">@Column</span>(name = <span class="str">"password"</span>)
+    <span class="kw">private</span> String password;
+
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> String <span class="meth">getUsername</span>() { <span class="kw">return</span> email; }
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> String <span class="meth">getPassword</span>() { <span class="kw">return</span> password; }
+    <span class="cm">// 기타 UserDetails 필수 오버라이드 메서드 생략 (true 반환)</span>
+}</code></pre>
+  </div>
+  <div class="do" id="do3">
+    <h3>🛠️ 미션 3: 도메인 및 레포지토리 만들기</h3>
+    <ol>
+      <li><code>User.java</code>와 <code>UserRepository.java</code>를 생성합니다[cite: 2].</li>
+    </ol>
+    <button class="check-btn" id="do3b" onclick="checkDo('do3b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 4 -->
+<section class="section" id="s4">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 4</span>
+    <h2>⚙️ 서비스 계층 만들기</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 왜 필요한가요?</h3>
+    <p>DB에서 사용자 정보를 가져오는 <strong>UserDetailsService</strong> 구현체를 작성합니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 service/UserDetailService.java</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">service/UserDetailService.java</span><button class="copy-btn" onclick="doCopy(this,'c4a')">📋 복사</button></div>
+    <pre class="code-block" id="c4a"><code><span class="ann">@RequiredArgsConstructor</span>
+<span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">UserDetailService</span> <span class="kw">implements</span> <span class="cls">UserDetailsService</span> {
+    <span class="kw">private final</span> <span class="cls">UserRepository</span> userRepository;
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="cls">UserDetails</span> <span class="meth">loadUserByUsername</span>(String email) {
+        <span class="kw">return</span> userRepository.<span class="meth">findByEmail</span>(email)
+                .<span class="meth">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="cls">IllegalArgumentException</span>(email));
+    }
+}</code></pre>
+  </div>
+  <div class="do" id="do4">
+    <h3>🛠️ 미션 4: UserDetailService 만들기</h3>
+    <ol>
+      <li>위 코드를 참고하여 작성합니다[cite: 2].</li>
+    </ol>
+    <button class="check-btn" id="do4b" onclick="checkDo('do4b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 5 -->
+<section class="section" id="s5">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 5</span>
+    <h2>🛡️ 시큐리티 설정하기</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 왜 필요한가요?</h3>
+    <p>URL별 접근 권한, 로그인 페이지, 로그아웃, 비밀번호 암호화 방식을 한 곳에서 설정합니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 config/WebSecurityConfig.java</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">config/WebSecurityConfig.java</span><button class="copy-btn" onclick="doCopy(this,'c5')">📋 복사</button></div>
+    <pre class="code-block" id="c5"><code><span class="ann">@Configuration</span> <span class="ann">@EnableWebSecurity</span> <span class="ann">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">WebSecurityConfig</span> {
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">SecurityFilterChain</span> <span class="meth">filterChain</span>(<span class="cls">HttpSecurity</span> http) <span class="kw">throws</span> Exception {
+        <span class="kw">return</span> http
+            .<span class="meth">authorizeHttpRequests</span>(auth -&gt; auth
+                .<span class="meth">requestMatchers</span>(<span class="str">"/login"</span>, <span class="str">"/signup"</span>, <span class="str">"/user"</span>).<span class="meth">permitAll</span>()
+                .<span class="meth">anyRequest</span>().<span class="meth">authenticated</span>())
+            .<span class="meth">formLogin</span>(form -&gt; form.<span class="meth">loginPage</span>(<span class="str">"/login"</span>).<span class="meth">defaultSuccessUrl</span>(<span class="str">"/articles"</span>))
+            .<span class="meth">logout</span>(logout -&gt; logout.<span class="meth">logoutSuccessUrl</span>(<span class="str">"/login"</span>).<span class="meth">invalidateHttpSession</span>(<span class="num">true</span>))
+            .<span class="meth">csrf</span>(<span class="cls">AbstractHttpConfigurer</span>::<span class="meth">disable</span>)
+            .<span class="meth">build</span>();
+    }
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> <span class="cls">PasswordEncoder</span> <span class="meth">passwordEncoder</span>() {
+        <span class="kw">return new</span> <span class="cls">BCryptPasswordEncoder</span>();
+    }
+}</code></pre>
+  </div>
+  <div class="do" id="do5">
+    <h3>🛠️ 미션 5: WebSecurityConfig 만들기</h3>
+    <ol>
+      <li>설정 파일을 작성하고 정상 구동을 확인합니다[cite: 2].</li>
+    </ol>
+    <button class="check-btn" id="do5b" onclick="checkDo('do5b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 6 -->
+<section class="section" id="s6">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 6</span>
+    <h2>📝 회원가입 구현하기</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 왜 필요한가요?</h3>
+    <p>회원가입 폼 데이터를 받아 비밀번호를 BCrypt로 암호화한 뒤 DB에 저장하는 로직을 구현합니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 service/UserService.java & controller/UserApiController.java</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">service/UserService.java</span><button class="copy-btn" onclick="doCopy(this,'c6b')">📋 복사</button></div>
+    <pre class="code-block" id="c6b"><code><span class="ann">@RequiredArgsConstructor</span> <span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">UserService</span> {
+    <span class="kw">private final</span> <span class="cls">UserRepository</span> userRepository;
+    <span class="kw">private final</span> <span class="cls">PasswordEncoder</span> passwordEncoder;
+
+    <span class="kw">public</span> Long <span class="meth">save</span>(<span class="cls">AddUserRequest</span> dto) {
+        <span class="kw">return</span> userRepository.<span class="meth">save</span>(<span class="cls">User</span>.<span class="meth">builder</span>()
+                .<span class="meth">email</span>(dto.<span class="meth">getEmail</span>())
+                .<span class="meth">password</span>(passwordEncoder.<span class="meth">encode</span>(dto.<span class="meth">getPassword</span>()))
+                .<span class="meth">build</span>()).<span class="meth">getId</span>();
+    }
+}</code></pre>
+  </div>
+  <div class="do" id="do6">
+    <h3>🛠️ 미션 6: 회원가입 API 구현</h3>
+    <ol>
+      <li><code>AddUserRequest</code>, <code>UserService</code>, <code>UserApiController</code>를 작성합니다[cite: 2].</li>
+    </ol>
+    <button class="check-btn" id="do6b" onclick="checkDo('do6b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 7 -->
+<section class="section" id="s7">
+  <div class="sec-header">
+    <span class="lesson-badge">레슨 7</span>
+    <h2>🚪 뷰 작성 & 실행 테스트</h2>
+  </div>
+  <div class="why-box">
+    <h3>💡 핵심 화면 만들기</h3>
+    <p>로그인 폼과 회원가입 폼 HTML을 작성하고 전체 연동 테스트를 수행합니다[cite: 2].</p>
+  </div>
+  <div class="file-path-lbl">📄 templates/login.html & templates/signup.html</div>
+  <div class="code-wrap">
+    <div class="code-hdr"><span class="file-badge">templates/login.html</span><button class="copy-btn" onclick="doCopy(this,'c7b')">📋 복사</button></div>
+    <pre class="code-block" id="c7b"><code>&lt;form action=<span class="str">"/login"</span> method=<span class="str">"post"</span>&gt;
+    &lt;input type=<span class="str">"email"</span> name=<span class="str">"username"</span> placeholder=<span class="str">"이메일 입력"</span>&gt;
+    &lt;input type=<span class="str">"password"</span> name=<span class="str">"password"</span> placeholder=<span class="str">"비밀번호 입력"</span>&gt;
+    &lt;button type=<span class="str">"submit"</span>&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+  <div class="do" id="do7">
+    <h3>🛠️ 미션 7: 뷰 연결 및 테스트</h3>
+    <ol>
+      <li><code>UserViewController.java</code>와 HTML 뷰 파일들을 완성합니다[cite: 2].</li>
+      <li>애플리케이션을 실행하여 회원가입과 로그인을 테스트합니다[cite: 2].</li>
+    </ol>
+    <button class="check-btn" id="do7b" onclick="checkDo('do7b')">✅ 완료했어요!</button>
+  </div>
+</section>
+
+<!-- LESSON 8 (NEW: 내부 동작 상세 추적기) -->
+<section class="section" id="s8">
+  <div class="sec-header">
+    <span class="lesson-badge" style="background:var(--acc);">레슨 8 (핵심 요약)</span>
+    <h2>🔍 파일별 코드 실행 흐름 완벽 추적기</h2>
+  </div>
+
+  <div class="why-box">
+    <h3>💡 비전공자가 가장 많이 멘붕오는 구간 완벽 해결!</h3>
+    <p>화면 띄우기부터 DB 처리까지 <strong>어떤 파일이 먼저 실행되는지</strong> 헷갈리시죠? 아래 탭을 눌러 <strong>우리가 직접 짠 코드(회원가입)</strong>와 <strong>스프링 시큐리티가 가로채는 코드(로그인)</strong>의 차이와 내부 동작을 확인하세요.</p>
+  </div>
+
+  <!-- 흐름 선택 탭 -->
+  <div class="track-tabs">
+    <div class="track-tab active" onclick="switchTrack('signup')">📝 회원가입 흐름<br><span style="font-size:12px;font-weight:400;">(내가 작성한 코드 100% 실행)</span></div>
+    <div class="track-tab" onclick="switchTrack('login')">🔑 로그인 흐름<br><span style="font-size:12px;font-weight:400;">(시큐리티 내부 동작 포함!)</span></div>
+  </div>
+
+  <!-- 회원가입 추적 패널 -->
+  <div class="track-pane active" id="pane-signup">
+    <div class="t-step">
+      <div class="t-num">1</div>
+      <div class="t-content">
+        <div class="t-file">📄 UserViewController.java</div>
+        <div class="t-desc">사용자가 주소창에 <code>http://localhost:8080/signup</code>을 입력하면 컨트롤러가 요청을 받아 <code>signup.html</code>을 띄웁니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">2</div>
+      <div class="t-content">
+        <div class="t-file">📄 signup.html</div>
+        <div class="t-desc">사용자가 이메일과 비밀번호를 입력하고 [Submit]을 누릅니다. (`POST /user` 요청 발생)[cite: 2]</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">3</div>
+      <div class="t-content">
+        <div class="t-file">📄 UserApiController.java</div>
+        <div class="t-desc"><code>POST /user</code> 요청이 들어오면 <code>AddUserRequest</code> 바구니에 담겨 컨트롤러로 전달되며, <code>userService.save()</code>를 호출합니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">4</div>
+      <div class="t-content">
+        <div class="t-file">📄 UserService.java</div>
+        <div class="t-desc"><strong>비밀번호 암호화</strong>가 일어납니다. 평문 비밀번호를 <code>BCryptPasswordEncoder</code>로 해시 처리한 뒤 <code>UserRepository</code>를 통해 DB에 저장합니다[cite: 2].</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 추적 패널 (내부 동작 상세 보충 버전) -->
+  <div class="track-pane" id="pane-login">
+    <div class="t-step">
+      <div class="t-num">1</div>
+      <div class="t-content">
+        <div class="t-file">📄 UserViewController.java</div>
+        <div class="t-desc"><code>/login</code> 접속 시 컨트롤러가 <code>return "login";</code>을 실행해 <strong>로그인 화면</strong>을 띄웁니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">2</div>
+      <div class="t-content">
+        <div class="t-file">📄 login.html</div>
+        <div class="t-desc">사용자가 아이디와 비밀번호를 입력하고 [Submit]을 누릅니다. (`POST /login` 요청)[cite: 2]</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">3</div>
+      <div class="t-content">
+        <div class="t-file">📄 WebSecurityConfig.java <span class="t-badge">시큐리티가 낚아챔!</span></div>
+        <div class="t-desc">우리 코드에는 <code>@PostMapping("/login")</code>이 없습니다! <strong>UsernamePasswordAuthenticationFilter</strong>가 이 요청을 공중에서 낚아챕니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num" style="background:#f77f00;">🕵️</div>
+      <div class="t-content" style="border-color:#f77f00; background:rgba(247, 127, 0, 0.03);">
+        <div class="t-file" style="color:#f77f00;">⚙️ [숨은 로직] 매니저와 실무자</div>
+        <div class="t-desc">필터는 가로챈 아이디/비번을 <strong>인증 매니저(AuthenticationManager)</strong>에게 넘기고, 매니저는 DB 조사를 전담하는 실무자 <strong>인증 제공자(DaoAuthenticationProvider)</strong>에게 일을 맡깁니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">4</div>
+      <div class="t-content">
+        <div class="t-file">📄 UserDetailService.java</div>
+        <div class="t-desc">실무자(인증 제공자)가 우리가 만든 이 파일의 <code>loadUserByUsername()</code> 메서드를 <strong>자동으로 호출</strong>하여 DB에서 유저 정보를 가져옵니다[cite: 2].</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">5</div>
+      <div class="t-content">
+        <div class="t-file">🛡️ [숨은 로직] 비밀번호 비교 & 금고 보관</div>
+        <div class="t-desc">실무자가 <code>PasswordEncoder.matches(내가_친_비번, DB_암호화_비번)</code>을 실행해 일치하는지 비교합니다. 일치하면 인증 도장을 찍어 <strong>SecurityContextHolder</strong>(세션 금고)에 보관합니다[cite: 2]!</div>
+      </div>
+    </div>
+    <div class="t-step">
+      <div class="t-num">6</div>
+      <div class="t-content">
+        <div class="t-file">🔄 브라우저 이동</div>
+        <div class="t-desc">인증 성공 시 설정된 <code>.defaultSuccessUrl("/articles")</code> 경로로 이동합니다[cite: 2].</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dash">
+  <div class="dash-title">📊 학습 진행률</div>
+  <div class="dash-ring" id="dashPct">0%</div>
+  <div class="dash-detail" id="dashDetail">미션·퀴즈를 완료하세요</div>
+  <div class="dash-row"><span>✅ 미션</span><span class="dash-val" id="dashDo">0/6</span></div>
+  <div class="dash-row"><span>🧠 퀴즈</span><span class="dash-val" id="dashQ">0/8</span></div>
+</div>
+
+<script>
+// 탭 전환 스크립트
+function switchTrack(type) {
+  document.querySelectorAll('.track-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.track-pane').forEach(p => p.classList.remove('active'));
+  if(type === 'signup') {
+    document.querySelectorAll('.track-tab')[0].classList.add('active');
+    document.getElementById('pane-signup').classList.add('active');
+  } else {
+    document.querySelectorAll('.track-tab')[1].classList.add('active');
+    document.getElementById('pane-login').classList.add('active');
+  }
+}
+
+function toggleSidebar(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('overlay');
+  s.classList.toggle('open'); o.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+if(window.innerWidth>=900){document.getElementById('sidebar').classList.add('open');}
+
+function downloadSelf(){
+  const a=document.createElement('a');
+  a.href='data:text/html;charset=utf-8,'+encodeURIComponent(document.documentElement.outerHTML);
+  a.download='SpringSecurity_Ch09_Tutorial.html';
+  a.click();
+}
+
+function doCopy(btn,id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const txt=el.innerText||el.textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✅ 복사됨!';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='📋 복사';btn.classList.remove('ok');},2000);
+  });
+}
+
+function authStep(type){
+  const p=document.getElementById('authPerson'),d=document.getElementById('authDoor');
+  const fa=document.getElementById('floorAdmin'),fu=document.getElementById('floorUser');
+  const msg=document.getElementById('authMsg');
+  fa.className='floor admin';fu.className='floor user';d.className='door';p.className='person';
+  if(type==='auth'){
+    p.classList.add('move');d.classList.add('open');
+    msg.textContent='🪪 인증: 신분증(이메일+비밀번호) 확인 완료!';
+  } else if(type==='user'){
+    p.classList.add('move');d.classList.add('open');fu.classList.add('active-user');
+    msg.textContent='🔑 인가: 일반 사용자로 확인됨 → 접근 허가!';
+  } else if(type==='admin'){
+    p.classList.add('move');d.classList.add('open');fa.classList.add('active-admin');
+    msg.textContent='👑 인가: 관리자로 확인됨 → 관리자 전용 접근 허가!';
+  } else {
+    msg.textContent='▶ 버튼을 눌러 인증과 인가를 체험해보세요!';
+  }
+}
+
+const quizDone={};
+function doQuiz(qid,btn,correct){
+  if(quizDone[qid])return;
+  const opts=btn.closest('.quiz-opts').querySelectorAll('.quiz-opt');
+  opts.forEach(o=>{o.disabled=true;});
+  btn.classList.add(correct?'correct':'wrong');
+  document.getElementById(qid+'e').classList.add('show');
+  quizDone[qid]=true;
+  updateDash();
+}
+
+const missionDone={};
+function checkDo(bid){
+  const btn=document.getElementById(bid);
+  if(!btn||missionDone[bid])return;
+  btn.textContent='완료했어요!';btn.classList.add('done');
+  missionDone[bid]=true;
+  updateDash();
+}
+
+const TOTAL_Q=8,TOTAL_D=6;
+function updateDash(){
+  const qCount=Object.keys(quizDone).length;
+  const dCount=Object.keys(missionDone).length;
+  const total=qCount+dCount;
+  const max=TOTAL_Q+TOTAL_D;
+  const pct=Math.round(total/max*100);
+  document.getElementById('dashPct').textContent=pct+'%';
+  document.getElementById('dashDetail').textContent=pct>=100?'🎉 전체 완료!':'계속 진행 중...';
+  document.getElementById('dashDo').textContent=dCount+'/'+TOTAL_D;
+  document.getElementById('dashQ').textContent=qCount+'/'+TOTAL_Q;
+  const fill=document.getElementById('sbFill');
+  const pctEl=document.getElementById('sbPct');
+  if(fill){fill.style.width=pct+'%';}
+  if(pctEl){pctEl.textContent=pct+'%';}
+}
+</script>
+</body>
+</html>

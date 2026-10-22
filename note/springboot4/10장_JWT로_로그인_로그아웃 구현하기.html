@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- v2 · 2026-10-09 · 백엔드 입문 10장 점검 후 재구성 · stepper 애니메이션·체크리스트 저장·퀴즈 형식 통일 -->
+<title>백엔드 입문 10장 · JWT로 로그인/로그아웃 구현하기 · 쉬운 설명서 v2</title>
+<style>
+  :root{--main:#0f7a5a;--main2:#e8f6f0;--ink:#1d2430;--mute:#5b6572;--line:#dfe5ea;--warn:#f0a33a;--warnbg:#fff4e0;--tipbg:#eaf2ff;--tipb:#4a86e8;--bad:#e0565b;--badbg:#fde8e9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#f4f7f9;line-height:1.8;font-size:16px}
+  .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(135deg,#0f7a5a,#2fbf8f);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:20}
+  .topbar h1{font-size:1.05rem;margin:0;flex:1}
+  .btn{background:#fff;color:var(--main);border:0;border-radius:8px;padding:8px 12px;font-size:.9rem;cursor:pointer;font-weight:bold}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+  #menuBtn{display:none}
+  .side{position:fixed;top:56px;left:0;bottom:0;width:270px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;padding:16px 12px;z-index:10}
+  .side h2{font-size:.9rem;color:var(--mute);margin:6px 8px 10px}
+  .side a{display:block;color:var(--ink);text-decoration:none;padding:9px 12px;border-radius:8px;margin-bottom:4px;font-size:.93rem}
+  .side a:hover{background:var(--main2)}
+  .side a.active{background:var(--main);color:#fff;font-weight:bold}
+  .side small{display:block;color:var(--mute);font-size:.78rem;font-weight:normal}
+  .side a.active small{color:#dff5ec}
+  main{margin-left:270px;margin-top:56px;min-height:calc(100vh - 56px);padding:24px 28px 60px}
+  .page{display:none;max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 26px 20px}
+  .page.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .page h2{margin:0 0 10px;color:var(--main);font-size:1.4rem}
+  .page h3{margin:24px 0 8px;font-size:1.1rem;border-left:4px solid var(--main);padding-left:10px}
+  .page p{margin:8px 0}
+  .page ul,.page ol{padding-left:22px}
+  .page li{margin:4px 0}
+  .box{border-radius:10px;padding:12px 14px;margin:14px 0;font-size:.95rem}
+  .box strong{display:block;margin-bottom:4px}
+  .tip{background:var(--tipbg);border-left:4px solid var(--tipb)}
+  .warn{background:var(--warnbg);border-left:4px solid var(--warn)}
+  .key{background:var(--main2);border-left:4px solid var(--main)}
+  .bad{background:var(--badbg);border-left:4px solid var(--bad)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--main2)}
+  code{background:#f0f3f6;border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:.9em}
+  .eg{background:#1e2530;color:#e6edf3;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:.85rem;overflow-x:auto;white-space:pre;line-height:1.6}
+  .eg .c{color:#8b98a8}
+  .stepper{border:2px solid var(--main2);border-radius:14px;padding:12px;margin:16px 0;background:#fbfdfc}
+  .stage{width:100%;height:auto;display:block}
+  .el{opacity:0;transition:opacity .45s ease}
+  .el.on{opacity:1}
+  .ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;margin:10px 0}
+  .ctrl button{background:var(--main);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.92rem}
+  .ctrl button.alt{background:#fff;color:var(--main);border:1px solid var(--main)}
+  .ctrl button:disabled{opacity:.35;cursor:default}
+  .ctrl .lbl{min-width:90px;text-align:center;font-weight:bold;color:var(--main)}
+  .caps{margin:6px 0 0;padding:0}
+  .caps li{list-style:none;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem;margin:0}
+  .caps li.on{display:block;border-color:var(--warn);background:var(--warnbg)}
+  .quiz{background:#fafafa;border:1px dashed #b8c2cc;border-radius:10px;padding:12px 14px;margin-top:18px}
+  .quiz summary{cursor:pointer;color:var(--main);font-weight:bold}
+  .check{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .check input{margin-top:6px}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin:14px auto 0;max-width:860px}
+  .pager button{background:#fff;border:1px solid var(--main);color:var(--main);border-radius:8px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+  .pager button:hover{background:var(--main2)}
+  @media (max-width:900px){
+    #menuBtn{display:inline-block}
+    .side{transform:translateX(-100%);transition:transform .25s;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+    .side.open{transform:none}
+    main{margin-left:0;padding:16px 12px 60px}
+    .page{padding:18px 14px}
+  }
+
+  .url{font-family:Consolas,monospace;background:#f1f4f6;padding:1px 6px;border-radius:5px;font-size:.9em}
+  .kw{display:inline-block;background:#e8f6f0;border-radius:14px;padding:3px 12px;margin:3px 4px 3px 0;font-size:.9rem;color:#0f7a5a;font-weight:bold}
+  .step{display:inline-block;background:#0f7a5a;color:#fff;border-radius:6px;padding:1px 8px;font-size:.85rem;margin-right:6px;font-weight:bold}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;font-size:.92rem}
+  .flow span{background:#e8f6f0;border:1px solid #bfe3d4;border-radius:8px;padding:5px 10px}
+  .eg .cm{color:#8fd19e}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="btn ghost" id="menuBtn" onclick="toggleMenu()">☰ 목차</button>
+  <h1>백엔드 입문 · 10장 JWT로 로그인/로그아웃 구현하기 (v2)</h1>
+  <button class="btn" onclick="downloadPage()">⬇️ 다운로드</button>
+</div>
+
+<aside class="side" id="side">
+  <h2>📚 목차 (순서대로 따라 하세요)</h2>
+  <a href="#p0" data-p="p0">10장 · JWT로 로그인/로그아웃 구현하기<small>학습 목표와 코스</small></a>
+  <a href="#p1" data-p="p1">10.1 사전 지식: 토큰 기반 인증<small>개념과 전달 과정</small></a>
+  <a href="#p2" data-p="p2">토큰 기반 인증의 특징 · JWT 구조<small>무상태성, 헤더·내용·서명</small></a>
+  <a href="#p3" data-p="p3">JWT 클레임(claim)<small>등록·공개·비공개 클레임</small></a>
+  <a href="#p4" data-p="p4">10.2 JWT 서비스 구현하기<small>의존성과 설정 파일</small></a>
+  <a href="#p5" data-p="p5">TokenProvider 만들기 (토큰 생성)<small>토큰 생성 메서드</small></a>
+  <a href="#p6" data-p="p6">검증·인증 정보·테스트<small>validToken, getAuthentication</small></a>
+  <a href="#p7" data-p="p7">리프레시 토큰 도메인과 토큰 필터<small>RefreshToken, TokenAuthenticationFilter</small></a>
+  <a href="#p8" data-p="p8">토큰 서비스 만들기<small>UserService, RefreshTokenService, TokenService</small></a>
+  <a href="#p9" data-p="p9">10.3 토큰 API 구현하기<small>DTO, 컨트롤러, 테스트</small></a>
+  <a href="#p10" data-p="p10">학습 마무리<small>핵심 요약·연습문제·체크리스트</small></a>
+</aside>
+
+<main>
+<section class="page" id="p0">
+  <h2>10장 · JWT로 로그인/로그아웃 구현하기</h2>
+<p>9장에서는 세션(Session) 기반으로 로그인했습니다. 이번 장에서는 <strong>토큰(Token) 기반 인증</strong>을 직접 구현합니다. 로그인한 사용자에게 <strong>JWT(JSON Web Token)</strong>를 발급하고, 요청할 때마다 그 토큰으로 본인을 증명하는 방식입니다. 토큰이 만료되면 <strong>리프레시 토큰</strong>으로 새 액세스 토큰을 받는 흐름까지 만듭니다.</p>
+
+  <h3>학습 목표</h3>
+  <p>토큰 기반 인증과 JWT, 리프레시 토큰의 개념을 이해하고, 토큰 기반 인증인 JWT 토큰 서비스를 구현하고 적용합니다.</p>
+
+  <h3>핵심 키워드</h3>
+  <div>
+    <span class="kw">토큰 기반 인증</span><span class="kw">JWT</span><span class="kw">리프레시 토큰</span><span class="kw">필터</span>
+  </div>
+
+  <h3>학습 코스</h3>
+  <div class="flow">
+    <span><em>1</em> 사전 지식: 토큰 기반 인증</span>
+    <span>→</span>
+    <span><em>2</em> JWT 서비스 구현하기</span>
+    <span>→</span>
+    <span><em>3</em> 토큰 API 구현하기</span>
+    <span>→</span>
+    <span><em>GOAL</em> 테스트와 정리</span>
+  </div>
+
+  <div class="box key"><strong>이 장에서 만드는 것</strong>
+    · JWT를 만들고 검증하는 <code>TokenProvider</code><br>
+    · 리프레시 토큰을 저장하는 <code>RefreshToken</code> 엔티티와 리포지터리<br>
+    · 요청 헤더의 토큰을 확인하는 <code>TokenAuthenticationFilter</code><br>
+    · 리프레시 토큰으로 새 액세스 토큰을 발급하는 <code>/api/token</code> API
+  </div>
+
+  <div class="box warn"><strong>⚠️ 시작 전 알아 둘 점</strong>
+    이 장의 예제는 학습용 비밀키(<code>study-springboot</code>)를 그대로 사용합니다. 실제 서비스에서는 이 값을 코드나 설정 파일에 두지 말고, 충분히 긴 무작위 값을 환경 변수로 주입해야 합니다.
+  </div>
+</section>
+
+<section class="page" id="p1">
+  <h2>10.1 사전 지식: 토큰 기반 인증</h2>
+<h3>토큰 기반 인증이란?</h3>
+  <p>사용자가 서버에 접근할 때 인증된 사용자인지 확인하는 방법은 여러 가지입니다. 대표적으로 <strong>서버 기반 인증(세션)</strong>과 <strong>토큰 기반 인증</strong>이 있습니다. 스프링 시큐리티는 기본적으로 세션 기반 인증을 제공하는데, 8·9장에서는 사용자마다 세션을 만들고 저장해서 인증했습니다.</p>
+  <p><strong>토큰</strong>은 서버에서 클라이언트를 구분하기 위한 유일한 값입니다. 서버가 토큰을 생성해서 클라이언트에게 제공하면, 클라이언트는 이 토큰을 갖고 있다가 여러 요청을 보낼 때마다 이 토큰과 함께 신청합니다. 그러면 서버는 토큰만 보고 유효한 사용자인지 검증합니다.</p>
+
+  <h3>토큰을 전달하고 인증받는 과정</h3>
+  <div class="stepper" data-steps="6" data-anim="anim-basic">
+<svg class="stage" viewBox="0 0 640 260" role="img" aria-label="토큰 기반 인증 전달 과정">
+      <rect x="40" y="20" width="140" height="44" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="110" y="47" text-anchor="middle" font-size="14">클라이언트</text>
+      <rect x="440" y="20" width="140" height="44" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="510" y="47" text-anchor="middle" font-size="14">서버</text>
+      <line x1="110" y1="64" x2="110" y2="250" stroke="#0f7a5a" stroke-width="2" stroke-dasharray="4 4"/>
+      <line x1="510" y1="64" x2="510" y2="250" stroke="#0f7a5a" stroke-width="2" stroke-dasharray="4 4"/>
+      <line class="el" data-show="1" x1="110" y1="95" x2="505" y2="95" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="310" y="88" text-anchor="middle" font-size="13">① 로그인 요청(아이디·비밀번호)</text>
+      <line class="el" data-show="2" x1="505" y1="130" x2="115" y2="130" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="310" y="123" text-anchor="middle" font-size="13">② 토큰 생성 후 응답</text>
+      <text class="el" data-show="3" x="60" y="168" text-anchor="middle" font-size="13" fill="#0f7a5a">③ 저장</text>
+      <line class="el" data-show="4" x1="110" y1="190" x2="505" y2="190" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="310" y="183" text-anchor="middle" font-size="13">④ 토큰과 함께 요청</text>
+      <text class="el" data-show="5" x="570" y="225" text-anchor="middle" font-size="13" fill="#0f7a5a">⑤ 토큰 검증</text>
+      <line class="el" data-show="6" x1="505" y1="235" x2="115" y2="235" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="6" x="310" y="252" text-anchor="middle" font-size="13">⑥ 응답</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">클라이언트가 아이디와 비밀번호로 로그인을 요청합니다.</li><li data-show="1">서버는 정보를 확인하고 유효하면 토큰을 만들어 응답합니다.</li><li data-show="2">클라이언트는 받은 토큰을 저장합니다.</li><li data-show="3">인증이 필요한 API를 부를 때 토큰을 함께 보냅니다.</li><li data-show="4">서버는 토큰이 유효한지 검증합니다.</li><li data-show="5">토큰이 유효하면 요청한 내용을 처리해 응답합니다.</li><li data-show="6">토큰이 유효하면 요청한 내용을 처리해 응답합니다.</li></ol>
+</div>
+
+  <div class="box tip"><strong>💡 세션과의 차이</strong>
+    세션 방식은 서버가 사용자 정보를 기억합니다. 토큰 방식은 사용자 정보를 담은 토큰을 <strong>클라이언트가 들고 다니고</strong>, 서버는 토큰만 검증합니다. 그래서 서버가 상태를 따로 저장하지 않아도 됩니다.
+  </div>
+
+  <h3>액세스 토큰과 리프레시 토큰</h3>
+  <p>토큰의 유효기간이 하루라면 그 토큰이 노출되었을 때 하루 동안 누구든 사용할 수 있습니다. 그렇다고 유효기간을 너무 짧게 잡으면 사용자는 자주 다시 로그인해야 하니 불편합니다. 이 문제를 해결하기 위해 <strong>리프레시 토큰(refresh token)</strong>을 씁니다.</p>
+  <table>
+    <tr><th>구분</th><th>액세스 토큰(access token)</th><th>리프레시 토큰(refresh token)</th></tr>
+    <tr><td>역할</td><td>API 요청에 붙여 사용자를 인증합니다.</td><td>액세스 토큰이 만료되었을 때 새 액세스 토큰을 발급받는 용도입니다.</td></tr>
+    <tr><td>유효기간</td><td>짧게 설정합니다(예: 2시간).</td><td>길게 설정합니다(예: 14일).</td></tr>
+    <tr><td>저장 위치</td><td>클라이언트</td><td>클라이언트와 DB(서버가 확인용으로 보관)</td></tr>
+  </table>
+
+  <div class="stepper" data-steps="5" data-anim="anim-refresh">
+<svg class="stage" viewBox="0 0 640 230" role="img" aria-label="액세스 토큰 만료 후 리프레시 토큰으로 재발급하는 흐름">
+      <rect x="10" y="90" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="75" y="118" text-anchor="middle" font-size="13">클라이언트</text>
+      <rect x="250" y="90" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="315" y="118" text-anchor="middle" font-size="13">서버</text>
+      <rect x="490" y="90" width="140" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="560" y="118" text-anchor="middle" font-size="13">DB (리프레시 토큰)</text>
+      <text class="el" data-show="1" x="200" y="70" text-anchor="middle" font-size="12">액세스 토큰으로 요청</text>
+      <text class="el" data-show="2" x="200" y="190" text-anchor="middle" font-size="12" fill="#e0565b">만료됨 → 에러 응답</text>
+      <text class="el" data-show="3" x="200" y="20" text-anchor="middle" font-size="12">리프레시 토큰과 함께 재발급 요청</text>
+      <line class="el" data-show="4" x1="315" y1="150" x2="555" y2="150" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="435" y="172" text-anchor="middle" font-size="12">저장된 토큰과 비교</text>
+      <text class="el" data-show="5" x="450" y="60" text-anchor="middle" font-size="12" fill="#0f7a5a">유효하면 새 액세스 토큰 발급</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">액세스 토큰으로 API를 요청합니다.</li><li data-show="1">토큰이 만료되면 서버는 만료 에러를 보냅니다.</li><li data-show="2">클라이언트는 리프레시 토큰과 함께 새 액세스 토큰을 요청합니다.</li><li data-show="3">서버는 리프레시 토큰을 DB에서 조회해 비교합니다.</li><li data-show="4">같으면 유효하다고 판단합니다.</li><li data-show="5">새 액세스 토큰을 응답하고, 이후 요청은 새 토큰으로 합니다.</li></ol>
+</div>
+
+  <div class="box bad"><strong>🚨 토큰이 노출되면 어떻게 될까요?</strong>
+    영화 티켓 정보가 노출되면 다른 사람이 그 티켓으로 영화를 볼 수 있습니다. 토큰도 마찬가지여서, 토큰을 가진 사람이 곧 인증된 사람이 됩니다. 그래서 액세스 토큰의 유효기간을 짧게 두고, 재발급에 쓰는 리프레시 토큰은 서버에서 따로 관리하는 방식이 필요합니다.
+  </div>
+</section>
+
+<section class="page" id="p2">
+  <h2>토큰 기반 인증의 특징 · JWT 구조</h2>
+<h3>토큰 기반 인증의 세 가지 특징</h3>
+  <table>
+    <tr><th>특징</th><th>설명</th></tr>
+    <tr><td><strong>무상태성</strong> (stateless)</td><td>인증 정보가 담긴 토큰을 클라이언트가 갖고 있으므로 서버가 따로 저장할 필요가 없습니다. 서버는 상태를 유지하지 않고 토큰만 검증합니다.</td></tr>
+    <tr><td><strong>확장성</strong></td><td>서버를 여러 대로 늘려도 상태를 공유할 필요가 없습니다. 같은 토큰으로 결제 서버와 주문 서버에 모두 요청할 수 있고, 다른 서비스와 로그인 방식을 공유하기도 쉽습니다.</td></tr>
+    <tr><td><strong>무결성</strong></td><td>토큰은 HMAC 기법으로 서명되어 있습니다. 토큰을 발급한 뒤에는 내용을 바꿀 수 없고, 한 글자라도 바뀌면 서버는 유효하지 않은 토큰으로 판단합니다.</td></tr>
+  </table>
+
+  <h3>JWT란?</h3>
+  <p>JWT는 토큰 기반 인증에서 주로 쓰는 토큰입니다. JSON 형식으로 사용자의 정보를 담습니다. 발급받은 JWT로 인증하려면 HTTP 요청 헤더의 <span class="url">Authorization</span> 키에 <span class="url">Bearer + JWT 토큰값</span>을 넣어 보내야 합니다.</p>
+
+  <div class="eg">Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhanVmcmVzaEBnbWFpbC5jb20ifQ.서명값</div>
+
+  <div class="stepper" data-steps="6" data-anim="anim-jwt">
+<svg class="stage" viewBox="0 0 640 230" role="img" aria-label="JWT의 헤더, 내용, 서명 구조">
+      <rect class="el" data-show="0" x="20" y="60" width="170" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="0" x="105" y="91" text-anchor="middle" font-size="16" font-family="Consolas,monospace">aaaaa</text>
+      <text class="el" data-show="1" x="105" y="140" text-anchor="middle" font-size="14" fill="#0f7a5a" font-weight="bold">헤더 (header)</text>
+      <text class="el" data-show="1" x="105" y="160" text-anchor="middle" font-size="12" fill="#5b6572">타입과 해싱 알고리즘</text>
+      <text class="el" data-show="2" x="210" y="91" text-anchor="middle" font-size="22" fill="#0f7a5a">.</text>
+      <rect class="el" data-show="2" x="235" y="60" width="170" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="320" y="91" text-anchor="middle" font-size="16" font-family="Consolas,monospace">bbbbbb</text>
+      <text class="el" data-show="3" x="320" y="140" text-anchor="middle" font-size="14" fill="#0f7a5a" font-weight="bold">내용 (payload)</text>
+      <text class="el" data-show="3" x="320" y="160" text-anchor="middle" font-size="12" fill="#5b6572">클레임 정보</text>
+      <text class="el" data-show="4" x="425" y="91" text-anchor="middle" font-size="22" fill="#0f7a5a">.</text>
+      <rect class="el" data-show="4" x="450" y="60" width="170" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="535" y="91" text-anchor="middle" font-size="16" font-family="Consolas,monospace">ccccc</text>
+      <text class="el" data-show="5" x="535" y="140" text-anchor="middle" font-size="14" fill="#0f7a5a" font-weight="bold">서명 (signature)</text>
+      <text class="el" data-show="5" x="535" y="160" text-anchor="middle" font-size="12" fill="#5b6572">변조 여부 확인</text>
+      <text class="el" data-show="6" x="320" y="210" text-anchor="middle" font-size="14" fill="#0f7a5a">JWT = 헤더 + "." + 내용 + "." + 서명</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">JWT는 점(.)을 기준으로 세 부분으로 나뉩니다.</li><li data-show="1">첫 부분은 헤더로, 토큰 타입과 해싱 알고리즘을 담습니다.</li><li data-show="2">둘째 부분은 내용으로, 토큰에 담을 정보를 담습니다.</li><li data-show="3">셋째 부분은 서명으로, 토큰이 바뀌지 않았는지 확인합니다.</li><li data-show="4">세 부분을 점으로 이어 붙인 것이 JWT입니다.</li><li data-show="5">세 부분을 점으로 이어 붙인 것이 JWT입니다.</li><li data-show="6">세 부분을 점으로 이어 붙인 것이 JWT입니다.</li></ol>
+</div>
+
+  <h3>헤더와 서명</h3>
+  <p><strong>헤더</strong>에는 토큰의 타입과 해싱 알고리즘을 지정하는 정보를 담습니다. 아래 예는 JWT 토큰이고 HS256 해싱 알고리즘을 쓴다는 뜻입니다.</p>
+  <div class="eg">{
+  "typ": "JWT",
+  "alg": "HS256"
+}</div>
+  <table>
+    <tr><th>이름</th><th>설명</th></tr>
+    <tr><td>typ</td><td>토큰의 타입을 지정합니다. JWT라는 문자열이 들어갑니다.</td></tr>
+    <tr><td>alg</td><td>해싱 알고리즘을 지정합니다.</td></tr>
+  </table>
+  <p><strong>서명</strong>은 토큰이 조작되었거나 변경되지 않았음을 확인하는 용도입니다. 헤더와 내용을 인코딩한 값을 합친 뒤, 주어진 비밀키로 해시값을 만듭니다. 서버는 받은 토큰에서 같은 방식으로 서명을 다시 계산해 비교합니다.</p>
+
+  <div class="box warn"><strong>⚠️ 내용은 암호화되지 않습니다</strong>
+    JWT의 내용(payload)은 Base64로 인코딩된 것일 뿐이라 누구나 해석할 수 있습니다. 그래서 비밀번호 같은 민감한 정보는 JWT에 넣으면 안 됩니다. 서명은 “위조되지 않았음”을 보장하는 것이지, “내용을 숨기는” 기능이 아닙니다.
+  </div>
+</section>
+
+<section class="page" id="p3">
+  <h2>JWT 클레임(claim)</h2>
+<p>내용(payload)에는 토큰과 관련된 정보를 담습니다. 내용의 한 덩어리를 <strong>클레임(claim)</strong>이라고 부르며, 클레임은 <strong>키-값의 한 쌍</strong>으로 이루어져 있습니다. 클레임은 크게 세 종류로 나뉩니다.</p>
+
+  <h3>등록된 클레임 (registered claim)</h3>
+  <p>토큰에 대한 정보를 담는 데 사용합니다. JWT 표준에서 미리 정해 둔 이름입니다.</p>
+  <table>
+    <tr><th>이름</th><th>설명</th></tr>
+    <tr><td>iss</td><td>토큰 발급자(issuer)</td></tr>
+    <tr><td>sub</td><td>토큰 제목(subject)</td></tr>
+    <tr><td>aud</td><td>토큰 대상자(audience)</td></tr>
+    <tr><td>exp</td><td>토큰의 만료 시간(expiration). NumericDate 형식이며 항상 현재 시간 이후로 설정합니다.</td></tr>
+    <tr><td>nbf</td><td>토큰의 활성 날짜(not before). 이 날짜가 지나기 전까지는 토큰이 처리되지 않습니다.</td></tr>
+    <tr><td>iat</td><td>토큰이 발급된 시간(issued at)</td></tr>
+    <tr><td>jti</td><td>JWT의 고유 식별자. 주로 일회용 토큰에 사용합니다.</td></tr>
+  </table>
+
+  <h3>공개 클레임 (public claim)</h3>
+  <p>공개되어도 상관없는 클레임입니다. 충돌을 방지할 수 있는 이름을 가져야 하며, 보통 클레임 이름을 URI 형태로 짓습니다.</p>
+
+  <h3>비공개 클레임 (private claim)</h3>
+  <p>공개되면 안 되는 클레임입니다. 클라이언트와 서버 간의 통신에 사용됩니다.</p>
+
+  <h3>예시</h3>
+  <div class="eg">{
+  <span class="cm">"iss": "ajufresh@gmail.com",     // 등록된 클레임</span>
+  <span class="cm">"iat": 1622370878,               // 등록된 클레임</span>
+  <span class="cm">"exp": 1622372678,               // 등록된 클레임</span>
+  <span class="cm">"https://shinsunyoung.com/jwt_claims/is_admin": true,   // 공개 클레임</span>
+  <span class="cm">"email": "ajufresh@gmail.com",   // 비공개 클레임</span>
+  <span class="cm">"hello": "안녕하세요!"            // 비공개 클레임</span>
+}</div>
+
+  <div class="box tip"><strong>💡 한눈에 구분하기</strong>
+    iss, iat, exp는 JWT 표준에서 정한 <strong>등록된 클레임</strong>입니다. URI 형태로 된 <code>is_admin</code>은 <strong>공개 클레임</strong>입니다. 그 밖의 email과 hello는 <strong>비공개 클레임</strong>입니다.
+  </div>
+</section>
+
+<section class="page" id="p4">
+  <h2>10.2 JWT 서비스 구현하기</h2>
+<p>이제 실제로 JWT를 만들고 검증하는 서비스를 구현합니다. 순서는 <strong>의존성 추가 → 설정 파일 → JwtProperties → TokenProvider → 테스트</strong>입니다.</p>
+
+  <h3><span class="step">01단계</span>의존성 추가하기 (build.gradle)</h3>
+  <p><code>build.gradle</code>에 필요한 의존성을 추가하고, Gradle 탭에서 새로고침을 눌러 의존성을 내려받습니다.</p>
+  <div class="eg"><span class="cm">// build.gradle</span>
+dependencies {
+    ... 생략 ...
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'         <span class="cm">// 자바 JWT 라이브러리</span>
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'       <span class="cm">// XML 문서와 자바 객체 간 매핑 자동화</span>
+}</div>
+
+  <div class="box warn"><strong>⚠️ 라이브러리 버전 참고</strong>
+    이 예제는 <code>jjwt 0.9.1</code> 버전 기준입니다. 이 버전의 API(<code>setSigningKey</code>, <code>parseClaimsJws</code> 등)는 이후 버전에서 바뀌었으니, 책의 코드를 따라 하려면 같은 버전을 쓰세요.
+  </div>
+
+  <h3><span class="step">02단계</span>설정 파일 수정하기 (application.yml)</h3>
+  <p>JWT에 필요한 <strong>발급자(issuer)</strong>와 <strong>비밀키(secret_key)</strong>를 설정 파일에 선언합니다.</p>
+  <div class="eg"><span class="cm"># application.yml</span>
+spring:
+  jpa:
+    show-sql: true
+    ... 생략 ...
+  ai:
+    openai:
+      api-key: ...
+jwt:
+  issuer: ajufresh@gmail.com
+  secret_key: study-springboot</div>
+
+  <div class="stepper" data-steps="5" data-anim="anim-yml">
+<svg class="stage" viewBox="0 0 640 170" role="img" aria-label="jwt 설정 항목과 자바 필드의 연결">
+      <rect x="20" y="30" width="250" height="110" rx="10" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="145" y="58" text-anchor="middle" font-size="13" font-weight="bold">application.yml</text>
+      <text class="el" data-show="0" x="40" y="88" font-size="13" font-family="Consolas,monospace">jwt:</text>
+      <text class="el" data-show="1" x="60" y="110" font-size="13" font-family="Consolas,monospace">issuer: ajufresh@gmail.com</text>
+      <text class="el" data-show="1" x="60" y="130" font-size="13" font-family="Consolas,monospace">secret_key: study-springboot</text>
+      <rect class="el" data-show="2" x="370" y="30" width="250" height="110" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="495" y="58" text-anchor="middle" font-size="13" font-weight="bold">JwtProperties.java</text>
+      <text class="el" data-show="3" x="390" y="88" font-size="13" font-family="Consolas,monospace">String issuer;</text>
+      <text class="el" data-show="3" x="390" y="110" font-size="13" font-family="Consolas,monospace">String secretKey;</text>
+      <line class="el" data-show="4" x1="275" y1="85" x2="365" y2="85" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="320" y="78" text-anchor="middle" font-size="11" fill="#0f7a5a">자동 매핑</text>
+      <text class="el" data-show="5" x="320" y="160" text-anchor="middle" font-size="12" fill="#5b6572">secret_key 는 자바에서 secretKey 로 연결됩니다.</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">설정 파일에 jwt 항목을 선언합니다.</li><li data-show="1">issuer와 secret_key 값을 넣습니다.</li><li data-show="2">JwtProperties 클래스가 같은 이름의 필드를 가집니다.</li><li data-show="3">설정 값이 필드에 자동으로 들어갑니다.</li><li data-show="4">이름 규칙(secret_key → secretKey)을 기억하세요.</li><li data-show="5">이름 규칙(secret_key → secretKey)을 기억하세요.</li></ol>
+</div>
+
+  <div class="box bad"><strong>🚨 비밀키 관리</strong>
+    비밀키는 서명을 만드는 열쇠입니다. 이 키를 알면 누구나 토큰을 위조할 수 있습니다. 예제의 <code>study-springboot</code>는 학습용입니다. 실제 배포에서는 환경 변수 등으로 주입하고, 깃에 올라가지 않도록 관리하세요.
+  </div>
+
+  <h3><span class="step">03단계</span>JwtProperties 만들기</h3>
+  <p><code>config/jwt</code> 패키지에 <code>JwtProperties.java</code>를 만듭니다. 설정 파일의 <code>jwt.issuer</code>와 <code>jwt.secret_key</code> 값을 이 클래스의 필드로 가져옵니다.</p>
+  <div class="eg"><span class="cm">// /config/jwt/JwtProperties.java</span>
+@Setter                                                  <span class="cm">// setter 자동 생성</span>
+@Getter                                                  <span class="cm">// getter 자동 생성</span>
+@Component                                               <span class="cm">// 스프링 빈으로 등록</span>
+@ConfigurationProperties("jwt")                          <span class="cm">// 설정 파일의 jwt 항목 값을 아래 필드에 넣음</span>
+public class JwtProperties {
+    private String issuer;                               <span class="cm">// 설정 파일의 jwt.issuer 값이 들어감</span>
+    private String secretKey;                            <span class="cm">// 설정 파일의 jwt.secret_key 값이 들어감</span>
+}</div>
+
+  <div class="box warn"><strong>⚠️ import 빨간 줄 해결</strong>
+    <code>Setter</code>, <code>Getter</code>, <code>Component</code>, <code>ConfigurationProperties</code>에 빨간 줄이 생기면 해당 줄에서 <strong>Alt+Enter</strong>를 눌러 import를 추가하세요.
+  </div>
+</section>
+
+<section class="page" id="p5">
+  <h2>TokenProvider 만들기 (토큰 생성)</h2>
+<p><span class="step">04단계</span>토큰을 생성하고, 올바른 토큰인지 유효성을 검사하고, 토큰에서 필요한 정보를 가져오는 클래스 <code>TokenProvider</code>를 만듭니다. <code>config/jwt</code> 디렉터리에 <code>TokenProvider.java</code>를 만들고 아래 코드를 입력합니다.</p>
+
+  <div class="eg"><span class="cm">// /config/jwt/TokenProvider.java</span>
+@RequiredArgsConstructor                  <span class="cm">// final 필드를 넣는 생성자 자동 생성</span>
+@Service                                  <span class="cm">// 서비스 빈으로 등록</span>
+public class TokenProvider {
+
+    private final JwtProperties jwtProperties;   <span class="cm">// 설정 값(issuer, secretKey) 주입</span>
+
+    <span class="cm">// 만료 기간(expiredAt)을 받아 현재 시간 기준으로 만료 시각을 계산하고 토큰 생성</span>
+    public String generateToken(User user, Duration expiredAt) {
+        Date now = new Date();                                              <span class="cm">// 지금 시각</span>
+        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), user); <span class="cm">// 만료 시각 계산 후 makeToken 호출</span>
+    }
+
+    <span class="cm">// ① JWT 토큰 생성 메서드</span>
+    private String makeToken(Date expiry, User user) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)   <span class="cm">// 헤더 typ : JWT</span>
+                .setIssuer(jwtProperties.getIssuer())          <span class="cm">// 내용 iss : 설정 파일에서 가져온 발급자</span>
+                .setIssuedAt(now)                              <span class="cm">// 내용 iat : 현재 시간</span>
+                .setExpiration(expiry)                         <span class="cm">// 내용 exp : 전달받은 만료 시각</span>
+                .setSubject(user.getEmail())                   <span class="cm">// 내용 sub : 사용자의 이메일</span>
+                .claim("id", user.getId())                     <span class="cm">// 비공개 클레임 id : 사용자 ID</span>
+                <span class="cm">// 서명 : 비밀키와 함께 HS256 방식으로 암호화</span>
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .compact();                                    <span class="cm">// 최종 JWT 문자열로 만듦</span>
+    }
+}</div>
+
+  <div class="stepper" data-steps="4" data-anim="anim-make">
+<svg class="stage" viewBox="0 0 640 240" role="img" aria-label="토큰 생성 과정">
+      <rect x="10" y="90" width="120" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="70" y="118" text-anchor="middle" font-size="12">User + 기간</text>
+      <text x="70" y="136" text-anchor="middle" font-size="11" fill="#5b6572">generateToken</text>
+      <rect class="el" data-show="1" x="170" y="90" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="235" y="118" text-anchor="middle" font-size="12">만료 시각 계산</text>
+      <text class="el" data-show="1" x="235" y="136" text-anchor="middle" font-size="11" fill="#5b6572">now + 기간</text>
+      <rect class="el" data-show="2" x="340" y="90" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="405" y="118" text-anchor="middle" font-size="12">makeToken</text>
+      <text class="el" data-show="2" x="405" y="136" text-anchor="middle" font-size="11" fill="#5b6572">내용 채우기</text>
+      <rect class="el" data-show="3" x="510" y="90" width="120" height="60" rx="8" fill="#0f7a5a"/>
+      <text class="el" data-show="3" x="570" y="118" text-anchor="middle" font-size="12" fill="#fff">서명 후 문자열</text>
+      <text class="el" data-show="3" x="570" y="136" text-anchor="middle" font-size="11" fill="#dff5ec">HS256 + secretKey</text>
+      <line x1="130" y1="120" x2="165" y2="120" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="1" x1="300" y1="120" x2="335" y2="120" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="2" x1="470" y1="120" x2="505" y2="120" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="320" y="200" text-anchor="middle" font-size="13" fill="#0f7a5a">헤더: typ=JWT / 내용: iss, iat, exp, sub, id</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">generateToken이 사용자와 유효 기간을 받습니다.</li><li data-show="1">현재 시각에 기간을 더해 만료 시각을 계산합니다.</li><li data-show="2">makeToken이 헤더와 내용 항목을 채웁니다.</li><li data-show="3">비밀키로 서명한 뒤 하나의 문자열로 만듭니다.</li><li data-show="4">비밀키로 서명한 뒤 하나의 문자열로 만듭니다.</li></ol>
+</div>
+
+  <h3>코드 한 줄씩 이해하기</h3>
+  <table>
+    <tr><th>코드</th><th>하는 일</th></tr>
+    <tr><td><code>generateToken(User, Duration)</code></td><td>호출하는 쪽에서 사용자와 유효 기간(예: 14일)을 넘기면, 만료 시각을 계산해 <code>makeToken</code>에 넘깁니다.</td></tr>
+    <tr><td><code>makeToken(Date, User)</code></td><td>실제 토큰을 만드는 private 메서드입니다. 외부에서 직접 쓰지 않습니다.</td></tr>
+    <tr><td><code>Jwts.builder()</code></td><td>JWT를 조립하는 빌더를 시작합니다.</td></tr>
+    <tr><td><code>setSubject(user.getEmail())</code></td><td>토큰의 주인을 이메일로 표시합니다.</td></tr>
+    <tr><td><code>claim("id", user.getId())</code></td><td>나중에 토큰에서 사용자 ID를 꺼낼 수 있도록 <code>id</code>를 비공개 클레임으로 넣습니다.</td></tr>
+    <tr><td><code>signWith(HS256, secretKey)</code></td><td>비밀키로 서명해서, 토큰이 바뀌면 검증에 실패하도록 만듭니다.</td></tr>
+  </table>
+</section>
+
+<section class="page" id="p6">
+  <h2>검증·인증 정보·테스트</h2>
+<h3><span class="step">04단계</span>TokenProvider에 검증과 조회 메서드 추가하기</h3>
+  <p>같은 <code>TokenProvider</code> 클래스에 아래 메서드를 추가합니다. 앞에서 만든 <code>makeToken</code> 아래에 이어서 씁니다.</p>
+
+  <div class="eg"><span class="cm">// ② JWT 토큰 유효성 검증 메서드</span>
+public boolean validToken(String token) {
+    try {
+        Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())   <span class="cm">// 비밀키로 복호화 시도</span>
+                .parseClaimsJws(token);                        <span class="cm">// 서명과 만료 시각을 검사</span>
+        return true;                                           <span class="cm">// 에러가 없으면 유효한 토큰</span>
+    } catch (Exception e) {                                    <span class="cm">// 복호화 과정에서 에러가 나면</span>
+        return false;                                          <span class="cm">// 유효하지 않은 토큰</span>
+    }
+}
+
+<span class="cm">// ③ 토큰 기반으로 인증 정보를 가져오는 메서드</span>
+public Authentication getAuthentication(String token) {
+    Claims claims = getClaims(token);                          <span class="cm">// 토큰의 클레임 정보 꺼내기</span>
+    Set&lt;SimpleGrantedAuthority&gt; authorities =
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));   <span class="cm">// 권한은 ROLE_USER 하나</span>
+
+    <span class="cm">// 스프링 시큐리티의 User 객체를 만들어 인증 객체로 돌려줌</span>
+    return new UsernamePasswordAuthenticationToken(
+            new org.springframework.security.core.userdetails.User(
+                    claims.getSubject(), "", authorities),   <span class="cm">// 사용자 이메일(sub)을 이름으로 사용</span>
+            token, authorities);
+}
+
+<span class="cm">// ④ 토큰 기반으로 유저 ID를 가져오는 메서드</span>
+public Long getUserId(String token) {
+    Claims claims = getClaims(token);                          <span class="cm">// 클레임 정보 꺼내기</span>
+    return claims.get("id", Long.class);                       <span class="cm">// id 키의 값을 Long으로 꺼냄</span>
+}
+
+<span class="cm">// 토큰을 비밀키로 복호화한 뒤 클레임(내용)만 꺼내는 private 메서드</span>
+private Claims getClaims(String token) {
+    return Jwts.parser()
+            .setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token)
+            .getBody();                                        <span class="cm">// 내용(클레임) 부분 반환</span>
+}</div>
+
+  <div class="box warn"><strong>⚠️ 주의: 두 개의 User 클래스</strong>
+    <code>getAuthentication</code>에서 쓰는 <code>User</code>는 우리가 만든 <code>domain.User</code>가 아니라 <strong>스프링 시큐리티가 제공하는 User 클래스</strong>입니다. 전체 이름(<code>org.springframework.security.core.userdetails.User</code>)을 써서 구분하세요. 우리가 만든 User를 넣으면 타입이 맞지 않습니다.
+  </div>
+
+  <div class="stepper" data-steps="3" data-anim="anim-auth">
+<svg class="stage" viewBox="0 0 640 170" role="img" aria-label="토큰에서 인증 정보를 얻는 흐름">
+      <rect x="10" y="60" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="75" y="88" text-anchor="middle" font-size="12">토큰 문자열</text>
+      <text x="75" y="106" text-anchor="middle" font-size="11" fill="#5b6572">요청 헤더에서 꺼냄</text>
+      <rect class="el" data-show="1" x="180" y="60" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="245" y="88" text-anchor="middle" font-size="12">getClaims</text>
+      <text class="el" data-show="1" x="245" y="106" text-anchor="middle" font-size="11" fill="#5b6572">비밀키로 복호화</text>
+      <rect class="el" data-show="2" x="350" y="60" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="415" y="88" text-anchor="middle" font-size="12">subject(이메일)</text>
+      <text class="el" data-show="2" x="415" y="106" text-anchor="middle" font-size="11" fill="#5b6572">사용자 이름</text>
+      <rect class="el" data-show="3" x="500" y="60" width="130" height="60" rx="8" fill="#0f7a5a"/>
+      <text class="el" data-show="3" x="565" y="88" text-anchor="middle" font-size="12" fill="#fff">Authentication</text>
+      <text class="el" data-show="3" x="565" y="106" text-anchor="middle" font-size="11" fill="#dff5ec">인증 객체 반환</text>
+      <line x1="140" y1="90" x2="175" y2="90" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="2" x1="310" y1="90" x2="345" y2="90" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="3" x1="480" y1="90" x2="495" y2="90" stroke="#0f7a5a" stroke-width="2"/>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">토큰 문자열을 받습니다.</li><li data-show="1">비밀키로 복호화해 클레임을 꺼냅니다.</li><li data-show="2">클레임의 sub(이메일)를 사용자 이름으로 씁니다.</li><li data-show="3">인증 객체를 만들어 돌려줍니다.</li></ol>
+</div>
+
+  <h3>테스트 코드 작성하기</h3>
+  <p><span class="step">05단계</span>토큰을 만드는 것을 테스트하기 위해 <strong>JwtFactory</strong>를 test 디렉터리에 만듭니다. 테스트에서 필요한 값만 골라 넣을 수 있도록 빌더 패턴을 씁니다.</p>
+
+  <div class="eg"><span class="cm">// test/.../config/jwt/JwtFactory.java</span>
+@Getter
+public class JwtFactory {
+
+    private String subject = "test@email.com";                            <span class="cm">// 기본 제목(sub)</span>
+    private Date issuedAt = new Date();                                   <span class="cm">// 기본 발급 시각</span>
+    private Date expiration = new Date(new Date().getTime()
+            + Duration.ofDays(14).toMillis());                            <span class="cm">// 기본 만료 시각(14일 뒤)</span>
+
+    private Map&lt;String, Object&gt; claims = emptyMap();                  <span class="cm">// 추가 클레임(기본은 비어 있음)</span>
+
+    <span class="cm">// 빌더 패턴을 사용해 설정이 필요한 데이터만 선택 설정</span>
+    @Builder
+    public JwtFactory(String subject, Date issuedAt, Date expiration,
+                      Map&lt;String, Object&gt; claims) {
+        this.subject = subject != null ? subject : this.subject;          <span class="cm">// 값이 있으면 쓰고 없으면 기본값</span>
+        this.issuedAt = issuedAt != null ? issuedAt : this.issuedAt;
+        this.expiration = expiration != null ? expiration : this.expiration;
+        this.claims = claims != null ? claims : this.claims;
+    }
+
+    <span class="cm">// 기본값으로만 만든 객체를 반환</span>
+    public static JwtFactory withDefaultValues() {
+        return JwtFactory.builder().build();
+    }
+
+    <span class="cm">// jjwt 라이브러리를 사용해 JWT 토큰 생성</span>
+    public String createToken(JwtProperties jwtProperties) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
+                .addClaims(claims)
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .compact();
+    }
+}</div>
+
+  <p>이제 <code>TokenProvider</code>를 검증하는 테스트 <code>TokenProviderTest.java</code>를 같은 위치에 만듭니다. 테스트는 <strong>given(준비) → when(실행) → then(확인)</strong> 순서로 씁니다.</p>
+
+  <div class="eg"><span class="cm">// test/.../config/jwt/TokenProviderTest.java</span>
+@SpringBootTest
+class TokenProviderTest {
+    @Autowired
+    private TokenProvider tokenProvider;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    <span class="cm">// ① generateToken() 검증 테스트</span>
+    @DisplayName("generateToken(): 유저 정보와 만료 기간을 전달해 토큰을 만들 수 있다.")
+    @Test
+    void generateToken() {
+        <span class="cm">// given: 테스트용 유저를 DB에 저장</span>
+        User testUser = userRepository.save(User.builder()
+                .email("user@gmail.com")
+                .password("test")
+                .build());
+
+        <span class="cm">// when: 토큰 생성</span>
+        String token = tokenProvider.generateToken(testUser, Duration.ofDays(14));
+
+        <span class="cm">// then: 토큰 안의 id 값이 테스트 유저의 id와 같은지 확인</span>
+        Long userId = Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
+
+        assertThat(userId).isEqualTo(testUser.getId());
+    }
+
+    <span class="cm">// ② validToken() 검증 테스트 (만료된 토큰)</span>
+    @DisplayName("validToken(): 만료된 토큰인 때에 유효성 검증에 실패한다.")
+    @Test
+    void validToken_invalidToken() {
+        <span class="cm">// given: 만료 시각을 7일 전으로 설정한 토큰</span>
+        String token = JwtFactory.builder()
+                .expiration(new Date(new Date().getTime() - Duration.ofDays(7).toMillis()))
+                .build()
+                .createToken(jwtProperties);
+
+        <span class="cm">// when: 유효성 검증</span>
+        boolean result = tokenProvider.validToken(token);
+
+        <span class="cm">// then: 유효하지 않으니 false</span>
+        assertThat(result).isFalse();
+    }
+
+    <span class="cm">// ② validToken() 검증 테스트 (유효한 토큰)</span>
+    @DisplayName("validToken(): 유효한 토큰인 때에 유효성 검증에 성공한다.")
+    @Test
+    void validToken_validToken() {
+        <span class="cm">// given: 기본값(14일 뒤 만료)으로 만든 토큰</span>
+        String token = JwtFactory.withDefaultValues()
+                .createToken(jwtProperties);
+
+        <span class="cm">// when: 유효성 검증</span>
+        boolean result = tokenProvider.validToken(token);
+
+        <span class="cm">// then: 유효하니 true</span>
+        assertThat(result).isTrue();
+    }
+
+    <span class="cm">// ③ getAuthentication() 검증 테스트</span>
+    @DisplayName("getAuthentication(): 토큰 기반으로 인증 정보를 가져올 수 있다.")
+    @Test
+    void getAuthentication() {
+        <span class="cm">// given: subject가 user@email.com인 토큰</span>
+        String userEmail = "user@email.com";
+        String token = JwtFactory.builder()
+                .subject(userEmail)
+                .build()
+                .createToken(jwtProperties);
+
+        <span class="cm">// when: 인증 객체 가져오기</span>
+        Authentication authentication = tokenProvider.getAuthentication(token);
+
+        <span class="cm">// then: 인증 객체의 사용자 이름이 토큰의 subject와 같은지 확인</span>
+        assertThat(((UserDetails) authentication.getPrincipal()).getUsername())
+                .isEqualTo(userEmail);
+    }
+
+    <span class="cm">// ④ getUserId() 검증 테스트</span>
+    @DisplayName("getUserId(): 토큰으로 유저 ID를 가져올 수 있다.")
+    @Test
+    void getUserId() {
+        <span class="cm">// given: id 클레임에 1을 넣은 토큰</span>
+        Long userId = 1L;
+        String token = JwtFactory.builder()
+                .claims(Map.of("id", userId))
+                .build()
+                .createToken(jwtProperties);
+
+        <span class="cm">// when: 토큰에서 유저 ID 가져오기</span>
+        Long userIdByToken = tokenProvider.getUserId(token);
+
+        <span class="cm">// then: 가져온 값이 1과 같은지 확인</span>
+        assertThat(userIdByToken).isEqualTo(userId);
+    }
+}</div>
+
+  <table>
+    <tr><th>테스트</th><th>given(준비)</th><th>then(확인)</th></tr>
+    <tr><td>generateToken</td><td>테스트 유저를 만들어 저장</td><td>토큰 안의 id가 유저 ID와 같은지</td></tr>
+    <tr><td>validToken_invalidToken</td><td>7일 전에 만료된 토큰</td><td>검증 결과가 false인지</td></tr>
+    <tr><td>validToken_validToken</td><td>14일 뒤 만료되는 토큰</td><td>검증 결과가 true인지</td></tr>
+    <tr><td>getAuthentication</td><td>subject가 user@email.com인 토큰</td><td>인증 객체의 사용자 이름이 같은지</td></tr>
+    <tr><td>getUserId</td><td>id 클레임이 1인 토큰</td><td>가져온 ID가 1인지</td></tr>
+  </table>
+
+  <div class="box tip"><strong>💡 JwtFactory는 왜 필요할까요?</strong>
+    테스트마다 “만료된 토큰”, “특정 id를 가진 토큰”처럼 조건이 다른 토큰이 필요합니다. JwtFactory는 필요한 값만 바꿔서 토큰을 만들어 주는 도구입니다. 이 객체는 실제 서비스에 들어가지 않고 테스트에서만 씁니다.
+  </div>
+</section>
+
+<section class="page" id="p7">
+  <h2>리프레시 토큰 도메인과 토큰 필터</h2>
+<h3>리프레시 토큰 도메인 구현하기</h3>
+  <p>리프레시 토큰은 데이터베이스에 저장하는 정보이므로, 엔티티와 리포지터리를 추가해야 합니다. 매핑될 테이블 구조는 다음과 같습니다.</p>
+  <table>
+    <tr><th>컬럼명</th><th>자료형</th><th>null 허용</th><th>키</th><th>설명</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td>N</td><td>기본키</td><td>일련번호, 기본키</td></tr>
+    <tr><td>user_id</td><td>BIGINT</td><td>N</td><td></td><td>유저 ID</td></tr>
+    <tr><td>refresh_token</td><td>VARCHAR(255)</td><td>N</td><td></td><td>토큰값</td></tr>
+  </table>
+
+  <h3><span class="step">01단계</span>RefreshToken 엔티티 만들기</h3>
+  <p><code>domain</code> 디렉터리에 <code>RefreshToken.java</code>를 추가하고 다음 코드를 작성합니다.</p>
+  <div class="eg"><span class="cm">// RefreshToken.java (domain 패키지)</span>
+@NoArgsConstructor(access = AccessLevel.PROTECTED)     <span class="cm">// 기본 생성자는 외부에서 못 쓰게 제한</span>
+@Getter
+@Entity
+public class RefreshToken {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
+    private Long id;
+
+    @Column(name = "user_id", nullable = false, unique = true)   <span class="cm">// 한 유저당 리프레시 토큰은 하나</span>
+    private Long userId;
+
+    @Column(name = "refresh_token", nullable = false)
+    private String refreshToken;
+
+    public RefreshToken(Long userId, String refreshToken) {
+        this.userId = userId;                  <span class="cm">// 어떤 유저의 토큰인지 저장</span>
+        this.refreshToken = refreshToken;      <span class="cm">// 토큰 문자열 저장</span>
+    }
+
+    <span class="cm">// 새 리프레시 토큰으로 값을 바꾸는 메서드</span>
+    public RefreshToken update(String newRefreshToken) {
+        this.refreshToken = newRefreshToken;
+        return this;                           <span class="cm">// 자기 자신을 돌려줌</span>
+    }
+}</div>
+
+  <h3><span class="step">02단계</span>RefreshTokenRepository 만들기</h3>
+  <p><code>repository</code> 디렉터리에 <code>RefreshTokenRepository.java</code>를 만들고 인터페이스를 작성합니다.</p>
+  <div class="eg"><span class="cm">// RefreshTokenRepository.java (repository 패키지)</span>
+public interface RefreshTokenRepository extends JpaRepository&lt;RefreshToken, Long&gt; {
+    Optional&lt;RefreshToken&gt; findByUserId(Long userId);              <span class="cm">// 유저 ID로 리프레시 토큰 찾기</span>
+    Optional&lt;RefreshToken&gt; findByRefreshToken(String refreshToken); <span class="cm">// 토큰 문자열로 찾기</span>
+}</div>
+
+  <h3>토큰 필터 흐름</h3>
+  <p>토큰 필터는 요청이 컨트롤러에 도착하기 전에 실행되어, 요청 헤더의 토큰을 확인합니다. 토큰이 유효하면 시큐리티 컨텍스트 홀더에 인증 정보를 저장합니다.</p>
+
+  <div class="stepper" data-steps="3" data-anim="anim-filter">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="토큰 필터 흐름도">
+      <rect x="10" y="70" width="110" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="65" y="100" text-anchor="middle" font-size="13">① 요청</text>
+      <rect x="160" y="60" width="150" height="70" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="235" y="90" text-anchor="middle" font-size="13">토큰 필터</text>
+      <text x="235" y="112" text-anchor="middle" font-size="11" fill="#5b6572">유효한 토큰?</text>
+      <rect class="el" data-show="1" x="350" y="60" width="130" height="70" rx="8" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="415" y="90" text-anchor="middle" font-size="12">② 인증 정보 저장</text>
+      <text class="el" data-show="1" x="415" y="112" text-anchor="middle" font-size="11" fill="#5b6572">시큐리티 컨텍스트</text>
+      <rect class="el" data-show="2" x="520" y="60" width="110" height="70" rx="8" fill="#0f7a5a"/>
+      <text class="el" data-show="2" x="575" y="92" text-anchor="middle" font-size="12" fill="#fff">③ 서비스</text>
+      <text class="el" data-show="2" x="575" y="112" text-anchor="middle" font-size="11" fill="#dff5ec">로직 실행</text>
+      <text class="el" data-show="3" x="235" y="165" text-anchor="middle" font-size="13" fill="#e0565b">NO → 인증 정보 없이 다음 단계로 (인증 필요 API는 거부)</text>
+      <line x1="120" y1="95" x2="155" y2="95" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="1" x1="310" y1="95" x2="345" y2="95" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="2" x1="480" y1="95" x2="515" y2="95" stroke="#0f7a5a" stroke-width="2"/>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">요청이 들어옵니다.</li><li data-show="1">필터가 헤더의 토큰이 유효한지 확인합니다.</li><li data-show="2">유효하면 시큐리티 컨텍스트 홀더에 인증 정보를 저장하고 서비스 로직을 실행합니다.</li><li data-show="3">유효하지 않으면 인증 정보 없이 넘어가고, 인증이 필요한 API는 거부됩니다.</li></ol>
+</div>
+
+  <h3><span class="step">03단계</span>TokenAuthenticationFilter 만들기</h3>
+  <p><code>config</code> 디렉터리에 <code>TokenAuthenticationFilter.java</code>를 만듭니다. 이 필터는 <span class="url">Authorization</span> 헤더 값을 가져와 <code>Bearer</code> 접두사를 떼고, 토큰이 유효하면 인증 정보를 설정합니다.</p>
+  <div class="eg"><span class="cm">// TokenAuthenticationFilter.java (config 패키지)</span>
+@RequiredArgsConstructor
+public class TokenAuthenticationFilter extends OncePerRequestFilter {  <span class="cm">// 요청당 한 번 실행되는 필터</span>
+
+    private final TokenProvider tokenProvider;
+    private final static String HEADER_AUTHORIZATION = "Authorization";  <span class="cm">// 헤더 이름</span>
+    private final static String TOKEN_PREFIX = "Bearer ";                <span class="cm">// 토큰 앞에 붙는 접두사</span>
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        <span class="cm">// ① 요청 헤더의 Authorization 키의 값 조회</span>
+        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+        <span class="cm">// ② 가져온 값에서 접두사 제거</span>
+        String token = getAccessToken(authorizationHeader);
+
+        <span class="cm">// ③ 가져온 토큰이 유효한지 확인하고, 유효할 때는 인증 정보 설정</span>
+        if (tokenProvider.validToken(token)) {
+            Authentication authentication = tokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        <span class="cm">// ④ 다음 필터(또는 컨트롤러)로 요청 넘기기</span>
+        filterChain.doFilter(request, response);
+    }
+
+    <span class="cm">// Bearer 접두사를 제외한 토큰 값을 돌려줌</span>
+    private String getAccessToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
+            return authorizationHeader.substring(TOKEN_PREFIX.length());
+        }
+        return null;                           <span class="cm">// 헤더가 없거나 Bearer로 시작하지 않으면 null</span>
+    }
+}</div>
+
+  <div class="box warn"><strong>⚠️ 필터 등록은 다음 단계에서</strong>
+    이 필터는 만들었지만, 시큐리티 설정 파일에 등록하는 코드(예: <code>addFilterBefore</code>)는 이 전자책에 아직 포함되어 있지 않습니다. 등록 방법은 책의 다음 페이지에 있으니, 해당 내용을 받은 뒤 보완하겠습니다.
+  </div>
+
+  <div class="box tip"><strong>💡 시큐리티 컨텍스트 홀더란?</strong>
+    시큐리티 컨텍스트(security context)는 인증 객체를 저장해 두는 보관소입니다. 시큐리티 컨텍스트 홀더(security context holder)는 이 보관소를 저장하는 객체입니다. 스레드마다 공간을 따로 줘서 다른 요청과 섞이지 않고, 코드 어디서나 <code>getContext().getAuthentication()</code>으로 꺼내 쓸 수 있습니다.
+  </div>
+</section>
+
+<section class="page" id="p8">
+  <h2>토큰 서비스 만들기</h2>
+<p>리프레시 토큰으로 새 액세스 토큰을 만드는 흐름을 서비스 계층에 구현합니다. 세 클래스가 차례로 필요합니다.</p>
+
+  <h3><span class="step">01단계</span>UserService에 findById 추가하기</h3>
+  <p>전달받은 유저 ID로 유저를 찾아 돌려주는 <code>findById()</code> 메서드를 <code>UserService.java</code>에 추가합니다.</p>
+  <div class="eg"><span class="cm">// UserService.java 에 추가 (… 생략 … 은 앞에서 만든 코드)</span>
+public User findById(Long userId) {
+    return userRepository.findById(userId)                       <span class="cm">// 기본 메서드로 id 검색</span>
+            .orElseThrow(() -&gt; new IllegalArgumentException("Unexpected user"));  <span class="cm">// 없으면 예외</span>
+}</div>
+
+  <h3><span class="step">02단계</span>RefreshTokenService 만들기</h3>
+  <p><code>service</code> 디렉터리에 <code>RefreshTokenService.java</code>를 만들고, 전달받은 리프레시 토큰으로 리프레시 토큰 객체를 찾는 <code>findByRefreshToken()</code>을 구현합니다.</p>
+  <div class="eg"><span class="cm">// RefreshTokenService.java (service 패키지)</span>
+@RequiredArgsConstructor
+@Service
+public class RefreshTokenService {
+
+    private final RefreshTokenRepository refreshTokenRepository;   <span class="cm">// DB 조회 담당</span>
+
+    <span class="cm">// 토큰 문자열로 리프레시 토큰 객체를 찾아 돌려줌</span>
+    public RefreshToken findByRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -&gt; new IllegalArgumentException("Unexpected token"));
+    }
+}</div>
+
+  <h3><span class="step">03단계</span>TokenService 만들기</h3>
+  <p><code>service</code> 디렉터리에 <code>TokenService.java</code>를 만듭니다. 이 클래스의 <code>createNewAccessToken()</code>은 다음 순서로 동작합니다.</p>
+  <ol>
+    <li>리프레시 토큰이 유효한지 검사합니다. 유효하지 않으면 예외를 던집니다.</li>
+    <li>리프레시 토큰으로 DB에서 리프레시 토큰 객체를 찾아 사용자 ID를 꺼냅니다.</li>
+    <li>사용자 ID로 사용자를 찾습니다.</li>
+    <li>토큰 제공자의 <code>generateToken()</code>으로 새 액세스 토큰을 만들어 돌려줍니다.</li>
+  </ol>
+  <div class="eg"><span class="cm">// TokenService.java (service 패키지)</span>
+@RequiredArgsConstructor
+@Service
+public class TokenService {
+
+    private final TokenProvider tokenProvider;               <span class="cm">// 토큰 생성·검증 담당</span>
+    private final RefreshTokenService refreshTokenService;   <span class="cm">// 리프레시 토큰 조회 담당</span>
+    private final UserService userService;                   <span class="cm">// 사용자 조회 담당</span>
+
+    public String createNewAccessToken(String refreshToken) {
+        <span class="cm">// ① 토큰 유효성 검사에 실패하면 예외 발생</span>
+        if (!tokenProvider.validToken(refreshToken)) {
+            throw new IllegalArgumentException("Unexpected token");
+        }
+
+        <span class="cm">// ② 리프레시 토큰으로 사용자 ID 찾기</span>
+        Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
+        <span class="cm">// ③ 사용자 ID로 사용자 찾기</span>
+        User user = userService.findById(userId);
+
+        <span class="cm">// ④ 새 액세스 토큰 생성(유효 기간 2시간)</span>
+        return tokenProvider.generateToken(user, Duration.ofHours(2));
+    }
+}</div>
+
+  <div class="stepper" data-steps="5" data-anim="anim-tokensvc">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="createNewAccessToken 내부 흐름">
+      <rect x="10" y="80" width="110" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="65" y="110" text-anchor="middle" font-size="12">리프레시 토큰</text>
+      <rect class="el" data-show="1" x="150" y="80" width="110" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="205" y="104" text-anchor="middle" font-size="12">validToken</text>
+      <text class="el" data-show="1" x="205" y="120" text-anchor="middle" font-size="10" fill="#5b6572">유효성 검사</text>
+      <rect class="el" data-show="2" x="290" y="80" width="110" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="345" y="104" text-anchor="middle" font-size="12">userId 찾기</text>
+      <text class="el" data-show="2" x="345" y="120" text-anchor="middle" font-size="10" fill="#5b6572">RefreshTokenService</text>
+      <rect class="el" data-show="3" x="430" y="80" width="90" height="50" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="3" x="475" y="104" text-anchor="middle" font-size="12">User 찾기</text>
+      <text class="el" data-show="3" x="475" y="120" text-anchor="middle" font-size="10" fill="#5b6572">UserService</text>
+      <rect class="el" data-show="4" x="540" y="80" width="90" height="50" rx="8" fill="#0f7a5a"/>
+      <text class="el" data-show="4" x="585" y="104" text-anchor="middle" font-size="12" fill="#fff">새 토큰</text>
+      <text class="el" data-show="4" x="585" y="120" text-anchor="middle" font-size="10" fill="#dff5ec">generateToken</text>
+      <line x1="120" y1="105" x2="145" y2="105" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="1" x1="260" y1="105" x2="285" y2="105" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="2" x1="400" y1="105" x2="425" y2="105" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="3" x1="520" y1="105" x2="535" y2="105" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="5" x="320" y="185" text-anchor="middle" font-size="13" fill="#e0565b">검사 실패 시 IllegalArgumentException 발생</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">리프레시 토큰을 받습니다.</li><li data-show="1">먼저 토큰이 유효한지 검사합니다.</li><li data-show="2">리프레시 토큰 테이블에서 userId를 찾습니다.</li><li data-show="3">userId로 사용자를 찾습니다.</li><li data-show="4">사용자 정보로 새 액세스 토큰을 만듭니다.</li><li data-show="5">검사에 실패하면 예외가 발생합니다.</li></ol>
+</div>
+
+  <div class="box tip"><strong>💡 세 서비스의 역할 분담</strong>
+    TokenProvider는 토큰을 만들고 검사하는 일만 합니다. RefreshTokenService는 DB에서 리프레시 토큰을 찾고, UserService는 사용자를 찾습니다. TokenService는 이 셋을 조합해 “재발급”이라는 업무를 완성합니다.
+  </div>
+</section>
+
+<section class="page" id="p9">
+  <h2>10.3 토큰 API 구현하기</h2>
+<p>리프레시 토큰을 받아 검증하고, 유효하면 새 액세스 토큰을 응답하는 API를 만듭니다. 순서는 <strong>DTO → 컨트롤러 → 테스트</strong>입니다.</p>
+
+  <h3><span class="step">01단계</span>DTO 만들기 (요청과 응답)</h3>
+  <p><code>dto</code> 디렉터리에 <code>CreateAccessTokenRequest.java</code>와 <code>CreateAccessTokenResponse.java</code>를 만듭니다.</p>
+  <div class="eg"><span class="cm">// CreateAccessTokenRequest.java (dto 패키지)</span>
+@Getter
+@Setter
+public class CreateAccessTokenRequest {
+    private String refreshToken;          <span class="cm">// 클라이언트가 보낼 리프레시 토큰</span>
+}
+
+<span class="cm">// CreateAccessTokenResponse.java (dto 패키지)</span>
+@AllArgsConstructor                      <span class="cm">// 모든 필드를 받는 생성자 자동 생성</span>
+@Getter
+public class CreateAccessTokenResponse {
+    private String accessToken;           <span class="cm">// 응답으로 돌려줄 새 액세스 토큰</span>
+}</div>
+
+  <h3><span class="step">02단계</span>TokenApiController 만들기</h3>
+  <p><code>controller</code> 디렉터리에 <code>TokenApiController.java</code>를 만듭니다. <code>/api/token</code>으로 POST 요청이 오면 토큰 서비스에 리프레시 토큰을 넘겨 새 액세스 토큰을 받습니다.</p>
+  <div class="eg"><span class="cm">// TokenApiController.java (controller 패키지)</span>
+@RequiredArgsConstructor
+@RestController
+public class TokenApiController {
+
+    private final TokenService tokenService;     <span class="cm">// 토큰 발급 로직을 맡은 서비스</span>
+
+    @PostMapping("/api/token")                   <span class="cm">// POST /api/token 요청을 받음</span>
+    public ResponseEntity&lt;CreateAccessTokenResponse&gt; createNewAccessToken(
+            @RequestBody CreateAccessTokenRequest request) {   <span class="cm">// JSON 바디를 요청 객체로 변환</span>
+
+        <span class="cm">// 리프레시 토큰으로 새 액세스 토큰 생성</span>
+        String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
+
+        <span class="cm">// 201 Created 상태와 함께 새 액세스 토큰을 응답</span>
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new CreateAccessTokenResponse(newAccessToken));
+    }
+}</div>
+
+  <div class="stepper" data-steps="4" data-anim="anim-api">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="토큰 API 요청 흐름">
+      <rect x="10" y="70" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text x="75" y="98" text-anchor="middle" font-size="12">POST /api/token</text>
+      <text x="75" y="116" text-anchor="middle" font-size="11" fill="#5b6572">refreshToken JSON</text>
+      <rect class="el" data-show="1" x="170" y="70" width="140" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="1" x="240" y="98" text-anchor="middle" font-size="12">TokenApiController</text>
+      <text class="el" data-show="1" x="240" y="116" text-anchor="middle" font-size="11" fill="#5b6572">요청 전달</text>
+      <rect class="el" data-show="2" x="340" y="70" width="130" height="60" rx="8" fill="#fff" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="2" x="405" y="98" text-anchor="middle" font-size="12">TokenService</text>
+      <text class="el" data-show="2" x="405" y="116" text-anchor="middle" font-size="11" fill="#5b6572">검증·발급</text>
+      <rect class="el" data-show="3" x="500" y="70" width="130" height="60" rx="8" fill="#0f7a5a"/>
+      <text class="el" data-show="3" x="565" y="98" text-anchor="middle" font-size="12" fill="#fff">201 Created</text>
+      <text class="el" data-show="3" x="565" y="116" text-anchor="middle" font-size="11" fill="#dff5ec">accessToken 응답</text>
+      <line x1="140" y1="100" x2="165" y2="100" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="2" x1="310" y1="100" x2="335" y2="100" stroke="#0f7a5a" stroke-width="2"/>
+      <line class="el" data-show="3" x1="470" y1="100" x2="495" y2="100" stroke="#0f7a5a" stroke-width="2"/>
+      <text class="el" data-show="4" x="320" y="170" text-anchor="middle" font-size="13" fill="#0f7a5a">새 액세스 토큰은 2시간 동안 유효합니다.</text>
+    </svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">클라이언트가 리프레시 토큰을 JSON으로 보냅니다.</li><li data-show="1">컨트롤러가 요청을 받아 서비스에 넘깁니다.</li><li data-show="2">서비스가 검증하고 새 액세스 토큰을 만듭니다.</li><li data-show="3">201 Created와 함께 새 토큰을 응답합니다.</li><li data-show="4">새 토큰의 유효 기간은 2시간입니다.</li></ol>
+</div>
+
+  <h3><span class="step">03단계</span>테스트 코드로 확인하기</h3>
+  <p>테스트는 직접 진행해 결과를 확인합니다. <code>test/.../controller</code> 패키지에 <code>TokenApiControllerTest.java</code>를 만들고, <code>createNewAccessToken()</code> 메서드를 테스트합니다.</p>
+
+  <table>
+    <tr><th>단계</th><th>하는 일</th></tr>
+    <tr><td><strong>Given</strong></td><td>테스트 유저를 만들고, jjwt 라이브러리로 리프레시 토큰을 만들어 DB에 저장합니다. 토큰 생성 API의 요청 본문에 넣을 요청 객체를 만듭니다.</td></tr>
+    <tr><td><strong>When</strong></td><td>토큰 추가 API에 요청을 보냅니다. 요청 타입은 JSON이며, given 절에서 만든 객체를 요청 본문으로 보냅니다.</td></tr>
+    <tr><td><strong>Then</strong></td><td>응답 코드가 201 Created인지 확인하고, 응답으로 온 액세스 토큰이 비어 있지 않은지 확인합니다.</td></tr>
+  </table>
+
+  <div class="eg"><span class="cm">// test/.../controller/TokenApiControllerTest.java</span>
+@SpringBootTest
+@AutoConfigureMockMvc
+class TokenApiControllerTest {
+    @Autowired
+    protected MockMvc mockMvc;                        <span class="cm">// 실제 서버 없이 API를 호출하는 도구</span>
+    @Autowired
+    protected ObjectMapper objectMapper;              <span class="cm">// 객체를 JSON 문자열로 바꾸는 도구</span>
+    @Autowired
+    private WebApplicationContext context;            <span class="cm">// 스프링 애플리케이션 설정 정보</span>
+    @Autowired
+    JwtProperties jwtProperties;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    RefreshTokenRepository refreshTokenRepository;
+
+    @BeforeEach
+    public void mockMvcSetUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();  <span class="cm">// MockMvc 준비</span>
+        userRepository.deleteAll();                   <span class="cm">// 테스트 전에 유저 데이터 비우기</span>
+    }
+
+    @DisplayName("createNewAccessToken: 새로운 액세스 토큰을 발급한다.")
+    @Test
+    public void createNewAccessToken() throws Exception {
+        <span class="cm">// given: 테스트 유저 저장</span>
+        final String url = "/api/token";
+        User testUser = userRepository.save(User.builder()
+                .email("user@gmail.com")
+                .password("test")
+                .build());
+
+        <span class="cm">// given: 리프레시 토큰을 만들어 DB에 저장</span>
+        String refreshToken = JwtFactory.builder()
+                .claims(Map.of("id", testUser.getId()))
+                .build()
+                .createToken(jwtProperties);
+        refreshTokenRepository.save(new RefreshToken(testUser.getId(), refreshToken));
+
+        <span class="cm">// given: 요청 객체를 만들고 JSON 문자열로 변환</span>
+        CreateAccessTokenRequest request = new CreateAccessTokenRequest();
+        request.setRefreshToken(refreshToken);
+        final String requestBody = objectMapper.writeValueAsString(request);
+
+        <span class="cm">// when: POST /api/token 요청 보내기</span>
+        ResultActions resultActions = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
+
+        <span class="cm">// then: 201 응답이고 accessToken 값이 비어 있지 않은지 확인</span>
+        resultActions
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty());
+    }
+}</div>
+
+  <div class="box tip"><strong>💡 import 빨간 줄 해결</strong>
+    <code>post</code>는 <code>MockMvcRequestBuilders.post</code>에서, <code>jsonPath</code>는 <code>MockMvcResultMatchers.jsonPath</code>에서 가져오는 <strong>정적 import</strong>입니다. 빨간 줄이 생기면 해당 줄에서 <strong>Alt+Enter</strong>를 눌러 import를 추가하세요.
+  </div>
+
+  <h3>테스트 결과</h3>
+  <p>테스트를 실행하면 <code>TokenApiControllerTest</code>의 <code>createNewAccessToken</code>이 성공으로 표시됩니다. 실제 실행 결과가 초록색 체크로 보이면 리프레시 토큰으로 새 액세스 토큰을 발급받는 흐름이 정상 동작하는 것입니다.</p>
+
+  <div class="box warn"><strong>⚠️ 실행이 실패하면 확인할 것</strong>
+    · <code>refreshTokenRepository.save</code>에 넣은 토큰이 <code>JwtFactory</code>로 만든 것인지 확인하세요.<br>
+    · <code>userRepository.deleteAll()</code>을 실행하면 리프레시 토큰이 가리키는 유저가 사라질 수 있으니, 테스트 순서와 데이터를 함께 확인하세요.<br>
+    · 요청 JSON의 키 이름이 <code>refreshToken</code>인지 확인하세요.
+  </div>
+</section>
+
+<section class="page" id="p10">
+  <h2>학습 마무리</h2>
+<p>토큰 기반 인증의 특징과 토큰의 일종인 JWT를 알아보고 직접 토큰 제공자를 만들었습니다. 토큰 기반 인증은 대중적으로 사용되며, 토큰 기반 인증에서는 JWT 인기가 높으므로 잘 알아두기 바랍니다.</p>
+
+  <h3>핵심 요약</h3>
+  <ol>
+    <li>토큰 기반 인증은 인증에 토큰을 사용하는 방식입니다. 토큰은 클라이언트를 구분하는 데 사용하는 유일한 값으로서, 서버에서 생성해 클라이언트에게 제공한 뒤 클라이언트는 요청할 때마다 토큰을 함께 보냅니다. 서버는 토큰으로 유효한 사용자인지 검증합니다.</li>
+    <li>JWT는 토큰 기반 인증에서 주로 사용하는 토큰입니다. JSON 형식으로 사용자의 정보를 저장하며, 헤더·내용·서명 구조로 이루어져 있습니다. 헤더는 토큰의 타입과 해싱 알고리즘을, 내용은 토큰에 담을 정보(클레임)를, 서명은 토큰이 변경되지 않았음을 확인하는 데 씁니다.</li>
+    <li>리프레시 토큰은 액세스 토큰과 별개의 토큰입니다. 액세스 토큰이 만료되었을 때 새로운 액세스 토큰을 발급받는 용도로 사용합니다.</li>
+    <li>필터는 실제로 요청이 전달되기 전과 후에 URL 패턴에 맞는 모든 요청을 처리하는 기능을 제공합니다.</li>
+    <li>시큐리티 컨텍스트는 인증 객체가 저장되는 보관소로, 인증 정보가 필요할 때 언제든지 인증 객체를 꺼내 사용하도록 제공되는 클래스입니다. 이러한 시큐리티 컨텍스트 객체를 저장하는 객체가 시큐리티 컨텍스트 홀더입니다.</li>
+  </ol>
+
+  <div class="box bad"><strong>🚨 실습 후 꼭 정리할 보안 원칙</strong>
+    · 비밀키는 코드와 깃에 두지 않고 환경 변수로 주입합니다.<br>
+    · JWT 내용은 누구나 읽을 수 있으니 비밀번호 같은 정보를 넣지 않습니다.<br>
+    · 액세스 토큰은 짧게, 리프레시 토큰은 서버에서 관리하며 필요하면 폐기할 수 있게 설계합니다.
+  </div>
+
+  <h3>연습문제</h3>
+  <div class="quiz"><details>
+    <summary>문제 1. 서버에서 클라이언트를 구분하기 위해 만든 유일한 값으로, 클라이언트가 요청할 때마다 함께 보내는 것은 무엇일까요?</summary>
+    <p>정답: <strong>토큰</strong>(토큰 기반 인증의 토큰)</p>
+  </details></div>
+  <div class="quiz"><details>
+    <summary>문제 2. JWT의 세 부분 중, 토큰의 타입과 해싱 알고리즘을 담는 부분은 무엇일까요?</summary>
+    <p>정답: <strong>헤더(header)</strong></p>
+  </details></div>
+  <div class="quiz"><details>
+    <summary>문제 3. 액세스 토큰이 만료되었을 때 새로운 액세스 토큰을 발급받기 위해 사용하는 토큰은 무엇일까요?</summary>
+    <p>정답: <strong>리프레시 토큰</strong>(refresh token)</p>
+  </details></div>
+  <div class="quiz"><details>
+    <summary>문제 4. 요청 헤더의 Authorization 키에 넣어 보내는 토큰 값의 접두사는 무엇일까요?</summary>
+    <p>정답: <strong>Bearer</strong></p>
+  </details></div>
+  <div class="quiz"><details>
+    <summary>문제 5. 인증 객체를 저장하는 보관소를 무엇이라고 할까요? (시큐리티 컨텍스트를 저장하는 객체)</summary>
+    <p>정답: <strong>시큐리티 컨텍스트 홀더</strong>(security context holder)</p>
+  </details></div>
+  <div class="quiz"><details>
+    <summary>문제 6(추가). JWT의 내용(payload)에 비밀번호를 넣으면 안 되는 이유는 무엇일까요?</summary>
+    <p>정답 예시: 내용은 Base64로 인코딩된 것이라 누구나 해석할 수 있기 때문입니다. 서명은 위조를 막을 뿐 내용을 숨기지는 않습니다.</p>
+  </details></div>
+
+  <h3>체크리스트</h3>
+  <p>항목을 체크하면 이 브라우저에 자동으로 저장됩니다.</p>
+  <div id="checklist">
+<div class="check"><input type="checkbox" id="ck-ch10-1"><label for="ck-ch10-1">토큰 기반 인증과 세션 인증의 차이를 설명할 수 있다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-2"><label for="ck-ch10-2">JWT의 헤더·내용·서명 구조를 설명할 수 있다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-3"><label for="ck-ch10-3">build.gradle에 jjwt와 jaxb-api 의존성을 추가했다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-4"><label for="ck-ch10-4">application.yml의 jwt 설정과 JwtProperties를 만들었다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-5"><label for="ck-ch10-5">TokenProvider의 generateToken, validToken, getAuthentication, getUserId를 구현했다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-6"><label for="ck-ch10-6">TokenProviderTest의 5개 테스트가 모두 성공했다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-7"><label for="ck-ch10-7">RefreshToken 엔티티와 RefreshTokenRepository를 만들었다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-8"><label for="ck-ch10-8">TokenService, RefreshTokenService, UserService.findById를 구현했다.</label></div>
+<div class="check"><input type="checkbox" id="ck-ch10-9"><label for="ck-ch10-9">POST /api/token 요청이 201 Created와 accessToken을 응답하는 것을 테스트로 확인했다.</label></div>
+</div>
+</section>
+
+<div class="pager" id="pager"></div>
+
+</main>
+
+<script>
+var PAGES = ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"];
+var TITLES = {"p0": "10장 · JWT로 로그인/로그아웃 구현하기", "p1": "10.1 사전 지식: 토큰 기반 인증", "p2": "토큰 기반 인증의 특징 · JWT 구조", "p3": "JWT 클레임(claim)", "p4": "10.2 JWT 서비스 구현하기", "p5": "TokenProvider 만들기 (토큰 생성)", "p6": "검증·인증 정보·테스트", "p7": "리프레시 토큰 도메인과 토큰 필터", "p8": "토큰 서비스 만들기", "p9": "10.3 토큰 API 구현하기", "p10": "학습 마무리"};
+
+function showPage(id){
+  if(PAGES.indexOf(id)<0) id='p0';
+  PAGES.forEach(function(p){ document.getElementById(p).classList.toggle('active', p===id); });
+  document.querySelectorAll('.side a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-p')===id); });
+  buildPager(id);
+  window.scrollTo(0,0);
+  document.getElementById(id).querySelectorAll('.stepper').forEach(function(st){ render(st); });
+  if(window.innerWidth<=900) document.getElementById('side').classList.remove('open');
+}
+function buildPager(id){
+  var i = PAGES.indexOf(id), pg = document.getElementById('pager');
+  pg.innerHTML='';
+  if(i>0){ var b=document.createElement('button'); b.textContent='◀ 이전: '+TITLES[PAGES[i-1]]; b.onclick=function(){location.hash='#'+PAGES[i-1]}; pg.appendChild(b); }
+  else pg.appendChild(document.createElement('span'));
+  if(i<PAGES.length-1){ var b2=document.createElement('button'); b2.textContent='다음: '+TITLES[PAGES[i+1]]+' ▶'; b2.style.textAlign='right'; b2.onclick=function(){location.hash='#'+PAGES[i+1]}; pg.appendChild(b2); }
+}
+function route(){ showPage((location.hash||'#p0').slice(1)); }
+window.addEventListener('hashchange', route);
+function toggleMenu(){ document.getElementById('side').classList.toggle('open'); }
+
+function render(st){
+  var n = +st.getAttribute('data-steps'), s = st.step||0;
+  st.querySelectorAll('.el').forEach(function(e){
+    var lo = e.hasAttribute('data-show') ? +e.getAttribute('data-show') : 0;
+    var hi = e.hasAttribute('data-hide') ? +e.getAttribute('data-hide') : 99;
+    e.classList.toggle('on', s>=lo && s<=hi);
+  });
+  st.querySelectorAll('.caps li').forEach(function(li){ li.classList.toggle('on', s===+li.getAttribute('data-show')); });
+  var lbl = st.querySelector('.lbl'); if(lbl) lbl.textContent=(s+1)+' / '+(n+1)+' 단계';
+  var pv = st.querySelector('[data-act="prev"]'), nx = st.querySelector('[data-act="next"]');
+  if(pv) pv.disabled = s===0; if(nx) nx.disabled = s===n;
+}
+function stopAuto(st){
+  if(st._timer){ clearInterval(st._timer); st._timer=null; }
+  var pb = st.querySelector('[data-act="play"]'); if(pb) pb.textContent='▶ 자동 재생';
+}
+document.querySelectorAll('.stepper').forEach(function(st){
+  st.step = 0;
+  st.querySelector('[data-act="prev"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.max(0,st.step-1); render(st); });
+  st.querySelector('[data-act="next"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.min(+st.getAttribute('data-steps'),st.step+1); render(st); });
+  st.querySelector('[data-act="play"]').addEventListener('click', function(){
+    if(st._timer){ stopAuto(st); return; }
+    if(st.step>=+st.getAttribute('data-steps')) st.step=0;
+    this.textContent='⏸ 일시정지';
+    st._timer = setInterval(function(){
+      st.step++;
+      if(st.step>=+st.getAttribute('data-steps')){ st.step=+st.getAttribute('data-steps'); render(st); stopAuto(st); return; }
+      render(st);
+    }, 2400);
+    render(st);
+  });
+  render(st);
+});
+
+document.querySelectorAll('.check input').forEach(function(cb){
+  try{ cb.checked = localStorage.getItem('ch10v2_'+cb.id)==='1'; }catch(e){}
+  cb.addEventListener('change', function(){ try{ localStorage.setItem('ch10v2_'+cb.id, cb.checked?'1':'0'); }catch(e){} });
+});
+
+function downloadPage(){
+  try{
+    var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "BackendBasics_Ch10_v2.html";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }catch(e){ alert("다운로드에 실패했습니다. 브라우저 메뉴에서 '페이지 저장'을 이용해 주세요."); }
+}
+
+route();
+</script>
+</body>
+</html>

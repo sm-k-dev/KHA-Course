@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- v2 · 2026-10-09 · 백엔드 입문 3장 재작성 · 폴더·build.gradle·yml·3계층 새 예제 · 책 문장·그림 미사용 -->
+<title>백엔드 입문 3장 · 스프링 부트 4 구조 이해하기 · 쉬운 설명서 v2</title>
+<style>
+  :root{--main:#0f7a5a;--main2:#e8f6f0;--ink:#1d2430;--mute:#5b6572;--line:#dfe5ea;--warn:#f0a33a;--warnbg:#fff4e0;--tipbg:#eaf2ff;--tipb:#4a86e8;--bad:#e0565b;--badbg:#fde8e9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#f4f7f9;line-height:1.8;font-size:16px}
+  .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(135deg,#0f7a5a,#2fbf8f);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:20}
+  .topbar h1{font-size:1.05rem;margin:0;flex:1}
+  .btn{background:#fff;color:var(--main);border:0;border-radius:8px;padding:8px 12px;font-size:.9rem;cursor:pointer;font-weight:bold}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+  #menuBtn{display:none}
+  .side{position:fixed;top:56px;left:0;bottom:0;width:270px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;padding:16px 12px;z-index:10}
+  .side h2{font-size:.9rem;color:var(--mute);margin:6px 8px 10px}
+  .side a{display:block;color:var(--ink);text-decoration:none;padding:9px 12px;border-radius:8px;margin-bottom:4px;font-size:.93rem}
+  .side a:hover{background:var(--main2)}
+  .side a.active{background:var(--main);color:#fff;font-weight:bold}
+  .side small{display:block;color:var(--mute);font-size:.78rem;font-weight:normal}
+  .side a.active small{color:#dff5ec}
+  main{margin-left:270px;margin-top:56px;min-height:calc(100vh - 56px);padding:24px 28px 60px}
+  .page{display:none;max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 26px 20px}
+  .page.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .page h2{margin:0 0 10px;color:var(--main);font-size:1.4rem}
+  .page h3{margin:24px 0 8px;font-size:1.1rem;border-left:4px solid var(--main);padding-left:10px}
+  .page p{margin:8px 0}
+  .page ul,.page ol{padding-left:22px}
+  .page li{margin:4px 0}
+  .box{border-radius:10px;padding:12px 14px;margin:14px 0;font-size:.95rem}
+  .box strong{display:block;margin-bottom:4px}
+  .tip{background:var(--tipbg);border-left:4px solid var(--tipb)}
+  .warn{background:var(--warnbg);border-left:4px solid var(--warn)}
+  .key{background:var(--main2);border-left:4px solid var(--main)}
+  .bad{background:var(--badbg);border-left:4px solid var(--bad)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--main2)}
+  code{background:#f0f3f6;border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:.9em}
+  .eg{background:#1e2530;color:#e6edf3;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:.85rem;overflow-x:auto;white-space:pre;line-height:1.6}
+  .eg .c{color:#8b98a8}
+  .stepper{border:2px solid var(--main2);border-radius:14px;padding:12px;margin:16px 0;background:#fbfdfc}
+  .stage{width:100%;height:auto;display:block}
+  .el{opacity:0;transition:opacity .45s ease}
+  .el.on{opacity:1}
+  .ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;margin:10px 0}
+  .ctrl button{background:var(--main);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.92rem}
+  .ctrl button.alt{background:#fff;color:var(--main);border:1px solid var(--main)}
+  .ctrl button:disabled{opacity:.35;cursor:default}
+  .ctrl .lbl{min-width:90px;text-align:center;font-weight:bold;color:var(--main)}
+  .caps{margin:6px 0 0;padding:0}
+  .caps li{list-style:none;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem;margin:0}
+  .caps li.on{display:block;border-color:var(--warn);background:var(--warnbg)}
+  .quiz{background:#fafafa;border:1px dashed #b8c2cc;border-radius:10px;padding:12px 14px;margin-top:18px}
+  .quiz summary{cursor:pointer;color:var(--main);font-weight:bold}
+  .check{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .check input{margin-top:6px}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin:14px auto 0;max-width:860px}
+  .pager button{background:#fff;border:1px solid var(--main);color:var(--main);border-radius:8px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+  .pager button:hover{background:var(--main2)}
+  @media (max-width:900px){
+    #menuBtn{display:inline-block}
+    .side{transform:translateX(-100%);transition:transform .25s;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+    .side.open{transform:none}
+    main{margin-left:0;padding:16px 12px 60px}
+    .page{padding:18px 14px}
+  }
+
+  .url{font-family:Consolas,monospace;background:#f1f4f6;padding:1px 6px;border-radius:5px;font-size:.9em}
+  .kw{display:inline-block;background:#e8f6f0;border-radius:14px;padding:3px 12px;margin:3px 4px 3px 0;font-size:.9rem;color:#0f7a5a;font-weight:bold}
+  .step{display:inline-block;background:#0f7a5a;color:#fff;border-radius:6px;padding:1px 8px;font-size:.85rem;margin-right:6px;font-weight:bold}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;font-size:.92rem}
+  .flow span{background:#e8f6f0;border:1px solid #bfe3d4;border-radius:8px;padding:5px 10px}
+  .eg .cm{color:#8fd19e}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="btn ghost" id="menuBtn" onclick="toggleMenu()">☰ 목차</button>
+  <h1>백엔드 입문 · 3장 스프링 부트 4 구조 이해하기 (v2)</h1>
+  <button class="btn" onclick="downloadPage()">⬇️ 다운로드</button>
+</div>
+
+<aside class="side" id="side">
+  <h2>📚 목차 (순서대로 따라 하세요)</h2>
+  <a href="#p0" data-p="p0">0. 3장 지도<small>프로젝트를 읽는 네 관문</small></a>
+  <a href="#p1" data-p="p1">1. 프로젝트 만들기<small>Initializr에서 고르는 항목</small></a>
+  <a href="#p2" data-p="p2">2. 폴더 구조<small>main, resources, test로 나누기</small></a>
+  <a href="#p3" data-p="p3">3. build.gradle 읽기<small>plugins, dependencies, test 블록</small></a>
+  <a href="#p4" data-p="p4">4. application.yml<small>포트와 로그 같은 실행 설정</small></a>
+  <a href="#p5" data-p="p5">5. 3계층 구조<small>Controller, Service, Repository</small></a>
+  <a href="#p6" data-p="p6">6. 패키지 설계<small>계층별과 기능별 나누기</small></a>
+  <a href="#p7" data-p="p7">7. 의존성 방향<small>한 방향으로만 호출하기</small></a>
+  <a href="#p8" data-p="p8">8. 실행 확인과 로그<small>콘솔과 브라우저로 두 번 확인</small></a>
+  <a href="#p9" data-p="p9">9. 정리와 연습<small>요약, 직접 해 보기, 체크리스트</small></a>
+</aside>
+
+<main>
+<section class="page" id="p0">
+  <h2>0. 3장 지도</h2>
+
+<p>2장에서는 스프링 부트를 <b>실행</b>해 보았습니다. 이번 장은 실행 전에 프로젝트가 <b>어떻게 생겼는지</b> 읽는 법을 배웁니다. 파일 하나하나의 역할을 알면, 나중에 오류가 났을 때 어디를 봐야 할지 알 수 있습니다.</p>
+<h3>🎬 애니메이션: 프로젝트를 읽는 네 가지 관문</h3>
+<div class="stepper" data-steps="4">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="10" y="85" width="150" height="70" rx="10" fill="#ffffff" stroke="#1d2430" stroke-width="2"/><text x="85.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">프로젝트 생성</text><text x="85.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">Initializr</text><rect x="175" y="85" width="150" height="70" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="250.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">폴더 구조</text><text x="250.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">src 아래 나누기</text><rect x="340" y="85" width="150" height="70" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="415.0" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">build.gradle</text><text x="415.0" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">의존성 목록</text><rect x="505" y="85" width="125" height="70" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="567.5" y="116.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">application.yml</text><text x="567.5" y="134.0" text-anchor="middle" font-size="10" fill="#5b6572">설정 값</text><g class="el" data-show="1" data-hide="99"><text x="320" y="200" text-anchor="middle" font-size="13">마지막으로 3계층(Controller·Service·Repository)을 연결합니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">프로젝트를 읽는 순서입니다. 네 관문을 차례로 통과합니다.</li><li data-show="1">1단계: 프로젝트를 만들 때 고른 설정이 출발점입니다.</li><li data-show="2">2단계: 폴더는 코드와 설정 파일을 역할별로 나눠 둡니다.</li><li data-show="3">3단계: build.gradle은 어떤 라이브러리를 쓸지 적어 둔 목록입니다.</li><li data-show="4">4단계: application.yml은 실행할 때 쓸 설정 값을 적어 둡니다.</li></ol>
+</div>
+<table>
+<tr><th>관문</th><th>파일 또는 폴더</th><th>한 줄 역할</th></tr>
+<tr><td>1</td><td>Initializr 설정</td><td>프로젝트의 뼈대를 정함</td></tr>
+<tr><td>2</td><td>src 폴더</td><td>코드, 설정, 테스트를 나눠 담음</td></tr>
+<tr><td>3</td><td>build.gradle</td><td>의존성(라이브러리)과 빌드 방법</td></tr>
+<tr><td>4</td><td>application.yml</td><td>포트, 데이터베이스 같은 실행 설정</td></tr>
+</table>
+
+</section>
+
+<section class="page" id="p1">
+  <h2>1. 프로젝트 만들기</h2>
+
+<p>스프링 부트 프로젝트는 직접 폴더를 만들기보다 <b>Spring Initializr</b>(start.spring.io)에서 만드는 것이 일반적입니다. 여기서 고른 값이 build.gradle과 폴더 구조의 바탕이 됩니다.</p>
+<h3>🎬 애니메이션: Initializr에서 고르는 순서</h3>
+<div class="stepper" data-steps="4">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><g class="el" data-show="1" data-hide="99"><rect x="40" y="40" width="560" height="34" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320.0" y="62.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Project: Gradle - Groovy</text></g><g class="el" data-show="2" data-hide="99"><rect x="40" y="82" width="560" height="34" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="320.0" y="104.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Language: Java</text></g><g class="el" data-show="3" data-hide="99"><rect x="40" y="124" width="560" height="34" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320.0" y="146.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Spring Boot: 4.x 안정 버전</text></g><g class="el" data-show="4" data-hide="99"><rect x="40" y="166" width="560" height="34" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="320.0" y="188.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Java: 21 권장 (17 이상)</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">웹 화면에서 항목을 하나씩 고릅니다.</li><li data-show="1">1단계: 빌드 도구는 Gradle을 고릅니다. 이 책은 Groovy 방식을 기준으로 합니다.</li><li data-show="2">2단계: 언어는 Java를 고릅니다.</li><li data-show="3">3단계: Spring Boot 버전은 안정 버전(정식 출시)을 고릅니다.</li><li data-show="4">4단계: 자바 버전은 설치한 JDK와 맞춥니다. 21을 권장합니다.</li></ol>
+</div>
+<table>
+<tr><th>항목</th><th>고르는 값</th><th>이유</th></tr>
+<tr><td>Project</td><td>Gradle - Groovy</td><td>build.gradle 파일로 설정함</td></tr>
+<tr><td>Group</td><td>com.example</td><td>패키지 이름의 앞부분이 됨</td></tr>
+<tr><td>Artifact</td><td>demo</td><td>프로젝트 이름이 됨</td></tr>
+<tr><td>Dependencies</td><td>Spring Web</td><td>웹 요청을 받을 수 있게 함</td></tr>
+</table>
+<div class="box tip"><strong>📌 Dependencies 칸은 나중에도 추가할 수 있습니다</strong>처음에 Spring Web만 골라도 됩니다. 필요할 때 build.gradle에 한 줄을 더 넣으면 됩니다.</div>
+<div class="box warn"><strong>⚠️ 자바 버전 불일치</strong>Initializr에서 고른 Java 버전이 실제 설치된 JDK와 다르면 빌드가 실패합니다. IDE의 프로젝트 JDK 설정도 같은 버전인지 확인하세요.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 1</summary>
+    <p>Q. Initializr에서 Group 값 com.example은 나중에 무엇이 되나요?</p>
+    <p>A. 패키지 이름의 앞부분입니다. 예: com.example.demo 패키지.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p2">
+  <h2>2. 폴더 구조</h2>
+
+<p>스프링 부트 프로젝트의 폴더는 <b>무엇을 담는지</b>에 따라 나뉘어 있습니다. 자바 코드는 java 폴더에, 설정과 화면 파일은 resources 폴더에, 테스트는 test 폴더에 둡니다.</p>
+<h3>🎬 애니메이션: 폴더를 역할별로 나눠 보기</h3>
+<div class="stepper" data-steps="4">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="40" width="180" height="40" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="110.0" y="56.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">src/main/java</text><text x="110.0" y="74.0" text-anchor="middle" font-size="10" fill="#5b6572">자바 코드</text><rect x="220" y="40" width="200" height="40" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="320.0" y="56.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">src/main/resources</text><text x="320.0" y="74.0" text-anchor="middle" font-size="10" fill="#5b6572">설정과 정적 파일</text><rect x="440" y="40" width="180" height="40" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="530.0" y="56.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">src/test/java</text><text x="530.0" y="74.0" text-anchor="middle" font-size="10" fill="#5b6572">테스트 코드</text><g class="el" data-show="1" data-hide="99"><text x="110" y="110" text-anchor="middle" font-size="12">DemoApplication.java 시작 파일</text></g><g class="el" data-show="2" data-hide="99"><text x="320" y="110" text-anchor="middle" font-size="12">application.yml, templates, static</text></g><g class="el" data-show="3" data-hide="99"><text x="530" y="110" text-anchor="middle" font-size="12">DemoApplicationTests.java</text></g><g class="el" data-show="4" data-hide="99"><text x="320" y="160" text-anchor="middle" font-size="13" font-weight="bold">build.gradle는 프로젝트 가장 바깥에 있습니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">폴더 이름 하나에 역할이 하나씩 붙어 있습니다.</li><li data-show="1">1단계: src/main/java에는 실제 프로그램 코드가 들어갑니다.</li><li data-show="2">2단계: src/main/resources에는 설정 파일과 화면, 정적 파일이 들어갑니다.</li><li data-show="3">3단계: src/test/java에는 자동으로 기능을 확인하는 테스트 코드가 들어갑니다.</li><li data-show="4">4단계: build.gradle은 src 밖, 프로젝트 맨 위에 있습니다.</li></ol>
+</div>
+<h3>트리 모양으로 보기</h3>
+<div class="eg">demo/
+├── build.gradle                  // 의존성과 빌드 설정
+├── settings.gradle               // 프로젝트 이름 설정
+└── src/
+    ├── main/
+    │   ├── java/com/example/demo/
+    │   │   └── DemoApplication.java   // 시작 파일
+    │   └── resources/
+    │       └── application.yml        // 실행 설정
+    └── test/
+        └── java/com/example/demo/
+            └── DemoApplicationTests.java  // 테스트</div>
+<div class="box warn"><strong>⚠️ 패키지 경로와 폴더는 일치해야 합니다</strong>com.example.demo 패키지의 클래스는 com/example/demo 폴더 안에 있어야 합니다. 이 규칙이 어긋나면 컴파일 오류가 나거나, 스프링이 빈을 찾지 못합니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 2</summary>
+    <p>Q. 테스트 코드는 어느 폴더에 두나요?</p>
+    <p>A. src/test/java 폴더입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p3">
+  <h2>3. build.gradle 읽기</h2>
+
+<p><b>build.gradle</b>은 프로젝트의 <b>설계도 겸 재료 목록</b>입니다. 어떤 플러그인을 켤지, 어떤 라이브러리를 가져올지, 테스트를 어떻게 실행할지를 적습니다.</p>
+<h3>🎬 애니메이션: build.gradle의 세 블록</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="40" width="600" height="40" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="320.0" y="56.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">plugins { … }</text><text x="320.0" y="74.0" text-anchor="middle" font-size="10" fill="#5b6572">플러그인: 빌드 도구의 기능을 켬</text><g class="el" data-show="1" data-hide="99"><rect x="20" y="95" width="600" height="40" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">dependencies { … }</text><text x="320.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">의존성: 필요한 라이브러리 목록</text></g><g class="el" data-show="2" data-hide="99"><rect x="20" y="150" width="600" height="40" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="320.0" y="166.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">tasks.named('test') { … }</text><text x="320.0" y="184.0" text-anchor="middle" font-size="10" fill="#5b6572">테스트 실행 방식</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#a66a10">의존성 한 줄 = 라이브러리 하나 (또는 묶음 하나)</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">build.gradle은 블록 단위로 읽으면 쉽습니다.</li><li data-show="1">1단계: plugins 블록은 자바와 스프링 부트 기능을 빌드에 켭니다.</li><li data-show="2">2단계: dependencies 블록은 필요한 라이브러리를 나열합니다.</li><li data-show="3">3단계: 의존성 한 줄이 라이브러리 하나 또는 묶음 하나를 뜻합니다.</li></ol>
+</div>
+<h3>코드: build.gradle 일부</h3>
+<div class="eg">plugins {
+    id 'java'                                              // 자바 프로그램을 빌드하는 기능을 켠다
+    id 'org.springframework.boot' version '4.0.0'          // 스프링 부트 기능을 켠다. 버전은 Initializr가 정한 값을 그대로 둔다
+    id 'io.spring.dependency-management' version '1.1.7'  // 라이브러리 버전을 자동으로 맞춰 준다
+}
+
+group = 'com.example'                                      // 패키지 이름의 앞부분
+version = '0.0.1-SNAPSHOT'                                 // 프로젝트 버전
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)       // 컴파일에 쓸 자바 버전
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'  // 웹 요청을 받는 기능 묶음
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // 테스트 도구 묶음
+}
+
+tasks.named('test') {
+    useJUnitPlatform()                                      // 테스트를 JUnit 5 방식으로 실행한다
+}</div>
+<table>
+<tr><th>키워드</th><th>뜻</th></tr>
+<tr><td>implementation</td><td>실행과 컴파일 모두에 필요한 의존성</td></tr>
+<tr><td>testImplementation</td><td>테스트를 실행할 때만 필요한 의존성</td></tr>
+<tr><td>starter</td><td>관련 라이브러리를 한 번에 가져오는 묶음 이름</td></tr>
+</table>
+<div class="box tip"><strong>📌 의존성을 추가하는 법</strong>라이브러리 이름을 찾아 dependencies 블록 안에 한 줄 넣고, 화면 오른쪽 위의 Gradle 새로고침(코끼리 아이콘)을 누르면 내려받습니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 3</summary>
+    <p>Q. build.gradle의 dependencies 블록에는 무엇을 적나요?</p>
+    <p>A. 프로젝트가 필요로 하는 라이브러리(의존성) 목록을 적습니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p4">
+  <h2>4. application.yml</h2>
+
+<p><b>application.yml</b>은 프로그램이 실행될 때 읽는 <b>설정 파일</b>입니다. 포트 번호, 데이터베이스 주소, 로그 수준 같은 값을 여기서 바꿉니다. 코드를 고치지 않고도 동작을 바꿀 수 있어 편리합니다.</p>
+<h3>🎬 애니메이션: 설정 항목이 하나씩 쌓이는 순서</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 200" role="img" aria-label="단계별 애니메이션"><rect x="20" y="50" width="190" height="110" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="115.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">application.yml</text><text x="115.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">src/main/resources</text><g class="el" data-show="1" data-hide="99"><rect x="240" y="40" width="190" height="42" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="335.0" y="57.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">server.port: 8080</text><text x="335.0" y="75.0" text-anchor="middle" font-size="10" fill="#5b6572">서버 번호</text></g><g class="el" data-show="2" data-hide="99"><rect x="240" y="92" width="190" height="42" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="335.0" y="109.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">spring.application.name</text><text x="335.0" y="127.0" text-anchor="middle" font-size="10" fill="#5b6572">프로그램 이름</text></g><g class="el" data-show="3" data-hide="99"><rect x="240" y="144" width="190" height="42" rx="10" fill="#fff4e0" stroke="#f0a33a" stroke-width="2"/><text x="335.0" y="161.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">logging.level</text><text x="335.0" y="179.0" text-anchor="middle" font-size="10" fill="#5b6572">로그 자세히 보기</text></g><g class="el" data-show="3" data-hide="99"><line x1="210" y1="105" x2="240" y2="61" stroke="#9aa5b1" stroke-width="3"/></g><g class="el" data-show="3" data-hide="99"><line x1="210" y1="105" x2="240" y2="113" stroke="#9aa5b1" stroke-width="3"/></g><g class="el" data-show="3" data-hide="99"><line x1="210" y1="105" x2="240" y2="165" stroke="#9aa5b1" stroke-width="3"/></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">설정 파일에는 값이 키와 함께 적힙니다.</li><li data-show="1">1단계: server.port는 서버가 열릴 포트 번호입니다.</li><li data-show="2">2단계: spring.application.name은 이 프로그램의 이름입니다.</li><li data-show="3">3단계: logging.level은 어떤 로그까지 화면에 보일지 정합니다.</li></ol>
+</div>
+<h3>코드: application.yml 예시</h3>
+<div class="eg">server:
+  port: 8080                     # 서버가 요청을 받을 포트 번호
+
+spring:
+  application:
+    name: memo-app              # 프로그램 이름. 로그 등에 표시된다
+
+logging:
+  level:
+    root: INFO                  # 기본 로그 수준. 정보성 로그까지 출력한다
+    com.example.demo: DEBUG     # 우리 패키지 로그만 더 자세히 출력한다</div>
+<div class="box warn"><strong>⚠️ 들여쓰기가 문법입니다</strong>yml은 칸 수(들여쓰기)로 소속을 나타냅니다. 탭 문자를 쓰면 오류가 나므로 스페이스 2칸으로 맞추세요.</div>
+<div class="box tip"><strong>📌 properties 파일과 같은 역할</strong>application.properties 파일도 같은 일을 합니다. 형식만 다르고, 한 프로젝트에 둘 중 하나만 쓰는 것이 좋습니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 4</summary>
+    <p>Q. application.yml에서 서버 포트를 바꾸려면 어떤 항목을 고치나요?</p>
+    <p>A. server.port 항목입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p5">
+  <h2>5. 3계층 구조</h2>
+
+<p>스프링 부트 웹 프로그램은 대개 세 계층으로 나눕니다. 요청을 받는 <b>Controller</b>, 업무 규칙을 처리하는 <b>Service</b>, 데이터를 저장하고 꺼내는 <b>Repository</b>입니다. 각 계층이 한 가지 일만 맡으면 수정할 때 영향 범위가 작아집니다.</p>
+<h3>🎬 애니메이션: 요청이 세 계층을 지나는 길</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="80" width="170" height="70" rx="10" fill="#ffffff" stroke="#1d2430" stroke-width="2"/><text x="105.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Controller</text><text x="105.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">요청 입구</text><g class="el" data-show="1" data-hide="1"><line x1="190" y1="115" x2="225" y2="115" stroke="#4a86e8" stroke-width="3"/><text x="207.5" y="107.0" text-anchor="middle" font-size="11" fill="#4a86e8" font-weight="bold">①</text></g><g class="el" data-show="1" data-hide="99"><rect x="225" y="80" width="170" height="70" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="310.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Service</text><text x="310.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">업무 규칙</text></g><g class="el" data-show="2" data-hide="2"><line x1="395" y1="115" x2="430" y2="115" stroke="#0f7a5a" stroke-width="3"/><text x="412.5" y="107.0" text-anchor="middle" font-size="11" fill="#0f7a5a" font-weight="bold">②</text></g><g class="el" data-show="2" data-hide="99"><rect x="430" y="80" width="190" height="70" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="525.0" y="111.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Repository</text><text x="525.0" y="129.0" text-anchor="middle" font-size="10" fill="#5b6572">저장과 조회</text></g><g class="el" data-show="3" data-hide="3"><text x="320" y="200" text-anchor="middle" font-size="13">③ 응답은 같은 길을 거꾸로 돌아갑니다</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">요청은 Controller에서 시작해 Repository까지 내려갔다가 응답으로 올라옵니다.</li><li data-show="1">1단계: Controller가 요청을 받아 Service에 일을 맡깁니다.</li><li data-show="2">2단계: Service가 규칙을 확인하고 Repository에 저장이나 조회를 요청합니다.</li><li data-show="3">3단계: 결과가 Service와 Controller를 거쳐 응답으로 돌아갑니다.</li></ol>
+</div>
+<h3>코드: 메모 앱의 세 계층 (뼈대)</h3>
+<div class="eg">package com.example.demo.controller;
+
+import org.springframework.web.bind.annotation.*;      // 요청 관련 표시들을 한 번에 가져온다
+
+@RestController                                        // 이 클래스는 웹 요청을 받는 입구다
+@RequestMapping("/memos")                              // 이 클래스의 모든 주소는 /memos로 시작한다
+public class MemoController {
+
+    private final MemoService memoService;             // Service를 담아 둘 칸
+
+    public MemoController(MemoService memoService) {   // 스프링이 MemoService 객체를 넣어 준다
+        this.memoService = memoService;
+    }
+
+    @GetMapping                                        // GET /memos 요청이 오면 아래 메서드가 실행된다
+    public String list() {
+        return memoService.findAllTitles();            // Service에 목록을 달라고 요청하고, 받은 값을 그대로 돌려준다
+    }
+}</div>
+<div class="eg">package com.example.demo.service;
+
+import org.springframework.stereotype.Service;         // 업무 로직 담당 표시
+
+@Service                                               // 스프링이 이 클래스의 객체를 만들어 관리한다
+public class MemoService {
+
+    private final MemoRepository memoRepository;       // 저장소 담당 객체를 담아 둘 칸
+
+    public MemoService(MemoRepository memoRepository) {// 스프링이 MemoRepository 객체를 넣어 준다
+        this.memoRepository = memoRepository;
+    }
+
+    public String findAllTitles() {
+<span class="cm">        // 저장소에 전체 목록을 달라고 요청하고, 받은 결과를 그대로 호출한 곳으로 돌려준다</span>
+        return memoRepository.findAll();
+    }
+}</div>
+<div class="eg">package com.example.demo.repository;
+
+import org.springframework.stereotype.Repository;      // 데이터 접근 담당 표시
+
+@Repository                                            // 스프링이 이 클래스의 객체를 만들어 관리한다
+public class MemoRepository {
+
+<span class="cm">    // 실제 DB 대신 임시로 메모 목록을 문자열로 돌려준다 (학습용)</span>
+    public String findAll() {
+        return "장보기, 운동 계획";                       // 이 값이 Service를 거쳐 Controller로 돌아간다
+    }
+}</div>
+<div class="box tip"><strong>📌 호출 방향은 한 방향입니다</strong>Controller는 Service를 부르고, Service는 Repository를 부릅니다. 반대로 Repository가 Controller를 부르면 구조가 엉킵니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 5</summary>
+    <p>Q. 요청을 가장 먼저 받는 계층은 무엇인가요?</p>
+    <p>A. Controller 계층입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p6">
+  <h2>6. 패키지 설계</h2>
+
+<p>코드가 많아지면 패키지를 어떻게 나눌지 정해야 합니다. 대표적인 방법은 <b>계층별</b>과 <b>기능별</b>입니다. 이 책은 입문 단계에서 계층별로 시작하고, 기능이 늘면 기능별로 묶는 방법도 소개합니다.</p>
+<h3>🎬 애니메이션: 두 가지 나누기 방식</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="50" width="280" height="120" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="160.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">계층별 나누기</text><text x="160.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">controller / service / repository</text><rect x="340" y="50" width="280" height="120" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="480.0" y="106.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">기능별 나누기</text><text x="480.0" y="124.0" text-anchor="middle" font-size="10" fill="#5b6572">memo / user / article 안에 계층</text><g class="el" data-show="1" data-hide="1"><text x="160" y="195" text-anchor="middle" font-size="12">작은 프로그램에 알맞음</text></g><g class="el" data-show="2" data-hide="2"><text x="480" y="195" text-anchor="middle" font-size="12">기능이 많아질수록 찾기 쉬움</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">같은 코드도 나누는 기준에 따라 찾기 쉬움이 달라집니다.</li><li data-show="1">1단계: 계층별로 나누면 controller 폴더에는 입구 코드만 모입니다.</li><li data-show="2">2단계: 기능별로 나누면 memo 폴더 하나에 그 기능의 계층이 모두 모입니다.</li></ol>
+</div>
+<table>
+<tr><th>방식</th><th>폴더 예</th><th>장점</th><th>주의</th></tr>
+<tr><td>계층별</td><td>controller, service, repository</td><td>역할이 명확함</td><td>기능이 늘면 한 폴더에 섞임</td></tr>
+<tr><td>기능별</td><td>memo, user, article</td><td>관련 코드가 한곳에 모임</td><td>기능 간 연결 규칙을 정해야 함</td></tr>
+</table>
+<div class="box key"><strong>💡 이 책의 기준</strong>1장부터 4장까지는 계층별 패키지를 씁니다. 이후 장에서 기능이 늘어날 때 그 이유를 함께 설명합니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 6</summary>
+    <p>Q. 기능이 많아질 때 관련 코드를 한곳에 모으기 쉬운 방식은 무엇인가요?</p>
+    <p>A. 기능별 패키지 나누기입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p7">
+  <h2>7. 의존성 방향</h2>
+
+<p><b>의존성 방향</b>은 "누가 누구를 알고 부르는가"를 말합니다. 규칙은 간단합니다. 바깥 계층이 안쪽 계층을 부르고, 안쪽 계층은 바깥을 모르게 합니다.</p>
+<h3>🎬 애니메이션: 화살표는 한 방향만</h3>
+<div class="stepper" data-steps="3">
+<svg class="stage" viewBox="0 0 640 230" role="img" aria-label="단계별 애니메이션"><rect x="20" y="80" width="170" height="70" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="105.0" y="120.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Controller</text><g class="el" data-show="1" data-hide="1"><line x1="190" y1="105" x2="230" y2="105" stroke="#4a86e8" stroke-width="3"/><text x="210.0" y="97.0" text-anchor="middle" font-size="11" fill="#4a86e8" font-weight="bold">호출</text></g><g class="el" data-show="1" data-hide="99"><rect x="230" y="80" width="170" height="70" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="315.0" y="120.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Service</text></g><g class="el" data-show="2" data-hide="2"><line x1="400" y1="105" x2="440" y2="105" stroke="#0f7a5a" stroke-width="3"/><text x="420.0" y="97.0" text-anchor="middle" font-size="11" fill="#0f7a5a" font-weight="bold">호출</text></g><g class="el" data-show="2" data-hide="99"><rect x="440" y="80" width="170" height="70" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="525.0" y="120.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">Repository</text></g><g class="el" data-show="3" data-hide="3"><line x1="440" y1="165" x2="230" y2="165" stroke="#e0565b" stroke-width="3"/><text x="335.0" y="157.0" text-anchor="middle" font-size="11" fill="#e0565b" font-weight="bold">✖ 금지: 거꾸로 호출</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">화살표는 Controller에서 Repository로만 흐릅니다.</li><li data-show="1">1단계: Controller는 Service를 호출합니다.</li><li data-show="2">2단계: Service는 Repository를 호출합니다.</li><li data-show="3">3단계: Repository가 Controller를 호출하는 것은 금지입니다.</li></ol>
+</div>
+<div class="box bad"><strong>🚫 거꾸로 호출하면 생기는 문제</strong>저장소가 화면 주소를 알게 되면, 화면 구조를 바꿀 때 저장소 코드까지 고쳐야 합니다. 그래서 방향을 지키는 것이 수정 비용을 줄입니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 7</summary>
+    <p>Q. Repository가 Controller의 메서드를 호출하면 안 되는 이유는 무엇인가요?</p>
+    <p>A. 계층 사이의 의존 방향이 뒤엉켜 수정이 어려워지기 때문입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p8">
+  <h2>8. 실행 확인과 로그</h2>
+
+<p>설정과 구조를 익혔으니 실행해 확인합니다. 로그를 읽는 습관은 오류를 빨리 찾는 데 큰 도움이 됩니다.</p>
+<h3>🎬 애니메이션: 실행부터 확인까지</h3>
+<div class="stepper" data-steps="2">
+<svg class="stage" viewBox="0 0 640 210" role="img" aria-label="단계별 애니메이션"><rect x="20" y="60" width="180" height="90" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="110.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">실행</text><text x="110.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">DemoApplication</text><g class="el" data-show="1" data-hide="1"><line x1="200" y1="105" x2="245" y2="105" stroke="#4a86e8" stroke-width="3"/></g><g class="el" data-show="1" data-hide="99"><rect x="245" y="60" width="180" height="90" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="335.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">로그 확인</text><text x="335.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">Tomcat started on port 8080</text></g><g class="el" data-show="2" data-hide="2"><line x1="425" y1="105" x2="470" y2="105" stroke="#0f7a5a" stroke-width="3"/></g><g class="el" data-show="2" data-hide="99"><rect x="470" y="60" width="150" height="90" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="545.0" y="101.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d2430">브라우저 확인</text><text x="545.0" y="119.0" text-anchor="middle" font-size="10" fill="#5b6572">localhost:8080/memos</text></g></svg>
+<div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+<ol class="caps"><li data-show="0">실행 후 로그와 브라우저로 두 번 확인합니다.</li><li data-show="1">1단계: 콘솔에 서버가 포트 8080에서 시작되었다는 로그가 보이는지 확인합니다.</li><li data-show="2">2단계: 브라우저에서 /memos 주소를 열어 응답이 오는지 확인합니다.</li></ol>
+</div>
+<h3>로그에서 볼 줄</h3>
+<table>
+<tr><th>로그 문장</th><th>뜻</th></tr>
+<tr><td>Tomcat started on port 8080</td><td>서버가 8080 포트에서 준비되었다</td></tr>
+<tr><td>Started DemoApplication</td><td>스프링 부트 시작이 끝났다</td></tr>
+<tr><td>Port 8080 was already in use</td><td>다른 프로그램이 8080을 쓰고 있다 (포트 충돌)</td></tr>
+</table>
+<div class="box warn"><strong>⚠️ 실행 전에 확인할 것</strong>build.gradle에 의존성을 추가했다면 Gradle 새로고침을 먼저 하세요. 새로고침을 하지 않으면 새 라이브러리를 찾지 못해 오류가 납니다.</div>
+<div class="quiz"><details><summary>🧠 확인 퀴즈 8</summary>
+    <p>Q. 로그에 "Port 8080 was already in use"가 보이면 무엇이 문제인가요?</p>
+    <p>A. 다른 프로그램이 8080 포트를 이미 쓰고 있어 새 서버가 열리지 못하는 상황입니다.</p>
+  </details></div>
+
+</section>
+
+<section class="page" id="p9">
+  <h2>9. 정리와 연습</h2>
+
+<h3>📝 한눈에 정리</h3>
+<table>
+<tr><th>주제</th><th>핵심</th></tr>
+<tr><td>Initializr</td><td>프로젝트 뼈대를 웹에서 고른다</td></tr>
+<tr><td>폴더 구조</td><td>java는 코드, resources는 설정, test는 테스트</td></tr>
+<tr><td>build.gradle</td><td>플러그인, 의존성, 테스트 설정</td></tr>
+<tr><td>application.yml</td><td>포트, 이름, 로그 같은 실행 설정</td></tr>
+<tr><td>3계층</td><td>Controller → Service → Repository 한 방향 호출</td></tr>
+<tr><td>패키지 설계</td><td>계층별로 시작, 기능이 늘면 기능별 고려</td></tr>
+</table>
+<h3>✍️ 직접 해 보기</h3>
+<ol>
+<li>application.yml의 server.port를 8081로 바꾸고 실행한 뒤, localhost:8081로 접속해 보세요.</li>
+<li>MemoController의 주소를 "/notes"로 바꾸고, 어떤 주소로 요청해야 응답이 오는지 적어 보세요.</li>
+<li>MemoRepository의 findAll이 빈 문자열을 돌려주면 화면에 무엇이 보이는지 확인하세요.</li>
+</ol>
+<div class="box key"><strong>💡 다음 장 예고</strong>4장에서는 이 구조가 제대로 동작하는지 자동으로 확인하는 테스트 코드를 씁니다.</div>
+<h3>✅ 학습 체크리스트</h3>
+<div class="check"><input type="checkbox" id="ck3-1"><label for="ck3-1">Initializr에서 프로젝트 기본 설정을 고를 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck3-2"><label for="ck3-2">src/main/java, resources, test 폴더의 역할을 구분할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck3-3"><label for="ck3-3">build.gradle의 plugins, dependencies 블록을 설명할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck3-4"><label for="ck3-4">application.yml에서 포트를 바꿔 실행해 보았다</label></div>
+<div class="check"><input type="checkbox" id="ck3-5"><label for="ck3-5">Controller, Service, Repository의 호출 방향을 설명할 수 있다</label></div>
+<div class="check"><input type="checkbox" id="ck3-6"><label for="ck3-6">실행 로그에서 포트 번호를 찾아 확인했다</label></div>
+
+</section>
+
+<div class="pager" id="pager"></div>
+
+</main>
+
+<script>
+var PAGES = ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"];
+var TITLES = {"p0": "0. 3장 지도", "p1": "1. 프로젝트 만들기", "p2": "2. 폴더 구조", "p3": "3. build.gradle 읽기", "p4": "4. application.yml", "p5": "5. 3계층 구조", "p6": "6. 패키지 설계", "p7": "7. 의존성 방향", "p8": "8. 실행 확인과 로그", "p9": "9. 정리와 연습"};
+
+function showPage(id){
+  if(PAGES.indexOf(id)<0) id='p0';
+  PAGES.forEach(function(p){ document.getElementById(p).classList.toggle('active', p===id); });
+  document.querySelectorAll('.side a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-p')===id); });
+  buildPager(id);
+  window.scrollTo(0,0);
+  document.getElementById(id).querySelectorAll('.stepper').forEach(function(st){ render(st); });
+  if(window.innerWidth<=900) document.getElementById('side').classList.remove('open');
+}
+function buildPager(id){
+  var i = PAGES.indexOf(id), pg = document.getElementById('pager');
+  pg.innerHTML='';
+  if(i>0){ var b=document.createElement('button'); b.textContent='◀ 이전: '+TITLES[PAGES[i-1]]; b.onclick=function(){location.hash='#'+PAGES[i-1]}; pg.appendChild(b); }
+  else pg.appendChild(document.createElement('span'));
+  if(i<PAGES.length-1){ var b2=document.createElement('button'); b2.textContent='다음: '+TITLES[PAGES[i+1]]+' ▶'; b2.style.textAlign='right'; b2.onclick=function(){location.hash='#'+PAGES[i+1]}; pg.appendChild(b2); }
+}
+function route(){ showPage((location.hash||'#p0').slice(1)); }
+window.addEventListener('hashchange', route);
+function toggleMenu(){ document.getElementById('side').classList.toggle('open'); }
+
+function render(st){
+  var n = +st.getAttribute('data-steps'), s = st.step||0;
+  st.querySelectorAll('.el').forEach(function(e){
+    var lo = e.hasAttribute('data-show') ? +e.getAttribute('data-show') : 0;
+    var hi = e.hasAttribute('data-hide') ? +e.getAttribute('data-hide') : 99;
+    e.classList.toggle('on', s>=lo && s<=hi);
+  });
+  st.querySelectorAll('.caps li').forEach(function(li){ li.classList.toggle('on', s===+li.getAttribute('data-show')); });
+  var lbl = st.querySelector('.lbl'); if(lbl) lbl.textContent=(s+1)+' / '+(n+1)+' 단계';
+  var pv = st.querySelector('[data-act="prev"]'), nx = st.querySelector('[data-act="next"]');
+  if(pv) pv.disabled = s===0; if(nx) nx.disabled = s===n;
+}
+function stopAuto(st){
+  if(st._timer){ clearInterval(st._timer); st._timer=null; }
+  var pb = st.querySelector('[data-act="play"]'); if(pb) pb.textContent='▶ 자동 재생';
+}
+document.querySelectorAll('.stepper').forEach(function(st){
+  st.step = 0;
+  st.querySelector('[data-act="prev"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.max(0,st.step-1); render(st); });
+  st.querySelector('[data-act="next"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.min(+st.getAttribute('data-steps'),st.step+1); render(st); });
+  st.querySelector('[data-act="play"]').addEventListener('click', function(){
+    if(st._timer){ stopAuto(st); return; }
+    if(st.step>=+st.getAttribute('data-steps')) st.step=0;
+    this.textContent='⏸ 일시정지';
+    st._timer = setInterval(function(){
+      st.step++;
+      if(st.step>=+st.getAttribute('data-steps')){ st.step=+st.getAttribute('data-steps'); render(st); stopAuto(st); return; }
+      render(st);
+    }, 2400);
+    render(st);
+  });
+  render(st);
+});
+
+document.querySelectorAll('.check input').forEach(function(cb){
+  try{ cb.checked = localStorage.getItem('ch3v2_'+cb.id)==='1'; }catch(e){}
+  cb.addEventListener('change', function(){ try{ localStorage.setItem('ch3v2_'+cb.id, cb.checked?'1':'0'); }catch(e){} });
+});
+
+function downloadPage(){
+  try{
+    var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "BackendBasics_Ch3_v2.html";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }catch(e){ alert("다운로드에 실패했습니다. 브라우저 메뉴에서 '페이지 저장'을 이용해 주세요."); }
+}
+
+route();
+</script>
+</body>
+</html>

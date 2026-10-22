@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- v1 · 2026-10-09 · 백엔드 입문 6장 · 블로그 기획하고 API 만들기 · 좌측 목차 + 우측 본문 + 단계별 애니메이션 -->
+<title>백엔드 입문 6장 · 블로그 기획하고 API 만들기 · 쉬운 설명서</title>
+<style>
+  :root{--main:#0f7a5a;--main2:#e8f6f0;--ink:#1d2430;--mute:#5b6572;--line:#dfe5ea;--warn:#f0a33a;--warnbg:#fff4e0;--tipbg:#eaf2ff;--tipb:#4a86e8;--bad:#e0565b;--badbg:#fde8e9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#f4f7f9;line-height:1.8;font-size:16px}
+  .topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(135deg,#0f7a5a,#2fbf8f);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:20}
+  .topbar h1{font-size:1.05rem;margin:0;flex:1}
+  .btn{background:#fff;color:var(--main);border:0;border-radius:8px;padding:8px 12px;font-size:.9rem;cursor:pointer;font-weight:bold}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+  #menuBtn{display:none}
+  .side{position:fixed;top:56px;left:0;bottom:0;width:270px;background:#fff;border-right:1px solid var(--line);overflow-y:auto;padding:16px 12px;z-index:10}
+  .side h2{font-size:.9rem;color:var(--mute);margin:6px 8px 10px}
+  .side a{display:block;color:var(--ink);text-decoration:none;padding:9px 12px;border-radius:8px;margin-bottom:4px;font-size:.93rem}
+  .side a:hover{background:var(--main2)}
+  .side a.active{background:var(--main);color:#fff;font-weight:bold}
+  .side small{display:block;color:var(--mute);font-size:.78rem;font-weight:normal}
+  .side a.active small{color:#dff5ec}
+  main{margin-left:270px;margin-top:56px;min-height:calc(100vh - 56px);padding:24px 28px 60px}
+  .page{display:none;max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 26px 20px}
+  .page.active{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .page h2{margin:0 0 10px;color:var(--main);font-size:1.4rem}
+  .page h3{margin:24px 0 8px;font-size:1.1rem;border-left:4px solid var(--main);padding-left:10px}
+  .page p{margin:8px 0}
+  .page ul,.page ol{padding-left:22px}
+  .page li{margin:4px 0}
+  .box{border-radius:10px;padding:12px 14px;margin:14px 0;font-size:.95rem}
+  .box strong{display:block;margin-bottom:4px}
+  .tip{background:var(--tipbg);border-left:4px solid var(--tipb)}
+  .warn{background:var(--warnbg);border-left:4px solid var(--warn)}
+  .key{background:var(--main2);border-left:4px solid var(--main)}
+  .bad{background:var(--badbg);border-left:4px solid var(--bad)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--main2)}
+  code{background:#f0f3f6;border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:.9em}
+  .eg{background:#1e2530;color:#e6edf3;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:.85rem;overflow-x:auto;white-space:pre;line-height:1.6}
+  .eg .c{color:#8b98a8}
+  .stepper{border:2px solid var(--main2);border-radius:14px;padding:12px;margin:16px 0;background:#fbfdfc}
+  .stage{width:100%;height:auto;display:block}
+  .el{opacity:0;transition:opacity .45s ease}
+  .el.on{opacity:1}
+  .ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;margin:10px 0}
+  .ctrl button{background:var(--main);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.92rem}
+  .ctrl button.alt{background:#fff;color:var(--main);border:1px solid var(--main)}
+  .ctrl button:disabled{opacity:.35;cursor:default}
+  .ctrl .lbl{min-width:90px;text-align:center;font-weight:bold;color:var(--main)}
+  .caps{margin:6px 0 0;padding:0}
+  .caps li{list-style:none;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem;margin:0}
+  .caps li.on{display:block;border-color:var(--warn);background:var(--warnbg)}
+  .quiz{background:#fafafa;border:1px dashed #b8c2cc;border-radius:10px;padding:12px 14px;margin-top:18px}
+  .quiz summary{cursor:pointer;color:var(--main);font-weight:bold}
+  .check{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .check input{margin-top:6px}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin:14px auto 0;max-width:860px}
+  .pager button{background:#fff;border:1px solid var(--main);color:var(--main);border-radius:8px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+  .pager button:hover{background:var(--main2)}
+  @media (max-width:900px){
+    #menuBtn{display:inline-block}
+    .side{transform:translateX(-100%);transition:transform .25s;box-shadow:2px 0 14px rgba(0,0,0,.15)}
+    .side.open{transform:none}
+    main{margin-left:0;padding:16px 12px 60px}
+    .page{padding:18px 14px}
+  }
+
+  .url{font-family:Consolas,monospace;background:#f1f4f6;padding:1px 6px;border-radius:5px;font-size:.9em}
+  .kw{display:inline-block;background:#e8f6f0;border-radius:14px;padding:3px 12px;margin:3px 4px 3px 0;font-size:.9rem;color:#0f7a5a;font-weight:bold}
+  .step{display:inline-block;background:#0f7a5a;color:#fff;border-radius:6px;padding:1px 8px;font-size:.85rem;margin-right:6px;font-weight:bold}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;font-size:.92rem}
+  .flow span{background:#e8f6f0;border:1px solid #bfe3d4;border-radius:8px;padding:5px 10px}
+  .eg .cm{color:#8fd19e}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="btn ghost" id="menuBtn" onclick="toggleMenu()">☰ 목차</button>
+  <h1>백엔드 입문 · 6장 블로그 기획하고 API 만들기</h1>
+  <button class="btn" onclick="downloadPage()">⬇️ 다운로드</button>
+</div>
+
+<aside class="side" id="side">
+  <h2>📚 목차 (순서대로 따라 하세요)</h2>
+  <a href="#p0" data-p="p0">0. 6장 한눈에 보기<small>블로그 글 한 건의 여정</small></a>
+  <a href="#p1" data-p="p1">1. API와 REST API<small>식당 비유로 이해하기</small></a>
+  <a href="#p2" data-p="p2">2. REST API 설계 규칙<small>URL, HTTP 메서드, 상태 코드</small></a>
+  <a href="#p3" data-p="p3">3. 프로젝트 준비<small>의존성, 설정, H2 콘솔</small></a>
+  <a href="#p4" data-p="p4">4. 엔티티 만들기<small>Article 테이블과 매핑</small></a>
+  <a href="#p5" data-p="p5">5. 빌더 패턴과 롬복<small>객체를 읽기 쉽게 만들기</small></a>
+  <a href="#p6" data-p="p6">6. 리포지터리 만들기<small>JpaRepository 상속</small></a>
+  <a href="#p7" data-p="p7">7. 글 작성 API (POST)<small>DTO, 서비스, 컨트롤러</small></a>
+  <a href="#p8" data-p="p8">8. 글 목록 조회 API (GET)<small>findAll과 스트림</small></a>
+  <a href="#p9" data-p="p9">9. 글 한 건 조회 API<small>@PathVariable</small></a>
+  <a href="#p10" data-p="p10">10. 글 수정 API (PUT)<small>트랜잭션과 변경 감지</small></a>
+  <a href="#p11" data-p="p11">11. 글 삭제 API (DELETE)<small>deleteById</small></a>
+  <a href="#p12" data-p="p12">12. 테스트와 포스트맨 실습<small>MockMvc, jsonPath</small></a>
+  <a href="#p13" data-p="p13">13. 정리 퀴즈와 체크리스트<small>연습문제, 완료 확인</small></a>
+</aside>
+
+<main>
+
+<!-- ============ 0 ============ -->
+<section class="page" id="p0">
+  <h2>0. 6장 한눈에 보기</h2>
+  <p>5장에서는 DB와 엔티티, 리포지터리를 배웠습니다. 6장에서는 이 재료로 <b>블로그</b>를 실제로 만듭니다. 블로그 글을 쓰고(등록), 목록을 보고(조회), 한 건을 열어 보고, 고치고(수정), 지우는(삭제) 기능을 <b>API</b>로 제공합니다. 이 네 가지 기능을 CRUD(Create, Read, Update, Delete)라고 부르며, 거의 모든 서비스의 기본 뼈대입니다.</p>
+  <p>6장은 "요청이 들어와서 DB에 닿고, 다시 응답으로 돌아오는 길"을 여러 번 반복해서 익히는 장입니다. 글 한 건이 어떤 길을 지나가는지 먼저 보고 시작하세요.</p>
+
+  <h3>🎬 애니메이션: 글 한 건이 지나가는 길</h3>
+  <div class="stepper" data-steps="5">
+    <svg class="stage" viewBox="0 0 640 250" role="img" aria-label="글 작성 요청이 계층을 지나는 흐름">
+      <rect x="10" y="100" width="110" height="60" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="65" y="128" text-anchor="middle" font-size="12">브라우저</text><text x="65" y="146" text-anchor="middle" font-size="10" fill="#5b6572">(클라이언트)</text>
+      <g class="el" data-show="1" data-hide="99"><rect x="160" y="100" width="130" height="60" rx="10" fill="#fff3d6" stroke="#f0a33a" stroke-width="3"/><text x="225" y="128" text-anchor="middle" font-size="11">Controller</text><text x="225" y="146" text-anchor="middle" font-size="10" fill="#5b6572">요청 받기</text></g>
+      <g class="el" data-show="2" data-hide="99"><rect x="330" y="100" width="130" height="60" rx="10" fill="#fff3d6" stroke="#f0a33a" stroke-width="3"/><text x="395" y="128" text-anchor="middle" font-size="11">Service</text><text x="395" y="146" text-anchor="middle" font-size="10" fill="#5b6572">업무 처리</text></g>
+      <g class="el" data-show="3" data-hide="99"><rect x="500" y="100" width="130" height="60" rx="10" fill="#fff3d6" stroke="#f0a33a" stroke-width="3"/><text x="565" y="128" text-anchor="middle" font-size="11">Repository</text><text x="565" y="146" text-anchor="middle" font-size="10" fill="#5b6572">저장 요청</text></g>
+      <g class="el" data-show="4"><ellipse cx="565" cy="210" rx="60" ry="22" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="565" y="214" text-anchor="middle" font-size="12" fill="#0f7a5a">article 테이블</text></g>
+      <g class="el" data-show="0"><text x="320" y="40" text-anchor="middle" font-size="13" fill="#5b6572">요청은 한 번에 DB까지 가지 않고, 계층을 차례로 지나갑니다</text></g>
+      <g class="el" data-show="1" data-hide="1"><line x1="142" y1="130" x2="156" y2="130" stroke="#0f7a5a" stroke-width="3"/><text x="225" y="92" text-anchor="middle" font-size="12" fill="#0f7a5a">① 요청 도착</text></g>
+      <g class="el" data-show="2" data-hide="2"><line x1="292" y1="130" x2="326" y2="130" stroke="#0f7a5a" stroke-width="3"/><text x="395" y="92" text-anchor="middle" font-size="12" fill="#0f7a5a">② 업무 실행</text></g>
+      <g class="el" data-show="3" data-hide="3"><line x1="462" y1="130" x2="496" y2="130" stroke="#0f7a5a" stroke-width="3"/><text x="565" y="92" text-anchor="middle" font-size="12" fill="#0f7a5a">③ 저장 요청</text></g>
+      <g class="el" data-show="4"><line x1="565" y1="162" x2="565" y2="186" stroke="#0f7a5a" stroke-width="3" stroke-dasharray="6 4"/><text x="320" y="240" text-anchor="middle" font-size="13" fill="#0f7a5a">④ 표에 한 행이 추가되고, 응답이 같은 길을 거꾸로 돌아갑니다</text></g>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 블로그 글 작성 요청은 브라우저(클라이언트)에서 시작합니다.</li>
+      <li data-show="1">② 가장 먼저 컨트롤러가 요청을 받습니다. 컨트롤러는 "어떤 주소로 왔는지"를 보고 맞는 메서드를 고릅니다.</li>
+      <li data-show="2">③ 컨트롤러는 실제 일을 서비스에게 맡깁니다. 서비스는 "무엇을 해야 하는지"를 담당합니다.</li>
+      <li data-show="3">④ 서비스는 저장을 리포지터리에게 맡깁니다. 리포지터리는 DB와 대화하는 창구입니다.</li>
+      <li data-show="4">⑤ 리포지터리가 DB에 행을 추가하고, 결과가 다시 위로 올라가 응답으로 돌아갑니다.</li>
+    <li data-show="5">⑤ 리포지터리가 DB에 행을 추가하고, 결과가 다시 위로 올라가 응답으로 돌아갑니다.</li></ol>
+  </div>
+
+  <h3>🧭 6장의 실습 순서</h3>
+  <table>
+    <tr><th>순서</th><th>만드는 것</th><th>핵심 키워드</th></tr>
+    <tr><td>1~2</td><td>API 개념과 URL·HTTP 규칙</td><td>REST API, CRUD</td></tr>
+    <tr><td>3~6</td><td>프로젝트 준비, Article 엔티티, 빌더, 리포지터리</td><td>@Entity, @Builder, JpaRepository</td></tr>
+    <tr><td>7~11</td><td>글 작성, 목록, 한 건 조회, 수정, 삭제 API</td><td>@PostMapping, @GetMapping, @PutMapping, @DeleteMapping</td></tr>
+    <tr><td>12~13</td><td>테스트 코드와 포스트맨 확인</td><td>MockMvc, given-when-then</td></tr>
+  </table>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 0</summary>
+    <p>Q. 글 작성 요청이 DB에 닿기까지 거치는 계층을 순서대로 말해 보세요.</p>
+    <p>A. Controller → Service → Repository → DB 순서입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 1 ============ -->
+<section class="page" id="p1">
+  <h2>1. API와 REST API</h2>
+  <p><b>API(Application Programming Interface)</b>는 프로그램끼리 주고받는 <b>정해진 창구와 약속</b>입니다. 말이 어렵게 느껴지니 식당에 가는 장면으로 생각해 봅시다.</p>
+  <p>우리는 주방에 직접 들어가지 않습니다. 대신 <b>점원</b>에게 주문합니다. 점원은 주방에 "이 요리를 만들어 주세요"라고 전달하고, 완성된 요리를 다시 우리에게 가져옵니다. 이때 손님은 <b>클라이언트</b>, 주방은 <b>서버</b>, 점원이 <b>API</b>입니다.</p>
+
+  <h3>🎬 애니메이션: 손님 → 점원 → 주방 → 점원 → 손님</h3>
+  <div class="stepper" data-steps="5">
+    <svg class="stage" viewBox="0 0 640 230" role="img" aria-label="식당 비유 API 흐름">
+      <circle cx="90" cy="110" r="50" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="90" y="106" text-anchor="middle" font-size="13">손님</text><text x="90" y="124" text-anchor="middle" font-size="11" fill="#5b6572">클라이언트</text>
+      <rect x="250" y="70" width="140" height="80" rx="12" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320" y="104" text-anchor="middle" font-size="13">점원</text><text x="320" y="124" text-anchor="middle" font-size="11" fill="#5b6572">API</text>
+      <rect x="470" y="70" width="140" height="80" rx="12" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="540" y="104" text-anchor="middle" font-size="13">주방</text><text x="540" y="124" text-anchor="middle" font-size="11" fill="#5b6572">서버</text>
+      <g class="el" data-show="1" data-hide="1"><line x1="146" y1="100" x2="244" y2="100" stroke="#f0a33a" stroke-width="3"/><polygon points="248,100 238,94 238,106" fill="#f0a33a"/><text x="195" y="90" text-anchor="middle" font-size="11" fill="#b7791f">① 주문(요청)</text></g>
+      <g class="el" data-show="2" data-hide="2"><line x1="394" y1="100" x2="466" y2="100" stroke="#0f7a5a" stroke-width="3"/><polygon points="470,100 460,94 460,106" fill="#0f7a5a"/><text x="430" y="90" text-anchor="middle" font-size="11" fill="#0f7a5a">② 조리 요청</text></g>
+      <g class="el" data-show="3" data-hide="3"><line x1="466" y1="130" x2="398" y2="130" stroke="#4a86e8" stroke-width="3"/><polygon points="394,130 404,124 404,136" fill="#4a86e8"/><text x="430" y="148" text-anchor="middle" font-size="11" fill="#4a86e8">③ 완성된 요리</text></g>
+      <g class="el" data-show="4" data-hide="4"><line x1="244" y1="130" x2="146" y2="130" stroke="#4a86e8" stroke-width="3"/><polygon points="142,130 152,124 152,136" fill="#4a86e8"/><text x="195" y="148" text-anchor="middle" font-size="11" fill="#4a86e8">④ 응답(결과)</text></g>
+      <text class="el" data-show="0" x="320" y="30" text-anchor="middle" font-size="13" fill="#5b6572">손님은 주방에 들어가지 않고, 점원을 통해서만 요리를 받습니다</text>
+      <text class="el" data-show="5" x="320" y="210" text-anchor="middle" font-size="13" fill="#0f7a5a">⑤ 웹에서도 같습니다: 브라우저 → API → 서버 → API → 브라우저</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 손님(클라이언트)은 주방(서버)에 직접 가지 않습니다.</li>
+      <li data-show="1">② 손님이 점원(API)에게 주문합니다. 웹에서는 "이 주소로 이런 요청을 해 주세요"에 해당합니다.</li>
+      <li data-show="2">③ 점원은 주방에 조리를 요청합니다. API는 요청을 서버에 그대로 전달하는 역할을 합니다.</li>
+      <li data-show="3">④ 주방이 요리를 완성해 점원에게 돌려주고, 점원은 그 결과를 손님에게 전합니다.</li>
+      <li data-show="4">⑤ 손님은 주방의 구조를 몰라도 주문표 하나로 원하는 결과를 얻습니다. 이것이 API의 장점입니다.</li>
+    <li data-show="5">⑤ 손님은 주방의 구조를 몰라도 주문표 하나로 원하는 결과를 얻습니다. 이것이 API의 장점입니다.</li></ol>
+  </div>
+
+  <h3>🌐 REST API란?</h3>
+  <p><b>REST(Representational State Transfer)</b>는 자원(데이터)을 <b>이름(주소)으로 구분</b>하고, 그 자원을 <b>어떻게 다룰지</b>를 HTTP 메서드로 표현하는 설계 방식입니다. 이런 규칙에 맞게 만든 API를 <b>REST API</b> 또는 RESTful API라고 부릅니다.</p>
+  <div class="box key"><strong>📌 REST의 핵심 한 문장</strong>"주소는 무엇(자원)을, 메서드는 어떻게(행위)를 말한다."</div>
+  <p>REST API의 장점은 주소와 메서드만 봐도 어떤 일을 하는지 알 수 있다는 점입니다. 상태를 기억하지 않는 방식(무상태)이라서 서버를 여러 대 두기도 쉽습니다. 단점은 정해진 표준 문서가 따로 없어서, 팀끼리 규칙을 미리 맞춰야 한다는 점입니다.</p>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 1</summary>
+    <p>Q. 식당 비유에서 API에 해당하는 것은 누구일까요?</p>
+    <p>A. <b>점원</b>입니다. 손님과 주방 사이에서 요청과 응답을 전달합니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="page" id="p2">
+  <h2>2. REST API 설계 규칙</h2>
+  <p>REST API를 만들 때 지켜야 할 대표 규칙은 두 가지입니다. 첫째, <b>URL에는 동사를 쓰지 않고 자원을 표시</b>합니다. 둘째, <b>동작은 HTTP 메서드</b>로 표현합니다.</p>
+
+  <h3>🎬 애니메이션: 같은 주소, 다른 메서드</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 260" role="img" aria-label="URL과 HTTP 메서드 대응">
+      <text x="30" y="30" font-size="14" fill="#5b6572">하고 싶은 일 → 메서드 + 자원 주소</text>
+      <rect x="30" y="50" width="580" height="36" rx="6" fill="#f0f3f6"/><text x="50" y="74" font-size="13">블로그 글 전체 조회</text><text x="400" y="74" font-size="13" font-family="Consolas,monospace">GET   /api/articles</text>
+      <rect x="30" y="92" width="580" height="36" rx="6" fill="#f0f3f6"/><text x="50" y="116" font-size="13">블로그 글 추가</text><text x="400" y="116" font-size="13" font-family="Consolas,monospace">POST  /api/articles</text>
+      <rect x="30" y="134" width="580" height="36" rx="6" fill="#f0f3f6"/><text x="50" y="158" font-size="13">1번 글 한 건 조회</text><text x="400" y="158" font-size="13" font-family="Consolas,monospace">GET   /api/articles/1</text>
+      <rect x="30" y="176" width="580" height="36" rx="6" fill="#f0f3f6"/><text x="50" y="200" font-size="13">1번 글 수정</text><text x="400" y="200" font-size="13" font-family="Consolas,monospace">PUT   /api/articles/1</text>
+      <rect x="30" y="218" width="580" height="36" rx="6" fill="#f0f3f6"/><text x="50" y="242" font-size="13">1번 글 삭제</text><text x="400" y="242" font-size="13" font-family="Consolas,monospace">DELETE /api/articles/1</text>
+      <g class="el" data-show="1" data-hide="1"><rect x="26" y="46" width="588" height="44" rx="8" fill="none" stroke="#f0a33a" stroke-width="3"/></g>
+      <g class="el" data-show="2" data-hide="2"><rect x="26" y="88" width="588" height="44" rx="8" fill="none" stroke="#0f7a5a" stroke-width="3"/></g>
+      <g class="el" data-show="3"><rect x="26" y="130" width="588" height="44" rx="8" fill="none" stroke="#4a86e8" stroke-width="3"/></g>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 같은 블로그 글이라도 하고 싶은 일에 따라 주소와 메서드 조합이 달라집니다.</li>
+      <li data-show="1">② 조회는 GET, 목록 조회도 GET입니다. 주소 끝 숫자가 있으면 한 건, 없으면 전체입니다.</li>
+      <li data-show="2">③ 추가는 POST입니다. 주소는 같은 /api/articles를 씁니다. "글 목록" 자원에 새 글을 넣는다는 뜻입니다.</li>
+      <li data-show="3">④ 수정은 PUT, 삭제는 DELETE입니다. 두 경우 모두 한 건을 가리키기 위해 id를 주소에 붙입니다.</li>
+    <li data-show="4">④ 수정은 PUT, 삭제는 DELETE입니다. 두 경우 모두 한 건을 가리키기 위해 id를 주소에 붙입니다.</li></ol>
+  </div>
+
+  <h3>✅ 규칙 1: URL에는 동사를 쓰지 않는다</h3>
+  <table>
+    <tr><th>잘못된 예</th><th>이유</th><th>좋은 예</th></tr>
+    <tr><td><code>/get-article?id=1</code></td><td>get이라는 동사가 주소에 있음</td><td><code>GET /api/articles/1</code></td></tr>
+    <tr><td><code>/articles/show/1</code></td><td>show라는 동사가 있음</td><td><code>GET /api/articles/1</code></td></tr>
+    <tr><td><code>/articles/delete/1</code></td><td>행위를 주소에 적음</td><td><code>DELETE /api/articles/1</code></td></tr>
+  </table>
+  <div class="box tip"><strong>📌 왜 동사를 빼나요?</strong>같은 기능을 어떤 개발자는 get, 어떤 개발자는 show로 부르면 주소가 제각각이 됩니다. 자원(명사)만 남기고 행위는 메서드로 정하면 규칙이 하나로 통일됩니다.</div>
+
+  <h3>✅ 규칙 2: 동작은 HTTP 메서드로</h3>
+  <table>
+    <tr><th>메서드</th><th>하는 일</th><th>CRUD</th></tr>
+    <tr><td>POST</td><td>새로 만들기</td><td>Create</td></tr>
+    <tr><td>GET</td><td>읽기</td><td>Read</td></tr>
+    <tr><td>PUT</td><td>수정하기</td><td>Update</td></tr>
+    <tr><td>DELETE</td><td>삭제하기</td><td>Delete</td></tr>
+  </table>
+
+  <h3>🔢 자주 보는 응답 상태 코드</h3>
+  <table>
+    <tr><th>코드</th><th>뜻</th><th>언제</th></tr>
+    <tr><td>200 OK</td><td>요청 성공</td><td>조회, 수정, 삭제 성공</td></tr>
+    <tr><td>201 Created</td><td>새 자원이 만들어짐</td><td>글 추가 성공</td></tr>
+    <tr><td>400 Bad Request</td><td>요청 값이 잘못됨</td><td>필수 값이 빠짐</td></tr>
+    <tr><td>404 Not Found</td><td>찾는 자원이 없음</td><td>없는 id로 조회</td></tr>
+    <tr><td>500 Internal Server Error</td><td>서버 내부 문제</td><td>예상하지 못한 예외</td></tr>
+  </table>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 2</summary>
+    <p>Q. "1번 글을 삭제하는 API"를 REST 규칙에 맞게 쓰면?</p>
+    <p>A. <b>DELETE /api/articles/1</b> 입니다. 행위(삭제)는 메서드로, 자원(글 1번)은 주소로 표현합니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="page" id="p3">
+  <h2>3. 프로젝트 준비</h2>
+  <p>6장은 5장까지 연습하던 프로젝트와 섞이지 않도록 <b>새 프로젝트처럼 정리</b>하고 시작합니다. 먼저 연습용으로 만든 파일을 지우고, 필요한 설정만 남깁니다. 준비가 잘 되어야 뒤에서 오류가 생겼을 때 원인을 찾기 쉽습니다.</p>
+
+  <h3>🎬 애니메이션: 준비 4단계</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 220" role="img" aria-label="프로젝트 준비 단계">
+      <rect x="20" y="30" width="140" height="150" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="90" y="60" text-anchor="middle" font-size="12">① 정리</text><text x="90" y="90" text-anchor="middle" font-size="11" fill="#5b6572">연습 파일 삭제</text><text x="90" y="110" text-anchor="middle" font-size="11" fill="#5b6572">data.sql 삭제</text>
+      <rect x="180" y="30" width="140" height="150" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="250" y="60" text-anchor="middle" font-size="12">② 의존성</text><text x="250" y="90" text-anchor="middle" font-size="11" fill="#5b6572">build.gradle 추가</text><text x="250" y="110" text-anchor="middle" font-size="11" fill="#5b6572">새로고침</text>
+      <rect x="340" y="30" width="140" height="150" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="410" y="60" text-anchor="middle" font-size="12">③ 설정</text><text x="410" y="90" text-anchor="middle" font-size="11" fill="#5b6572">application.yml</text><text x="410" y="110" text-anchor="middle" font-size="11" fill="#5b6572">H2 주소와 콘솔</text>
+      <rect x="500" y="30" width="120" height="150" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="560" y="60" text-anchor="middle" font-size="12">④ 실행</text><text x="560" y="90" text-anchor="middle" font-size="11" fill="#5b6572">서버 실행</text><text x="560" y="110" text-anchor="middle" font-size="11" fill="#5b6572">H2 콘솔 확인</text>
+      <g class="el" data-show="0" data-hide="0"><rect x="20" y="30" width="140" height="150" rx="10" fill="none" stroke="#f0a33a" stroke-width="4"/></g>
+      <g class="el" data-show="1" data-hide="1"><rect x="180" y="30" width="140" height="150" rx="10" fill="none" stroke="#f0a33a" stroke-width="4"/></g>
+      <g class="el" data-show="2" data-hide="2"><rect x="340" y="30" width="140" height="150" rx="10" fill="none" stroke="#f0a33a" stroke-width="4"/></g>
+      <g class="el" data-show="3"><rect x="500" y="30" width="120" height="150" rx="10" fill="none" stroke="#f0a33a" stroke-width="4"/></g>
+      <text class="el" data-show="0" x="320" y="205" text-anchor="middle" font-size="13" fill="#5b6572">5장 연습 파일과 섞이지 않게 먼저 정리합니다</text>
+      <text class="el" data-show="1" x="320" y="205" text-anchor="middle" font-size="13" fill="#0f7a5a">의존성을 추가하고 반드시 새로고침합니다</text>
+      <text class="el" data-show="2" x="320" y="205" text-anchor="middle" font-size="13" fill="#0f7a5a">H2 주소와 콘솔 설정을 맞춥니다</text>
+      <text class="el" data-show="3" x="320" y="205" text-anchor="middle" font-size="13" fill="#0f7a5a">서버를 실행하고 콘솔 접속을 확인합니다</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 정리: src/main/java 안의 연습 파일과 src/main/resources의 data.sql, 테스트 자원의 연습 SQL을 지웁니다. 다만 메인 실행 클래스(SpringBootDeveloperApplication)는 남깁니다.</li>
+      <li data-show="1">② 의존성: build.gradle에 아래 항목을 추가하고 Gradle 새로고침(🔄)을 누릅니다.</li>
+      <li data-show="2">③ 설정: application.yml에 H2 데이터베이스 주소와 콘솔 사용 여부를 적습니다.</li>
+      <li data-show="3">④ 실행: 서버를 켜고 브라우저에서 H2 콘솔에 접속해 봅니다. 서버가 켜져 있어야 데이터를 확인할 수 있습니다.</li>
+    <li data-show="4">④ 실행: 서버를 켜고 브라우저에서 H2 콘솔에 접속해 봅니다. 서버가 켜져 있어야 데이터를 확인할 수 있습니다.</li></ol>
+  </div>
+
+  <h3>📦 build.gradle 의존성</h3>
+  <div class="eg">dependencies {
+    <span class="c">// 웹 요청을 받는 기능 (컨트롤러 사용)</span>
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    <span class="c">// JPA 기능 (엔티티, 리포지터리 사용)</span>
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    <span class="c">// 연습용 DB H2 (실행할 때만 필요)</span>
+    runtimeOnly 'com.h2database:h2'
+    <span class="c">// 콘솔에서 DB를 눈으로 확인하는 도구</span>
+    implementation 'org.springframework.boot:spring-boot-h2console'
+    <span class="c">// 테스트용 MockMvc 등 웹 테스트 도구</span>
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    <span class="c">// 롬복: getter, 생성자 자동 생성</span>
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}</div>
+  <div class="box warn"><strong>⚠️ 주의</strong>의존성을 추가한 뒤 반드시 Gradle 새로고침을 해야 실제로 내려받습니다. 빨간 줄이 계속 남으면 새로고침 후 Alt + Enter로 import를 가져오세요.</div>
+
+  <h3>⚙️ application.yml 설정</h3>
+  <div class="eg">spring:
+  datasource:                     <span class="c"># DB 연결 정보 (들여쓰기 2칸)</span>
+    url: jdbc:h2:mem:testdb       <span class="c"># 메모리에 만드는 H2 DB 이름</span>
+    username: sa                  <span class="c"># 기본 사용자 이름</span>
+  h2:
+    console:
+      enabled: true               <span class="c"># 브라우저에서 H2 콘솔 사용</span></div>
+  <div class="box tip"><strong>📌 H2 콘솔 접속 방법</strong>서버 실행 후 <code>http://localhost:8080/h2-console</code>에 들어갑니다. JDBC URL에 <code>jdbc:h2:mem:testdb</code>, User Name에 <code>sa</code>를 넣고 Connect를 누릅니다. 비밀번호는 비워 둡니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 3</summary>
+    <p>Q. 의존성을 추가한 뒤 반드시 해야 하는 작업은?</p>
+    <p>A. <b>Gradle 새로고침</b>입니다. 새로고침해야 라이브러리를 실제로 내려받습니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="page" id="p4">
+  <h2>4. 엔티티 만들기</h2>
+  <p>이제 블로그 글을 담을 <b>Article 엔티티</b>를 만듭니다. 엔티티는 DB의 <code>article</code> 테이블과 짝이 되는 자바 클래스입니다. 먼저 어떤 표를 만들지 설계하고, 그 표와 같은 모양의 클래스를 씁니다.</p>
+
+  <h3>🗂️ 테이블 설계표</h3>
+  <table>
+    <tr><th>컬럼명</th><th>자료형</th><th>NULL 허용</th><th>키</th><th>설명</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td>N</td><td>기본키</td><td>일련번호, 자동 증가</td></tr>
+    <tr><td>title</td><td>VARCHAR(255)</td><td>N</td><td></td><td>글 제목</td></tr>
+    <tr><td>content</td><td>VARCHAR(255)</td><td>N</td><td></td><td>글 내용</td></tr>
+  </table>
+
+  <h3>🎬 애니메이션: 어노테이션을 하나씩 붙여 엔티티 완성</h3>
+  <div class="stepper" data-steps="5">
+    <svg class="stage" viewBox="0 0 640 300" role="img" aria-label="Article 엔티티 어노테이션 추가 과정">
+      <rect x="20" y="20" width="600" height="270" rx="10" fill="#1e2530"/>
+      <text x="40" y="50" font-size="13" font-family="Consolas,monospace" fill="#e6edf3">public class Article {</text>
+      <text class="el" data-show="1" x="60" y="74" font-size="13" font-family="Consolas,monospace" fill="#fbbf24">@Entity          ← ① 이 클래스는 article 표와 짝</text>
+      <text class="el" data-show="2" x="60" y="100" font-size="13" font-family="Consolas,monospace" fill="#fbbf24">@Id              ← ② id 필드가 기본키</text>
+      <text class="el" data-show="3" x="60" y="126" font-size="13" font-family="Consolas,monospace" fill="#fbbf24">@GeneratedValue ← ③ 번호를 DB가 1씩 증가</text>
+      <text class="el" data-show="4" x="60" y="152" font-size="13" font-family="Consolas,monospace" fill="#fbbf24">@Column(nullable=false) ← ④ 제목·내용 필수</text>
+      <text class="el" data-show="0" x="60" y="190" font-size="13" font-family="Consolas,monospace" fill="#e6edf3">private Long id; private String title; private String content;</text>
+      <text class="el" data-show="5" x="60" y="222" font-size="13" font-family="Consolas,monospace" fill="#86efac">✔ 완성: 표 article과 짝이 맞는 엔티티</text>
+      <text x="40" y="270" font-size="13" font-family="Consolas,monospace" fill="#e6edf3">}</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 필드(id, title, content)를 먼저 정합니다. 설계표의 열과 같은 순서로 생각하면 쉽습니다.</li>
+      <li data-show="1">② @Entity: "이 클래스는 DB 표와 연결된다"는 표시입니다. 표 이름은 기본으로 클래스 이름 article이 됩니다.</li>
+      <li data-show="2">③ @Id: id 필드를 기본키(행을 구분하는 번호)로 지정합니다.</li>
+      <li data-show="3">④ @GeneratedValue: 번호를 사람이 넣지 않고 DB가 1, 2, 3…으로 자동으로 채웁니다.</li>
+      <li data-show="4">⑤ @Column(nullable = false): 제목과 내용은 비워 둘 수 없다는 규칙입니다.</li>
+      <li data-show="5">⑥ 완성된 엔티티는 설계표와 한 줄씩 대응합니다.</li>
+    </ol>
+  </div>
+
+  <h3>📝 Article.java 전체 코드</h3>
+  <p>패키지 <code>domain</code>을 만들고 그 안에 <code>Article.java</code>를 만듭니다. 빨간 줄이 나오는 import는 Alt + Enter로 가져옵니다.</p>
+  <div class="eg">package me.yourname.springbootdeveloper.domain;
+
+import jakarta.persistence.*;    <span class="c">// JPA 어노테이션 묶음 (@Entity, @Id 등)</span>
+import lombok.*;                 <span class="c">// getter, 생성자 등을 자동으로 만들어 줌</span>
+
+@Entity                          <span class="c">// ① DB 표와 연결된 엔티티</span>
+@Getter                          <span class="c">// ② 모든 필드의 값을 꺼내는 메서드 자동 생성</span>
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  <span class="c">// ③ JPA가 쓰는 기본 생성자(외부 new 금지)</span>
+public class Article {
+
+    @Id                          <span class="c">// ④ 기본키 지정</span>
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  <span class="c">// ⑤ 번호 자동 증가</span>
+    @Column(name = "id", updatable = false)  <span class="c">// id 열. 수정 금지</span>
+    private Long id;
+
+    @Column(name = "title", nullable = false)    <span class="c">// ⑥ 제목 열, 빈 값 금지</span>
+    private String title;
+
+    @Column(name = "content", nullable = false)  <span class="c">// ⑦ 내용 열, 빈 값 금지</span>
+    private String content;
+
+    @Builder                     <span class="c">// ⑧ 빌더 패턴으로 객체를 만들 수 있게 함 (다음 페이지)</span>
+    public Article(String title, String content) {
+        this.title = title;      <span class="c">// 전달받은 제목을 필드에 저장</span>
+        this.content = content;  <span class="c">// 전달받은 내용을 필드에 저장</span>
+    }
+}</div>
+
+  <h3>🔎 @Column 속성 표</h3>
+  <table>
+    <tr><th>속성</th><th>뜻</th><th>기본값</th></tr>
+    <tr><td>name</td><td>매핑할 열 이름</td><td>필드 이름</td></tr>
+    <tr><td>nullable</td><td>NULL 허용 여부</td><td>true(허용)</td></tr>
+    <tr><td>updatable</td><td>수정 가능 여부</td><td>true(가능)</td></tr>
+    <tr><td>length</td><td>문자열 최대 길이</td><td>255</td></tr>
+  </table>
+  <div class="box bad"><strong>🚨 흔한 실수</strong>기본 생성자(<code>@NoArgsConstructor</code>)를 빼먹으면 JPA가 객체를 만들 수 없어 실행 중 오류가 납니다. 또 필드 이름과 @Column의 name을 다르게 쓰면 열과 연결이 어긋날 수 있으니 주의하세요.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 4</summary>
+    <p>Q. 엔티티의 기본키를 DB가 자동으로 1씩 늘리게 하려면 어떤 어노테이션을 함께 씁니까?</p>
+    <p>A. <b>@Id</b>와 <b>@GeneratedValue(strategy = GenerationType.IDENTITY)</b>입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="page" id="p5">
+  <h2>5. 빌더 패턴과 롬복</h2>
+  <p>객체를 만들 때 생성자에 값을 넣으면, 어떤 값이 어떤 필드에 들어가는지 헷갈리기 쉽습니다. <b>빌더 패턴(Builder Pattern)</b>은 "필드 이름을 붙여서 한 줄씩 값을 채운 뒤 build()로 완성"하는 방식입니다. 읽기 쉽고, 값을 빼먹거나 순서를 틀리는 실수를 줄여 줍니다.</p>
+
+  <h3>🎬 애니메이션: 생성자 방식과 빌더 방식 비교</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 260" role="img" aria-label="생성자 방식과 빌더 방식 비교">
+      <rect x="20" y="20" width="290" height="200" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="165" y="46" text-anchor="middle" font-size="13">생성자 방식</text>
+      <text x="40" y="90" font-size="13" font-family="Consolas,monospace">new Article("abc", "def");</text>
+      <text class="el" data-show="1" x="40" y="130" font-size="12" fill="#e0565b">어느 값이 제목인지 알기 어려움</text>
+      <rect x="330" y="20" width="290" height="200" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="475" y="46" text-anchor="middle" font-size="13">빌더 방식</text>
+      <text x="350" y="80" font-size="13" font-family="Consolas,monospace">Article.builder()</text>
+      <text class="el" data-show="2" x="350" y="104" font-size="13" font-family="Consolas,monospace">.title("abc")</text>
+      <text class="el" data-show="2" x="350" y="126" font-size="13" font-family="Consolas,monospace">.content("def")</text>
+      <text class="el" data-show="3" x="350" y="150" font-size="13" font-family="Consolas,monospace">.build();</text>
+      <text class="el" data-show="3" x="350" y="190" font-size="12" fill="#0f7a5a">어느 필드에 무슨 값인지 한눈에 보임</text>
+      <text class="el" data-show="0" x="320" y="245" text-anchor="middle" font-size="13" fill="#5b6572">둘 다 Article 객체를 만들지만, 읽는 사람이 받는 느낌이 다릅니다</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 같은 객체를 두 방식으로 만들 수 있습니다.</li>
+      <li data-show="1">② 생성자 방식은 짧지만, 두 값이 모두 문자열이라 순서를 틀려도 컴파일러가 알려 주지 않습니다.</li>
+      <li data-show="2">③ 빌더 방식은 .title, .content처럼 이름이 붙어 있어 어떤 값이 어디에 들어가는지 바로 보입니다.</li>
+      <li data-show="3">④ build()를 호출하는 순간 객체가 완성됩니다. 롬복의 @Builder가 이 코드를 자동으로 만들어 줍니다.</li>
+    <li data-show="4">④ build()를 호출하는 순간 객체가 완성됩니다. 롬복의 @Builder가 이 코드를 자동으로 만들어 줍니다.</li></ol>
+  </div>
+
+  <h3>🧰 롬복 어노테이션 정리</h3>
+  <table>
+    <tr><th>어노테이션</th><th>자동으로 만들어 주는 것</th></tr>
+    <tr><td>@Getter</td><td>필드 값을 꺼내는 getXxx() 메서드</td></tr>
+    <tr><td>@NoArgsConstructor</td><td>값이 없는 기본 생성자 (접근 제한 가능)</td></tr>
+    <tr><td>@AllArgsConstructor</td><td>모든 필드를 받는 생성자</td></tr>
+    <tr><td>@Builder</td><td>빌더 패턴 코드(builder(), build())</td></tr>
+  </table>
+  <div class="box tip"><strong>📌 직접 쓴 코드와 비교해 보기</strong>@Getter 한 줄이면 <code>getTitle()</code>을 직접 쓸 필요가 없습니다. 자바 코드가 짧아지고, 필드를 바꿔도 getter를 같이 고칠 필요가 없어 실수가 줄어듭니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 5</summary>
+    <p>Q. 빌더로 Article을 만들 때 호출하는 마지막 메서드는?</p>
+    <p>A. <b>build()</b>입니다. build()를 호출해야 객체가 실제로 완성됩니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="page" id="p6">
+  <h2>6. 리포지터리 만들기</h2>
+  <p><b>리포지터리(Repository)</b>는 엔티티를 저장하고 꺼내는 <b>창구</b>입니다. 서비스는 DB의 SQL을 몰라도, 리포지터리에게 "저장해 줘", "전체 목록 줘"라고 부탁하기만 하면 됩니다.</p>
+  <p>리포지터리는 클래스가 아니라 <b>인터페이스</b>로 만듭니다. <code>JpaRepository</code>를 상속받으면 저장, 조회, 삭제 기능이 자동으로 생깁니다. 우리가 직접 구현 코드를 쓰지 않아도 됩니다.</p>
+
+  <h3>🎬 애니메이션: 인터페이스 상속 계단</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 280" role="img" aria-label="JpaRepository 상속 구조">
+      <rect x="200" y="200" width="240" height="50" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="320" y="230" text-anchor="middle" font-size="13">BlogRepository (내가 만듦)</text>
+      <rect x="200" y="130" width="240" height="50" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320" y="160" text-anchor="middle" font-size="13">JpaRepository (기본 기능 제공)</text>
+      <rect x="200" y="60" width="240" height="50" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="320" y="90" text-anchor="middle" font-size="13">CrudRepository (저장 등)</text>
+      <g class="el" data-show="1" data-hide="99"><rect x="460" y="200" width="160" height="50" rx="8" fill="#fff3d6" stroke="#f0a33a"/><text x="540" y="230" text-anchor="middle" font-size="11">findAll() 전체 조회</text></g>
+      <g class="el" data-show="2" data-hide="99"><rect x="20" y="200" width="160" height="50" rx="8" fill="#fff3d6" stroke="#f0a33a"/><text x="100" y="230" text-anchor="middle" font-size="11">save() 저장</text></g>
+      <g class="el" data-show="3"><rect x="460" y="60" width="160" height="50" rx="8" fill="#fff3d6" stroke="#f0a33a"/><text x="540" y="90" text-anchor="middle" font-size="11">findById, deleteById 등</text></g>
+      <text class="el" data-show="0" x="320" y="30" text-anchor="middle" font-size="13" fill="#5b6572">아래 인터페이스가 위 인터페이스의 기능을 물려받습니다</text>
+      <text class="el" data-show="1" x="320" y="268" text-anchor="middle" font-size="12" fill="#0f7a5a">①② 내가 쓴 BlogRepository만으로도 저장, 전체 조회 같은 기능을 바로 씀</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 가운데 JpaRepository가 핵심입니다. 나의 BlogRepository는 이것을 상속받습니다.</li>
+      <li data-show="1">② 전체 조회 findAll()은 JpaRepository에 이미 있으므로 직접 만들 필요가 없습니다.</li>
+      <li data-show="2">③ 저장 save()도 같은 방식으로 물려받아 씁니다.</li>
+      <li data-show="3">④ 한 건 조회, 삭제 등도 같은 방식입니다. 상속 계단 위쪽의 기능까지 모두 사용할 수 있습니다.</li>
+    <li data-show="4">④ 한 건 조회, 삭제 등도 같은 방식입니다. 상속 계단 위쪽의 기능까지 모두 사용할 수 있습니다.</li></ol>
+  </div>
+
+  <h3>📝 BlogRepository.java</h3>
+  <p>패키지 <code>repository</code>를 만들고 그 안에 인터페이스를 만듭니다.</p>
+  <div class="eg">package me.yourname.springbootdeveloper.repository;
+
+import me.yourname.springbootdeveloper.domain.Article;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+<span class="c">// JpaRepository&lt;관리할 엔티티, 기본키 타입&gt;</span>
+public interface BlogRepository extends JpaRepository&lt;Article, Long&gt; {
+    <span class="c">// 내용이 비어 있는 블로그 글만 찾는 메서드도 이름 규칙으로 만들 수 있음 (5장 복습)</span>
+}</div>
+
+  <h3>🔎 <code>JpaRepository&lt;Article, Long&gt;</code> 읽는 법</h3>
+  <table>
+    <tr><th>부분</th><th>뜻</th></tr>
+    <tr><td><code>JpaRepository</code></td><td>저장, 조회, 삭제 기능을 물려받음</td></tr>
+    <tr><td><code>Article</code></td><td>이 창구가 다루는 엔티티(표)</td></tr>
+    <tr><td><code>Long</code></td><td>Article 기본키(id)의 자료형</td></tr>
+  </table>
+  <div class="box warn"><strong>⚠️ 클래스인지 인터페이스인지</strong>리포지터리는 <code>public interface</code>로 만듭니다. <code>class</code>로 만들고 구현 코드를 직접 쓸 필요가 없습니다. 이름은 나중에 테스트와 서비스에서 같이 쓰므로 정확히 맞춰 주세요.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 6</summary>
+    <p>Q. BlogRepository를 JpaRepository로 상속받을 때 두 번째 인수로 무엇을 넣습니까?</p>
+    <p>A. 엔티티의 기본키 타입인 <b>Long</b>입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="page" id="p7">
+  <h2>7. 글 작성 API (POST)</h2>
+  <p>이제 "글을 추가하는 API"를 만듭니다. 클라이언트가 보낸 JSON을 객체로 받고, 서비스에 저장을 맡기고, 저장된 결과를 응답으로 돌려주는 흐름입니다. 세 계층(컨트롤러, 서비스, 리포지터리)이 모두 등장하므로 천천히 따라 가세요.</p>
+
+  <h3>🎬 애니메이션: POST /api/articles 요청 한 건의 여정</h3>
+  <div class="stepper" data-steps="6">
+    <svg class="stage" viewBox="0 0 640 290" role="img" aria-label="글 작성 요청 흐름">
+      <rect x="10" y="110" width="100" height="60" rx="8" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="60" y="136" text-anchor="middle" font-size="11">클라이언트</text><text x="60" y="154" text-anchor="middle" font-size="10" fill="#5b6572">JSON 전송</text>
+      <rect x="140" y="110" width="110" height="60" rx="8" fill="#fff3d6" stroke="#f0a33a" stroke-width="2"/><text x="195" y="136" text-anchor="middle" font-size="11">Controller</text><text x="195" y="154" text-anchor="middle" font-size="10" fill="#5b6572">@PostMapping</text>
+      <rect x="280" y="110" width="110" height="60" rx="8" fill="#fff3d6" stroke="#f0a33a" stroke-width="2"/><text x="335" y="136" text-anchor="middle" font-size="11">Service</text><text x="335" y="154" text-anchor="middle" font-size="10" fill="#5b6572">save()</text>
+      <rect x="420" y="110" width="110" height="60" rx="8" fill="#fff3d6" stroke="#f0a33a" stroke-width="2"/><text x="475" y="136" text-anchor="middle" font-size="11">Repository</text><text x="475" y="154" text-anchor="middle" font-size="10" fill="#5b6572">save()</text>
+      <ellipse cx="590" cy="140" rx="40" ry="26" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="590" y="144" text-anchor="middle" font-size="10">DB</text>
+      <g class="el" data-show="1" data-hide="99"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">① JSON {"title":..., "content":...} 이 컨트롤러에 도착</text></g>
+      <g class="el" data-show="2" data-hide="99"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">② JSON → DTO(AddArticleRequest) 객체로 변환</text></g>
+      <g class="el" data-show="3" data-hide="99"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">③ DTO → Article 엔티티로 변환 후 리포지터리 저장</text></g>
+      <g class="el" data-show="4" data-hide="99"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">④ INSERT 실행, id가 자동으로 채워짐</text></g>
+      <g class="el" data-show="5"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">⑤ 저장된 글을 201 Created 응답으로 돌려보냄</text></g>
+      <g class="el" data-show="0"><text x="320" y="40" text-anchor="middle" font-size="13" fill="#5b6572">요청이 들어오면 아래 다섯 단계가 한 번에 일어납니다</text></g>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 글 작성은 POST /api/articles 요청입니다. 본문(body)에 제목과 내용이 JSON으로 담깁니다.</li>
+      <li data-show="1">② 컨트롤러의 @PostMapping이 이 주소와 POST 요청을 addArticle() 메서드에 연결합니다.</li>
+      <li data-show="2">③ JSON은 자바 객체로 바뀌어 AddArticleRequest(DTO)에 담깁니다. 직렬화·역직렬화는 다음 장에서 자세히 다룹니다.</li>
+      <li data-show="3">④ DTO의 toEntity()가 Article 엔티티를 만들고, 서비스가 리포지터리 save()로 저장합니다.</li>
+      <li data-show="4">⑤ 저장되면 DB가 id를 채우고, 그 객체가 응답 body에 담겨 201 Created로 돌아갑니다.</li>
+      <li data-show="5">⑥ 정리: 요청 → 컨트롤러 → 서비스 → 리포지터리 → DB, 그리고 응답은 반대 방향입니다.</li>
+    <li data-show="6">⑥ 정리: 요청 → 컨트롤러 → 서비스 → 리포지터리 → DB, 그리고 응답은 반대 방향입니다.</li></ol>
+  </div>
+
+  <h3>📝 1단계: DTO 만들기 (AddArticleRequest.java)</h3>
+  <p><b>DTO(Data Transfer Object)</b>는 계층끼리 데이터를 주고받기 위한 <b>운반용 객체</b>입니다. 화면에서 받은 값을 DB 엔티티와 분리해 두면, 나중에 DB 구조가 바뀌어도 화면 쪽 코드를 덜 고쳐도 됩니다. 패키지 <code>dto</code>를 만들고 아래 코드를 넣습니다.</p>
+  <div class="eg">package me.yourname.springbootdeveloper.dto;
+
+import lombok.*;
+import me.yourname.springbootdeveloper.domain.Article;
+
+@NoArgsConstructor                <span class="c">// JSON을 객체로 바꿀 때 기본 생성자가 필요</span>
+@AllArgsConstructor               <span class="c">// 모든 필드를 받는 생성자 (테스트에서 사용)</span>
+@Getter                           <span class="c">// 값 꺼내기 메서드 자동 생성</span>
+public class AddArticleRequest {
+
+    private String title;         <span class="c">// JSON의 "title" 값이 여기에 들어옴</span>
+    private String content;       <span class="c">// JSON의 "content" 값이 여기에 들어옴</span>
+
+    public Article toEntity() {   <span class="c">// DTO를 엔티티로 바꾸는 메서드 (빌더 사용)</span>
+        return Article.builder()  <span class="c">// 빌더 시작</span>
+                .title(title)     <span class="c">// 제목 값 넣기</span>
+                .content(content) <span class="c">// 내용 값 넣기</span>
+                .build();         <span class="c">// 완성된 Article 객체 반환</span>
+    }
+}</div>
+
+  <h3>📝 2단계: 서비스 만들기 (BlogService.java)</h3>
+  <p>패키지 <code>service</code>를 만들고 <code>BlogService.java</code>를 만듭니다. 서비스는 "업무의 순서"를 담당합니다. 지금은 저장만 하므로 한 줄입니다.</p>
+  <div class="eg">package me.yourname.springbootdeveloper.service;
+
+import lombok.RequiredArgsConstructor;
+import me.yourname.springbootdeveloper.domain.Article;
+import me.yourname.springbootdeveloper.dto.AddArticleRequest;
+import me.yourname.springbootdeveloper.repository.BlogRepository;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor           <span class="c">// final 필드를 받는 생성자 자동 생성 (의존성 주입)</span>
+@Service                           <span class="c">// 서비스 계층 빈으로 등록</span>
+public class BlogService {
+
+    private final BlogRepository blogRepository;  <span class="c">// 리포지터리를 주입받음</span>
+
+    <span class="c">// 블로그 글 추가 메서드</span>
+    public Article save(AddArticleRequest request) {
+        <span class="c">// DTO를 엔티티로 바꾼 뒤 리포지터리에 저장하고, 저장된 객체를 돌려줌</span>
+        return blogRepository.save(request.toEntity());
+    }
+}</div>
+
+  <h3>📝 3단계: 컨트롤러 만들기 (BlogApiController.java)</h3>
+  <p>패키지 <code>controller</code>를 만들고 <code>BlogApiController.java</code>를 만듭니다.</p>
+  <div class="eg">package me.yourname.springbootdeveloper.controller;
+
+import lombok.RequiredArgsConstructor;
+import me.yourname.springbootdeveloper.domain.Article;
+import me.yourname.springbootdeveloper.dto.AddArticleRequest;
+import me.yourname.springbootdeveloper.service.BlogService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RequiredArgsConstructor           <span class="c">// 서비스 주입용 생성자 자동 생성</span>
+@RestController                    <span class="c">// 반환 객체를 JSON으로 응답하는 컨트롤러</span>
+public class BlogApiController {
+
+    private final BlogService blogService;  <span class="c">// 서비스 주입</span>
+
+    @PostMapping("/api/articles")  <span class="c">// POST /api/articles 요청을 이 메서드에 연결</span>
+    public ResponseEntity&lt;Article&gt; addArticle(@RequestBody AddArticleRequest request) {
+        <span class="c">// @RequestBody: 요청 본문 JSON을 AddArticleRequest 객체로 바꿈</span>
+        Article savedArticle = blogService.save(request);  <span class="c">// 서비스에 저장을 맡김</span>
+
+        <span class="c">// 201 Created 상태 코드와 함께 저장된 글을 body에 담아 응답</span>
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedArticle);
+    }
+}</div>
+
+  <div class="box key"><strong>💡 어노테이션 한 줄씩 읽기</strong>
+  <ul>
+    <li><code>@RestController</code>: 클래스 전체를 "JSON으로 응답하는 컨트롤러"로 지정합니다.</li>
+    <li><code>@PostMapping("/api/articles")</code>: 이 주소로 온 POST 요청을 이 메서드에 연결합니다.</li>
+    <li><code>@RequestBody</code>: 요청 본문의 JSON을 객체로 바꿔 매개변수에 넣습니다.</li>
+    <li><code>ResponseEntity.status(...).body(...)</code>: 상태 코드와 응답 내용을 함께 만듭니다.</li>
+  </ul></div>
+  <div class="box warn"><strong>⚠️ 자주 틀리는 점</strong>@RestController는 클래스 위에 한 번만 붙입니다. @PostMapping 주소의 철자가 조금만 달라도 404 Not Found가 납니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 7</summary>
+    <p>Q. 요청 본문의 JSON을 AddArticleRequest 객체로 바꾸는 어노테이션은?</p>
+    <p>A. <b>@RequestBody</b>입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="page" id="p8">
+  <h2>8. 글 목록 조회 API (GET)</h2>
+  <p>전체 글을 가져오는 API입니다. 리포지터리의 <code>findAll()</code>로 DB의 모든 행을 리스트로 받고, 그 리스트를 응답용 객체로 바꿔 돌려줍니다. 이때 자바의 <b>스트림(Stream)</b>을 사용하면 리스트를 짧고 읽기 쉽게 변환할 수 있습니다.</p>
+
+  <h3>🎬 애니메이션: 리스트가 응답 객체 리스트로 바뀌는 과정</h3>
+  <div class="stepper" data-steps="5">
+    <svg class="stage" viewBox="0 0 640 250" role="img" aria-label="목록 조회 스트림 변환">
+      <rect x="20" y="30" width="180" height="170" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="110" y="54" text-anchor="middle" font-size="12">DB 결과 (Article)</text>
+      <rect x="40" y="70" width="140" height="30" rx="6" fill="#eaf2ff" stroke="#4a86e8"/><text x="110" y="90" text-anchor="middle" font-size="11">Article #1 제목/내용</text>
+      <rect x="40" y="110" width="140" height="30" rx="6" fill="#eaf2ff" stroke="#4a86e8"/><text x="110" y="130" text-anchor="middle" font-size="11">Article #2 제목/내용</text>
+      <rect x="40" y="150" width="140" height="30" rx="6" fill="#eaf2ff" stroke="#4a86e8"/><text x="110" y="170" text-anchor="middle" font-size="11">Article #3 제목/내용</text>
+      <g class="el" data-show="1" data-hide="99"><text x="320" y="110" text-anchor="middle" font-size="12" fill="#f0a33a">.stream()으로 흐름 열기</text></g>
+      <g class="el" data-show="2" data-hide="99"><text x="320" y="110" text-anchor="middle" font-size="12" fill="#f0a33a">.map(ArticleResponse::new) 한 건씩 변환</text></g>
+      <g class="el" data-show="3" data-hide="99"><text x="320" y="110" text-anchor="middle" font-size="12" fill="#f0a33a">.toList()로 다시 리스트로 모으기</text></g>
+      <rect x="450" y="30" width="170" height="170" rx="10" fill="#fff" stroke="#0f7a5a" stroke-width="2"/><text x="535" y="54" text-anchor="middle" font-size="12">응답 객체 (ArticleResponse)</text>
+      <rect x="470" y="70" width="130" height="30" rx="6" fill="#e8f6f0" stroke="#0f7a5a"/><text x="535" y="90" text-anchor="middle" font-size="11">title, content만</text>
+      <rect x="470" y="110" width="130" height="30" rx="6" fill="#e8f6f0" stroke="#0f7a5a"/><text x="535" y="130" text-anchor="middle" font-size="11">title, content만</text>
+      <rect x="470" y="150" width="130" height="30" rx="6" fill="#e8f6f0" stroke="#0f7a5a"/><text x="535" y="170" text-anchor="middle" font-size="11">title, content만</text>
+      <g class="el" data-show="4"><text x="320" y="230" text-anchor="middle" font-size="13" fill="#0f7a5a">✔ 필요한 정보(제목, 내용)만 골라서 응답으로 보냄</text></g>
+      <path class="el" data-show="2" d="M205 120 L440 120" stroke="#f0a33a" stroke-width="3" fill="none" stroke-dasharray="6 4"/>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① DB에 저장된 글 세 건이 리스트로 준비되어 있습니다.</li>
+      <li data-show="1">② .stream()은 리스트의 원소를 하나씩 흘려보내는 "흐름"을 엽니다.</li>
+      <li data-show="2">③ .map(ArticleResponse::new)는 흐르는 각 글을 응답용 객체로 한 건씩 바꿉니다.</li>
+      <li data-show="3">④ .toList()는 바뀐 결과를 다시 리스트로 모읍니다.</li>
+      <li data-show="4">⑤ 응답에는 id 같은 내부 정보 없이 제목과 내용만 담깁니다.</li>
+    <li data-show="5">⑤ 응답에는 id 같은 내부 정보 없이 제목과 내용만 담깁니다.</li></ol>
+  </div>
+
+  <h3>📝 1단계: 응답 DTO 만들기 (ArticleResponse.java)</h3>
+  <div class="eg">package me.yourname.springbootdeveloper.dto;
+
+import lombok.Getter;
+import me.yourname.springbootdeveloper.domain.Article;
+
+@Getter                                  <span class="c">// getter 자동 생성 (JSON 변환에 필요)</span>
+public class ArticleResponse {
+
+    private final String title;          <span class="c">// 응답에 보낼 제목</span>
+    private final String content;        <span class="c">// 응답에 보낼 내용</span>
+
+    public ArticleResponse(Article article) {  <span class="c">// 엔티티 한 건을 받아 필요한 값만 복사</span>
+        this.title = article.getTitle();       <span class="c">// 엔티티에서 제목 꺼내기</span>
+        this.content = article.getContent();   <span class="c">// 엔티티에서 내용 꺼내기</span>
+    }
+}</div>
+
+  <h3>📝 2단계: 서비스 메서드 추가 (BlogService.java)</h3>
+  <div class="eg">    <span class="c">// 전체 글 목록 조회: JpaRepository의 findAll() 사용</span>
+    public List&lt;Article&gt; findAll() {
+        return blogRepository.findAll();  <span class="c">// article 표의 모든 행을 리스트로 반환</span>
+    }</div>
+
+  <h3>📝 3단계: 컨트롤러 메서드 추가 (BlogApiController.java)</h3>
+  <div class="eg">    @GetMapping("/api/articles")                <span class="c">// GET /api/articles 요청 연결</span>
+    public ResponseEntity&lt;List&lt;ArticleResponse&gt;&gt; findAllArticles() {
+        List&lt;ArticleResponse&gt; articles = blogService.findAll()  <span class="c">// 서비스에서 전체 글 가져오기</span>
+                .stream()                     <span class="c">// 리스트를 흐름(스트림)으로 바꿈</span>
+                .map(ArticleResponse::new)    <span class="c">// 글 한 건마다 ArticleResponse로 변환</span>
+                .toList();                    <span class="c">// 다시 리스트로 모으기</span>
+
+        return ResponseEntity.ok()            <span class="c">// 200 OK 상태 코드</span>
+                .body(articles);              <span class="c">// 변환된 목록을 body에 담아 응답</span>
+    }</div>
+  <div class="box tip"><strong>📌 ArticleResponse::new는 무슨 뜻?</strong>"글 한 건을 받아 ArticleResponse 생성자를 호출하라"는 짧은 표현입니다. <code>article -> new ArticleResponse(article)</code>와 같습니다.</div>
+
+  <h3>🧪 확인: 포스트맨</h3>
+  <p>서버를 재실행한 뒤 메서드 GET, 주소 <code>http://localhost:8080/api/articles</code>로 요청하면 글 목록이 JSON 배열로 보입니다. 아직 글이 없다면 빈 배열 <code>[]</code>이 정상입니다.</p>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 8</summary>
+    <p>Q. 엔티티 리스트를 응답용 리스트로 바꿀 때 "한 건씩 변환"을 담당하는 스트림 메서드는?</p>
+    <p>A. <b>map()</b>입니다. 흐르는 각 원소를 다른 모양으로 바꿉니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="page" id="p9">
+  <h2>9. 글 한 건 조회 API</h2>
+  <p>이번에는 URL 안의 번호로 글 한 건을 찾습니다. 예를 들어 <code>GET /api/articles/3</code>이면 id가 3인 글을 찾아 보여 줍니다. URL 일부를 값으로 꺼내는 것이 <b>@PathVariable</b>입니다.</p>
+
+  <h3>🎬 애니메이션: URL의 숫자가 메서드 매개변수로 들어가는 과정</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 230" role="img" aria-label="PathVariable 동작">
+      <rect x="20" y="40" width="330" height="50" rx="8" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="185" y="70" text-anchor="middle" font-size="14" font-family="Consolas,monospace">GET /api/articles/3</text>
+      <rect x="420" y="40" width="200" height="50" rx="8" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="520" y="70" text-anchor="middle" font-size="13" font-family="Consolas,monospace">{id} 자리</text>
+      <g class="el" data-show="1" data-hide="99"><text x="185" y="120" text-anchor="middle" font-size="12" fill="#f0a33a">① 주소에서 {id} 자리에 해당하는 값 "3"을 찾음</text></g>
+      <g class="el" data-show="2" data-hide="99"><text x="320" y="150" text-anchor="middle" font-size="12" fill="#f0a33a">② @PathVariable long id 에 3이 들어감</text></g>
+      <g class="el" data-show="3" data-hide="99"><text x="320" y="180" text-anchor="middle" font-size="12" fill="#f0a33a">③ blogService.findById(3) 호출</text></g>
+      <g class="el" data-show="4"><text x="320" y="210" text-anchor="middle" font-size="12" fill="#0f7a5a">④ 찾은 글을 ArticleResponse로 바꿔 200 OK로 응답</text></g>
+      <path class="el" data-show="1" d="M350 65 L415 65" stroke="#f0a33a" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 요청 주소는 GET /api/articles/3입니다. 마지막 칸의 3이 찾을 글 번호입니다.</li>
+      <li data-show="1">② 주소의 {id} 자리에 있는 값을 찾습니다.</li>
+      <li data-show="2">③ @PathVariable이 붙은 매개변수 id에 값 3이 자동으로 들어갑니다.</li>
+      <li data-show="3">④ 서비스의 findById(3)이 호출되어 DB에서 한 건을 찾습니다.</li>
+      <li data-show="4">⑤ 찾은 글을 응답 객체로 바꿔 돌려줍니다. 없으면 예외가 발생합니다.</li>
+    </ol>
+  </div>
+
+  <h3>📝 1단계: 서비스 메서드 (BlogService.java)</h3>
+  <div class="eg">    <span class="c">// id로 글 한 건 찾기</span>
+    public Article findById(long id) {
+        return blogRepository.findById(id)     <span class="c">// JpaRepository의 findById 사용 (Optional 반환)</span>
+                .orElseThrow(() -&gt; new IllegalArgumentException("not found: " + id));
+                <span class="c">// 값이 없으면 "not found: id" 예외를 던짐</span>
+    }</div>
+  <div class="box key"><strong>💡 Optional이란?</strong>findById는 "있을 수도, 없을 수도 있는 결과"를 Optional 상자에 담아 돌려줍니다. orElseThrow는 상자가 비어 있으면 예외를 던지고, 들어 있으면 안의 Article을 꺼냅니다.</div>
+
+  <h3>📝 2단계: 컨트롤러 메서드 (BlogApiController.java)</h3>
+  <div class="eg">    @GetMapping("/api/articles/{id}")                <span class="c">// {id} 자리에 오는 숫자를 변수로 사용</span>
+    public ResponseEntity&lt;ArticleResponse&gt; findArticle(@PathVariable long id) {
+        <span class="c">// @PathVariable: URL의 {id} 값을 매개변수 id에 넣음</span>
+        Article article = blogService.findById(id);  <span class="c">// 서비스에서 한 건 조회</span>
+
+        return ResponseEntity.ok()                   <span class="c">// 200 OK</span>
+                .body(new ArticleResponse(article)); <span class="c">// 응답 객체로 바꿔 body에 담기</span>
+    }</div>
+
+  <div class="box warn"><strong>⚠️ 이름이 다르면?</strong>{id}와 @PathVariable 뒤의 변수 이름이 같아야 합니다. 이름을 다르게 쓰려면 <code>@PathVariable("id")</code>처럼 이름을 적어 줍니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 9</summary>
+    <p>Q. GET /api/articles/5 요청에서 5를 메서드 매개변수로 받으려면 어떤 어노테이션을 씁니까?</p>
+    <p>A. <b>@PathVariable</b>입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="page" id="p10">
+  <h2>10. 글 수정 API (PUT)</h2>
+  <p>글을 고치는 API입니다. 수정은 "한 건을 찾고 → 필드 값을 바꾸는" 순서로 진행됩니다. 이때 중요한 개념이 <b>트랜잭션(Transaction)</b>과 <b>변경 감지</b>입니다. 5장에서 본 내용을 실제 서비스에 적용하는 장면입니다.</p>
+
+  <h3>🎬 애니메이션: 트랜잭션 묶음과 변경 감지</h3>
+  <div class="stepper" data-steps="5">
+    <svg class="stage" viewBox="0 0 640 260" role="img" aria-label="트랜잭션과 변경 감지 흐름">
+      <rect x="20" y="20" width="600" height="200" rx="14" fill="none" stroke="#0f7a5a" stroke-width="3" stroke-dasharray="10 6"/>
+      <text x="40" y="46" font-size="12" fill="#0f7a5a">@Transactional 묶음 (시작 ~ 끝)</text>
+      <rect x="50" y="70" width="150" height="60" rx="10" fill="#fff" stroke="#1d2430" stroke-width="2"/><text x="125" y="96" text-anchor="middle" font-size="12">findById(1)</text><text x="125" y="114" text-anchor="middle" font-size="10" fill="#5b6572">글 조회 (영속)</text>
+      <rect x="245" y="70" width="150" height="60" rx="10" fill="#fff3d6" stroke="#f0a33a" stroke-width="2"/><text x="320" y="96" text-anchor="middle" font-size="12">update(제목, 내용)</text><text x="320" y="114" text-anchor="middle" font-size="10" fill="#5b6572">필드만 변경</text>
+      <rect x="440" y="70" width="150" height="60" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="515" y="96" text-anchor="middle" font-size="12">끝나면 UPDATE</text><text x="515" y="114" text-anchor="middle" font-size="10" fill="#5b6572">변경 감지 자동 실행</text>
+      <g class="el" data-show="1" data-hide="99"><line x1="200" y1="100" x2="241" y2="100" stroke="#0f7a5a" stroke-width="3"/></g>
+      <g class="el" data-show="2" data-hide="99"><line x1="395" y1="100" x2="436" y2="100" stroke="#0f7a5a" stroke-width="3"/></g>
+      <g class="el" data-show="3"><text x="320" y="170" text-anchor="middle" font-size="12" fill="#e0565b">만약 중간에 예외가 나면 → 전체가 처음 상태로 되돌아감(롤백)</text></g>
+      <g class="el" data-show="4"><text x="320" y="200" text-anchor="middle" font-size="12" fill="#0f7a5a">예외가 없으면 → 모든 변경이 함께 확정(커밋)</text></g>
+      <text class="el" data-show="0" x="320" y="250" text-anchor="middle" font-size="12" fill="#5b6572">트랜잭션 = 여러 작업을 한 묶음으로 확정하거나 취소하는 단위</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 트랜잭션은 "함께 성공하거나 함께 실패해야 하는 작업 묶음"입니다. 계좌 이체처럼 생각하면 쉽습니다.</li>
+      <li data-show="1">② 글을 조회하면 그 객체는 영속 상태가 됩니다(5장 복습).</li>
+      <li data-show="2">③ update()로 필드 값만 바꿉니다. save()는 호출하지 않습니다.</li>
+      <li data-show="3">④ 묶음 안에서 문제가 생기면, 지금까지의 변경을 모두 되돌립니다(롤백).</li>
+      <li data-show="4">⑤ 문제가 없으면 변경 감지가 UPDATE를 만들어 DB에 확정합니다(커밋).</li>
+    <li data-show="5">⑤ 문제가 없으면 변경 감지가 UPDATE를 만들어 DB에 확정합니다(커밋).</li></ol>
+  </div>
+
+  <h3>📝 1단계: 수정 요청 DTO (UpdateArticleRequest.java)</h3>
+  <div class="eg">package me.yourname.springbootdeveloper.dto;
+
+import lombok.*;
+
+@NoArgsConstructor                  <span class="c">// JSON → 객체 변환용 기본 생성자</span>
+@AllArgsConstructor                 <span class="c">// 모든 필드 생성자 (테스트에서 사용)</span>
+@Getter                             <span class="c">// getter 자동 생성</span>
+public class UpdateArticleRequest {
+    private String title;           <span class="c">// 새 제목</span>
+    private String content;         <span class="c">// 새 내용</span>
+}</div>
+
+  <h3>📝 2단계: 엔티티에 수정 메서드 (Article.java)</h3>
+  <div class="eg">    <span class="c">// 제목과 내용을 새 값으로 바꾸는 메서드</span>
+    public void update(String title, String content) {
+        this.title = title;       <span class="c">// 새 제목으로 교체</span>
+        this.content = content;   <span class="c">// 새 내용으로 교체</span>
+    }</div>
+
+  <h3>📝 3단계: 서비스 메서드 (BlogService.java)</h3>
+  <div class="eg">    @Transactional                          <span class="c">// 이 메서드 전체를 하나의 트랜잭션으로 묶음</span>
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = blogRepository.findById(id)      <span class="c">// ① id로 글 조회 (영속 상태)</span>
+                .orElseThrow(() -&gt; new IllegalArgumentException("not found: " + id));
+
+        article.update(request.getTitle(), request.getContent());  <span class="c">// ② 필드만 변경</span>
+        return article;                       <span class="c">// ③ 저장 호출 없이 돌려줌 → 끝날 때 변경 감지로 UPDATE</span>
+    }</div>
+  <div class="box tip"><strong>📌 save()를 안 불렀는데 왜 바뀌나요?</strong>@Transactional 안에서 조회한 엔티티는 영속 상태입니다. 메서드가 끝날 때 JPA가 처음 값과 지금 값을 비교해 바뀐 것만 UPDATE로 보냅니다(변경 감지). 5장 8페이지를 떠올려 보세요.</div>
+
+  <h3>📝 4단계: 컨트롤러 메서드 (BlogApiController.java)</h3>
+  <div class="eg">    @PutMapping("/api/articles/{id}")       <span class="c">// PUT /api/articles/{id} 요청 연결</span>
+    public ResponseEntity&lt;Article&gt; updateArticle(@PathVariable long id,
+                                                 @RequestBody UpdateArticleRequest request) {
+        Article updatedArticle = blogService.update(id, request);  <span class="c">// 서비스에 수정 맡기기</span>
+        return ResponseEntity.ok()                   <span class="c">// 200 OK</span>
+                .body(updatedArticle);               <span class="c">// 수정된 글을 응답 body에 담기</span>
+    }</div>
+
+  <div class="box bad"><strong>🚨 @Transactional을 빼면?</strong>트랜잭션이 없으면 변경 감지가 제대로 묶이지 않아, 중간에 실패했을 때 일부만 바뀌는 상황이 생길 수 있습니다. 수정 메서드에는 반드시 @Transactional을 붙이세요.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 10</summary>
+    <p>Q. 수정 서비스에서 save()를 호출하지 않는데도 DB가 바뀌는 이유는?</p>
+    <p>A. @Transactional 안에서 조회한 엔티티의 값이 바뀌면, 트랜잭션이 끝날 때 변경 감지가 UPDATE를 자동으로 만들기 때문입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="page" id="p11">
+  <h2>11. 글 삭제 API (DELETE)</h2>
+  <p>마지막 기능은 삭제입니다. 삭제는 "id를 받아서 그 행을 지우는" 단순한 흐름입니다. 리포지터리의 <code>deleteById()</code>가 기본키로 행을 찾아 지웁니다.</p>
+
+  <h3>🎬 애니메이션: 2번 글이 사라지는 과정</h3>
+  <div class="stepper" data-steps="3">
+    <svg class="stage" viewBox="0 0 640 210" role="img" aria-label="deleteById 흐름">
+      <rect x="20" y="20" width="600" height="34" fill="#1d2430"/><text x="80" y="42" text-anchor="middle" font-size="12" fill="#fff">id</text><text x="320" y="42" text-anchor="middle" font-size="12" fill="#fff">title</text>
+      <rect x="20" y="54" width="600" height="34" fill="#fff" stroke="#dfe5ea"/><text x="80" y="76" text-anchor="middle" font-size="12">1</text><text x="320" y="76" text-anchor="middle" font-size="12">첫 번째 글</text>
+      <rect x="20" y="88" width="600" height="34" fill="#fff" stroke="#dfe5ea"/><text x="80" y="110" text-anchor="middle" font-size="12">2</text><text x="320" y="110" text-anchor="middle" font-size="12">두 번째 글</text>
+      <rect x="20" y="122" width="600" height="34" fill="#fff" stroke="#dfe5ea"/><text x="80" y="144" text-anchor="middle" font-size="12">3</text><text x="320" y="144" text-anchor="middle" font-size="12">세 번째 글</text>
+      <g class="el" data-show="1" data-hide="1"><rect x="20" y="88" width="600" height="34" fill="#fde8e9" stroke="#e0565b" stroke-width="3"/><text x="320" y="110" text-anchor="middle" font-size="12" fill="#e0565b">deleteById(2L) → 2번 행 삭제</text></g>
+      <g class="el" data-show="2"><rect x="20" y="88" width="600" height="34" fill="#f5f5f5" stroke="#dfe5ea"/><text x="320" y="110" text-anchor="middle" font-size="12" fill="#9aa3ad">2번 행 사라짐 (남은 글: 1, 3)</text></g>
+      <text class="el" data-show="0" x="320" y="190" text-anchor="middle" font-size="12" fill="#5b6572">① 세 개의 글이 있습니다</text>
+      <text class="el" data-show="1" x="320" y="190" text-anchor="middle" font-size="12" fill="#e0565b">② id 2를 기준으로 행을 찾아 지웁니다</text>
+      <text class="el" data-show="2" x="320" y="190" text-anchor="middle" font-size="12" fill="#0f7a5a">③ 목록을 다시 조회하면 2번 글은 보이지 않습니다</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 세 개의 글이 들어 있는 상태입니다.</li>
+      <li data-show="1">② deleteById(2L)이 기본키 2인 행을 찾아 삭제합니다.</li>
+      <li data-show="2">③ 삭제 후 목록을 조회하면 1번과 3번만 남습니다.</li>
+    <li data-show="3">③ 삭제 후 목록을 조회하면 1번과 3번만 남습니다.</li></ol>
+  </div>
+
+  <h3>📝 1단계: 서비스 메서드 (BlogService.java)</h3>
+  <div class="eg">    <span class="c">// id로 글 삭제</span>
+    public void delete(long id) {
+        blogRepository.deleteById(id);   <span class="c">// JpaRepository의 deleteById: id 행을 삭제</span>
+    }</div>
+
+  <h3>📝 2단계: 컨트롤러 메서드 (BlogApiController.java)</h3>
+  <div class="eg">    @DeleteMapping("/api/articles/{id}")         <span class="c">// DELETE /api/articles/{id} 요청 연결</span>
+    public ResponseEntity&lt;Void&gt; deleteArticle(@PathVariable long id) {
+        blogService.delete(id);                  <span class="c">// 서비스에 삭제 맡기기</span>
+        return ResponseEntity.ok().build();      <span class="c">// 200 OK, 본문 없이 응답</span>
+    }</div>
+  <div class="box tip"><strong>📌 Void는 무엇?</strong>응답 body에 담을 내용이 없다는 뜻입니다. 삭제는 결과 데이터가 필요 없으므로 <code>ResponseEntity&lt;Void&gt;</code>를 씁니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 11</summary>
+    <p>Q. 삭제 API의 HTTP 메서드와 주소를 쓰세요. (글 번호는 1번)</p>
+    <p>A. <b>DELETE /api/articles/1</b>입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="page" id="p12">
+  <h2>12. 테스트와 포스트맨 실습</h2>
+  <p>API를 만들 때마다 포스트맨으로 손으로 확인하면 시간이 많이 듭니다. 그래서 <b>테스트 코드</b>로 API를 자동으로 호출하고 결과를 검사합니다. 테스트 코드가 있으면 나중에 코드를 고쳐도 기존 기능이 깨졌는지 바로 알 수 있습니다.</p>
+
+  <h3>🎬 애니메이션: 테스트 한 건의 given-when-then</h3>
+  <div class="stepper" data-steps="4">
+    <svg class="stage" viewBox="0 0 640 230" role="img" aria-label="given when then 흐름">
+      <rect x="20" y="50" width="180" height="110" rx="10" fill="#fff3d6" stroke="#f0a33a" stroke-width="2"/><text x="110" y="82" text-anchor="middle" font-size="14">Given</text><text x="110" y="108" text-anchor="middle" font-size="11" fill="#5b6572">준비</text><text x="110" y="128" text-anchor="middle" font-size="11" fill="#5b6572">글 저장, 요청 객체 만들기</text>
+      <rect x="230" y="50" width="180" height="110" rx="10" fill="#eaf2ff" stroke="#4a86e8" stroke-width="2"/><text x="320" y="82" text-anchor="middle" font-size="14">When</text><text x="320" y="108" text-anchor="middle" font-size="11" fill="#5b6572">실행</text><text x="320" y="128" text-anchor="middle" font-size="11" fill="#5b6572">API 호출 (mockMvc)</text>
+      <rect x="440" y="50" width="180" height="110" rx="10" fill="#e8f6f0" stroke="#0f7a5a" stroke-width="2"/><text x="530" y="82" text-anchor="middle" font-size="14">Then</text><text x="530" y="108" text-anchor="middle" font-size="11" fill="#5b6572">검증</text><text x="530" y="128" text-anchor="middle" font-size="11" fill="#5b6572">상태 코드, 값 비교</text>
+      <g class="el" data-show="1" data-hide="99"><rect x="20" y="50" width="180" height="110" rx="10" fill="none" stroke="#e0565b" stroke-width="4"/></g>
+      <g class="el" data-show="2" data-hide="99"><rect x="230" y="50" width="180" height="110" rx="10" fill="none" stroke="#e0565b" stroke-width="4"/></g>
+      <g class="el" data-show="3"><rect x="440" y="50" width="180" height="110" rx="10" fill="none" stroke="#e0565b" stroke-width="4"/></g>
+      <text class="el" data-show="0" x="320" y="200" text-anchor="middle" font-size="13" fill="#5b6572">테스트는 항상 준비 → 실행 → 검증 순서로 씁니다</text>
+      <text class="el" data-show="1" x="320" y="200" text-anchor="middle" font-size="13" fill="#e0565b">① 준비: 테스트에 필요한 데이터와 요청을 만듭니다</text>
+      <text class="el" data-show="2" x="320" y="200" text-anchor="middle" font-size="13" fill="#e0565b">② 실행: 실제 API를 한 번 호출합니다</text>
+      <text class="el" data-show="3" x="320" y="200" text-anchor="middle" font-size="13" fill="#0f7a5a">③ 검증: 결과가 기대와 같은지 확인하면 통과입니다</text>
+    </svg>
+    <div class="ctrl"><button class="alt" data-act="prev">◀ 이전</button><span class="lbl"></span><button data-act="next">다음 ▶</button><button class="alt" data-act="play">▶ 자동 재생</button></div>
+    <ol class="caps">
+      <li data-show="0">① 테스트 한 건은 Given, When, Then 세 부분으로 나눠 씁니다.</li>
+      <li data-show="1">② Given: 필요한 데이터를 준비합니다.</li>
+      <li data-show="2">③ When: 실제 API를 호출합니다.</li>
+      <li data-show="3">④ Then: 응답 코드와 저장된 값을 검사합니다. 틀리면 테스트가 실패합니다.</li>
+    <li data-show="4">④ Then: 응답 코드와 저장된 값을 검사합니다. 틀리면 테스트가 실패합니다.</li></ol>
+  </div>
+
+  <h3>🧪 테스트 코드: 글 추가 API (BlogApiControllerTest.java)</h3>
+  <div class="eg">package me.yourname.springbootdeveloper.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;                       <span class="c">// 목록을 담을 List 타입</span>
+import me.yourname.springbootdeveloper.domain.Article;
+import me.yourname.springbootdeveloper.dto.AddArticleRequest;
+import me.yourname.springbootdeveloper.repository.BlogRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+<span class="c">// static import: 아래 메서드들을 클래스 이름 없이 바로 쓰게 해 줌</span>
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest                   <span class="c">// 실제 스프링 애플리케이션을 띄워 테스트</span>
+@AutoConfigureMockMvc             <span class="c">// MockMvc(가짜 웹 요청 도구)를 자동 설정</span>
+class BlogApiControllerTest {
+
+    @Autowired MockMvc mockMvc;               <span class="c">// API를 호출하는 도구</span>
+    @Autowired ObjectMapper objectMapper;     <span class="c">// 객체 ↔ JSON 변환 도구</span>
+    @Autowired BlogRepository blogRepository; <span class="c">// DB 확인용 리포지터리</span>
+
+    @DisplayName("addArticle: 블로그 글 추가에 성공한다.")
+    @Test
+    void addArticle() throws Exception {
+        // given: 요청 객체와 JSON 문자열 준비
+        final String url = "/api/articles";
+        final String title = "첫 번째 일기";
+        final String content = "오늘은 스프링을 처음 실행했다.";
+        final AddArticleRequest userRequest = new AddArticleRequest(title, content);
+        final String requestBody = objectMapper.writeValueAsString(userRequest);  <span class="c">// 객체 → JSON 문자열</span>
+
+        // when: POST 요청을 JSON 본문과 함께 보냄
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestBody));
+
+        // then: 201 상태 코드인지 확인
+        result.andExpect(status().isCreated());
+
+        // DB에 한 건만 저장됐는지, 값이 맞는지 확인
+        List&lt;Article&gt; articles = blogRepository.findAll();
+        assertThat(articles.size()).isEqualTo(1);
+        assertThat(articles.get(0).getTitle()).isEqualTo(title);
+        assertThat(articles.get(0).getContent()).isEqualTo(content);
+    }
+}</div>
+
+  <div class="box key"><strong>💡 static import란?</strong>assertThat, post, status처럼 다른 클래스에 있는 메서드를 클래스 이름 없이 쓰게 해 주는 import입니다. <code>import static</code>으로 시작합니다. 빨간 줄이 나면 Alt + Enter로 가져오세요.</div>
+
+  <h3>🧩 자주 쓰는 검증 메서드</h3>
+  <table>
+    <tr><th>코드</th><th>뜻</th></tr>
+    <tr><td><code>assertThat(list.size()).isEqualTo(1)</code></td><td>목록 크기가 1인지</td></tr>
+    <tr><td><code>assertThat(list).isEmpty()</code></td><td>목록이 비어 있는지</td></tr>
+    <tr><td><code>assertThat(text).contains("제")</code></td><td>문자열에 "제"가 포함되는지</td></tr>
+    <tr><td><code>status().isOk()</code></td><td>200 OK인지</td></tr>
+    <tr><td><code>jsonPath("$[0].title").value(title)</code></td><td>JSON 배열 첫 번째 항목의 title이 맞는지</td></tr>
+  </table>
+
+  <h3>🧪 포스트맨으로 직접 확인하기</h3>
+  <table>
+    <tr><th>실습</th><th>메서드와 주소</th><th>본문(body)</th><th>기대 결과</th></tr>
+    <tr><td>글 추가</td><td>POST <code>http://localhost:8080/api/articles</code></td><td>raw, JSON: <code>{"title":"새 블로그","content":"새로운 글을 써볼까?"}</code></td><td>201 Created</td></tr>
+    <tr><td>전체 조회</td><td>GET <code>http://localhost:8080/api/articles</code></td><td>없음</td><td>200 OK, 목록 배열</td></tr>
+    <tr><td>한 건 조회</td><td>GET <code>http://localhost:8080/api/articles/1</code></td><td>없음</td><td>200 OK, 글 한 건</td></tr>
+    <tr><td>수정</td><td>PUT <code>http://localhost:8080/api/articles/1</code></td><td>raw, JSON: <code>{"title":"수정","content":"바뀐 내용"}</code></td><td>200 OK</td></tr>
+    <tr><td>삭제</td><td>DELETE <code>http://localhost:8080/api/articles/1</code></td><td>없음</td><td>200 OK</td></tr>
+  </table>
+  <div class="box warn"><strong>⚠️ 실행 전 확인</strong>코드를 새로 고쳤다면 반드시 스프링 부트 서버를 재실행해야 새 코드가 적용됩니다. 실행 후 H2 콘솔(<code>/h2-console</code>)에서 <code>SELECT * FROM ARTICLE</code>을 실행하면 실제 저장 결과를 눈으로 볼 수 있습니다.</div>
+
+  <div class="quiz"><details><summary>🧠 확인 퀴즈 12</summary>
+    <p>Q. 테스트 코드에서 "응답 코드가 201인지" 확인하는 줄은 given, when, then 중 어디에 해당합니까?</p>
+    <p>A. <b>then</b>(검증)입니다.</p>
+  </details></div>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="page" id="p13">
+  <h2>13. 정리 퀴즈와 체크리스트</h2>
+  <p>아래 퀴즈를 먼저 스스로 풀어 보고, 막히면 정답을 펼쳐 확인하세요.</p>
+
+  <h3>✏️ 문제 1: REST 규칙</h3>
+  <p>글 한 건을 삭제하는 API를 REST 규칙에 맞게 쓰세요. (글 번호 5)</p>
+  <details class="quiz"><summary>정답 보기</summary><p><b>DELETE /api/articles/5</b> 입니다. 주소에 동사를 쓰지 않고, 삭제는 DELETE 메서드로 표현합니다.</p></details>
+
+  <h3>✏️ 문제 2: 계층 순서</h3>
+  <p>글 작성 요청이 DB에 닿기까지 거치는 계층을 순서대로 쓰세요.</p>
+  <details class="quiz"><summary>정답 보기</summary><p>Controller → Service → Repository → DB 입니다.</p></details>
+
+  <h3>✏️ 문제 3: 어노테이션 고르기</h3>
+  <p>URL의 {id} 값을 메서드 매개변수로 받는 어노테이션은? ① @RequestBody ② @PathVariable ③ @Entity</p>
+  <details class="quiz"><summary>정답 보기</summary><p><b>②</b> @PathVariable 입니다. @RequestBody는 본문 JSON을 받습니다.</p></details>
+
+  <h3>✏️ 문제 4: 빌더 완성하기</h3>
+  <p>빌더로 제목 "오늘의 기록", 내용 "맑음"인 Article을 만드는 코드를 쓰세요.</p>
+  <details class="quiz"><summary>정답 보기</summary><div class="eg">Article article = Article.builder()
+        .title("오늘의 기록")
+        .content("맑음")
+        .build();</div></details>
+
+  <h3>✏️ 문제 5: 수정이 저장되는 이유</h3>
+  <p>수정 서비스에서 save()를 호출하지 않아도 DB가 바뀌는 이유를 한 문장으로 쓰세요.</p>
+  <details class="quiz"><summary>정답 보기</summary><p>@Transactional 안에서 조회한 엔티티의 값이 바뀌면, 트랜잭션이 끝날 때 변경 감지가 UPDATE를 자동으로 만들기 때문입니다.</p></details>
+
+  <h3>✏️ 문제 6: 상태 코드</h3>
+  <p>글 추가에 성공했을 때 보통 받는 상태 코드는? ① 200 OK ② 201 Created ③ 404 Not Found</p>
+  <details class="quiz"><summary>정답 보기</summary><p><b>②</b> 201 Created입니다. 새로운 자원이 만들어졌다는 뜻입니다.</p></details>
+
+  <div class="box key"><strong>💡 도전 과제</strong>Article에 작성일(createdAt) 필드를 추가하고, 목록 응답에도 포함해 보세요. 엔티티, 응답 DTO, 테스트 세 곳을 함께 고쳐야 합니다.</div>
+
+  <h3>✅ 6장 완료 체크리스트</h3>
+  <div class="check"><input type="checkbox" id="c1"><label for="c1">build.gradle 의존성을 추가하고 새로고침했다</label></div>
+  <div class="check"><input type="checkbox" id="c2"><label for="c2">Article 엔티티를 어노테이션과 함께 완성했다</label></div>
+  <div class="check"><input type="checkbox" id="c3"><label for="c3">BlogRepository 인터페이스를 만들었다</label></div>
+  <div class="check"><input type="checkbox" id="c4"><label for="c4">글 작성 API(POST)를 만들고 포스트맨으로 201을 확인했다</label></div>
+  <div class="check"><input type="checkbox" id="c5"><label for="c5">글 목록(GET)과 한 건 조회(GET /{id})를 확인했다</label></div>
+  <div class="check"><input type="checkbox" id="c6"><label for="c6">글 수정(PUT)을 만들고 @Transactional의 역할을 설명할 수 있다</label></div>
+  <div class="check"><input type="checkbox" id="c7"><label for="c7">글 삭제(DELETE)를 만들고 H2 콘솔에서 행이 사라진 것을 확인했다</label></div>
+  <div class="check"><input type="checkbox" id="c8"><label for="c8">BlogApiControllerTest의 테스트를 모두 통과시켰다</label></div>
+
+  <div class="box tip"><strong>📌 6장 정리 한 줄</strong>API는 주문표, REST는 주문표 작성 규칙입니다. 주소는 자원, 메서드는 행위로 표현하고, 요청은 컨트롤러 → 서비스 → 리포지터리 → DB로 내려갔다가 응답으로 올라옵니다.</div>
+</section>
+
+<div class="pager" id="pager"></div>
+
+</main>
+
+<script>
+var PAGES = ['p0','p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12','p13'];
+var TITLES = {p0:'0. 6장 한눈에 보기',p1:'1. API와 REST API',p2:'2. REST 설계 규칙',p3:'3. 프로젝트 준비',p4:'4. 엔티티 만들기',p5:'5. 빌더 패턴과 롬복',p6:'6. 리포지터리',p7:'7. 글 작성 API',p8:'8. 글 목록 조회 API',p9:'9. 글 한 건 조회 API',p10:'10. 글 수정 API',p11:'11. 글 삭제 API',p12:'12. 테스트와 포스트맨',p13:'13. 정리와 체크리스트'};
+
+function showPage(id){
+  if(PAGES.indexOf(id)<0) id='p0';
+  PAGES.forEach(function(p){ document.getElementById(p).classList.toggle('active', p===id); });
+  document.querySelectorAll('.side a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-p')===id); });
+  buildPager(id);
+  window.scrollTo(0,0);
+  document.getElementById(id).querySelectorAll('.stepper').forEach(function(st){ render(st); });
+  if(window.innerWidth<=900) document.getElementById('side').classList.remove('open');
+}
+function buildPager(id){
+  var i = PAGES.indexOf(id), pg = document.getElementById('pager');
+  pg.innerHTML='';
+  if(i>0){ var b=document.createElement('button'); b.textContent='◀ 이전: '+TITLES[PAGES[i-1]]; b.onclick=function(){location.hash='#'+PAGES[i-1]}; pg.appendChild(b); }
+  else pg.appendChild(document.createElement('span'));
+  if(i<PAGES.length-1){ var b2=document.createElement('button'); b2.textContent='다음: '+TITLES[PAGES[i+1]]+' ▶'; b2.style.textAlign='right'; b2.onclick=function(){location.hash='#'+PAGES[i+1]}; pg.appendChild(b2); }
+}
+function route(){ showPage((location.hash||'#p0').slice(1)); }
+window.addEventListener('hashchange', route);
+function toggleMenu(){ document.getElementById('side').classList.toggle('open'); }
+
+function render(st){
+  var n = +st.getAttribute('data-steps'), s = st.step||0;
+  st.querySelectorAll('.el').forEach(function(e){
+    var lo = e.hasAttribute('data-show') ? +e.getAttribute('data-show') : 0;
+    var hi = e.hasAttribute('data-hide') ? +e.getAttribute('data-hide') : 99;
+    e.classList.toggle('on', s>=lo && s<=hi);
+  });
+  st.querySelectorAll('.caps li').forEach(function(li){ li.classList.toggle('on', s===+li.getAttribute('data-show')); });
+  var lbl = st.querySelector('.lbl'); if(lbl) lbl.textContent=(s+1)+' / '+(n+1)+' 단계';
+  var pv = st.querySelector('[data-act="prev"]'), nx = st.querySelector('[data-act="next"]');
+  if(pv) pv.disabled = s===0; if(nx) nx.disabled = s===n;
+}
+function stopAuto(st){
+  if(st._timer){ clearInterval(st._timer); st._timer=null; }
+  var pb = st.querySelector('[data-act="play"]'); if(pb) pb.textContent='▶ 자동 재생';
+}
+document.querySelectorAll('.stepper').forEach(function(st){
+  st.step = 0;
+  st.querySelector('[data-act="prev"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.max(0,st.step-1); render(st); });
+  st.querySelector('[data-act="next"]').addEventListener('click', function(){ stopAuto(st); st.step=Math.min(+st.getAttribute('data-steps'),st.step+1); render(st); });
+  st.querySelector('[data-act="play"]').addEventListener('click', function(){
+    if(st._timer){ stopAuto(st); return; }
+    if(st.step>=+st.getAttribute('data-steps')) st.step=0;
+    this.textContent='⏸ 일시정지';
+    st._timer = setInterval(function(){
+      st.step++;
+      if(st.step>=+st.getAttribute('data-steps')){ st.step=+st.getAttribute('data-steps'); render(st); stopAuto(st); return; }
+      render(st);
+    }, 2400);
+    render(st);
+  });
+  render(st);
+});
+
+document.querySelectorAll('.check input').forEach(function(cb){
+  try{ cb.checked = localStorage.getItem('ch6_'+cb.id)==='1'; }catch(e){}
+  cb.addEventListener('change', function(){ try{ localStorage.setItem('ch6_'+cb.id, cb.checked?'1':'0'); }catch(e){} });
+});
+
+function downloadPage(){
+  try{
+    var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "BackendBasics_Ch6_v1.html";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }catch(e){ alert("다운로드에 실패했습니다. 브라우저 메뉴에서 '페이지 저장'을 이용해 주세요."); }
+}
+
+route();
+</script>
+</body>
+</html>
