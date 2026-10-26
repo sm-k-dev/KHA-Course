@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>4장 요청과 응답 흐름 : /quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEF3; --panel:#FFFFFF; --ink:#1B2433; --muted:#596577; --line:#C6D0DC;
+  --req:#2457C5; --req-soft:#DCE6FA; --res:#137A50; --res-soft:#D6EFE3;
+  --db:#9A5B0C; --hl:#FFEFA8; --hl-ink:#3A2E00; --code:#F4F7FA; --rail:#B9C5D3;
+  --sans:"IBM Plex Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --mono:"JetBrains Mono",Consolas,"D2Coding",monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141922; --panel:#1C232E; --ink:#E4E9F0; --muted:#9AA5B4; --line:#323E4F;
+    --req:#7AA2FF; --req-soft:#1F2E4F; --res:#4CC48C; --res-soft:#173A2B;
+    --db:#E2A757; --hl:#4B4220; --hl-ink:#FFF1BF; --code:#161C25; --rail:#3A4759;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;padding-bottom:120px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font-size:26px;line-height:1.25;margin:0 0 4px;font-weight:700;letter-spacing:-0.01em}
+.lead{margin:0;color:var(--muted);font-size:15px;max-width:62ch}
+.lead code{font-family:var(--mono);font-size:14px;color:var(--ink)}
+button{font-family:var(--sans);font-size:14px;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px}
+button:focus-visible{outline:3px solid var(--req);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+
+.grid{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:20px;align-items:start}
+
+/* 왼쪽 : 구간 스택 */
+.stage{position:sticky;top:16px}
+.stack{position:relative;padding-left:40px}
+.rail{position:absolute;left:17px;top:22px;bottom:22px;width:2px;background:var(--rail)}
+.band{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:10px;transition:border-color .3s, background .3s}
+.band:last-child{margin-bottom:0}
+.band .nm{font-weight:600;font-size:15px}
+.band .sb{font-size:12.5px;color:var(--muted);font-family:var(--sans)}
+.band::before{content:"";position:absolute;left:-28px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);border:2px solid var(--rail)}
+.band.db{border-style:dashed}
+.band.active{border-width:2px;padding:9px 13px}
+.band.active.req{border-color:var(--req);background:var(--req-soft)}
+.band.active.res{border-color:var(--res);background:var(--res-soft)}
+.band.active.none{border-color:var(--ink)}
+.band.active::before{border-color:currentColor}
+.band.active.req::before{background:var(--req);border-color:var(--req)}
+.band.active.res::before{background:var(--res);border-color:var(--res)}
+.band.active.none::before{background:var(--ink);border-color:var(--ink)}
+.packet{position:absolute;left:10px;top:0;width:16px;height:16px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px var(--panel);z-index:2;will-change:transform}
+.packet.req{background:var(--req)}
+.packet.res{background:var(--res)}
+.packet.pulse{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--panel)}50%{box-shadow:0 0 0 4px var(--panel),0 0 0 9px var(--rail)}}
+.legend{display:flex;gap:14px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend .lq::before{background:var(--req)}
+.legend .ls::before{background:var(--res)}
+.legend .ln::before{background:var(--ink)}
+
+/* 오른쪽 : 단계 설명 */
+.detail{min-width:0}
+.stephead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.stepno{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.phase{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid var(--line)}
+.phase.p0{color:var(--ink)}
+.phase.p1{color:var(--req);border-color:var(--req)}
+.phase.p2{color:var(--res);border-color:var(--res)}
+h2{font-size:22px;line-height:1.35;margin:0 0 10px;font-weight:700}
+ol.desc{margin:0 0 16px;padding-left:22px;max-width:70ch}
+ol.desc li{margin:3px 0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.boxhead{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.boxhead .fname{font-family:var(--mono);font-weight:600;font-size:13.5px}
+.boxhead .fpath{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.code{position:relative;background:var(--code);max-height:340px;overflow:auto;padding:8px 0;font-family:var(--mono);font-size:13.5px;line-height:1.55}
+.code .ln{display:flex;white-space:pre;padding:0 12px 0 0;min-width:max-content}
+.code .no{display:inline-block;width:40px;flex:0 0 40px;text-align:right;padding-right:12px;color:var(--muted);user-select:none}
+.code .ln.hl{background:var(--hl);color:var(--hl-ink);box-shadow:inset 4px 0 0 var(--db)}
+.code .ln.hl .no{color:var(--hl-ink)}
+.empty{padding:16px 14px;color:var(--muted);font-size:14px;background:var(--code)}
+.data pre{margin:0;padding:12px 14px;background:var(--code);font-family:var(--mono);font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.data table{border-collapse:collapse;margin:12px 14px;font-family:var(--mono);font-size:14px}
+.data th,.data td{border:1px solid var(--line);padding:5px 14px;text-align:left}
+.data th{background:var(--code)}
+.browser{margin:12px 14px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.browser .bar{background:var(--code);padding:6px 10px;font-size:13px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+.browser .view{padding:12px;font-family:var(--mono);font-size:13.5px;overflow-wrap:anywhere;background:var(--panel)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px}
+.tab{border-radius:8px 8px 0 0;border-bottom-width:3px;padding:8px 14px;font-weight:600;background:transparent}
+.tab[aria-selected="true"]{border-color:var(--line);border-bottom-color:var(--ink);background:var(--panel)}
+.scen{margin:0 0 16px;color:var(--muted);font-size:14.5px;max-width:90ch}
+.scen code{font-family:var(--mono);font-size:13.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:.25}to{opacity:1}}
+
+/* 아래 : 조작 바 */
+.controls{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:10}
+.controls .in{max-width:1180px;margin:0 auto}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btns .sp{flex:1}
+.dots{display:flex;gap:4px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.dots .grp{display:flex;gap:4px;align-items:center;margin-right:10px}
+.dots .gl{font-size:12px;color:var(--muted);margin-right:4px}
+.dot{width:26px;height:26px;padding:0;border-radius:6px;font-size:12px;font-family:var(--mono)}
+.dot.done{background:var(--code)}
+.dot.cur{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.kbd{font-size:12px;color:var(--muted)}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr;gap:14px}
+  .stage{position:static}
+  .band{padding:6px 12px;margin-bottom:5px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+  .band.active{padding:5px 11px}
+  .band .nm{font-size:14px}
+  .band .sb{font-size:11.5px}
+  .dots{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .dots .grp{flex:0 0 auto}
+  .btns button{padding:7px 12px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto}
+  .tab{flex:0 0 auto;padding:7px 11px;font-size:13.5px}
+  h1{font-size:21px}
+  h2{font-size:19px}
+  .code{font-size:12.5px;max-height:280px}
+  .data pre{font-size:12.5px}
+  .kbd{display:none}
+  body{padding-bottom:118px}
+}
+@media (prefers-reduced-motion: reduce){
+  .packet{transition:none !important}
+  .packet.pulse,.fade{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>4장 요청과 응답 흐름</h1>
+      <p class="lead">4장의 QuizController 로 요청 방식(GET, POST)과 상태 코드(201, 403)가 어떻게 정해지는지 따라갑니다. 응답과 로그는 4장 프로젝트를 실제로 실행해서 얻은 값입니다.</p>
+    </div>
+    <button type="button" class="primary" id="dl">HTML 파일 다운로드</button>
+  </header>
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="시나리오"></div>
+  <p class="scen" id="scen"></p>
+
+  <div class="grid">
+    <aside class="stage" aria-label="요청이 지나가는 구간">
+      <div class="stack" id="stack">
+        <div class="rail"></div>
+        <div class="packet" id="packet" aria-hidden="true"></div>
+      </div>
+      <div class="legend"><span class="lq">요청 방향</span><span class="ls">응답 방향</span><span class="ln">준비·처리</span></div>
+    </aside>
+
+    <main class="detail">
+      <div class="stephead">
+        <span class="stepno" id="stepno"></span>
+        <span class="phase" id="phase"></span>
+      </div>
+      <h2 id="title" aria-live="polite"></h2>
+      <ol class="desc" id="desc"></ol>
+
+      <section class="box" aria-label="실행되는 코드">
+        <div class="boxhead"><div><div class="fname" id="fname"></div><div class="fpath" id="fpath"></div></div><span id="hlcount" class="fpath"></span></div>
+        <div id="codewrap"></div>
+      </section>
+
+      <section class="box data" aria-label="오가는 데이터">
+        <div class="boxhead"><span class="fname" id="dlabel"></span></div>
+        <div id="dbody"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<nav class="controls" aria-label="단계 조작">
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="first">처음</button>
+      <button type="button" id="prev">이전</button>
+      <button type="button" class="primary" id="play">자동 재생</button>
+      <button type="button" id="next">다음</button>
+      <span class="sp"></span>
+      <span class="kbd">키보드 ← → 로 이동</span>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+</nav>
+
+<script>
+// 다운로드용 : 화면 요소를 추가하기 전, 처음 불러온 상태의 HTML 을 저장해 둡니다.
+const ORIGINAL_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+const SCENARIOS = [{"tab": "GET /quiz?code=1", "nodes": [{"name": "클라이언트", "sub": "브라우저, 개발자 도구, curl"}, {"name": "내장 톰캣", "sub": "8080 포트"}, {"name": "DispatcherServlet", "sub": "스프링 자동 등록 (파일 없음)"}, {"name": "HttpMessageConverter", "sub": "본문 변환 (Jackson, 문자열)"}, {"name": "QuizController", "sub": "QuizController.java"}], "steps": [{"phase": "시작 준비", "title": "프로그램 시작 : QuizController 빈 생성", "file": "SpringBootDeveloperApplication.java", "active": [1, 4], "move": null, "dir": "none", "desc": ["main 메소드가 SpringApplication.run(...) 을 호출해서 스프링 컨테이너(AnnotationConfigServletWebServerApplicationContext 객체)를 만듭니다.", "@RestController 가 붙은 QuizController 의 빈(객체)이 자동 생성되어 보관됩니다.", "이때 @GetMapping(\"/quiz\") 와 @PostMapping(\"/quiz\") 주소가 DispatcherServlet 의 주소 목록에 등록됩니다."], "data": {"kind": "pre", "label": "실제 실행 로그", "text": "Tomcat started on port 8080 (http) with context path '/'"}, "nofile": null, "hlLines": [6, 11]}, {"phase": "요청", "title": "브라우저가 GET /quiz?code=1 요청을 보냄", "file": null, "active": [0, 1], "move": [0, 1], "dir": "req", "desc": ["주소창에 http://localhost:8080/quiz?code=1 을 입력하면 GET 방식 요청이 나갑니다.", "물음표(?) 뒤의 code=1 은 요청 주소에 붙는 값(쿼리 문자열)입니다."], "data": {"kind": "pre", "label": "HTTP 요청", "text": "GET /quiz?code=1 HTTP/1.1\nHost: localhost:8080"}, "nofile": null, "hlLines": []}, {"phase": "요청", "title": "톰캣이 DispatcherServlet 에 전달", "file": null, "active": [1, 2], "move": [1, 2], "dir": "req", "desc": ["톰캣은 받은 요청을 DispatcherServlet 에 넘깁니다.", "DispatcherServlet 은 요청 방식(GET)과 주소(/quiz)로 실행할 메소드를 찾습니다."], "data": {"kind": "pre", "label": "전달되는 정보", "text": "요청 방식 : GET\n요청 주소 : /quiz\n주소에 붙은 값 : code=1"}, "nofile": null, "hlLines": []}, {"phase": "요청", "title": "주소에 맞는 메소드 찾기 : quiz", "file": "QuizController.java", "active": [2, 4], "move": null, "dir": "none", "desc": ["같은 /quiz 주소에 메소드가 두 개 있습니다. GET 요청이므로 @GetMapping 이 붙은 quiz 메소드가 대상입니다.", "POST 요청이었다면 @PostMapping 이 붙은 quiz2 메소드가 대상이 됩니다."], "data": {"kind": "pre", "label": "찾은 대상", "text": "GET /quiz  →  QuizController.quiz(int code)"}, "nofile": null, "hlLines": [6, 9]}, {"phase": "요청", "title": "@RequestParam 으로 code 값 꺼내기", "file": "QuizController.java", "active": [2, 4], "move": [2, 4], "dir": "req", "desc": ["@RequestParam(\"code\") 이 주소의 code=1 에서 값을 꺼냅니다.", "주소의 값은 글자 \"1\" 이므로, 스프링이 매개변수 자료형 int 에 맞게 숫자 1 로 바꿔서 code 변수에 넣습니다.", "주소에 code 가 없으면 이 메소드는 실행되지 않고 400 오류가 응답됩니다."], "data": {"kind": "pre", "label": "매개변수", "text": "주소 : ?code=1\nint code = 1"}, "nofile": null, "hlLines": [10]}, {"phase": "요청", "title": "switch 문 : case 1 실행", "file": "QuizController.java", "active": [4], "move": null, "dir": "none", "desc": ["switch (code) 가 code 변수의 값을 차례로 비교합니다. 값이 1 이므로 case 1 아래 줄이 실행됩니다.", "code=2 로 요청하면 case 2 가 실행되어 400 상태와 \"Bad Request!\" 가 응답됩니다. (실제 확인)", "1, 2 가 아닌 값이면 default 가 실행되어 200 상태와 \"OK!\" 가 응답됩니다."], "data": {"kind": "pre", "label": "비교 결과", "text": "code = 1  →  case 1"}, "nofile": null, "hlLines": [12, 14]}, {"phase": "응답", "title": "ResponseEntity 로 201 상태와 본문 만들기", "file": "QuizController.java", "active": [4], "move": null, "dir": "res", "desc": ["ResponseEntity.created(null) 이 상태 코드를 201(Created, 생성됨)로 정합니다. 괄호 안 null 은 새 데이터 주소(Location 머리글)를 비워 둔다는 뜻입니다.", ".body(\"Created!\") 가 응답 본문에 글자 Created! 를 담습니다.", "return 으로 이 응답 상자가 호출한 곳(DispatcherServlet)으로 돌아갑니다."], "data": {"kind": "pre", "label": "만들어진 응답 상자", "text": "상태 코드 : 201\n본문 : \"Created!\""}, "nofile": null, "hlLines": [15]}, {"phase": "응답", "title": "본문을 글자로 쓰기 : HttpMessageConverter", "file": null, "active": [4, 3], "move": [4, 3], "dir": "res", "desc": ["본문이 String(글자)이므로 JSON 변환기(Jackson)가 아니라 글자 변환기가 본문을 씁니다.", "그래서 Content-Type 이 application/json 이 아니라 text/plain 이 됩니다. (실제 확인)"], "data": {"kind": "pre", "label": "실제 응답 머리글", "text": "Content-Type: text/plain;charset=UTF-8"}, "nofile": "본문 변환기(StringHttpMessageConverter)는 스프링 라이브러리 안의 코드입니다.", "hlLines": []}, {"phase": "응답", "title": "HTTP 응답을 브라우저로 보냄", "file": null, "active": [3, 2, 1, 0], "move": [3, 0], "dir": "res", "desc": ["DispatcherServlet 과 톰캣을 거쳐 응답이 브라우저로 갑니다.", "created(null) 로 주소를 비워 두었으므로 Location 머리글은 없습니다."], "data": {"kind": "pre", "label": "실제 HTTP 응답", "text": "HTTP/1.1 201\nContent-Type: text/plain;charset=UTF-8\n\nCreated!"}, "nofile": null, "hlLines": []}, {"phase": "응답", "title": "브라우저 화면에 결과 표시", "file": null, "active": [0], "move": null, "dir": "res", "desc": ["브라우저 화면에는 본문 글자 Created! 만 보입니다.", "상태 코드 201 은 화면에 나오지 않습니다. 브라우저의 개발자 도구(F12) → Network 탭에서 확인합니다."], "data": {"kind": "browser", "label": "브라우저 화면", "url": "localhost:8080/quiz?code=1", "text": "Created!"}, "nofile": null, "hlLines": []}], "summary": [{"code": "GET /quiz?code=1"}, {"text": " 요청이 "}, {"code": "201 Created!"}, {"text": " 로 응답되기까지. 주소의 값을 @RequestParam 으로 받고, ResponseEntity 로 상태 코드를 고릅니다."}]}, {"tab": "POST /quiz {\"value\":1}", "nodes": [{"name": "클라이언트", "sub": "브라우저, 개발자 도구, curl"}, {"name": "내장 톰캣", "sub": "8080 포트"}, {"name": "DispatcherServlet", "sub": "스프링 자동 등록 (파일 없음)"}, {"name": "HttpMessageConverter", "sub": "본문 변환 (Jackson, 문자열)"}, {"name": "QuizController", "sub": "QuizController.java"}], "steps": [{"phase": "요청", "title": "클라이언트가 POST /quiz 요청을 보냄", "file": null, "active": [0, 1], "move": [0, 1], "dir": "req", "desc": ["주소창에 입력하는 요청은 GET 만 보낼 수 있습니다. POST 는 개발자 도구 콘솔의 fetch, curl, Postman 등으로 보냅니다.", "본문에 JSON {\"value\":1} 을 담고, Content-Type 머리글로 본문이 JSON 이라고 알립니다."], "data": {"kind": "pre", "label": "HTTP 요청", "text": "POST /quiz HTTP/1.1\nHost: localhost:8080\nContent-Type: application/json\n\n{\"value\":1}"}, "nofile": null, "hlLines": []}, {"phase": "요청", "title": "톰캣이 DispatcherServlet 에 전달", "file": null, "active": [1, 2], "move": [1, 2], "dir": "req", "desc": ["톰캣이 요청을 DispatcherServlet 에 넘깁니다.", "이번에는 요청 방식이 POST 입니다."], "data": {"kind": "pre", "label": "전달되는 정보", "text": "요청 방식 : POST\n요청 주소 : /quiz\n본문 : {\"value\":1}"}, "nofile": null, "hlLines": []}, {"phase": "요청", "title": "주소에 맞는 메소드 찾기 : quiz2", "file": "QuizController.java", "active": [2, 4], "move": null, "dir": "none", "desc": ["주소는 GET 과 같은 /quiz 이지만, 요청 방식이 POST 이므로 @PostMapping 이 붙은 quiz2 메소드가 대상입니다.", "이처럼 같은 주소라도 요청 방식이 다르면 다른 메소드가 실행됩니다."], "data": {"kind": "pre", "label": "찾은 대상", "text": "POST /quiz  →  QuizController.quiz2(Code code)"}, "nofile": null, "hlLines": [25]}, {"phase": "요청", "title": "JSON 본문을 Code 객체로 바꾸기", "file": "QuizController.java", "active": [2, 3], "move": [2, 3], "dir": "req", "desc": ["@RequestBody 가 붙어 있으므로, 본문 JSON 을 Code 객체로 바꿉니다. 이 일은 Jackson(JSON 변환기)이 맡습니다.", "JSON 의 \"value\" 키 값 1 이 record Code 의 value 에 들어갑니다.", "record 는 생성자와 value() 메소드를 자동으로 만들어 주는 자바 문법입니다."], "data": {"kind": "pre", "label": "변환 결과", "text": "{\"value\":1}  →  Code[value=1]"}, "nofile": null, "hlLines": [26, 39]}, {"phase": "요청", "title": "quiz2(code) 실행", "file": "QuizController.java", "active": [3, 4], "move": [3, 4], "dir": "req", "desc": ["DispatcherServlet 이 만들어진 Code 객체를 매개변수 code 에 넣어 quiz2 메소드를 호출합니다."], "data": {"kind": "pre", "label": "호출", "text": "quizController.quiz2(Code[value=1])"}, "nofile": null, "hlLines": [26]}, {"phase": "요청", "title": "switch 문 : case 1 실행", "file": "QuizController.java", "active": [4], "move": null, "dir": "none", "desc": ["code.value() 가 Code 객체 안의 값 1 을 꺼냅니다.", "값이 1 이므로 case 1 아래 줄이 실행됩니다.", "value 가 13 이면 default 가 실행되어 200 상태와 \"OK!\" 가 응답됩니다. (실제 확인)"], "data": {"kind": "pre", "label": "비교 결과", "text": "code.value() = 1  →  case 1"}, "nofile": null, "hlLines": [28, 30]}, {"phase": "응답", "title": "ResponseEntity 로 403 상태와 본문 만들기", "file": "QuizController.java", "active": [4, 3], "move": [4, 3], "dir": "res", "desc": ["ResponseEntity.status(403) 이 상태 코드를 403(Forbidden, 접근 금지)으로 정합니다.", ".body(\"Forbidden!\") 가 본문에 글자를 담습니다.", "본문이 String 이므로 글자 변환기가 text/plain 으로 씁니다."], "data": {"kind": "pre", "label": "만들어진 응답 상자", "text": "상태 코드 : 403\n본문 : \"Forbidden!\""}, "nofile": null, "hlLines": [31]}, {"phase": "응답", "title": "HTTP 응답을 클라이언트로 보냄", "file": null, "active": [3, 2, 1, 0], "move": [3, 0], "dir": "res", "desc": ["DispatcherServlet 과 톰캣을 거쳐 응답이 클라이언트로 갑니다."], "data": {"kind": "pre", "label": "실제 HTTP 응답", "text": "HTTP/1.1 403\nContent-Type: text/plain;charset=UTF-8\n\nForbidden!"}, "nofile": null, "hlLines": []}, {"phase": "응답", "title": "클라이언트에서 결과 확인", "file": null, "active": [0], "move": null, "dir": "res", "desc": ["개발자 도구 콘솔에서 fetch 로 보냈다면, 응답의 status 값이 403, 본문이 Forbidden! 입니다.", "403 은 오류 상태이지만 서버는 정상으로 동작한 것입니다. 이 메소드가 일부러 403 을 고른 것입니다."], "data": {"kind": "browser", "label": "개발자 도구 콘솔에서 확인한 값", "url": "fetch('/quiz', { method: 'POST', ... })", "text": "status : 403\nbody   : Forbidden!"}, "nofile": null, "hlLines": []}], "summary": [{"code": "POST /quiz  {\"value\":1}"}, {"text": " 요청이 "}, {"code": "403 Forbidden!"}, {"text": " 로 응답되기까지. 본문 JSON 을 @RequestBody 로 Code 객체로 바꿔서 받습니다."}]}];
+const PHASE_CLASS = { '시작 준비': 'p0', '준비': 'p0', '요청': 'p1', '실행': 'p1', '응답': 'p2', '확인': 'p2', '정리': 'p0' };
+const FILES = {"SpringBootDeveloperApplication.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n@SpringBootApplication\npublic class SpringBootDeveloperApplication {\n\n    public static void main(String[] args) {\n\n        SpringApplication.run(SpringBootDeveloperApplication.class, args);\n    }\n}", "QuizController.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.*;\n\n@RestController\npublic class QuizController {\n\n    @GetMapping(\"/quiz\")\n    public ResponseEntity<String> quiz(@RequestParam(\"code\") int code) {\n\n        switch (code) {\n\n            case 1:\n                return ResponseEntity.created(null).body(\"Created!\");\n\n            case 2:\n                return ResponseEntity.badRequest().body(\"Bad Request!\");\n\n            default:\n                return ResponseEntity.ok().body(\"OK!\");\n        }\n    }\n\n    @PostMapping(\"/quiz\")\n    public ResponseEntity<String> quiz2(@RequestBody Code code) {\n\n        switch (code.value()) {\n\n            case 1:\n                return ResponseEntity.status(403).body(\"Forbidden!\");\n\n            default:\n                return ResponseEntity.ok().body(\"OK!\");\n        }\n    }\n}\n\nrecord Code(int value) {}"};
+const PATHS = {"SpringBootDeveloperApplication.java": "src/main/java/me/shinsunyoung/springbootdeveloper/SpringBootDeveloperApplication.java", "QuizController.java": "src/main/java/me/shinsunyoung/springbootdeveloper/QuizController.java"};
+
+const $ = (id) => document.getElementById(id);
+const stack = $('stack'), packet = $('packet');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let sc = 0, cur = 0, timer = null, bands = [], dotBtns = [], phases = [];
+let STEPS = [], NODES = [];
+
+// 시나리오 탭 만들기
+const tabBtns = SCENARIOS.map((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'tab'; b.setAttribute('role', 'tab');
+  b.textContent = s.tab;
+  b.addEventListener('click', () => { stop(); load(i); });
+  $('tabs').appendChild(b);
+  return b;
+});
+
+function buildStage() {
+  bands.forEach((b) => b.remove());
+  bands = NODES.map((n, i) => {
+    const d = document.createElement('div');
+    d.className = 'band' + (n.db ? ' db' : '');
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = n.name;
+    const sb = document.createElement('div'); sb.className = 'sb'; sb.textContent = n.sub;
+    d.append(nm, sb);
+    stack.appendChild(d);
+    return d;
+  });
+  $('dots').innerHTML = ''; dotBtns = [];
+  // 단계 번호는 단계 순서대로 놓고, 묶음(요청, 응답 등)이 바뀌는 곳에서만 묶음 이름을 붙입니다.
+  phases = [];
+  let g = null, last = null;
+  STEPS.forEach((s, i) => {
+    if (!phases.includes(s.phase)) phases.push(s.phase);
+    if (s.phase !== last) {
+      g = document.createElement('div'); g.className = 'grp';
+      const gl = document.createElement('span'); gl.className = 'gl'; gl.textContent = s.phase;
+      g.appendChild(gl);
+      $('dots').appendChild(g);
+      last = s.phase;
+    }
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'dot'; b.textContent = i + 1;
+    b.setAttribute('aria-label', (i + 1) + '단계 : ' + s.title);
+    b.addEventListener('click', () => { stop(); go(i); });
+    g.appendChild(b); dotBtns[i] = b;
+  });
+}
+
+function load(i) {
+  sc = i;
+  const s = SCENARIOS[sc];
+  STEPS = s.steps; NODES = s.nodes;
+  tabBtns.forEach((b, k) => b.setAttribute('aria-selected', k === sc ? 'true' : 'false'));
+  tabBtns[sc].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  $('scen').innerHTML = '';
+  s.summary.forEach((part) => {
+    if (part.code) { const c = document.createElement('code'); c.textContent = part.code; $('scen').appendChild(c); }
+    else $('scen').appendChild(document.createTextNode(part.text));
+  });
+  buildStage();
+  go(0);
+}
+
+function centerY(i) {
+  const b = bands[i];
+  return b.offsetTop + b.offsetHeight / 2 - 8;
+}
+
+function placePacket(step) {
+  packet.className = 'packet ' + (step.dir === 'none' ? '' : step.dir);
+  if (step.move) {
+    const [from, to] = step.move;
+    packet.style.transition = 'none';
+    packet.style.transform = 'translateY(' + centerY(from) + 'px)';
+    void packet.offsetHeight;
+    packet.style.transition = reduce ? 'none' : 'transform 1s cubic-bezier(.45,0,.2,1)';
+    packet.style.transform = 'translateY(' + centerY(to) + 'px)';
+  } else {
+    packet.style.transition = 'none';
+    packet.style.transform = 'translateY(' + centerY(step.active[0]) + 'px)';
+    packet.classList.add('pulse');
+  }
+}
+
+function renderCode(step) {
+  const wrap = $('codewrap');
+  wrap.innerHTML = '';
+  if (!step.file) {
+    $('fname').textContent = '프로젝트 파일 없음';
+    $('fpath').textContent = step.nofile || '이 단계는 스프링 부트 라이브러리나 브라우저가 처리합니다.';
+    $('hlcount').textContent = '';
+    const e = document.createElement('div'); e.className = 'empty';
+    e.textContent = '이 단계에서는 개발자가 작성한 파일이 실행되지 않습니다. 왼쪽에서 신호가 지나가는 구간을 확인하세요.';
+    wrap.appendChild(e);
+    return;
+  }
+  $('fname').textContent = step.file.split('/').pop();
+  $('fpath').textContent = PATHS[step.file];
+  const box = document.createElement('div'); box.className = 'code'; box.tabIndex = 0;
+  box.setAttribute('aria-label', step.file + ' 코드');
+  let first = null, n = 0;
+  FILES[step.file].split('\n').forEach((line, i) => {
+    const row = document.createElement('div'); row.className = 'ln';
+    const no = document.createElement('span'); no.className = 'no'; no.textContent = i + 1;
+    const tx = document.createElement('span'); tx.textContent = line || ' ';
+    row.append(no, tx);
+    if (step.hlLines.includes(i + 1)) {
+      row.classList.add('hl'); n++;
+      if (!first) first = row;
+    }
+    box.appendChild(row);
+  });
+  wrap.appendChild(box);
+  $('hlcount').textContent = n ? '강조된 줄 ' + n + '개 : 이 단계에서 실행되거나 쓰이는 코드' : '';
+  if (first) box.scrollTop = Math.max(0, first.offsetTop - box.clientHeight / 3);
+}
+
+function renderData(step) {
+  const d = step.data, body = $('dbody');
+  $('dlabel').textContent = d.label;
+  body.innerHTML = '';
+  if (d.kind === 'table') {
+    const t = document.createElement('table');
+    const tr = document.createElement('tr');
+    d.cols.forEach((c) => { const th = document.createElement('th'); th.textContent = c; tr.appendChild(th); });
+    t.appendChild(tr);
+    d.rows.forEach((r) => {
+      const row = document.createElement('tr');
+      r.forEach((c) => { const td = document.createElement('td'); td.textContent = c; row.appendChild(td); });
+      t.appendChild(row);
+    });
+    const w = document.createElement('div'); w.style.overflowX = 'auto'; w.appendChild(t);
+    body.appendChild(w);
+  } else if (d.kind === 'browser') {
+    const b = document.createElement('div'); b.className = 'browser';
+    const bar = document.createElement('div'); bar.className = 'bar'; bar.textContent = d.url;
+    const v = document.createElement('div'); v.className = 'view'; v.style.whiteSpace = 'pre-wrap'; v.textContent = d.text;
+    b.append(bar, v); body.appendChild(b);
+  } else {
+    const p = document.createElement('pre'); p.textContent = d.text; body.appendChild(p);
+  }
+}
+
+function go(i) {
+  cur = Math.max(0, Math.min(STEPS.length - 1, i));
+  const s = STEPS[cur];
+  $('stepno').textContent = (cur + 1) + ' / ' + STEPS.length + '단계';
+  const ph = $('phase');
+  ph.textContent = s.phase;
+  ph.className = 'phase ' + (PHASE_CLASS[s.phase] || 'p0');
+  $('title').textContent = s.title;
+  const ol = $('desc'); ol.innerHTML = '';
+  s.desc.forEach((t) => { const li = document.createElement('li'); li.textContent = t; ol.appendChild(li); });
+  bands.forEach((b, k) => { b.className = 'band' + (NODES[k].db ? ' db' : ''); });
+  s.active.forEach((k) => bands[k].classList.add('active', s.dir));
+  renderCode(s);
+  renderData(s);
+  ['desc', 'codewrap', 'dbody'].forEach((id) => { const el = $(id); el.classList.remove('fade'); void el.offsetWidth; el.classList.add('fade'); });
+  placePacket(s);
+  dotBtns.forEach((b, k) => { b.classList.toggle('cur', k === cur); b.classList.toggle('done', k < cur); b.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
+  if (dotBtns[cur]) dotBtns[cur].scrollIntoView({ block: 'nearest', inline: 'center' });
+  $('prev').disabled = cur === 0; $('first').disabled = cur === 0;
+  $('next').disabled = cur === STEPS.length - 1;
+}
+
+function stop() { if (timer) { clearInterval(timer); timer = null; } $('play').textContent = '자동 재생'; }
+function play() {
+  if (timer) { stop(); return; }
+  if (cur === STEPS.length - 1) go(0);
+  $('play').textContent = '멈춤';
+  timer = setInterval(() => { if (cur >= STEPS.length - 1) { stop(); return; } go(cur + 1); }, 4200);
+}
+
+$('first').addEventListener('click', () => { stop(); go(0); });
+$('prev').addEventListener('click', () => { stop(); go(cur - 1); });
+$('next').addEventListener('click', () => { stop(); go(cur + 1); });
+$('play').addEventListener('click', play);
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('.code')) return;
+  if (e.key === 'ArrowRight') { stop(); go(cur + 1); }
+  if (e.key === 'ArrowLeft') { stop(); go(cur - 1); }
+});
+window.addEventListener('resize', () => placePacket(Object.assign({}, STEPS[cur], { move: null })));
+
+$('dl').addEventListener('click', () => {
+  stop();
+  const blob = new Blob([ORIGINAL_HTML], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "chapter4-request-flow.html";
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+});
+
+load(0);
+</script>
+</body>
+</html>
