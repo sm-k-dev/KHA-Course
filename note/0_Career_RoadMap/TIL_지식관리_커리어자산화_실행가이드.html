@@ -1,0 +1,85 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>지식 관리 & 커리어 자산화 실행 가이드</title><style>@page{size:A4;margin:18mm 16mm 17mm}body{font-family:"Noto Sans CJK KR","NanumGothic",sans-serif;color:#1d2939;font-size:10.5pt;line-height:1.72}h1{font-size:24pt;line-height:1.28;color:#102a43;margin:12px 0}h2{font-size:15pt;color:#123c61;border-bottom:2px solid #d6e4ef;padding-bottom:5px;margin:26px 0 10px}h3{font-size:11.7pt;color:#205781;margin:18px 0 6px}p{margin:7px 0}li{margin:5px 0}.eyebrow{letter-spacing:2px;font-size:9pt;color:#45718b;font-weight:bold}.subtitle{font-size:12pt;color:#566b7b}.hero{background:#f0f6fb;padding:22px;border-radius:12px;margin-bottom:20px}.flow{display:flex;gap:9px;margin:15px 0}.flow>div{flex:1;text-align:center;padding:12px 7px;background:#e8f2fa;border:1px solid #c7dfef;border-radius:9px;font-weight:bold;font-size:9pt}.arrow{align-self:center;color:#7190a5}.track{border-left:5px solid #2c8b69;padding:9px 14px;background:#f1f9f5;margin:15px 0}.track.blue{border-color:#327bb5;background:#f1f6fc}.muted{color:#5c6f7e}.note{background:#f6f8fa;border-left:3px solid #9db2c4;padding:10px 13px;margin:12px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Sans Mono CJK KR","DejaVu Sans Mono",monospace;font-size:8.2pt;line-height:1.55;background:#f3f6fa;border:1px solid #e0e7ef;border-radius:7px;padding:12px}table{border-collapse:collapse;width:100%;margin:10px 0 14px;font-size:9.2pt}th{background:#e7f0f7;text-align:left}td,th{border:1px solid #d8e3ed;padding:8px;vertical-align:top}tr{break-inside:avoid}h2,h3{break-after:avoid}.pagebreak{break-before:page}.small{font-size:9pt}a{color:#1b5e8b}footer{margin-top:25px;color:#667988;font-size:8.5pt}</style></head><body>
+<div class="hero"><div class="eyebrow">PERSONAL ENGINEERING KNOWLEDGE SYSTEM</div><h1>지식 관리 & 커리어 자산화 실행 가이드</h1><div class="subtitle">실무 경험을 지식으로 축적하고, 지식을 채용 경쟁력으로 전환하는 2-Track 운영 체계</div></div>
+<p><b>핵심 원리:</b> 실무에서 경험한 문제 해결 과정을 TIL(Today I Learned)로 기록하고, 축적된 사실을 의사결정과 영향력 중심의 이력서·면접 스토리로 재구성한다.</p>
+<div class="flow"><div>실무 문제 경험</div><span class="arrow">→</span><div>5분 TIL 기록</div><span class="arrow">→</span><div>반복 학습·성장</div><span class="arrow">→</span><div>이력서·면접 증거</div></div>
+<table><tr><th>트랙</th><th>목적</th><th>핵심 산출물</th></tr><tr><td><b>Track 1 · 실무 가치 상승</b></td><td>문제 해결 경험을 재사용 가능한 지식으로 축적</td><td>상황별 TIL, 재발 방지 체크리스트, 연간 성장 요약</td></tr><tr><td><b>Track 2 · 채용 가치 증명</b></td><td>문제 해결 경험을 판단력·성과의 근거로 설명</td><td>이력서 문장, 면접 스토리, 질문 매핑, 자기소개</td></tr></table>
+<h2>Track 1. 실무에서 내 가치 높이기</h2><div class="track"><b>목표</b> · 오늘 하나 더 이해한 지점을 남겨, 미래에 같은 문제를 더 빠르고 정확하게 해결한다.</div>
+<h3>1. 퇴근 5분 TIL 루틴</h3><p><b>권장 빈도:</b> 주 2~3회, 1회 최대 5분. <b>기록 단위:</b> 한 페이지 = 한 상황. <b>원칙:</b> 예쁘게 정리하기보다 무엇을 오해했고 왜 해결됐는지 남긴다.</p>
+<h3>바로 복사해 쓰는 Markdown 템플릿</h3><pre># 📌 TIL (Work) — [작성일 / 주제]
+
+## 🧠 상황 (Context)
+- 무엇을 하려다가 막혔는가?
+- 어떤 환경이었는가? (서비스 / 스택 / 상황)
+
+## ❓ 문제 (Problem)
+- 정확히 무엇이 안 됐는가?
+- 내가 처음에 잘못 생각한 지점은?
+
+## 🔍 깨달음 (Insight)
+- 핵심 원리 또는 오해를 바로잡은 내용 1~2줄
+
+## 🔧 해결 방법 (How)
+- 실제 적용한 해결책 (명령어 / 설정 / 코드)
+- 해결되었음을 어떻게 확인했는가?
+
+## 🪴 다음에 쓸 때 체크할 것
+- 재발 방지 체크리스트
+
+## 💬 연결 가능한 면접 질문
+- Q[번호]. [질문]
+
+태그: #실무 #Docker #API #DB</pre>
+<h3>2. 작성 예시 — Docker / AWS EC2 접근 이슈</h3><p class="small muted">아래는 사용자가 제시한 사례를 읽기 쉽게 보완한 <b>가상 예시</b>이며, 실제 수행 경험으로 단정하지 않는다.</p><pre># TIL — EC2에서 FastAPI 컨테이너 외부 접속 불가 (예시)
+
+## 🧠 상황
+로컬에서 실행되던 FastAPI 컨테이너가 EC2에서는 외부에서 접속되지 않음.
+
+## ❓ 문제
+컨테이너 포트 공개, 서버의 네트워크 허용 규칙을 혼동함.
+
+## 🔍 깨달음
+Docker의 포트 매핑과 EC2 보안 그룹 인바운드 허용은 별개의 설정.
+애플리케이션의 바인딩 주소(0.0.0.0)도 확인해야 함.
+
+## 🔧 해결
+컨테이너 실행 옵션(-p 8000:8000), 앱 바인딩 주소,
+EC2 보안 그룹의 인바운드 규칙을 각각 점검·수정.
+접속 테스트와 로그로 정상 동작 확인.
+
+## 🪴 다음에 확인할 것
+앱 리스닝 주소 → 컨테이너 포트 → 호스트 포트 →
+보안 그룹/방화벽 → 외부 접근 경로 순으로 점검.
+
+## 💬 연결 가능한 면접 질문
+Q9. 서버에서만 발생한 문제를 해결한 경험이 있나요?
+Q15. 설정 문제와 코드 문제를 어떻게 구분하나요?</pre>
+<div class="note"><b>보완 포인트:</b> 원본의 ‘보안 그룹 → 컨테이너 포트’ 점검 순서는 한 가지 실무 휴리스틱이다. 실제 진단에서는 앱 바인딩 주소, 호스트 포트, 컨테이너 매핑, 보안 그룹과 방화벽을 함께 확인해야 한다.</div>
+<h3>3. 1년치 TIL을 A4 한 장으로 압축하기</h3><p>연 1회 개인 저장소의 메인 페이지에 기록한다. 기술 이름을 나열하기보다 <b>문제 유형, 판단 기준, 반복 실수, 개선, 다음 성장 목표</b>를 중심으로 작성한다.</p><pre># 202X Engineering Growth Summary
+
+1. 내가 다룬 문제 유형
+   - 배포 및 환경 설정, API 연동, 인증/권한 문제
+2. 내가 내린 주요 판단
+   - 애플리케이션/인프라 구분, 로그→설정→코드 순 확인
+3. 반복된 실수와 개선
+   - 환경 설정 확인 누락 → 배포 체크리스트 도입
+4. 기술적으로 깊어진 영역
+   - Docker 배포, Linux 디버깅, REST API 설계
+5. 다음 해 집중할 것
+   - 모니터링·로그 체계, 아키텍처 설계</pre>
+<h2 class="pagebreak">Track 2. 면접·이직에서 내 가치 증명하기</h2><div class="track blue"><b>목표</b> · 사실 기록을 ‘왜 그렇게 판단했는가, 어떤 결과를 만들었는가’라는 채용 언어로 변환한다.</div>
+<h3>1. TIL → 이력서 문장 변환 공식</h3><div class="flow"><div>문제와 맥락</div><span class="arrow">→</span><div>내 판단·행동</div><span class="arrow">→</span><div>검증된 결과</div><span class="arrow">→</span><div>간결한 이력서 문장</div></div>
+<table><tr><th>단계</th><th>내용</th></tr><tr><td>원본 TIL</td><td>EC2의 FastAPI 컨테이너 외부 접속 불가 → 포트/보안 설정 점검 → 해결</td></tr><tr><td>판단 강조</td><td>애플리케이션 오류와 네트워크·인프라 설정 문제를 구분해 원인을 추적</td></tr><tr><td>영문 이력서 예시</td><td><i>Deployed FastAPI services on AWS EC2 using Docker, identifying and resolving access issues by analyzing security group and container port configurations.</i></td></tr></table>
+<p class="small muted">예시는 실제 수행 여부를 확인한 뒤 사용해야 한다. 해결 시간, 장애 감소율 등 정량 성과는 측정한 경우에만 기재한다.</p>
+<h3>2. 면접 스토리텔링 프레임워크</h3>
+<table><tr><th>프레임</th><th>사용 상황</th><th>답변 구조</th></tr><tr><td><b>S-P-T-R</b></td><td>경험·문제 해결 질문</td><td>Situation(상황) → Problem(문제) → Thinking(판단) → Result(결과)</td></tr><tr><td><b>Why–How–Trade-off</b></td><td>기술 선택·설계 질문</td><td>선택 기준 → 구현 방식 → 비용·한계·대안</td></tr><tr><td><b>No–Similar–Approach</b></td><td>직접 경험 없는 기술 질문</td><td>경험 없음 명시 → 유사 경험 → 검증 가능한 접근 순서</td></tr></table>
+<p><b>S-P-T-R 답변 틀:</b> “당시 상황은 [상황]이었고, [문제]가 발생했습니다. 저는 [근거]를 바탕으로 [접근]을 선택했고, 그 결과 [검증된 결과]를 얻었습니다.”</p>
+<p><b>Why–How–Trade-off 답변 틀:</b> “중요한 기준은 [Why]였기 때문에 [How]로 구현했습니다. 다만 [Trade-off]가 있어 [조건]에서는 다른 대안도 검토할 수 있습니다.”</p>
+<p><b>No–Similar–Approach 답변 틀:</b> “직접 사용한 경험은 없습니다. 다만 [유사 경험]을 바탕으로 [접근·검증 순서]로 해결하겠습니다.”</p>
+<h3>3. 면접 질문 ↔ TIL 매핑 매트릭스</h3><p>각 TIL 하단에 연결 가능한 면접 질문 번호를 붙인다. 원본에는 <b>30개 질문의 전체 목록이 아니라 Q9·Q15 예시만</b> 있으므로, 아래는 제공된 두 질문만 수록한다.</p>
+<table><tr><th>번호</th><th>질문</th><th>연결 TIL 예시</th></tr><tr><td>Q9</td><td>서버에서만 발생한 문제를 해결한 경험이 있나요?</td><td>EC2 컨테이너 접근 장애</td></tr><tr><td>Q15</td><td>설정 문제와 코드 문제를 어떻게 구분하여 접근하나요?</td><td>네트워크·컨테이너·앱 설정 단계별 진단</td></tr></table>
+<h3>4. 나를 정의하는 5문장 자기소개</h3><ol><li><b>소개:</b> 나는 [주로 해결해 온 문제]에 강점을 가진 [직무] 개발자다.</li><li><b>판단 기준:</b> 문제 발생 시 [내가 우선 확인하는 기준]을 적용한다.</li><li><b>증거·경험:</b> [실제로 수행한 경험]을 통해 이를 입증했다.</li><li><b>성장:</b> 그 과정에서 [개선한 사고·업무 습관]을 배웠다.</li><li><b>지향점:</b> 앞으로 [목표 엔지니어상]으로 성장하고자 한다.</li></ol>
+<h3>5. 회사별 면접 전 3분 커스터마이징</h3><table><tr><th>시간</th><th>실행</th></tr><tr><td>1분</td><td>JD에서 반복되는 핵심 키워드 3개 선정 (예: Reliability, Automation, Ownership)</td></tr><tr><td>1분</td><td>관련 TIL을 찾아 회사가 사용하는 직무 언어로 번역</td></tr><tr><td>1분</td><td>‘어려웠던 문제 / 기술 선택 / 실패·실수’ 3대 질문에 사례 배치</td></tr></table>
+<h2>운영 규칙 · 두 트랙을 연결하는 방법</h2><table><tr><th>시점</th><th>행동</th><th>결과</th></tr><tr><td>실무 중 / 퇴근 전</td><td>의미 있는 문제 1건을 5분 이내로 기록</td><td>원본 TIL</td></tr><tr><td>월 1회 (제안)</td><td>반복되는 문제·판단·검증 방법 확인</td><td>재사용 체크리스트</td></tr><tr><td>연 1회</td><td>문제 유형과 성장 궤적을 A4 한 장으로 압축</td><td>Engineering Growth Summary</td></tr><tr><td>지원·면접 준비 시</td><td>JD 키워드에 맞는 TIL 선택 및 답변 변환</td><td>이력서·면접 스토리</td></tr></table>
+<div class="note"><b>기록 시 유의:</b> 회사의 비공개 코드, 고객 데이터, API 키, 내부 주소·계정 정보 등은 개인 저장소에 복사하지 않는다. 문제의 원리와 본인의 판단을 비식별화해 기록한다. 이력서에는 검증 가능한 사실만 사용한다.</div>
+<h2>핵심 요약</h2><p><b>Track 1은 경험을 축적하는 시스템, Track 2는 축적한 경험을 증명하는 시스템이다.</b> 매번 새로운 면접 답변을 만들어 내기보다, 평소의 문제 해결 기록을 근거로 자신의 판단과 성장 과정을 설명한다.</p><footer>개인 지식 저장소(TIL) 기반 커리어 자산화 가이드 · 사용자 제공 원문을 기반으로 구조와 서식을 정리한 문서</footer>
+</body></html>
