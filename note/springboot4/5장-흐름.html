@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>5장 요청과 테스트 흐름</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEF3; --panel:#FFFFFF; --ink:#1B2433; --muted:#596577; --line:#C6D0DC;
+  --req:#2457C5; --req-soft:#DCE6FA; --res:#137A50; --res-soft:#D6EFE3;
+  --db:#9A5B0C; --hl:#FFEFA8; --hl-ink:#3A2E00; --code:#F4F7FA; --rail:#B9C5D3;
+  --sans:"IBM Plex Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --mono:"JetBrains Mono",Consolas,"D2Coding",monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141922; --panel:#1C232E; --ink:#E4E9F0; --muted:#9AA5B4; --line:#323E4F;
+    --req:#7AA2FF; --req-soft:#1F2E4F; --res:#4CC48C; --res-soft:#173A2B;
+    --db:#E2A757; --hl:#4B4220; --hl-ink:#FFF1BF; --code:#161C25; --rail:#3A4759;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;padding-bottom:120px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font-size:26px;line-height:1.25;margin:0 0 4px;font-weight:700;letter-spacing:-0.01em}
+.lead{margin:0;color:var(--muted);font-size:15px;max-width:62ch}
+.lead code{font-family:var(--mono);font-size:14px;color:var(--ink)}
+button{font-family:var(--sans);font-size:14px;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px}
+button:focus-visible{outline:3px solid var(--req);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+
+.grid{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:20px;align-items:start}
+
+/* 왼쪽 : 구간 스택 */
+.stage{position:sticky;top:16px}
+.stack{position:relative;padding-left:40px}
+.rail{position:absolute;left:17px;top:22px;bottom:22px;width:2px;background:var(--rail)}
+.band{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:10px;transition:border-color .3s, background .3s}
+.band:last-child{margin-bottom:0}
+.band .nm{font-weight:600;font-size:15px}
+.band .sb{font-size:12.5px;color:var(--muted);font-family:var(--sans)}
+.band::before{content:"";position:absolute;left:-28px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--panel);border:2px solid var(--rail)}
+.band.db{border-style:dashed}
+.band.active{border-width:2px;padding:9px 13px}
+.band.active.req{border-color:var(--req);background:var(--req-soft)}
+.band.active.res{border-color:var(--res);background:var(--res-soft)}
+.band.active.none{border-color:var(--ink)}
+.band.active::before{border-color:currentColor}
+.band.active.req::before{background:var(--req);border-color:var(--req)}
+.band.active.res::before{background:var(--res);border-color:var(--res)}
+.band.active.none::before{background:var(--ink);border-color:var(--ink)}
+.packet{position:absolute;left:10px;top:0;width:16px;height:16px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px var(--panel);z-index:2;will-change:transform}
+.packet.req{background:var(--req)}
+.packet.res{background:var(--res)}
+.packet.pulse{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--panel)}50%{box-shadow:0 0 0 4px var(--panel),0 0 0 9px var(--rail)}}
+.legend{display:flex;gap:14px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend .lq::before{background:var(--req)}
+.legend .ls::before{background:var(--res)}
+.legend .ln::before{background:var(--ink)}
+
+/* 오른쪽 : 단계 설명 */
+.detail{min-width:0}
+.stephead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.stepno{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.phase{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid var(--line)}
+.phase.p0{color:var(--ink)}
+.phase.p1{color:var(--req);border-color:var(--req)}
+.phase.p2{color:var(--res);border-color:var(--res)}
+h2{font-size:22px;line-height:1.35;margin:0 0 10px;font-weight:700}
+ol.desc{margin:0 0 16px;padding-left:22px;max-width:70ch}
+ol.desc li{margin:3px 0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.boxhead{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.boxhead .fname{font-family:var(--mono);font-weight:600;font-size:13.5px}
+.boxhead .fpath{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.code{position:relative;background:var(--code);max-height:340px;overflow:auto;padding:8px 0;font-family:var(--mono);font-size:13.5px;line-height:1.55}
+.code .ln{display:flex;white-space:pre;padding:0 12px 0 0;min-width:max-content}
+.code .no{display:inline-block;width:40px;flex:0 0 40px;text-align:right;padding-right:12px;color:var(--muted);user-select:none}
+.code .ln.hl{background:var(--hl);color:var(--hl-ink);box-shadow:inset 4px 0 0 var(--db)}
+.code .ln.hl .no{color:var(--hl-ink)}
+.empty{padding:16px 14px;color:var(--muted);font-size:14px;background:var(--code)}
+.data pre{margin:0;padding:12px 14px;background:var(--code);font-family:var(--mono);font-size:13.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.data table{border-collapse:collapse;margin:12px 14px;font-family:var(--mono);font-size:14px}
+.data th,.data td{border:1px solid var(--line);padding:5px 14px;text-align:left}
+.data th{background:var(--code)}
+.browser{margin:12px 14px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.browser .bar{background:var(--code);padding:6px 10px;font-size:13px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+.browser .view{padding:12px;font-family:var(--mono);font-size:13.5px;overflow-wrap:anywhere;background:var(--panel)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px}
+.tab{border-radius:8px 8px 0 0;border-bottom-width:3px;padding:8px 14px;font-weight:600;background:transparent}
+.tab[aria-selected="true"]{border-color:var(--line);border-bottom-color:var(--ink);background:var(--panel)}
+.scen{margin:0 0 16px;color:var(--muted);font-size:14.5px;max-width:90ch}
+.scen code{font-family:var(--mono);font-size:13.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:.25}to{opacity:1}}
+
+/* 아래 : 조작 바 */
+.controls{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:10}
+.controls .in{max-width:1180px;margin:0 auto}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btns .sp{flex:1}
+.dots{display:flex;gap:4px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.dots .grp{display:flex;gap:4px;align-items:center;margin-right:10px}
+.dots .gl{font-size:12px;color:var(--muted);margin-right:4px}
+.dot{width:26px;height:26px;padding:0;border-radius:6px;font-size:12px;font-family:var(--mono)}
+.dot.done{background:var(--code)}
+.dot.cur{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.kbd{font-size:12px;color:var(--muted)}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr;gap:14px}
+  .stage{position:static}
+  .band{padding:6px 12px;margin-bottom:5px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+  .band.active{padding:5px 11px}
+  .band .nm{font-size:14px}
+  .band .sb{font-size:11.5px}
+  .dots{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .dots .grp{flex:0 0 auto}
+  .btns button{padding:7px 12px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto}
+  .tab{flex:0 0 auto;padding:7px 11px;font-size:13.5px}
+  h1{font-size:21px}
+  h2{font-size:19px}
+  .code{font-size:12.5px;max-height:280px}
+  .data pre{font-size:12.5px}
+  .kbd{display:none}
+  body{padding-bottom:118px}
+}
+@media (prefers-reduced-motion: reduce){
+  .packet{transition:none !important}
+  .packet.pulse,.fade{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>5장 요청과 테스트 흐름</h1>
+      <p class="lead">5장은 브라우저 요청 흐름과 함께, MemberRepositoryTest 테스트가 실행되는 흐름을 봅니다. SQL 로그는 5장 프로젝트에서 테스트를 실제로 실행해서 얻은 값입니다.</p>
+    </div>
+    <button type="button" class="primary" id="dl">HTML 파일 다운로드</button>
+  </header>
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="시나리오"></div>
+  <p class="scen" id="scen"></p>
+
+  <div class="grid">
+    <aside class="stage" aria-label="요청이 지나가는 구간">
+      <div class="stack" id="stack">
+        <div class="rail"></div>
+        <div class="packet" id="packet" aria-hidden="true"></div>
+      </div>
+      <div class="legend"><span class="lq">요청 방향</span><span class="ls">응답 방향</span><span class="ln">준비·처리</span></div>
+    </aside>
+
+    <main class="detail">
+      <div class="stephead">
+        <span class="stepno" id="stepno"></span>
+        <span class="phase" id="phase"></span>
+      </div>
+      <h2 id="title" aria-live="polite"></h2>
+      <ol class="desc" id="desc"></ol>
+
+      <section class="box" aria-label="실행되는 코드">
+        <div class="boxhead"><div><div class="fname" id="fname"></div><div class="fpath" id="fpath"></div></div><span id="hlcount" class="fpath"></span></div>
+        <div id="codewrap"></div>
+      </section>
+
+      <section class="box data" aria-label="오가는 데이터">
+        <div class="boxhead"><span class="fname" id="dlabel"></span></div>
+        <div id="dbody"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<nav class="controls" aria-label="단계 조작">
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="first">처음</button>
+      <button type="button" id="prev">이전</button>
+      <button type="button" class="primary" id="play">자동 재생</button>
+      <button type="button" id="next">다음</button>
+      <span class="sp"></span>
+      <span class="kbd">키보드 ← → 로 이동</span>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+</nav>
+
+<script>
+// 다운로드용 : 화면 요소를 추가하기 전, 처음 불러온 상태의 HTML 을 저장해 둡니다.
+const ORIGINAL_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+const SCENARIOS = [{"tab": "브라우저 GET /test", "nodes": [{"name": "브라우저", "sub": "Chrome, Edge 등"}, {"name": "내장 톰캣", "sub": "8080 포트"}, {"name": "DispatcherServlet", "sub": "스프링 자동 등록 (파일 없음)"}, {"name": "TestController", "sub": "TestController.java"}, {"name": "TestService", "sub": "TestService.java"}, {"name": "MemberRepository", "sub": "MemberRepository.java + Hibernate"}, {"name": "H2 DB", "sub": "member 테이블 (메모리)", "db": true}], "steps": [{"phase": "시작 준비", "title": "프로그램 시작 : 테이블 생성과 data.sql", "file": "data.sql", "active": [5, 6], "move": null, "dir": "none", "desc": ["3장과 같이 빈(객체)이 생성되고, Hibernate 가 member 테이블을 만든 뒤 data.sql 이 회원 3명을 넣습니다.", "5장의 MemberRepository 에는 findByName 등 메소드가 추가되었지만, 이 요청에서는 쓰이지 않습니다."], "data": {"kind": "table", "label": "member 테이블 (H2 메모리 DB)", "cols": ["id", "name"], "rows": [["1", "name 1"], ["2", "name 2"], ["3", "name 3"]]}, "nofile": null, "hlLines": [1, 3, 5]}, {"phase": "요청", "title": "브라우저가 GET /test 요청을 보냄", "file": null, "active": [0, 1], "move": [0, 1], "dir": "req", "desc": ["주소창에 http://localhost:8080/test 를 입력하면 GET 요청이 나갑니다."], "data": {"kind": "pre", "label": "HTTP 요청", "text": "GET /test HTTP/1.1\nHost: localhost:8080"}, "nofile": null, "hlLines": []}, {"phase": "요청", "title": "DispatcherServlet 이 메소드를 찾음", "file": "TestController.java", "active": [1, 2], "move": [1, 2], "dir": "req", "desc": ["톰캣이 요청을 DispatcherServlet 에 넘기고, DispatcherServlet 이 @GetMapping(\"/test\") 가 붙은 getAllMembers 메소드를 찾습니다."], "data": {"kind": "pre", "label": "찾은 대상", "text": "GET /test  →  TestController.getAllMembers()"}, "nofile": null, "hlLines": [15]}, {"phase": "요청", "title": "TestController → TestService", "file": "TestController.java", "active": [2, 3, 4], "move": [2, 4], "dir": "req", "desc": ["getAllMembers 가 실행되고, testService 변수의 getAllMembers 메소드를 호출합니다."], "data": {"kind": "pre", "label": "호출", "text": "testService.getAllMembers()"}, "nofile": null, "hlLines": [16, 18]}, {"phase": "요청", "title": "TestService → MemberRepository.findAll()", "file": "TestService.java", "active": [4, 5], "move": [4, 5], "dir": "req", "desc": ["TestService 가 memberRepository 변수의 findAll 메소드를 호출합니다. JpaRepository 에서 물려받은 메소드입니다."], "data": {"kind": "pre", "label": "호출", "text": "memberRepository.findAll()"}, "nofile": null, "hlLines": [16]}, {"phase": "요청", "title": "SELECT 구문을 DB 로 보냄", "file": "MemberRepository.java", "active": [5, 6], "move": [5, 6], "dir": "req", "desc": ["Hibernate 가 member 테이블 전체를 조회하는 select 구문을 보냅니다.", "아래 로그는 5장 프로젝트를 실행해서 받은 실제 로그입니다."], "data": {"kind": "pre", "label": "실제 콘솔 로그", "text": "Hibernate: \n    select\n        m1_0.id,\n        m1_0.name \n    from\n        member m1_0"}, "nofile": null, "hlLines": [10]}, {"phase": "응답", "title": "DB 가 행 레코드 3줄을 돌려줌", "file": "data.sql", "active": [6, 5], "move": [6, 5], "dir": "res", "desc": ["data.sql 이 넣은 3줄이 조회 결과로 돌아옵니다."], "data": {"kind": "table", "label": "조회 결과", "cols": ["id", "name"], "rows": [["1", "name 1"], ["2", "name 2"], ["3", "name 3"]]}, "nofile": null, "hlLines": [1, 3, 5]}, {"phase": "응답", "title": "행 레코드를 Member 객체로 바꿈", "file": "Member.java", "active": [5], "move": null, "dir": "res", "desc": ["Hibernate 가 빈 생성자로 Member 객체를 만들고, id 와 name 변수에 열 값을 넣습니다.", "객체 3개가 List 에 담깁니다."], "data": {"kind": "pre", "label": "만들어진 객체 (List<Member>)", "text": "Member  id=1  name=\"name 1\"\nMember  id=2  name=\"name 2\"\nMember  id=3  name=\"name 3\""}, "nofile": null, "hlLines": [11, 17, 20]}, {"phase": "응답", "title": "목록이 TestController 의 members 변수로", "file": "TestController.java", "active": [5, 4, 3], "move": [5, 3], "dir": "res", "desc": ["목록이 TestService 를 거쳐 TestController 의 members 변수에 담깁니다."], "data": {"kind": "pre", "label": "members 변수", "text": "members = [Member(1), Member(2), Member(3)]"}, "nofile": null, "hlLines": [18]}, {"phase": "응답", "title": "return members : JSON 글자로 바꿈", "file": "TestController.java", "active": [3, 2], "move": [3, 2], "dir": "res", "desc": ["@RestController 이므로 Jackson 이 목록을 JSON 글자로 바꿉니다. Member 의 @Getter 가 만든 getId(), getName() 이 쓰입니다.", "실제 결과에서는 name 이 id 보다 먼저 나옵니다. 순서가 달라도 담긴 데이터는 같습니다."], "data": {"kind": "pre", "label": "만들어진 JSON (실제)", "text": "[{\"name\":\"name 1\",\"id\":1},{\"name\":\"name 2\",\"id\":2},{\"name\":\"name 3\",\"id\":3}]"}, "nofile": null, "hlLines": [20]}, {"phase": "응답", "title": "HTTP 응답을 브라우저로 보냄", "file": null, "active": [2, 1, 0], "move": [2, 0], "dir": "res", "desc": ["DispatcherServlet 과 톰캣을 거쳐 응답이 브라우저로 갑니다."], "data": {"kind": "pre", "label": "실제 HTTP 응답", "text": "HTTP/1.1 200\nContent-Type: application/json\n\n[{\"name\":\"name 1\",\"id\":1},{\"name\":\"name 2\",\"id\":2},{\"name\":\"name 3\",\"id\":3}]"}, "nofile": null, "hlLines": []}, {"phase": "응답", "title": "브라우저 화면에 결과 표시", "file": null, "active": [0], "move": null, "dir": "res", "desc": ["브라우저가 JSON 글자를 화면에 보여 줍니다. 3장과 같은 흐름입니다.", "5장에서 새로 배우는 내용은 테스트 탭 두 개에서 볼 수 있습니다."], "data": {"kind": "browser", "label": "브라우저 화면", "url": "localhost:8080/test", "text": "[{\"name\":\"name 1\",\"id\":1},{\"name\":\"name 2\",\"id\":2},{\"name\":\"name 3\",\"id\":3}]"}, "nofile": null, "hlLines": []}], "summary": [{"code": "GET /test"}, {"text": " 요청 흐름입니다. 3장과 같은 흐름을 5장 코드로 확인합니다."}]}, {"tab": "테스트 findByName", "nodes": [{"name": "Gradle · JUnit", "sub": "./gradlew test 실행"}, {"name": "MemberRepositoryTest", "sub": "MemberRepositoryTest.java"}, {"name": "@Sql", "sub": "insert-members.sql"}, {"name": "MemberRepository", "sub": "스프링 데이터 JPA 구현 객체 + Hibernate"}, {"name": "H2 DB", "sub": "테스트용 member 테이블 (메모리)", "db": true}], "steps": [{"phase": "준비", "title": "./gradlew test : JUnit 이 테스트를 찾음", "file": "MemberRepositoryTest.java", "active": [0], "move": null, "dir": "none", "desc": ["./gradlew test (Windows : gradlew.bat test) 를 실행하면 JUnit 이 @Test 가 붙은 메소드를 찾아 실행합니다.", "이 테스트는 브라우저와 톰캣을 쓰지 않습니다. 테스트 코드가 직접 MemberRepository 를 호출합니다.", "아래 명령은 getMemberByName 테스트 하나만 실행합니다. 모든 테스트를 실행하려면 --tests 부분을 빼면 됩니다."], "data": {"kind": "pre", "label": "실행 명령", "text": "./gradlew test --tests '*MemberRepositoryTest.getMemberByName'"}, "nofile": null, "hlLines": [13, 14]}, {"phase": "준비", "title": "@DataJpaTest : JPA 부분만 올리고 테이블 생성", "file": "MemberRepositoryTest.java", "active": [0, 1, 3, 4], "move": [0, 1], "dir": "req", "desc": ["@DataJpaTest 는 JPA 관련 빈(객체)만 스프링 컨테이너에 올립니다. 톰캣과 컨트롤러는 만들지 않습니다.", "Hibernate 가 테스트용 H2 DB 에 member 테이블을 만들고, @Autowired 로 memberRepository 변수에 구현 객체를 넣습니다.", "테스트용 application.yml 의 mode: never 때문에 data.sql 은 실행되지 않습니다."], "data": {"kind": "pre", "label": "실제 테스트 로그", "text": "Hibernate: create table member (id bigint generated by default as identity, name varchar(255) not null, primary key (id))"}, "nofile": null, "hlLines": [13, 16, 17]}, {"phase": "준비", "title": "@Sql : insert-members.sql 로 회원 A, B, C 넣기", "file": "insert-members.sql", "active": [2, 4], "move": [2, 4], "dir": "req", "desc": ["getMemberByName 위의 @Sql(\"/insert-members.sql\") 때문에, 테스트 메소드 실행 직전에 이 파일의 INSERT 3개가 실행됩니다.", "@Sql 이 실행한 SQL 은 Hibernate 의 show-sql 로그에 나오지 않습니다."], "data": {"kind": "table", "label": "member 테이블", "cols": ["id", "name"], "rows": [["1", "A"], ["2", "B"], ["3", "C"]]}, "nofile": null, "hlLines": [1, 3, 5]}, {"phase": "실행", "title": "findByName(\"C\") 호출", "file": "MemberRepositoryTest.java", "active": [1, 3], "move": [1, 3], "dir": "req", "desc": ["테스트 메소드가 memberRepository.findByName(\"C\") 를 호출합니다."], "data": {"kind": "pre", "label": "호출", "text": "memberRepository.findByName(\"C\")"}, "nofile": null, "hlLines": [45, 47]}, {"phase": "실행", "title": "메소드 이름으로 쿼리 만들기", "file": "MemberRepository.java", "active": [3], "move": null, "dir": "none", "desc": ["findByName 에는 구현 코드가 없습니다. 스프링 데이터 JPA 가 메소드 이름을 읽어서 쿼리를 만듭니다.", "find + By + Name → name 열이 같은 행을 찾는 조건(where name = ?)이 됩니다.", "같은 일을 @Query 로 직접 적은 메소드가 findByNameQuery 입니다."], "data": {"kind": "pre", "label": "이름 규칙 해석", "text": "findByName(\"C\")\n  find   : 조회\n  By     : 조건 시작\n  Name   : name 변수(열)\n  →  where name = 'C'"}, "nofile": null, "hlLines": [12]}, {"phase": "실행", "title": "SELECT 구문을 DB 로 보냄", "file": "MemberRepository.java", "active": [3, 4], "move": [3, 4], "dir": "req", "desc": ["물음표(?) 자리에 \"C\" 가 들어가서 실행됩니다.", "아래는 실제 테스트 로그입니다."], "data": {"kind": "pre", "label": "실제 테스트 로그", "text": "Hibernate: select m1_0.id,m1_0.name from member m1_0 where m1_0.name=?"}, "nofile": null, "hlLines": [12]}, {"phase": "확인", "title": "결과 1줄이 Optional 에 담겨 돌아옴", "file": "MemberRepositoryTest.java", "active": [4, 3, 1], "move": [4, 1], "dir": "res", "desc": ["DB 가 id 3, name C 행을 돌려주고, Hibernate 가 Member 객체로 바꿉니다.", "결과는 Optional 상자에 담겨 돌아오고, .get() 이 상자에서 Member 객체를 꺼내 member 변수에 넣습니다."], "data": {"kind": "table", "label": "조회 결과", "cols": ["id", "name"], "rows": [["3", "C"]]}, "nofile": null, "hlLines": [47]}, {"phase": "확인", "title": "assertThat 으로 결과 검사", "file": "MemberRepositoryTest.java", "active": [1, 0], "move": [1, 0], "dir": "res", "desc": ["member.getId() 가 3 인지 검사합니다. 같으므로 테스트가 통과합니다.", "실제 결과 : 테스트 1개 실행, 실패 0개"], "data": {"kind": "pre", "label": "검사", "text": "기대값 : 3\n실제값 : 3\n결과   : 통과"}, "nofile": null, "hlLines": [49]}, {"phase": "정리", "title": "@AfterEach 와 롤백", "file": "MemberRepositoryTest.java", "active": [1, 3, 4], "move": [1, 4], "dir": "none", "desc": ["테스트 메소드가 끝나면 @AfterEach 의 cleanUp 이 deleteAll() 을 호출합니다. 실제 로그에는 전체 조회 select 만 나옵니다.", "삭제(delete) 구문은 DB 로 보내지지 않았습니다. @DataJpaTest 가 테스트 끝에 작업을 모두 취소(롤백)하기 때문입니다.", "그래서 다음 테스트는 다시 깨끗한 상태에서 시작합니다."], "data": {"kind": "pre", "label": "실제 테스트 로그 (cleanUp)", "text": "Hibernate: select m1_0.id,m1_0.name from member m1_0"}, "nofile": null, "hlLines": [19, 22]}], "summary": [{"code": "MemberRepositoryTest.getMemberByName()"}, {"text": " 테스트입니다. 메소드 이름만 적은 findByName 이 어떤 SQL 이 되는지 따라갑니다."}]}, {"tab": "테스트 update (변경 감지)", "nodes": [{"name": "Gradle · JUnit", "sub": "./gradlew test 실행"}, {"name": "MemberRepositoryTest", "sub": "MemberRepositoryTest.java"}, {"name": "@Sql", "sub": "insert-members.sql"}, {"name": "MemberRepository", "sub": "스프링 데이터 JPA 구현 객체 + Hibernate"}, {"name": "H2 DB", "sub": "테스트용 member 테이블 (메모리)", "db": true}], "steps": [{"phase": "준비", "title": "./gradlew test : JUnit 이 테스트를 찾음", "file": "MemberRepositoryTest.java", "active": [0], "move": null, "dir": "none", "desc": ["./gradlew test (Windows : gradlew.bat test) 를 실행하면 JUnit 이 @Test 가 붙은 메소드를 찾아 실행합니다.", "이 테스트는 브라우저와 톰캣을 쓰지 않습니다. 테스트 코드가 직접 MemberRepository 를 호출합니다.", "아래 명령은 update 테스트 하나만 실행합니다. 모든 테스트를 실행하려면 --tests 부분을 빼면 됩니다."], "data": {"kind": "pre", "label": "실행 명령", "text": "./gradlew test --tests '*MemberRepositoryTest.update'"}, "nofile": null, "hlLines": [13, 14]}, {"phase": "준비", "title": "@Sql : 회원 A, B, C 넣기", "file": "insert-members.sql", "active": [2, 4], "move": [2, 4], "dir": "req", "desc": ["update 위의 @Sql 이 테스트 직전에 회원 3명을 넣습니다."], "data": {"kind": "table", "label": "member 테이블", "cols": ["id", "name"], "rows": [["1", "A"], ["2", "B"], ["3", "C"]]}, "nofile": null, "hlLines": [1, 3, 5]}, {"phase": "실행", "title": "findById(2L) : 2번 회원 조회", "file": "MemberRepositoryTest.java", "active": [1, 3, 4], "move": [1, 4], "dir": "req", "desc": ["findById(2L) 이 id 2 인 행을 조회하는 select 구문을 보냅니다.", "찾은 Member 객체는 이 테스트 트랜잭션 안에서 JPA 가 관리합니다. 처음 값(name=\"B\")도 함께 기억해 둡니다."], "data": {"kind": "pre", "label": "실제 테스트 로그", "text": "Hibernate: select m1_0.id,m1_0.name from member m1_0 where m1_0.id=?"}, "nofile": null, "hlLines": [38, 95]}, {"phase": "실행", "title": "changeName(\"BC\") : 변수 값만 바뀜", "file": "Member.java", "active": [1], "move": null, "dir": "none", "desc": ["member.changeName(\"BC\") 가 객체의 name 변수만 \"BC\" 로 바꿉니다.", "이 순간에는 SQL 이 실행되지 않습니다. DB 의 2번 행은 아직 \"B\" 입니다."], "data": {"kind": "pre", "label": "객체와 DB 상태", "text": "객체 member.name : \"B\" → \"BC\"\nDB 2번 행 name  : \"B\" (아직 그대로)"}, "nofile": null, "hlLines": [26]}, {"phase": "확인", "title": "다시 findById(2L) : SQL 없이 같은 객체", "file": "MemberRepositoryTest.java", "active": [1, 3], "move": [1, 3], "dir": "req", "desc": ["같은 트랜잭션 안에서 같은 id 를 다시 찾으면, JPA 가 이미 가지고 있는 객체를 그대로 돌려줍니다. (1차 캐시)", "실제 로그에도 이 줄에서 select 구문이 나오지 않습니다.", "그래서 이 검사는 객체 값만 확인하고 통과합니다. DB 에 반영되었는지는 이 줄로 알 수 없습니다."], "data": {"kind": "pre", "label": "검사", "text": "기대값 : \"BC\"\n실제값 : \"BC\" (1차 캐시의 객체)\n결과   : 통과"}, "nofile": null, "hlLines": [101]}, {"phase": "정리", "title": "@AfterEach : 조회 직전에 update 실행", "file": "MemberRepositoryTest.java", "active": [1, 3, 4], "move": [1, 4], "dir": "req", "desc": ["cleanUp 의 deleteAll() 이 먼저 전체 조회를 하려고 합니다. JPA 는 조회하기 직전에 바뀐 객체를 찾아 update 구문을 먼저 보냅니다. (변경 감지)", "실제 로그 순서 : update → select. update 는 테스트 메소드 안이 아니라 이 시점에 실행되었습니다."], "data": {"kind": "pre", "label": "실제 테스트 로그 (순서대로)", "text": "Hibernate: update member set name=? where id=?\nHibernate: select m1_0.id,m1_0.name from member m1_0"}, "nofile": null, "hlLines": [19, 22]}, {"phase": "정리", "title": "롤백 : 모든 변경 취소", "file": null, "active": [0], "move": [4, 0], "dir": "res", "desc": ["테스트가 끝나면 @DataJpaTest 가 트랜잭션을 롤백합니다. update 로 바뀐 이름과 넣은 회원이 모두 취소됩니다.", "deleteAll() 의 delete 구문은 DB 로 보내지지 않았습니다.", "실제 결과 : 테스트 1개 실행, 실패 0개"], "data": {"kind": "pre", "label": "이 테스트에서 실제로 나간 SQL 순서", "text": "1) select ... where id=?   (findById)\n2) update member set name=? where id=?   (cleanUp 의 조회 직전)\n3) select ... from member   (cleanUp 의 deleteAll)"}, "nofile": "롤백은 스프링 테스트 기능이 처리합니다.", "hlLines": []}], "summary": [{"code": "MemberRepositoryTest.update()"}, {"text": " 테스트입니다. 값만 바꿨는데 update 구문이 언제 나가는지 실제 로그 순서로 확인합니다."}]}];
+const PHASE_CLASS = { '시작 준비': 'p0', '준비': 'p0', '요청': 'p1', '실행': 'p1', '응답': 'p2', '확인': 'p2', '정리': 'p0' };
+const FILES = {"TestController.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.List;\n\n@RestController\npublic class TestController {\n\n    @Autowired\n    TestService testService;\n\n    @GetMapping(\"/test\")\n    public List<Member> getAllMembers() {\n\n        List<Member> members = testService.getAllMembers();\n\n        return members;\n    }\n}", "TestService.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.stereotype.Service;\n\nimport java.util.List;\n\n@Service\npublic class TestService {\n\n    @Autowired\n    MemberRepository memberRepository;\n\n    public List<Member> getAllMembers() {\n\n        return memberRepository.findAll();\n    }\n}", "MemberRepository.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.stereotype.Repository;\n\nimport java.util.Optional;\n\n@Repository\npublic interface MemberRepository extends JpaRepository<Member, Long> {\n\n    Optional<Member> findByName(String name);\n\n    @Query(\"select m from Member m where m.name = ?1\")\n    Optional<Member> findByNameQuery(String name);\n}", "Member.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport jakarta.persistence.*;\n\nimport lombok.AccessLevel;\nimport lombok.Getter;\nimport lombok.NoArgsConstructor;\n\n@Getter\n@Entity\n@NoArgsConstructor(access = AccessLevel.PROTECTED)\npublic class Member {\n\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    @Column(name = \"id\", updatable = false)\n    private Long id;\n\n    @Column(name = \"name\", nullable = false)\n    private String name;\n\n    public Member(String name) {\n        this.name = name;\n    }\n\n    public void changeName(String name) {\n        this.name = name;\n    }\n}", "data.sql": "INSERT INTO member (id, name) VALUES (1, 'name 1')\n\nINSERT INTO member (id, name) VALUES (2, 'name 2')\n\nINSERT INTO member (id, name) VALUES (3, 'name 3')", "MemberRepositoryTest.java": "package me.shinsunyoung.springbootdeveloper;\n\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;\nimport org.springframework.test.context.jdbc.Sql;\n\nimport java.util.List;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@DataJpaTest\nclass MemberRepositoryTest {\n\n    @Autowired\n    MemberRepository memberRepository;\n\n    @AfterEach\n    public void cleanUp() {\n\n        memberRepository.deleteAll();\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void getAllMembers() {\n\n        List<Member> members = memberRepository.findAll();\n\n        assertThat(members.size()).isEqualTo(3);\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void getMemberById() {\n\n        Member member = memberRepository.findById(2L).get();\n\n        assertThat(member.getName()).isEqualTo(\"B\");\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void getMemberByName() {\n\n        Member member = memberRepository.findByName(\"C\").get();\n\n        assertThat(member.getId()).isEqualTo(3);\n    }\n\n    @Test\n    void saveMember() {\n\n        Member member = new Member(\"A\");\n\n        memberRepository.save(member);\n\n        assertThat(memberRepository.findById(1L).get().getName()).isEqualTo(\"A\");\n    }\n\n    @Test\n    void saveMembers() {\n\n        List<Member> members = List.of(new Member(\"B\"),\n                new Member(\"C\"));\n\n        memberRepository.flush();\n\n        memberRepository.saveAll(members);\n\n        assertThat(memberRepository.findAll().size()).isEqualTo(2);\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void deleteMemberById() {\n\n        memberRepository.deleteById(2L);\n\n        assertThat(memberRepository.findById(2L).isEmpty()).isTrue();\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void deleteAll() {\n\n        memberRepository.deleteAll();\n\n        assertThat(memberRepository.findAll().size()).isZero();\n    }\n\n    @Sql(\"/insert-members.sql\")\n    @Test\n    void update() {\n\n        Member member = memberRepository.findById(2L).get();\n\n        member.changeName(\"BC\");\n\n        assertThat(memberRepository.findById(2L).get().getName()).isEqualTo(\"BC\");\n    }\n}", "insert-members.sql": "INSERT INTO member (id, name) VALUES (1, 'A')\n\nINSERT INTO member (id, name) VALUES (2, 'B')\n\nINSERT INTO member (id, name) VALUES (3, 'C')", "test/application.yml": "spring:\n\n  sql:\n\n    init:\n\n      mode: never"};
+const PATHS = {"TestController.java": "src/main/java/me/shinsunyoung/springbootdeveloper/TestController.java", "TestService.java": "src/main/java/me/shinsunyoung/springbootdeveloper/TestService.java", "MemberRepository.java": "src/main/java/me/shinsunyoung/springbootdeveloper/MemberRepository.java", "Member.java": "src/main/java/me/shinsunyoung/springbootdeveloper/Member.java", "data.sql": "src/main/resources/data.sql", "MemberRepositoryTest.java": "src/test/java/me/shinsunyoung/springbootdeveloper/MemberRepositoryTest.java", "insert-members.sql": "src/test/resources/insert-members.sql", "test/application.yml": "src/test/resources/application.yml"};
+
+const $ = (id) => document.getElementById(id);
+const stack = $('stack'), packet = $('packet');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let sc = 0, cur = 0, timer = null, bands = [], dotBtns = [], phases = [];
+let STEPS = [], NODES = [];
+
+// 시나리오 탭 만들기
+const tabBtns = SCENARIOS.map((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'tab'; b.setAttribute('role', 'tab');
+  b.textContent = s.tab;
+  b.addEventListener('click', () => { stop(); load(i); });
+  $('tabs').appendChild(b);
+  return b;
+});
+
+function buildStage() {
+  bands.forEach((b) => b.remove());
+  bands = NODES.map((n, i) => {
+    const d = document.createElement('div');
+    d.className = 'band' + (n.db ? ' db' : '');
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = n.name;
+    const sb = document.createElement('div'); sb.className = 'sb'; sb.textContent = n.sub;
+    d.append(nm, sb);
+    stack.appendChild(d);
+    return d;
+  });
+  $('dots').innerHTML = ''; dotBtns = [];
+  // 단계 번호는 단계 순서대로 놓고, 묶음(요청, 응답 등)이 바뀌는 곳에서만 묶음 이름을 붙입니다.
+  phases = [];
+  let g = null, last = null;
+  STEPS.forEach((s, i) => {
+    if (!phases.includes(s.phase)) phases.push(s.phase);
+    if (s.phase !== last) {
+      g = document.createElement('div'); g.className = 'grp';
+      const gl = document.createElement('span'); gl.className = 'gl'; gl.textContent = s.phase;
+      g.appendChild(gl);
+      $('dots').appendChild(g);
+      last = s.phase;
+    }
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'dot'; b.textContent = i + 1;
+    b.setAttribute('aria-label', (i + 1) + '단계 : ' + s.title);
+    b.addEventListener('click', () => { stop(); go(i); });
+    g.appendChild(b); dotBtns[i] = b;
+  });
+}
+
+function load(i) {
+  sc = i;
+  const s = SCENARIOS[sc];
+  STEPS = s.steps; NODES = s.nodes;
+  tabBtns.forEach((b, k) => b.setAttribute('aria-selected', k === sc ? 'true' : 'false'));
+  tabBtns[sc].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  $('scen').innerHTML = '';
+  s.summary.forEach((part) => {
+    if (part.code) { const c = document.createElement('code'); c.textContent = part.code; $('scen').appendChild(c); }
+    else $('scen').appendChild(document.createTextNode(part.text));
+  });
+  buildStage();
+  go(0);
+}
+
+function centerY(i) {
+  const b = bands[i];
+  return b.offsetTop + b.offsetHeight / 2 - 8;
+}
+
+function placePacket(step) {
+  packet.className = 'packet ' + (step.dir === 'none' ? '' : step.dir);
+  if (step.move) {
+    const [from, to] = step.move;
+    packet.style.transition = 'none';
+    packet.style.transform = 'translateY(' + centerY(from) + 'px)';
+    void packet.offsetHeight;
+    packet.style.transition = reduce ? 'none' : 'transform 1s cubic-bezier(.45,0,.2,1)';
+    packet.style.transform = 'translateY(' + centerY(to) + 'px)';
+  } else {
+    packet.style.transition = 'none';
+    packet.style.transform = 'translateY(' + centerY(step.active[0]) + 'px)';
+    packet.classList.add('pulse');
+  }
+}
+
+function renderCode(step) {
+  const wrap = $('codewrap');
+  wrap.innerHTML = '';
+  if (!step.file) {
+    $('fname').textContent = '프로젝트 파일 없음';
+    $('fpath').textContent = step.nofile || '이 단계는 스프링 부트 라이브러리나 브라우저가 처리합니다.';
+    $('hlcount').textContent = '';
+    const e = document.createElement('div'); e.className = 'empty';
+    e.textContent = '이 단계에서는 개발자가 작성한 파일이 실행되지 않습니다. 왼쪽에서 신호가 지나가는 구간을 확인하세요.';
+    wrap.appendChild(e);
+    return;
+  }
+  $('fname').textContent = step.file.split('/').pop();
+  $('fpath').textContent = PATHS[step.file];
+  const box = document.createElement('div'); box.className = 'code'; box.tabIndex = 0;
+  box.setAttribute('aria-label', step.file + ' 코드');
+  let first = null, n = 0;
+  FILES[step.file].split('\n').forEach((line, i) => {
+    const row = document.createElement('div'); row.className = 'ln';
+    const no = document.createElement('span'); no.className = 'no'; no.textContent = i + 1;
+    const tx = document.createElement('span'); tx.textContent = line || ' ';
+    row.append(no, tx);
+    if (step.hlLines.includes(i + 1)) {
+      row.classList.add('hl'); n++;
+      if (!first) first = row;
+    }
+    box.appendChild(row);
+  });
+  wrap.appendChild(box);
+  $('hlcount').textContent = n ? '강조된 줄 ' + n + '개 : 이 단계에서 실행되거나 쓰이는 코드' : '';
+  if (first) box.scrollTop = Math.max(0, first.offsetTop - box.clientHeight / 3);
+}
+
+function renderData(step) {
+  const d = step.data, body = $('dbody');
+  $('dlabel').textContent = d.label;
+  body.innerHTML = '';
+  if (d.kind === 'table') {
+    const t = document.createElement('table');
+    const tr = document.createElement('tr');
+    d.cols.forEach((c) => { const th = document.createElement('th'); th.textContent = c; tr.appendChild(th); });
+    t.appendChild(tr);
+    d.rows.forEach((r) => {
+      const row = document.createElement('tr');
+      r.forEach((c) => { const td = document.createElement('td'); td.textContent = c; row.appendChild(td); });
+      t.appendChild(row);
+    });
+    const w = document.createElement('div'); w.style.overflowX = 'auto'; w.appendChild(t);
+    body.appendChild(w);
+  } else if (d.kind === 'browser') {
+    const b = document.createElement('div'); b.className = 'browser';
+    const bar = document.createElement('div'); bar.className = 'bar'; bar.textContent = d.url;
+    const v = document.createElement('div'); v.className = 'view'; v.style.whiteSpace = 'pre-wrap'; v.textContent = d.text;
+    b.append(bar, v); body.appendChild(b);
+  } else {
+    const p = document.createElement('pre'); p.textContent = d.text; body.appendChild(p);
+  }
+}
+
+function go(i) {
+  cur = Math.max(0, Math.min(STEPS.length - 1, i));
+  const s = STEPS[cur];
+  $('stepno').textContent = (cur + 1) + ' / ' + STEPS.length + '단계';
+  const ph = $('phase');
+  ph.textContent = s.phase;
+  ph.className = 'phase ' + (PHASE_CLASS[s.phase] || 'p0');
+  $('title').textContent = s.title;
+  const ol = $('desc'); ol.innerHTML = '';
+  s.desc.forEach((t) => { const li = document.createElement('li'); li.textContent = t; ol.appendChild(li); });
+  bands.forEach((b, k) => { b.className = 'band' + (NODES[k].db ? ' db' : ''); });
+  s.active.forEach((k) => bands[k].classList.add('active', s.dir));
+  renderCode(s);
+  renderData(s);
+  ['desc', 'codewrap', 'dbody'].forEach((id) => { const el = $(id); el.classList.remove('fade'); void el.offsetWidth; el.classList.add('fade'); });
+  placePacket(s);
+  dotBtns.forEach((b, k) => { b.classList.toggle('cur', k === cur); b.classList.toggle('done', k < cur); b.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
+  if (dotBtns[cur]) dotBtns[cur].scrollIntoView({ block: 'nearest', inline: 'center' });
+  $('prev').disabled = cur === 0; $('first').disabled = cur === 0;
+  $('next').disabled = cur === STEPS.length - 1;
+}
+
+function stop() { if (timer) { clearInterval(timer); timer = null; } $('play').textContent = '자동 재생'; }
+function play() {
+  if (timer) { stop(); return; }
+  if (cur === STEPS.length - 1) go(0);
+  $('play').textContent = '멈춤';
+  timer = setInterval(() => { if (cur >= STEPS.length - 1) { stop(); return; } go(cur + 1); }, 4200);
+}
+
+$('first').addEventListener('click', () => { stop(); go(0); });
+$('prev').addEventListener('click', () => { stop(); go(cur - 1); });
+$('next').addEventListener('click', () => { stop(); go(cur + 1); });
+$('play').addEventListener('click', play);
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('.code')) return;
+  if (e.key === 'ArrowRight') { stop(); go(cur + 1); }
+  if (e.key === 'ArrowLeft') { stop(); go(cur - 1); }
+});
+window.addEventListener('resize', () => placePacket(Object.assign({}, STEPS[cur], { move: null })));
+
+$('dl').addEventListener('click', () => {
+  stop();
+  const blob = new Blob([ORIGINAL_HTML], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "chapter5-request-flow.html";
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+});
+
+load(0);
+</script>
+</body>
+</html>
