@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- v2 · 2026-10-20 · 8장 스프링 AI 글쓰기 도우미 실습 자습서 (IntelliJ IDEA 기준 · OpenRouter 무료 모델) -->
+<title>8장 실습 · IntelliJ로 스프링 AI 글쓰기 도우미 (OpenRouter 무료)</title>
+<style>
+:root { --green: #1f7a4d; --green-2: #e7f5ee; --ink: #1d2433; --muted: #5b6475; --line: #dfe4ea; --bg: #f7f9fb; --warn: #fff4e5; --warn-ink: #8a4b00; --ok: #e8f7ee; --ok-ink: #17643a; --code: #0f1b2d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #e7ecf3; --muted: #a9b3c2; --line: #2b3648; --bg: #111827; --green-2: #12301f; --warn: #3a2a10; --warn-ink: #ffd08a; --ok: #112a1d; --ok-ink: #a6e6bf; } }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.7; font-size: 16px; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--green); color: #fff; }
+.topbar .brand { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar .brand small { font-weight: 400; opacity: .85; margin-left: 6px; }
+.menu-btn { display: none; background: none; border: 1px solid rgba(255,255,255,.6); color: #fff; border-radius: 6px; font-size: 18px; padding: 2px 10px; cursor: pointer; }
+.dl-btn { background: #fff; color: var(--green); border: 0; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.wrap { display: flex; align-items: flex-start; max-width: 1180px; margin: 0 auto; }
+.toc { width: 240px; flex: 0 0 240px; position: sticky; top: 60px; max-height: calc(100vh - 70px); overflow: auto; padding: 18px 14px; }
+.toc .toc-title { font-weight: 700; margin: 0 0 8px; color: var(--green); }
+.toc ol { margin: 0; padding-left: 0; list-style: none; }
+.toc li { margin: 2px 0; }
+.toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 15px; }
+.toc a:hover, .toc a:focus { background: var(--green-2); }
+.content { flex: 1; min-width: 0; padding: 18px 20px 120px; }
+h1 { font-size: 26px; margin: 8px 0 10px; }
+h2 { font-size: 22px; margin: 0 0 12px; padding-top: 6px; }
+h2 .no { display: inline-block; background: var(--green); color: #fff; border-radius: 8px; padding: 0 10px; margin-right: 6px; }
+h2 small { font-size: 14px; color: var(--muted); font-weight: 400; }
+h3 { font-size: 17px; margin: 18px 0 8px; }
+section.lesson { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 18px; margin: 0 0 22px; scroll-margin-top: 70px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) section.lesson { background: #161f2e; } }
+.why, .warn, .ok, .tip { border-radius: 10px; padding: 12px 14px; margin: 12px 0; }
+.why { background: var(--green-2); }
+.warn { background: var(--warn); color: var(--warn-ink); }
+.ok { background: var(--ok); color: var(--ok-ink); }
+.tip { background: var(--bg); border: 1px dashed var(--line); }
+.why b, .ok b, .warn b { font-weight: 700; }
+ol.steps { padding-left: 0; list-style: none; counter-reset: step; }
+ol.steps > li { counter-increment: step; position: relative; padding-left: 38px; margin: 0 0 18px; }
+ol.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: #fff; font-weight: 700; text-align: center; line-height: 26px; font-size: 14px; }
+p { margin: 6px 0; }
+.codebox { margin: 10px 0 14px; border-radius: 10px; overflow: hidden; border: 1px solid #1c2a40; background: var(--code); }
+.codebox .bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; background: #18263d; color: #cbd5e1; font-size: 13px; }
+.codebox .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.codebox pre { margin: 0; padding: 12px 14px; overflow: auto; max-height: 520px; color: #e6edf7; font-family: Consolas, "D2Coding", monospace; font-size: 13px; line-height: 1.55; white-space: pre; tab-size: 4; }
+.copy, .copy-lesson { cursor: pointer; border: 0; border-radius: 6px; padding: 5px 10px; font-size: 13px; font-weight: 700; background: #3ddc97; color: #06301d; white-space: nowrap; }
+.copy-lesson { background: var(--green); color: #fff; margin: 4px 0 12px; padding: 8px 12px; font-size: 14px; }
+.shot { border-radius: 10px; overflow: hidden; border: 1px solid #2b3a52; margin: 10px 0 14px; background: #0b1424; }
+.shot .shot-bar { background: #1b2a42; color: #9fb0c8; font-size: 12px; padding: 5px 10px; }
+.shot pre { margin: 0; padding: 10px 12px; color: #d7e2f0; font-family: Consolas, monospace; font-size: 13px; white-space: pre-wrap; word-break: break-all; }
+.caption { font-size: 13px; color: var(--muted); margin: -6px 0 12px; }
+/* 본문 속 짧은 코드(인라인)는 휴대폰 폭에서도 줄바꿈되도록 합니다. 코드 블록 안의 글자는 그대로 둡니다. */
+p code, li code, .ok code, .warn code, .why code, .tip code, td code, th code, .q-title code, .opt code { overflow-wrap: anywhere; word-break: break-word; background: rgba(127,127,127,.15); padding: 1px 4px; border-radius: 4px; }
+.codebox code, .shot code { overflow-wrap: normal; word-break: normal; background: none; padding: 0; border-radius: 0; }
+kbd { font-family: inherit; font-size: 13px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) kbd { background: #1e293b; } }
+.do { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 10px 12px; margin: 14px 0; cursor: pointer; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .do { background: #161f2e; } }
+.do input { margin-top: 6px; transform: scale(1.3); pointer-events: none; }
+.quiz { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 14px 0; background: var(--bg); }
+.quiz .q-title { font-weight: 700; margin: 0 0 8px; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 9px 12px; cursor: pointer; font-size: 15px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .opt { background: #161f2e; } }
+.opt:disabled { cursor: default; }
+.opt.right { border-color: #1f9d5b; background: var(--ok); color: var(--ok-ink); font-weight: 700; }
+.opt.wrong { border-color: #c2410c; background: var(--warn); color: var(--warn-ink); }
+.quiz .exp { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: #fff; border-left: 4px solid var(--green); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .quiz .exp { background: #161f2e; } }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+th { background: var(--green-2); }
+.dash { position: fixed; right: 14px; bottom: 14px; z-index: 30; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.12); display: flex; gap: 12px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dash { background: #161f2e; } }
+.ring { text-align: center; font-size: 12px; color: var(--muted); }
+.ring svg { width: 64px; height: 64px; display: block; margin: 0 auto 4px; }
+.ring .track { stroke: var(--line); fill: none; stroke-width: 4; }
+.ring .bar { stroke: var(--green); fill: none; stroke-width: 4; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 18px 18px; }
+.ring .pct { font-size: 9px; font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.ring b { color: var(--ink); }
+footer.end { font-size: 14px; color: var(--muted); margin-top: 28px; }
+@media (max-width: 1000px) {
+  .menu-btn { display: inline-block; }
+  .wrap { display: block; }
+  .toc { position: fixed; left: 0; top: 0; bottom: 0; width: 270px; max-height: none; background: #fff; box-shadow: 4px 0 18px rgba(0,0,0,.18); transform: translateX(-105%); transition: transform .2s ease; z-index: 40; padding-top: 60px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .toc { background: #161f2e; } }
+  .toc.open { transform: translateX(0); }
+  .content { padding: 14px 12px 120px; }
+  section.lesson { padding: 16px 12px; }
+  .dash { left: 10px; right: 10px; justify-content: space-around; bottom: 10px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+}
+@media (max-width: 600px) { .topbar .brand small { display: none; } .dl-btn { padding: 6px 8px; font-size: 13px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="목차 열기">☰</button>
+  <div class="brand">8장 · IntelliJ로 글쓰기 도우미 만들기 <small>OpenRouter 무료 모델</small></div>
+  <button class="dl-btn" id="dlBtn">⬇️ 자습서 다운로드</button>
+</header>
+
+<div class="wrap">
+  <aside class="toc" id="toc">
+    <p class="toc-title">목차</p>
+    <ol>
+      <li><a href="#intro">시작하기 전에</a></li>
+      <li><a href="#l0">0. IntelliJ 열기 · 설정 점검</a></li>
+      <li><a href="#l1">1. 사전 지식 (PDF 8.1)</a></li>
+      <li><a href="#l2">2. OpenRouter 키 등록 (PDF 8.2 대체)</a></li>
+      <li><a href="#l3">3. 의존성 추가 · 테스트 (PDF 8.3)</a></li>
+      <li><a href="#l4">4. 글쓰기 도우미 코드 작성 (PDF 8.3)</a></li>
+      <li><a href="#l5">5. 앱 실행 · 제안 받기 (PDF 8.3)</a></li>
+      <li><a href="#l6">6. 글 작성 화면 (PDF 8.3)</a></li>
+      <li><a href="#l7">7. 이미지 업로드 (PDF 8.4 앞부분)</a></li>
+      <li><a href="#l8">8. 섬네일 확인 (PDF 8.4, 이번엔 꺼 둠)</a></li>
+      <li><a href="#l9">9. 마무리</a></li>
+    </ol>
+  </aside>
+
+  <main class="content">
+
+    <section id="intro" class="lesson">
+      <h1>8장 실습 · IntelliJ로 스프링 AI 글쓰기 도우미 만들기</h1>
+      <p>이 자습서는 <b>IntelliJ IDEA</b>에서 따라 하는 실습서입니다. 파일은 IntelliJ 편집기에서 열고, 명령은 IntelliJ 아래쪽 <b>Terminal 탭</b>에서 실행합니다. 별도의 PowerShell 창은 열지 않습니다.</p>
+      <div class="why">
+        💡 <b>이 자습서에서 할 일</b><br>
+        1) IntelliJ에서 프로젝트를 열고 설정을 점검합니다. 2) 책의 순서대로 코드를 읽고, 필요하면 IntelliJ에 붙여넣습니다. 3) ▶ 버튼으로 앱을 실행하고 결과를 확인합니다. 4) 미션과 퀴즈로 이해를 점검합니다.<br>
+        모든 코드 블록 오른쪽 위 <b>전체 복사</b> 버튼으로 파일 내용을 한 번에 복사할 수 있습니다. 각 단계 위쪽의 <b>이 단계 파일 한 번에 복사</b> 버튼은 그 단계의 파일들을 한꺼번에 복사합니다.
+      </div>
+      <div class="warn">
+        ⚠️ <b>꼭 알아 두세요</b><br>
+        · 무료 모델은 <b>글쓰기 제안(텍스트)</b>은 됩니다. <b>섬네일 이미지 생성</b>은 무료 모델에서 동작하지 않아서, 이번 실습에서는 <b>꺼 둔 상태</b>로 진행합니다(8단계).<br>
+        · 이 자습서는 <b>IntelliJ IDEA 2026.2.3</b> 기준입니다. 메뉴 이름은 버전에 따라 조금 다를 수 있습니다.<br>
+        · 아래 화면 예시는 실제 화면을 그린 것입니다. 숫자나 문구는 환경마다 다를 수 있습니다.
+      </div>
+      <h3>IntelliJ에서 자주 쓰는 키 (Windows 기본 설정)</h3>
+      <table>
+        <tr><th>하고 싶은 일</th><th>누르는 키 또는 메뉴</th></tr>
+        <tr><td>파일 이름으로 찾아서 열기</td><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd></td></tr>
+        <tr><td>앱 실행 (마지막으로 실행한 구성)</td><td><kbd>Shift</kbd> + <kbd>F10</kbd> 또는 ▶ 버튼</td></tr>
+        <tr><td>실행 중인 앱 멈추기</td><td>Run 창의 빨간 ■ 버튼 (<kbd>Ctrl</kbd> + <kbd>F2</kbd>)</td></tr>
+        <tr><td>Terminal 탭 열기</td><td><kbd>Alt</kbd> + <kbd>F12</kbd> 또는 하단 Terminal 탭</td></tr>
+        <tr><td>전체 빌드 (오류 검사)</td><td>Build 메뉴 → Build Project (<kbd>Ctrl</kbd> + <kbd>F9</kbd>)</td></tr>
+        <tr><td>설정 열기</td><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd></td></tr>
+        <tr><td>프로젝트 구조(JDK) 열기</td><td>File → Project Structure (<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>)</td></tr>
+        <tr><td>파일 내용 전부 고르기 / 붙여넣기</td><td><kbd>Ctrl</kbd> + <kbd>A</kbd> / <kbd>Ctrl</kbd> + <kbd>V</kbd></td></tr>
+      </table>
+      <h3>한눈에 보는 순서</h3>
+      <table>
+        <tr><th>단계</th><th>하는 일</th><th>결과</th></tr>
+        <tr><td>0~1</td><td>프로젝트 열기, 설정 점검, 개념 이해</td><td>설정 점검표 완료</td></tr>
+        <tr><td>2~3</td><td>OpenRouter 키 등록, 테스트 실행</td><td>테스트 통과</td></tr>
+        <tr><td>4~6</td><td>코드 확인·붙여넣기, 앱 실행, 브라우저에서 사용</td><td>AI 제안 3개 받기</td></tr>
+        <tr><td>7~9</td><td>이미지 업로드, 섬네일(꺼 둠) 확인, 마무리</td><td>업로드 201, 섬네일 404</td></tr>
+      </table>
+    </section>
+
+    <section id="l0" class="lesson">
+      <h2><span class="no">0</span> IntelliJ에서 프로젝트 열기 · 설정 점검 <small>(시작 전 한 번)</small></h2>
+      <div class="why">💡 <b>왜 하나요?</b> 설정이 하나라도 다르면 빌드가 실패하거나 Lombok 관련 오류(<code>cannot find symbol</code>)가 납니다. 먼저 점검표로 확인하고 넘어가면 나중에 덜 헤맵니다.</div>
+      <ol class="steps">
+        <li>
+          <p>IntelliJ를 열고 <b>File → Open</b>을 누릅니다. <code>C:\chapter8</code> 폴더를 고르고 <b>OK</b>를 누릅니다. 신뢰 확인 창이 뜨면 <b>Trust Project</b>를 누릅니다.</p>
+        </li>
+        <li>
+          <p>오른쪽 아래 진행바에 <b>Gradle</b>, <b>Indexing</b> 같은 글자가 보입니다. 이 글자가 사라질 때까지 기다립니다. 끝나면 파일 탐색기(Project 창)에 <code>src</code> 폴더가 보입니다.</p>
+        </li>
+        <li>
+          <p>하단 <b>Terminal</b> 탭을 엽니다(<kbd>Alt</kbd> + <kbd>F12</kbd>). 프롬프트가 <code>C:\chapter8</code>로 시작하는지 확인하고 아래 명령을 실행합니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>Get-Content gradle.properties</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: <code>org.gradle.java.installations.paths=...corretto-25.0.4.1</code> 한 줄이 보입니다.</div>
+          <div class="tip">📌 Terminal 탭의 <b>+</b> 옆 화살표에서 <b>Windows PowerShell</b>을 고르면 이 자습서의 명령이 그대로 동작합니다. 기본 셸이 <code>cmd</code>라면 PowerShell로 바꾸세요.</div>
+        </li>
+        <li>
+          <p><b>설정 점검표</b>를 하나씩 확인합니다. 아래 "이 PC 점검 결과"는 이 PC의 설정 파일을 읽어서 확인한 내용입니다. 여러분 화면에서도 같은 값인지 직접 보세요.</p>
+          <table>
+            <tr><th>항목</th><th>IntelliJ에서 여는 곳</th><th>맞아야 하는 값</th><th>이 PC 점검 결과</th></tr>
+            <tr><td>① 프로젝트 JDK</td><td>File → Project Structure → Project</td><td>SDK: <b>corretto-25</b>, Language level: <b>25</b></td><td>✅ 저장되어 있음</td></tr>
+            <tr><td>② Gradle JVM</td><td>Settings(<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>) → Build, Execution, Deployment → Build Tools → Gradle</td><td>Gradle JVM: <b>corretto-25</b></td><td>✅ 저장되어 있음</td></tr>
+            <tr><td>③ Lombok 어노테이션 처리</td><td>Settings → Build, Execution, Deployment → Compiler → Annotation Processors</td><td><b>Enable annotation processing</b> 체크</td><td>✅ 켜져 있음 (Lombok 1.18.42)</td></tr>
+            <tr><td>④ Lombok 플러그인</td><td>Settings → Plugins 검색창에 Lombok</td><td>Lombok이 목록에 있고 켜져 있음</td><td>✅ IntelliJ에 기본 포함됨 (켜짐은 화면에서 확인)</td></tr>
+            <tr><td>⑤ 바이트코드 버전</td><td>Settings → Build, Execution, Deployment → Compiler → Java Compiler</td><td>Target bytecode version: <b>25</b></td><td>✅ 25로 저장되어 있음</td></tr>
+            <tr><td>⑥ 인코딩 (한글 깨짐 방지)</td><td>Settings → Editor → File Encodings</td><td>Global Encoding, Project Encoding: <b>UTF-8</b></td><td>⚠️ 저장된 값 없음 → 화면에서 UTF-8 확인</td></tr>
+            <tr><td>⑦ Gradle 실행 방식</td><td>Settings → Build Tools → Gradle → Build and run using / Run tests using</td><td><b>Gradle</b> 권장 (터미널 명령과 같은 방식)</td><td>⚠️ 저장된 값 없음 → 화면에서 Gradle 선택</td></tr>
+            <tr><td>⑧ OpenRouter 환경변수</td><td>Windows 환경 변수 (2단계에서 확인)</td><td>사용자 변수 <b>OPENROUTER_API_KEY</b> 있음</td><td>✅ 사용자 변수에 있음 (IntelliJ를 다시 켜야 적용)</td></tr>
+            <tr><td>⑨ 실행 구성(Run Configuration)</td><td>Run → Edit Configurations</td><td>앱 실행 구성이 하나 있음 (없으면 5단계 ▶로 자동 생성)</td><td>⚠️ 아직 없음 → 5단계에서 생성</td></tr>
+            <tr><td>⑩ JDK 목록</td><td>Settings → Build, Execution, Deployment → Build Tools → Gradle (JDK 선택 목록)</td><td>corretto-25 가 있음</td><td>✅ 있음 (같은 이름이 여러 번 보여도 괜찮습니다. corretto-25 하나만 고르세요)</td></tr>
+          </table>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · <code>Project SDK is not defined</code> → File → Project Structure → Project에서 SDK를 <b>corretto-25</b>로 고르세요.<br>
+        · <code>cannot find symbol</code>(getter, builder 등 Lombok이 만드는 것) → ③ 어노테이션 처리 체크와 ④ Lombok 플러그인을 확인하고, File → <b>Invalidate Caches</b> → <b>Invalidate and Restart</b>를 누르세요.<br>
+        · 한글이 깨짐 → ⑥ 인코딩을 UTF-8로 바꾸고, 파일을 닫았다가 다시 여세요.</div>
+      <div class="do" data-row="m1"><input type="checkbox" data-mission="m1"><span>🛠️ <b>미션 1</b>: 프로젝트를 열고, 하단 진행바가 끝난 뒤 <code>Get-Content gradle.properties</code> 결과를 확인하고 체크하세요.</span></div>
+      <div class="do" data-row="m2"><input type="checkbox" data-mission="m2"><span>🛠️ <b>미션 2</b>: 설정 점검표 ①~⑩을 IntelliJ 화면에서 하나씩 열어 보고, 다른 값이 있으면 고친 뒤 체크하세요.</span></div>
+      <div class="quiz" data-q="q0" data-ans="0">
+        <p class="q-title">🧠 퀴즈 0. 프로젝트가 사용할 JDK(Java 개발 도구) 버전을 정하는 메뉴는 어디일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">File → Project Structure → Project</button>
+          <button class="opt" data-i="1">Help → About</button>
+          <button class="opt" data-i="2">Run → Debug</button>
+        </div>
+        <p class="exp" hidden>정답은 ①입니다. 여기서 Project SDK와 Language level을 정합니다. Help → About은 IntelliJ 버전을 보여 줍니다.</p>
+      </div>
+    </section>
+
+    <section id="l1" class="lesson">
+      <h2><span class="no">1</span> 사전 지식: AI와 LLM <small>(PDF 8.1)</small></h2>
+      <div class="why">
+        💡 <b>LLM(대규모 언어 모델)</b>은 아주 많은 글을 읽고 "다음에 올 말"을 잘 맞히도록 훈련된 AI입니다. 책을 많이 읽은 작가가 문장을 자연스럽게 이어 쓰는 것과 비슷합니다.<br>
+        <b>스프링 AI</b>는 여러 AI 회사(OpenAI, 앤트로픽, AWS 베드록 등)를 <b>같은 리모컨</b>으로 쓸 수 있게 해 주는 도구입니다. 회사마다 리모컨이 달라도 하나로 누르는 것과 같습니다.
+      </div>
+      <h3>이 장에서 만들 기능</h3>
+      <div class="shot"><div class="shot-bar">글 작성 화면 (완성 모습 예시)</div><pre>My Blog
+제목:  오늘의 일기
+이미지 업로드:  [파일 선택]  ← 8장 · 이미지 업로드
+내용:  샌드위치를 만들었다.
+[AI 도움받기] [등록]         ← 8장 · 글쓰기 도우미 (제안 3개)</pre></div>
+      <p class="caption">화면 예시입니다. 실제 화면은 글꼴과 배치가 다를 수 있습니다.</p>
+      <ol class="steps">
+        <li>
+          <p>이 화면의 두 기능이 어떤 역할인지 읽고 넘어갑니다.</p>
+          <div class="tip">📌 <b>용어 정리</b>: <b>ChatClient</b> = AI와 대화하는 전화기, <b>PromptTemplate</b> = 빈칸이 있는 문장 양식, <b>DTO</b> = 데이터를 담아 옮기는 상자, <b>record</b> = 한 번 만들면 바꿀 수 없는 짧은 데이터 클래스.</div>
+        </li>
+      </ol>
+      <div class="do" data-row="m3"><input type="checkbox" data-mission="m3"><span>🛠️ <b>미션 3</b>: LLM을 한 문장으로 설명해 보고 체크하세요. (예: 많이 읽고 다음 말을 맞히는 AI)</span></div>
+      <div class="quiz" data-q="q1" data-ans="0">
+        <p class="q-title">🧠 퀴즈 1. 챗GPT, 클로드, 제미나이의 기반 기술인 LLM의 약어(영문)는 무엇일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">Large Language Model</button>
+          <button class="opt" data-i="1">Light Learning Machine</button>
+          <button class="opt" data-i="2">Linear Logic Model</button>
+        </div>
+        <p class="exp" hidden>정답은 Large Language Model입니다. 대규모 텍스트 데이터로 학습한 언어 모델이라는 뜻입니다.</p>
+      </div>
+      <div class="quiz" data-q="q2" data-ans="2">
+        <p class="q-title">🧠 퀴즈 2. 스프링 AI를 쓰는 가장 적절한 이유는 무엇일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">AI 모델마다 다른 HTTP 요청과 인증 헤더를 직접 구현하기 위해서</button>
+          <button class="opt" data-i="1">파이썬 코드를 자바 프로젝트 안에서 직접 실행하기 위해서</button>
+          <button class="opt" data-i="2">ChatClient, ImageModel 같은 추상화된 인터페이스로 특정 AI 모델에 묶이지 않고 비즈니스 로직에 집중하기 위해서</button>
+        </div>
+        <p class="exp" hidden>정답은 ③입니다. 모델을 바꿔도 같은 코드 구조를 유지할 수 있다는 것이 스프링 AI의 핵심입니다.</p>
+      </div>
+    </section>
+
+    <section id="l2" class="lesson">
+      <h2><span class="no">2</span> OpenRouter 키 등록 <small>(PDF 8.2 · 05단계 대체)</small></h2>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="why">
+        💡 <b>API 키</b>는 AI 서비스를 쓸 때 내는 <b>집 열쇠</b>입니다. 책은 OpenAI 키를 쓰지만, 이 자습서는 <b>무료로 쓸 수 있는 OpenRouter 키</b>를 씁니다. 키는 코드 파일에 적지 않고 <b>Windows 환경 변수</b>(컴퓨터에 저장된 비밀 메모)에 둡니다.
+      </div>
+      <ol class="steps">
+        <li>
+          <p>브라우저에서 <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a>에 로그인하고, <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener">Keys 페이지</a>에서 <b>Create Key</b>로 키를 만듭니다. 키는 <code>sk-or-v1-</code>으로 시작합니다. 한 번만 보이니 바로 복사하세요.</p>
+        </li>
+        <li>
+          <p><b>Windows 환경 변수에 등록</b> (화면으로 하는 방법): 시작 메뉴에 <b>환경 변수</b>를 검색 → <b>사용자 환경 변수 편집</b> → 사용자 변수 목록 아래 <b>새로 만들기</b> → 변수 이름 <code>OPENROUTER_API_KEY</code>, 변수 값에 복사한 키를 붙여넣기 → <b>확인</b>.</p>
+          <div class="tip">📌 이 PC는 이미 등록되어 있습니다(점검표 ⑧). 등록 여부만 확인하고 싶으면 아래 명령을 Terminal에서 실행하세요. 값은 보이지 않고 결과만 나옵니다.</div>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>if ($env:OPENROUTER_API_KEY) { "설정됨" } else { "없음" }</code></pre></div>
+          <div class="ok">✅ <b>성공 기준</b>: <code>설정됨</code>이 나옵니다. <code>없음</code>이면 위 화면 방법으로 다시 등록하세요.</div>
+        </li>
+        <li>
+          <p><b>IntelliJ를 완전히 끄고 다시 엽니다.</b> (File → Exit 후 다시 실행) IntelliJ는 켜질 때의 환경 변수만 읽기 때문입니다. 이미 실행 중이었다면 이 과정이 꼭 필요합니다.</p>
+        </li>
+        <li>
+          <p>설정 파일 <code>application.yml</code>을 엽니다. <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd>을 누르고 <code>application.yml</code>을 입력해 여세요. 키는 <code>${OPENROUTER_API_KEY}</code>로 환경 변수에서 읽고, 주소는 OpenRouter로 바꿔 두었습니다. (책의 <code>api-key: &lt;&lt;입력&gt;&gt;</code> 자리와 같은 곳입니다)</p>
+          <div class="codebox" data-file="src/main/resources/application.yml"><div class="bar"><span class="fname">src/main/resources/application.yml</span><div><button class="copy">전체 복사</button></div></div><pre><code>spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+  h2:
+    console:
+      enabled: true
+  ai:
+    openai:
+      # OpenRouter는 OpenAI 호환 API를 제공하므로 base-url만 바꿔서 사용합니다.
+      # Spring AI가 뒤에 /v1/chat/completions 를 붙이므로 /v1 은 빼야 합니다.
+      base-url: https://openrouter.ai/api
+      api-key: ${OPENROUTER_API_KEY}
+      chat:
+        options:
+          # 무료 라우터 모델입니다. 실행할 때마다 여러 무료 텍스트 모델 중 하나가 자동 선택됩니다.
+          # 텍스트(글 생성)만 가능하고 이미지 생성은 할 수 없습니다.
+          model: openrouter/free
+
+# 무료 모델(openrouter/free)은 이미지 생성을 지원하지 않아서 섬네일 기능을 꺼 둡니다.
+app:
+  thumbnail:
+    enabled: false</code></pre></div>
+          <div class="warn">⚠️ <b>흔한 실수</b>: <code>base-url</code> 끝에 <code>/v1</code>을 붙이면 주소가 두 번 붙어서 404가 납니다. 지금 값(<code>https://openrouter.ai/api</code>)을 그대로 두세요.</div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · <code>Could not resolve placeholder 'OPENROUTER_API_KEY'</code> → 환경 변수가 없거나 IntelliJ를 다시 켜지 않았습니다. 위 3단계를 다시 하세요.<br>
+        · 나중에 401 오류 → 키를 잘못 옮겼습니다. Keys 페이지에서 새로 만들어 환경 변수 값을 바꾸세요.</div>
+      <div class="do" data-row="m4"><input type="checkbox" data-mission="m4"><span>🛠️ <b>미션 4</b>: Terminal에서 <code>설정됨</code>이 나오고, IntelliJ를 다시 켠 뒤 체크하세요.</span></div>
+      <div class="quiz" data-q="q3" data-ans="1">
+        <p class="q-title">🧠 퀴즈 3. OpenRouter 키를 저장하는 가장 안전한 곳은 어디일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">application.yml 파일에 직접 적는다</button>
+          <button class="opt" data-i="1">Windows 환경 변수(OPENROUTER_API_KEY)에 저장한다</button>
+          <button class="opt" data-i="2">자바 소스 코드 주석에 적는다</button>
+        </div>
+        <p class="exp" hidden>정답은 ②입니다. 환경 변수에 두면 소스 파일과 분리되어 깃허브 등에 올려도 키가 새지 않습니다.</p>
+      </div>
+    </section>
+
+    <section id="l3" class="lesson">
+      <h2><span class="no">3</span> 의존성 추가 · 테스트 실행 <small>(PDF 8.3 · 의존성 추가하기)</small></h2>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="why">
+        💡 <b>의존성(dependency)</b>은 프로젝트가 가져다 쓰는 외부 라이브러리 목록입니다. 요리에 비유하면 <b>재료 주문서</b>입니다. 스프링 AI 2.0은 아직 "미리 공개된 테스트 판(마일스톤)"이라서 <b>마일스톤 저장소 주소</b>가 필요합니다. <b>BOM</b>은 여러 라이브러리의 버전을 한 번에 맞춰 주는 <b>버전 목록표</b>입니다.
+      </div>
+      <ol class="steps">
+        <li>
+          <p><code>build.gradle</code>을 엽니다(<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd>). 아래는 파일 전체입니다. 스프링 AI 관련 줄은 <code>repositories</code>의 마일스톤 주소 한 줄과 <code>dependencies</code>의 세 줄입니다.</p>
+          <div class="codebox" data-file="build.gradle"><div class="bar"><span class="fname">build.gradle</span><div><button class="copy">전체 복사</button></div></div><pre><code>plugins {
+    id &#39;java&#39;
+    id &#39;org.springframework.boot&#39; version &#39;4.0.1&#39;
+    id &#39;io.spring.dependency-management&#39; version &#39;1.1.7&#39;
+}
+
+group = &#39;me.shinsunyoung&#39;
+version = &#39;0.0.1-SNAPSHOT&#39;
+description = &#39;springboot-developer&#39;
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+    // [8장] Spring AI 2.0은 아직 &quot;마일스톤(미리 공개된 테스트 판)&quot; 저장소에만 있어서 이 주소가 필요합니다.
+    maven { url &#39;https://repo.spring.io/milestone&#39; }
+}
+
+dependencies {
+    implementation &#39;org.springframework.boot:spring-boot-starter&#39;
+    implementation &#39;org.springframework.boot:spring-boot-starter-web&#39;
+    implementation &#39;org.springframework.boot:spring-boot-starter-thymeleaf&#39;
+    // [8장 &#183; 스프링 AI 의존성]
+    // BOM(버전 목록표): 스프링 AI 라이브러리들의 버전을 한 번에 맞춰 줍니다. 여기서는 2.0.0-M1입니다.
+    implementation platform(&#39;org.springframework.ai:spring-ai-bom:2.0.0-M1&#39;)
+    // OpenAI 호환 스타터: OpenRouter처럼 OpenAI 방식으로 말하는 AI 서비스에 모두 연결할 수 있습니다.
+    // ChatClient(글 생성)와 ImageModel(이미지 생성) 자동 설정이 이 한 줄로 들어옵니다.
+    implementation &#39;org.springframework.ai:spring-ai-starter-model-openai&#39;
+    testImplementation &#39;org.springframework.boot:spring-boot-starter-test&#39;
+    testImplementation &#39;org.springframework.boot:spring-boot-starter-webmvc-test&#39;
+    testImplementation &#39;org.springframework.boot:spring-boot-starter-data-jpa-test&#39;
+    testRuntimeOnly &#39;org.junit.platform:junit-platform-launcher&#39;
+    implementation &#39;org.springframework.boot:spring-boot-starter-data-jpa&#39;
+    implementation &#39;org.springframework.boot:spring-boot-h2console&#39;
+    runtimeOnly &#39;com.h2database:h2&#39;
+    compileOnly &#39;org.projectlombok:lombok&#39;
+    annotationProcessor &#39;org.projectlombok:lombok&#39;
+}
+
+tasks.named(&#39;test&#39;) {
+    useJUnitPlatform()
+}</code></pre></div>
+        </li>
+        <li>
+          <p>오른쪽의 <b>Gradle</b> 창을 엽니다(View → Tool Windows → Gradle). 위쪽의 <b>Reload All Gradle Projects</b>(새로고침) 아이콘을 누릅니다. 그다음 <b>springboot-developer → Tasks → verification → test</b>를 더블클릭합니다.</p>
+          <div class="tip">📌 같은 결과를 Terminal에서 얻으려면 아래 명령을 실행하세요. Terminal은 프로젝트 폴더에서 열려 있어야 합니다.</div>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>.\gradlew.bat test</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: 하단 Run 창(또는 Terminal)에 <code>BUILD SUCCESSFUL</code>이 나옵니다. 테스트 목록은 초록 체크로 보입니다.</div>
+        </li>
+        <li>
+          <p>테스트 결과를 숫자로 확인합니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>Get-ChildItem build\test-results\test -Filter *.xml | ForEach-Object { ([xml](Get-Content $_.FullName -Raw)).testsuite | Select-Object name,tests,failures,errors | Format-Table -AutoSize | Out-String }</code></pre></div>
+          <div class="ok">✅ <b>성공 기준</b>: 두 줄 모두 <code>failures 0</code>, <code>errors 0</code>입니다. tests 값은 <b>5</b>와 <b>1</b>입니다.</div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · <code>Could not resolve placeholder</code> → 2단계 환경 변수를 확인하고 IntelliJ를 다시 켜세요.<br>
+        · 빨간 줄이 <code>build.gradle</code>에 보임 → Gradle 창의 Reload를 다시 누르고 진행바가 끝날 때까지 기다리세요.<br>
+        · JDK 관련 오류 → 0단계 ①, ② 설정(corretto-25)을 확인하세요.</div>
+      <div class="do" data-row="m5"><input type="checkbox" data-mission="m5"><span>🛠️ <b>미션 5</b>: 테스트를 실행해서 <code>BUILD SUCCESSFUL</code>과 failures 0을 확인하고 체크하세요.</span></div>
+      <div class="quiz" data-q="q4" data-ans="2">
+        <p class="q-title">🧠 퀴즈 4. <code>spring-ai-bom</code>의 역할은 무엇일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">AI가 쓰는 메모리 용량을 늘린다</button>
+          <button class="opt" data-i="1">이미지 파일을 저장하는 폴더를 만든다</button>
+          <button class="opt" data-i="2">스프링 AI 라이브러리들의 버전을 한 번에 맞춰 준다</button>
+        </div>
+        <p class="exp" hidden>정답은 ③입니다. BOM은 버전 목록표라서 라이브러리마다 버전을 따로 적지 않아도 됩니다.</p>
+      </div>
+    </section>
+
+    <section id="l4" class="lesson">
+      <h2><span class="no">4</span> 글쓰기 도우미 코드 작성 <small>(PDF 8.3 · 01~04단계)</small></h2>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="why">
+        💡 <b>흐름 요약</b>: 화면 입력 → <b>DTO 상자</b>(WritingSuggestionRequest) → <b>프롬프트 양식</b>(writing-assistant.st)에 채움 → <b>AI 호출</b>(WritingAssistantService) → AI의 JSON 답 → <b>응답 상자</b>(WritingSuggestionsResponse) → 화면.<br>
+        코드 위의 주석은 책의 설명을 옮긴 것입니다. 주석은 실행 결과를 바꾸지 않습니다.
+      </div>
+      <h3>IntelliJ에서 파일을 열고 코드 작성하는 방법</h3>
+      <ol class="steps">
+        <li>
+          <p><b>파일 열기</b>: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> → 파일 이름 입력 → Enter. 또는 왼쪽 Project 창에서 <code>src → main → java → me → shinsunyoung → springbootdeveloper</code> 순서로 펼쳐 찾습니다.</p>
+        </li>
+        <li>
+          <p><b>코드 넣는 방법</b>: 아래 코드 블록 오른쪽 위 <b>전체 복사</b>를 누릅니다. IntelliJ에서 파일을 열고 <kbd>Ctrl</kbd> + <kbd>A</kbd>(전체 선택) → <kbd>Ctrl</kbd> + <kbd>V</kbd>(붙여넣기)를 누릅니다. 자동 저장되지만 <kbd>Ctrl</kbd> + <kbd>S</kbd>로 한 번 더 저장해도 됩니다.</p>
+          <div class="tip">📌 파일이 이미 있으면 내용이 같은지 비교만 해도 됩니다. 직접 입력해 보는 연습을 하고 싶다면 주석부터 한 줄씩 옮겨 적어 보세요.</div>
+        </li>
+        <li>
+          <p><b>새 파일 만들기(연습용)</b>: 패키지 폴더를 우클릭 → <b>New → Java Class</b> → 종류 목록에서 <b>Record</b>를 고르고 이름을 입력합니다. 책의 1단계 방식과 같습니다. 이미 있는 파일과 이름이 같으면 덮어쓰지 말고 내용만 비교하세요.</p>
+        </li>
+        <li>
+          <p>요청과 응답 데이터 상자입니다. <b>record</b>는 한 번 만들면 바꿀 수 없는 짧은 데이터 클래스입니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/WritingSuggestionRequest.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/WritingSuggestionRequest.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import java.util.Map;
+
+// [8장 &#183; 글쓰기 도우미 &#183; 요청 데이터]
+// 글 작성 화면의 &quot;AI 도움받기&quot; 창에서 입력한 값을 서버로 보낼 때 쓰는 &quot;택배 상자&quot;입니다.
+// 브라우저가 보낸 JSON {&quot;title&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot;, &quot;question&quot;: &quot;...&quot;} 이
+// 이 record 객체로 자동 변환됩니다(@RequestBody 덕분).
+//
+// record: Java 14부터 정식 도입된 &quot;불변(한 번 만들면 못 바꾸는) 데이터 객체&quot;입니다.
+// 필드, 생성자, getter가 자동으로 만들어져서 DTO를 짧게 쓸 수 있습니다.
+public record WritingSuggestionRequest(
+        String title,     // 지금 작성 중인 글 제목
+        String content,   // 지금 작성 중인 글 본문
+        String question   // &quot;어떤 부분이 고민되시나요?&quot;에 적은 질문
+) {
+
+    // 프롬프트 템플릿(resources/prompts/writing-assistant.st)의 빈칸을 채울 값들을 Map으로 묶습니다.
+    // Map.of의 &quot;키&quot;(&quot;title&quot;, &quot;content&quot; ...)가 템플릿의 {title}, {content} ... 이름과 똑같아야 합니다.
+    // format은 BeanOutputConverter가 만든 &quot;JSON으로 답하라&quot;는 안내 문장입니다.
+    public Map&lt;String, Object&gt; toMap(String format) {
+        return Map.of(
+                &quot;title&quot;, title,
+                &quot;content&quot;, content,
+                &quot;question&quot;, question,
+                &quot;format&quot;, format
+        );
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/WritingSuggestionsResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/WritingSuggestionsResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import java.util.List;
+
+// [8장 &#183; 글쓰기 도우미 &#183; 응답 데이터]
+// AI가 준 답을 &quot;제안 목록&quot;으로 담아 브라우저에 돌려주는 &quot;응답 상자&quot;입니다.
+// AI는 글자(JSON 문자열)로 답하는데, BeanOutputConverter가 이 record 형태로 바꿔 줍니다.
+// 응답 예) {&quot;suggestions&quot;: [&quot;제안 1&quot;, &quot;제안 2&quot;, &quot;제안 3&quot;]}
+public record WritingSuggestionsResponse(List&lt;String&gt; suggestions) {}</code></pre></div>
+        </li>
+        <li>
+          <p>프롬프트 양식입니다. <code>resources → prompts</code> 폴더에 있습니다. 중괄호 <code>{title}</code> 같은 자리에 사용자 입력이 들어갑니다. 이 파일은 <b>AI에게 그대로 전달되는 문장</b>이라서 주석을 넣지 않았습니다.</p>
+          <div class="codebox" data-file="src/main/resources/prompts/writing-assistant.st"><div class="bar"><span class="fname">src/main/resources/prompts/writing-assistant.st</span><div><button class="copy">전체 복사</button></div></div><pre><code>당신은 블로그 글쓰기를 도와주는 전문 작가입니다.
+
+제목: {title}
+현재 작성된 내용: {content}
+질문: {question}
+
+위 질문에 대해 3개의 구체적이고 실용적인 제안을 해주세요.
+
+{format}</code></pre></div>
+        </li>
+        <li>
+          <p>AI 호출을 담당하는 서비스입니다. 프롬프트를 채우고, AI를 부르고, JSON을 객체로 바꿉니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/service/WritingAssistantService.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/service/WritingAssistantService.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.service;
+
+import me.shinsunyoung.springbootdeveloper.dto.WritingSuggestionRequest;
+import me.shinsunyoung.springbootdeveloper.dto.WritingSuggestionsResponse;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+
+// [8장 &#183; 글쓰기 도우미 &#183; 핵심 서비스]
+// 이 클래스가 &quot;AI에게 물어보고 결과를 정리하는&quot; 일을 모두 합니다.
+//   1) 프롬프트 템플릿(writing-assistant.st)에 사용자 입력을 채운다  → PromptTemplate
+//   2) 완성된 문장을 AI(ChatClient)에게 보낸다                        → ChatClient
+//   3) AI의 JSON 답변을 자바 객체로 바꾼다                           → BeanOutputConverter
+// 스프링 AI 덕분에 OpenAI, OpenRouter 등 &quot;어떤 AI 회사&quot;를 쓰는지 이 코드는 몰라도 됩니다.
+@Service
+public class WritingAssistantService {
+
+    // AI와 대화하는 &quot;전화기&quot; 역할입니다. 설정(application.yml)을 보고 스프링이 자동으로 만들어 줍니다.
+    private final ChatClient chatClient;
+
+    // 빈칸(중괄호 {...})이 있는 문장 양식을 실제 문장으로 채워 주는 도구입니다.
+    private final PromptTemplate template;
+
+    // AI가 준 JSON 글자를 WritingSuggestionsResponse 객체로 바꿔 주는 &quot;번역기&quot;입니다.
+    // getFormat()은 &quot;이런 JSON 모양으로 답하라&quot;는 안내문을 만들어 줍니다.
+    private final BeanOutputConverter&lt;WritingSuggestionsResponse&gt; outputConverter =
+            new BeanOutputConverter&lt;&gt;(WritingSuggestionsResponse.class);
+
+    // 생성자: 스프링이 필요한 재료를 넣어 줍니다(의존성 주입).
+    //  - ChatClient.Builder : AI 전화기를 만드는 공장
+    //  - promptResource     : src/main/resources/prompts/writing-assistant.st 파일 자체
+    public WritingAssistantService(
+            ChatClient.Builder chatClientBuilder,
+            @Value(&quot;classpath:prompts/writing-assistant.st&quot;) Resource promptResource
+    ) {
+        this.chatClient = chatClientBuilder.build();
+        this.template = new PromptTemplate(promptResource);
+    }
+
+    // 실제 기능: 사용자 입력 → 프롬프트 → AI 호출 → 제안 목록(DTO)
+    public WritingSuggestionsResponse getWritingAssist(WritingSuggestionRequest request) {
+        // (1) 템플릿의 {title}, {content}, {question}, {format} 자리를 채워서 최종 프롬프트 문장을 만듭니다.
+        String prompt = template.create(request.toMap(outputConverter.getFormat())).getContents();
+
+        // (2) 만든 문장을 AI에게 보내고, 답변 글자(content)만 받습니다.
+        String response = chatClient.prompt().user(prompt).call().content();
+
+        // (3) AI가 준 JSON 글자를 WritingSuggestionsResponse 객체로 바꿔서 돌려줍니다.
+        return outputConverter.convert(response);
+    }
+}</code></pre></div>
+        </li>
+        <li>
+          <p>웹 요청을 받는 컨트롤러입니다. <code>/api/ai-suggestions</code> 주소를 열어 서비스를 호출합니다. 이 파일에는 8장에서 추가된 필드와 메서드에 주석이 있습니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/controller/BlogApiController.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/controller/BlogApiController.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.controller;
+
+import lombok.RequiredArgsConstructor;
+import me.shinsunyoung.springbootdeveloper.domain.Article;
+import me.shinsunyoung.springbootdeveloper.dto.*;
+import me.shinsunyoung.springbootdeveloper.service.BlogService;
+import me.shinsunyoung.springbootdeveloper.service.WritingAssistantService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@RestController
+public class BlogApiController {
+
+    private final BlogService blogService;
+    // [8장 &#183; 글쓰기 도우미] AI에게 글쓰기 제안을 받아오는 서비스입니다.
+    // @RequiredArgsConstructor 덕분에 final 필드들은 생성자로 자동 주입됩니다.
+    private final WritingAssistantService writingAssistantService;
+
+    @PostMapping(&quot;/api/articles&quot;)
+    public ResponseEntity&lt;Article&gt; addArticle(@RequestBody AddArticleRequest request) {
+        Article savedArticle = blogService.save(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedArticle);
+    }
+
+    @GetMapping(&quot;/api/articles&quot;)
+    public ResponseEntity&lt;List&lt;ArticleResponse&gt;&gt; findAllArticles() {
+        List&lt;ArticleResponse&gt; articles = blogService.findAll()
+                .stream()
+                .map(ArticleResponse::new)
+                .toList();
+        return ResponseEntity.ok()
+                .body(articles);
+    }
+
+    @GetMapping(&quot;/api/articles/{id}&quot;)
+    public ResponseEntity&lt;ArticleResponse&gt; findArticle(@PathVariable long id) {
+        Article article = blogService.findById(id);
+        return ResponseEntity.ok()
+                .body(new ArticleResponse(article));
+    }
+
+    @DeleteMapping(&quot;/api/articles/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteArticle(@PathVariable long id) {
+        blogService.delete(id);
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @PutMapping(&quot;/api/articles/{id}&quot;)
+    public ResponseEntity&lt;Article&gt; updateArticle(@PathVariable long id,
+                                                 @RequestBody UpdateArticleRequest request) {
+        Article updatedArticle = blogService.update(id, request);
+        return ResponseEntity.ok()
+                .body(updatedArticle);
+    }
+
+    // [8장 &#183; 글쓰기 도우미 &#183; API] 브라우저의 &quot;제안 받기&quot; 버튼이 호출하는 주소입니다.
+    // 흐름: 브라우저(JSON) → 이 메서드 → WritingAssistantService(AI 호출) → JSON 제안 목록 응답
+    // 요청 예) POST /api/ai-suggestions  {&quot;title&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot;, &quot;question&quot;: &quot;...&quot;}
+    @PostMapping(&quot;/api/ai-suggestions&quot;)
+    public ResponseEntity&lt;WritingSuggestionsResponse&gt; writingAssist(@RequestBody WritingSuggestionRequest request) {
+        WritingSuggestionsResponse response = writingAssistantService.getWritingAssist(request);
+
+        return ResponseEntity.ok()
+                .body(response);
+    }
+}</code></pre></div>
+        </li>
+        <li>
+          <p><b>오류 검사</b>: 메뉴 <b>Build → Build Project</b>(<kbd>Ctrl</kbd> + <kbd>F9</kbd>)를 누릅니다. 하단 Build 창에 결과가 나옵니다.</p>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: Build 창에 <code>Build completed successfully</code>가 나옵니다. 편집기에 빨간 밑줄이 없어야 합니다.</div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · 빨간 밑줄 + <code>cannot find symbol</code> → 0단계 ③, ④(Lombok)를 확인하고 Invalidate Caches를 해 보세요.<br>
+        · 붙여넣은 뒤 한글 주석이 깨짐 → 파일을 닫고 File → Settings → Editor → File Encodings에서 UTF-8로 맞춘 다음 다시 여세요.</div>
+      <div class="do" data-row="m6"><input type="checkbox" data-mission="m6"><span>🛠️ <b>미션 6</b>: <code>BlogApiController</code>의 <code>/api/ai-suggestions</code> 주석을 읽고, 요청이 어디를 거쳐 응답이 되는지 세 단계로 말해 보세요. 그다음 Build Project가 성공하는지 확인하고 체크하세요.</span></div>
+      <div class="quiz" data-q="q5" data-ans="1">
+        <p class="q-title">🧠 퀴즈 5. 프롬프트 파일의 빈칸에 값을 채워 넣는 클래스는 무엇일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">BeanOutputConverter</button>
+          <button class="opt" data-i="1">PromptTemplate</button>
+          <button class="opt" data-i="2">ChatClient</button>
+        </div>
+        <p class="exp" hidden>정답은 PromptTemplate입니다. 빈칸이 있는 양식(.st 파일)을 읽고 값을 채워 완성된 문장을 만듭니다.</p>
+      </div>
+      <div class="quiz" data-q="q6" data-ans="0">
+        <p class="q-title">🧠 퀴즈 6. WritingSuggestionRequest처럼 데이터를 간편하게 담고 옮기는 자바 14부터 정식 도입된 불변 객체 유형은?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">레코드(record)</button>
+          <button class="opt" data-i="1">인터페이스(interface)</button>
+          <button class="opt" data-i="2">열거형(enum)</button>
+        </div>
+        <p class="exp" hidden>정답은 레코드입니다. 필드, 생성자, getter가 자동으로 만들어져 DTO를 짧게 쓸 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section id="l5" class="lesson">
+      <h2><span class="no">5</span> 앱 실행 · 제안 받기 <small>(PDF 8.3 · 실행 테스트하기)</small></h2>
+      <div class="why">💡 <b>왜 하나요?</b> 책은 Postman으로 요청을 보냅니다. 이 자습서는 IntelliJ의 ▶ 버튼으로 앱을 켜고, Terminal에서 같은 요청을 보냅니다. 앱이 켜져 있는 동안 요청을 보낼 수 있습니다.</div>
+      <ol class="steps">
+        <li>
+          <p><code>SpringbootDeveloperApplication.java</code>를 엽니다(<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd>). <code>main</code> 메서드 줄 왼쪽의 <b>▶</b>을 누르고 <b>Run 'SpringbootDeveloperApplication'</b>을 고릅니다. 처음 한 번은 실행 구성이 자동으로 만들어집니다(점검표 ⑨).</p>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: 하단 Run 창에 <code>Started SpringBootDeveloperApplication in ... seconds</code>가 나옵니다. 이 문구가 나오기까지 몇 초 걸릴 수 있습니다.</div>
+        </li>
+        <li>
+          <p>하단 <b>Terminal</b> 탭에서 <b>+</b>를 눌러 새 터미널을 엽니다(앱을 끄지 않게 따로 여는 것입니다). 아래 두 줄을 실행합니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal (새 탭)</span><div><button class="copy">복사</button></div></div><pre><code>$res = Invoke-RestMethod -Method Post -Uri http://localhost:8080/api/ai-suggestions -ContentType "application/json" -Body '{"title":"Spring AI","content":"Blog writing assistant","question":"What should I write next?"}'
+$res.suggestions</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: 제안 문장이 <b>3줄</b> 나옵니다. 내용은 실행할 때마다 달라집니다.</div>
+          <div class="shot"><div class="shot-bar">Terminal 출력 예시</div><pre>독자의 상황에 대입할 수 있는 구체적인 사례나 개인 경험담을 추가하세요.
+읽는 사람이 바로 실천할 수 있도록 단계별 가이드를 제시하세요.
+글 마지막에 독자의 댓글을 유도하는 명확한 행동 유도(CTA)를 포함하세요.</pre></div>
+        </li>
+        <li>
+          <p><b>대안</b>: ▶ 대신 Terminal에서 <code>.\gradlew.bat bootRun</code>으로 켤 수도 있습니다. 이때 끄려면 Terminal에서 <kbd>Ctrl</kbd> + <kbd>C</kbd>를 누릅니다.</p>
+        </li>
+        <li>
+          <p>앱은 <b>6~7단계에서도 켜 둔 상태</b>여야 합니다. 실습이 모두 끝나면(9단계) Run 창의 빨간 <b>■</b>(정지) 버튼으로 끕니다.</p>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · <code>401</code> / <code>Missing Authentication</code> → 키가 틀렸습니다. 2단계 환경 변수 값을 다시 확인하세요.<br>
+        · <code>404</code> → <code>application.yml</code>의 <code>base-url</code> 끝에 <code>/v1</code>이 없는지 확인하세요.<br>
+        · <code>Port 8080 was already in use</code> → 이전 실행이 남아 있습니다. Run 창에서 ■을 누르고 다시 ▶하세요.<br>
+        · Run 창에 <code>Could not resolve placeholder</code>가 나옴 → 실행 구성에 환경 변수가 안 보입니다. Run → Edit Configurations → Environment variables에 <code>OPENROUTER_API_KEY</code>를 같은 방식으로 넣고, 이 실행 구성은 다른 사람과 공유하지 마세요.</div>
+      <div class="do" data-row="m7"><input type="checkbox" data-mission="m7"><span>🛠️ <b>미션 7</b>: 앱을 ▶로 켜고, Terminal에서 제안 문장이 3줄 나오는 것을 확인하고 체크하세요.</span></div>
+    </section>
+
+    <section id="l6" class="lesson">
+      <h2><span class="no">6</span> 글 작성 화면 <small>(PDF 8.3 · 글 생성 뷰 수정하기)</small></h2>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="why">💡 <b>왜 하나요?</b> 실제 블로그 화면에서 <b>AI 도움받기</b> 버튼을 눌러야 책의 기능이 완성됩니다. 화면(HTML)은 모양과 구조를, 자바스크립트(article.js)는 버튼을 누를 때의 동작을 담당합니다.</div>
+      <ol class="steps">
+        <li>
+          <p>앱이 실행 중인지 확인하고, 브라우저(크롬 등)에서 아래 주소를 엽니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">브라우저 주소창</span><div><button class="copy">복사</button></div></div><pre><code>http://localhost:8080/new-article</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: "My Blog" 화면에 <b>제목, 이미지 업로드, 내용, AI 도움받기, 등록</b> 버튼이 보입니다. <b>AI 썸네일 생성</b> 버튼은 보이지 않습니다. 정상입니다.</div>
+        </li>
+        <li>
+          <p>제목과 내용을 적고 <b>AI 도움받기</b>를 누릅니다. 질문 칸에 "이 다음에는 어떤 내용을 쓰는 게 좋을까요?"라고 적고 <b>제안 받기</b>를 누릅니다.</p>
+          <div class="ok">✅ <b>성공 기준</b>: 약 10~20초 뒤 <b>AI 제안</b> 목록이 나옵니다. 제안을 한 번 누르면 본문 끝에 문장이 추가됩니다.</div>
+        </li>
+        <li>
+          <p>화면을 만든 파일입니다. 파일 위치는 <code>resources → templates → newArticle.html</code>입니다. 버튼의 <code>id</code>가 자바스크립트와 연결되는 이름표입니다.</p>
+          <div class="codebox" data-file="src/main/resources/templates/newArticle.html"><div class="bar"><span class="fname">src/main/resources/templates/newArticle.html</span><div><button class="copy">전체 복사</button></div></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;!-- [8장 &#183; 글 작성 화면] Thymeleaf 템플릿입니다. th:... 속성은 서버가 데이터를 채워 넣는 자리입니다. --&gt;
+&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;블로그 글&lt;/title&gt;
+    &lt;!-- 부트스트랩 CSS: 버튼, 모달, 레이아웃 모양을 담당합니다. (인터넷 CDN에서 불러옵니다) --&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=&quot;p-5 mb-5 text-center bg-light&quot;&gt;
+        &lt;h1 class=&quot;mb-3&quot;&gt;My Blog&lt;/h1&gt;
+        &lt;h4 class=&quot;mb-3&quot;&gt;블로그에 오신 것을 환영합니다.&lt;/h4&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;container mt-5&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-lg-8&quot;&gt;
+                &lt;article&gt;
+                    &lt;!-- 글 번호(수정 화면에서만 값이 있음). article.js가 수정/삭제 주소를 만들 때 씁니다. --&gt;
+                    &lt;input type=&quot;hidden&quot; id=&quot;article-id&quot; th:value=&quot;${article.id}&quot;&gt;
+
+                    &lt;!-- 제목 입력칸. 수정 화면이면 기존 제목이 th:value로 미리 채워집니다. --&gt;
+                    &lt;header class=&quot;mb-4&quot;&gt;
+                        &lt;input type=&quot;text&quot; class=&quot;form-control&quot; placeholder=&quot;제목&quot; id=&quot;title&quot; th:value=&quot;${article.title}&quot;&gt;
+                    &lt;/header&gt;
+
+                    &lt;!-- [8장 &#183; 이미지 업로드] 파일을 고르면 article.js가 /api/upload로 보내고, 받은 주소를 아래 숨김칸에 넣습니다. --&gt;
+                    &lt;section class=&quot;mb-4&quot;&gt;
+                        &lt;label for=&quot;image-upload&quot; class=&quot;form-label&quot;&gt;이미지 업로드&lt;/label&gt;
+                        &lt;div class=&quot;input-group mb-2&quot;&gt;
+                            &lt;input type=&quot;file&quot; class=&quot;form-control&quot; id=&quot;image-upload&quot; accept=&quot;image/*&quot;&gt;
+                            &lt;!-- [8장 &#183; AI 섬네일] 무료 모델에서는 동작하지 않아 기본값으로 숨겨 둡니다(style=&quot;display: none;&quot;). --&gt;
+                            &lt;button type=&quot;button&quot; id=&quot;ai-thumbnail-btn&quot; class=&quot;btn btn-outline-secondary&quot; style=&quot;display: none;&quot;&gt;AI 썸네일 생성&lt;/button&gt;
+
+                        &lt;/div&gt;
+                        &lt;!-- 저장할 이미지 주소를 담아 두는 숨김칸입니다. 화면에는 보이지 않지만 &quot;등록/수정&quot; 때 함께 서버로 갑니다. --&gt;
+                        &lt;input type=&quot;hidden&quot; id=&quot;image-url&quot; th:value=&quot;${article.imageUrl}&quot;&gt;
+                        &lt;!-- 섬네일을 만드는 중에 보여 줄 로딩 문구입니다. 평소에는 숨겨져 있습니다. --&gt;
+                        &lt;div id=&quot;ai-thumbnail-loading&quot; class=&quot;mt-2&quot; style=&quot;display: none;&quot;&gt;
+                            &lt;div class=&quot;spinner-border spinner-border-sm text-primary&quot; role=&quot;status&quot;&gt;
+                                &lt;span class=&quot;sr-only&quot;&gt;Loading...&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;span class=&quot;ml-2&quot;&gt;AI가 썸네일을 생성하고 있습니다... (30초 정도 소요됩니다)&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;!-- 업로드(또는 기존 이미지)의 미리보기 영역입니다. 이미지가 없으면 숨겨져 있습니다. --&gt;
+                        &lt;div id=&quot;image-preview&quot; class=&quot;mt-3&quot; style=&quot;display: none;&quot;&gt;
+                            &lt;img id=&quot;preview-img&quot; src=&quot;&quot; alt=&quot;미리보기&quot; style=&quot;max-width: 100%; max-height: 400px;&quot;&gt;
+                            &lt;button type=&quot;button&quot; id=&quot;remove-image-btn&quot; class=&quot;btn btn-sm btn-danger mt-2&quot;&gt;이미지 제거&lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/section&gt;
+
+                    &lt;!-- 본문 입력칸. 수정 화면이면 기존 내용이 th:text로 채워집니다. --&gt;
+                    &lt;section class=&quot;mb-5&quot;&gt;
+                        &lt;textarea class=&quot;form-control h-25&quot; rows=&quot;10&quot; placeholder=&quot;내용&quot; id=&quot;content&quot; th:text=&quot;${article.content}&quot;&gt;&lt;/textarea&gt;
+                    &lt;/section&gt;
+
+                    &lt;!-- [8장 &#183; 글쓰기 도우미] 누르면 모달 창(아래 aiAssistModal)이 열립니다. --&gt;
+                    &lt;button type=&quot;button&quot; id=&quot;ai-assist-btn&quot; class=&quot;btn btn-info btn-sm&quot;&gt;AI 도움받기&lt;/button&gt;
+                    &lt;!-- th:if: 글 번호가 있으면(수정 화면) &quot;수정&quot; 버튼을, 없으면(새 글) &quot;등록&quot; 버튼을 보여 줍니다. --&gt;
+                    &lt;button th:if=&quot;${article.id} != null&quot; type=&quot;button&quot; id=&quot;modify-btn&quot; class=&quot;btn btn-primary btn-sm&quot;&gt;수정&lt;/button&gt;
+                    &lt;button th:if=&quot;${article.id} == null&quot; type=&quot;button&quot; id=&quot;create-btn&quot; class=&quot;btn btn-primary btn-sm&quot;&gt;등록&lt;/button&gt;
+                &lt;/article&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- [8장 &#183; 글쓰기 도우미 모달] 부트스트랩 모달 창입니다. 평소에는 숨겨져 있다가 &quot;AI 도움받기&quot;를 누르면 뜹니다. --&gt;
+    &lt;div class=&quot;modal fade&quot; id=&quot;aiAssistModal&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-labelledby=&quot;aiAssistModalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog modal-lg&quot; role=&quot;document&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;modal-header&quot;&gt;
+                    &lt;h5 class=&quot;modal-title&quot; id=&quot;aiAssistModalLabel&quot;&gt;AI 글쓰기 도우미&lt;/h5&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;close&quot; data-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;
+                        &lt;span aria-hidden=&quot;true&quot;&gt;&amp;times;&lt;/span&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;modal-body&quot;&gt;
+                    &lt;!-- 사용자가 고민을 적는 칸입니다. 이 내용이 AI의 question 자리(프롬프트)로 들어갑니다. --&gt;
+                    &lt;div class=&quot;form-group&quot;&gt;
+                        &lt;label for=&quot;ai-question&quot;&gt;어떤 부분이 고민되시나요?&lt;/label&gt;
+                        &lt;textarea class=&quot;form-control&quot; id=&quot;ai-question&quot; rows=&quot;3&quot; placeholder=&quot;예: 이 다음에 어떤 내용을 써야 할까요?&quot;&gt;&lt;/textarea&gt;
+                    &lt;/div&gt;
+                    &lt;!-- 누르면 article.js가 /api/ai-suggestions를 호출합니다. --&gt;
+                    &lt;button type=&quot;button&quot; id=&quot;get-suggestion-btn&quot; class=&quot;btn btn-primary&quot;&gt;제안 받기&lt;/button&gt;
+                    &lt;!-- AI가 답을 만드는 동안 보이는 로딩 문구입니다(보통 몇 초~20초). --&gt;
+                    &lt;div id=&quot;ai-loading&quot; class=&quot;mt-3&quot; style=&quot;display: none;&quot;&gt;
+                        &lt;div class=&quot;spinner-border text-primary&quot; role=&quot;status&quot;&gt;
+                            &lt;span class=&quot;sr-only&quot;&gt;Loading...&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;span class=&quot;ml-2&quot;&gt;AI가 생각하고 있습니다...&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;!-- 제안 목록이 들어가는 영역입니다. 클릭한 제안은 본문 끝에 추가됩니다. --&gt;
+                    &lt;div id=&quot;ai-suggestion&quot; class=&quot;mt-3&quot; style=&quot;display: none;&quot;&gt;
+                        &lt;h6&gt;AI 제안:&lt;/h6&gt;
+                        &lt;div id=&quot;ai-suggestion-content&quot;&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;modal-footer&quot;&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;btn btn-secondary&quot; data-dismiss=&quot;modal&quot;&gt;닫기&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 스크립트는 body 맨 아래에 둡니다. 화면이 먼저 그려진 뒤 버튼에 기능을 붙이기 위해서입니다. --&gt;
+    &lt;script src=&quot;https://code.jquery.com/jquery-3.3.1.slim.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- 버튼 동작(업로드, AI 도움받기, 저장)을 담은 자바스크립트 파일입니다. --&gt;
+    &lt;script src=&quot;/js/article.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+        </li>
+        <li>
+          <p>버튼을 누르면 실행되는 자바스크립트입니다. 위치는 <code>resources → static → js → article.js</code>입니다. 주석을 읽으면 업로드, AI 도움받기, 등록 흐름이 보입니다.</p>
+          <div class="codebox" data-file="src/main/resources/static/js/article.js"><div class="bar"><span class="fname">src/main/resources/static/js/article.js</span><div><button class="copy">전체 복사</button></div></div><pre><code>// [8장 &#183; article.js 전체 안내]
+// 이 파일은 글 작성/수정/삭제 화면(newArticle.html, article.html)의 &quot;버튼 동작&quot;을 담당합니다.
+// 브라우저에서 버튼을 누르면 → 이 파일의 함수가 실행 → fetch()로 서버 API를 호출 → 결과를 화면에 반영
+// 8장에서 추가된 부분: 이미지 업로드(/api/upload), AI 도움받기(/api/ai-suggestions), AI 섬네일(/api/ai-thumbnails)
+
+// 페이지가 열릴 때(DOMContentLoaded) 실행됩니다.
+// 수정 화면처럼 이미 이미지가 있는 글이면, 숨겨 둔 image-url 값으로 미리보기를 바로 보여 줍니다.
+window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+    // ?. (옵셔널 체이닝): 요소가 없으면 에러 없이 undefined가 됩니다.
+    const imageUrl = document.getElementById(&#39;image-url&#39;)?.value;
+    if (imageUrl) {
+        displayImagePreview(imageUrl);
+    }
+});
+
+// [8장 &#183; 이미지 업로드] 파일 선택 상자(id=image-upload)에서 파일을 고르면 실행됩니다.
+// 흐름: 파일 검사 → FormData에 담기 → POST /api/upload → 받은 imageUrl을 숨김칸에 저장 → 미리보기
+// 이미지 업로드 버튼
+const imageUpload = document.getElementById(&#39;image-upload&#39;);
+if (imageUpload) {
+    // async: 이 함수 안에서 기다림(await) 없이 fetch를 쓰지만, 나중에 기다림을 넣기 쉽도록 붙여 둡니다.
+    imageUpload.addEventListener(&#39;change&#39;, async (event) =&gt; {
+        // 사용자가 고른 파일 목록 중 첫 번째 파일을 꺼냅니다.
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // 확장자가 아니라 &quot;MIME 타입&quot;(image/png, image/jpeg 등)으로 이미지인지 확인합니다.
+        if (!file.type.startsWith(&#39;image/&#39;)) {
+            alert(&#39;이미지 파일만 업로드 가능합니다.&#39;);
+            return;
+        }
+
+        // FormData: 파일을 &quot;폼 전송&quot;처럼 담는 상자입니다. key 이름 &#39;file&#39;은 서버의 @RequestParam(&quot;file&quot;)과 같아야 합니다.
+        const formData = new FormData();
+        formData.append(&#39;file&#39;, file);
+
+        // POST /api/upload 로 파일을 보냅니다. (Content-Type은 브라우저가 자동으로 맞춰 줍니다)
+        fetch(&#39;/api/upload&#39;, {
+            method: &#39;POST&#39;,
+            body: formData
+        }).then((response) =&gt; {
+            // 서버가 201(Created) 등 성공 코드를 주면 response.ok는 true입니다.
+            if (!response.ok) {
+                alert(&#39;이미지 업로드에 실패했습니다.&#39;);
+                throw new Error();
+            }
+            // 응답 본문(JSON)을 자바스크립트 객체로 바꿉니다. 예) {imageUrl: &quot;/uploads/...png&quot;}
+            return response.json();
+        })
+            .then((data) =&gt; {
+                // 받은 주소를 숨김칸(image-url)에 저장합니다. 나중에 &quot;등록&quot; 버튼이 이 값을 서버로 보냅니다.
+                document.getElementById(&#39;image-url&#39;).value = data.imageUrl;
+                displayImagePreview(data.imageUrl);
+            })
+            .catch((e) =&gt; console.error(e));
+    });
+}
+
+// [8장 &#183; 이미지 미리보기] imageUrl이 있으면 미리보기 영역을 보여 주고, 그 주소를 &lt;img&gt;에 넣습니다.
+function displayImagePreview(imageUrl) {
+    const preview = document.getElementById(&#39;image-preview&#39;);
+    const previewImg = document.getElementById(&#39;preview-img&#39;);
+
+    if (preview &amp;&amp; previewImg &amp;&amp; imageUrl) {
+        previewImg.src = imageUrl;
+        preview.style.display = &#39;block&#39;;
+    }
+}
+
+// [8장 &#183; 이미지 제거] &quot;이미지 제거&quot; 버튼: 숨김칸, 파일 선택, 미리보기를 모두 비웁니다.
+// 이미지 제거 버튼
+const removeImageButton = document.getElementById(&#39;remove-image-btn&#39;);
+if (removeImageButton) {
+    removeImageButton.addEventListener(&#39;click&#39;, () =&gt; {
+        document.getElementById(&#39;image-url&#39;).value = &#39;&#39;;
+        document.getElementById(&#39;image-upload&#39;).value = &#39;&#39;;
+        document.getElementById(&#39;image-preview&#39;).style.display = &#39;none&#39;;
+    });
+}
+
+// [8장 &#183; AI 섬네일 생성 버튼] 이 버튼은 기본적으로 숨겨져 있습니다(newArticle.html 참고).
+// 무료 모델은 이미지 생성을 지원하지 않아서, 기능을 켜기 전까지는 사용되지 않습니다.
+// AI 썸네일 생성 버튼
+const aiThumbnailButton = document.getElementById(&#39;ai-thumbnail-btn&#39;);
+if (aiThumbnailButton) {
+    aiThumbnailButton.addEventListener(&#39;click&#39;, async () =&gt; {
+        const title = document.getElementById(&#39;title&#39;).value;
+        const content = document.getElementById(&#39;content&#39;).value;
+
+        // 제목과 본문이 모두 비어 있으면 생성할 근거가 없으니 막습니다. (trim: 앞뒤 공백 제거)
+        if (!title.trim() &amp;&amp; !content.trim()) {
+            alert(&#39;제목이나 내용을 먼저 입력해주세요.&#39;);
+            return;
+        }
+
+        // 생성에 시간이 걸리므로 로딩 문구를 보여 주고, 중복 클릭을 막으려고 버튼을 잠급니다.
+        const loadingDiv = document.getElementById(&#39;ai-thumbnail-loading&#39;);
+        loadingDiv.style.display = &#39;block&#39;;
+        aiThumbnailButton.disabled = true;
+
+        // POST /api/ai-thumbnails 호출. 성공하면 받은 imageUrl을 숨김칸에 저장하고 미리보기를 보여 줍니다.
+        fetch(&#39;/api/ai-thumbnails&#39;, {
+            method: &#39;POST&#39;,
+            body: JSON.stringify({
+                title: title,
+                content: content
+            }),
+            headers: {
+                &#39;Content-Type&#39;: &#39;application/json&#39;,
+            },
+        }).then((response) =&gt; {
+            if (!response.ok) {
+                alert(&#39;썸네일 생성에 실패했습니다.&#39;);
+                throw new Error();
+            }
+            return response.json();
+        }).then((data) =&gt; {
+            document.getElementById(&#39;image-url&#39;).value = data.imageUrl;
+            displayImagePreview(data.imageUrl);
+        }).finally(() =&gt; {
+            // 성공하든 실패하든 마지막에는 로딩 문구를 숨기고 버튼을 다시 누를 수 있게 합니다.
+            loadingDiv.style.display = &#39;none&#39;;
+            aiThumbnailButton.disabled = false;
+        });
+    });
+}
+
+
+// 삭제 기능 (수정 화면에서 &quot;삭제&quot; 버튼이 있을 때만 동작)
+const deleteButton = document.getElementById(&#39;delete-btn&#39;);
+
+if (deleteButton) {
+    deleteButton.addEventListener(&#39;click&#39;, event =&gt; {
+        let id = document.getElementById(&#39;article-id&#39;).value;
+        fetch(`/api/articles/${id}`, {
+            method: &#39;DELETE&#39;
+        })
+            .then(() =&gt; {
+                alert(&#39;삭제가 완료되었습니다.&#39;);
+                location.replace(&#39;/articles&#39;);
+            });
+    });
+}
+
+// 수정 기능: 주소창의 ?id=번호 를 읽어서 그 글을 PUT 요청으로 수정합니다.
+// 수정 때도 imageUrl을 같이 보내야 이미지가 유지되거나 바뀝니다. (8장에서 추가된 부분)
+const modifyButton = document.getElementById(&#39;modify-btn&#39;);
+
+if (modifyButton) {
+    modifyButton.addEventListener(&#39;click&#39;, event =&gt; {
+        let params = new URLSearchParams(location.search);
+        let id = params.get(&#39;id&#39;);
+
+        fetch(`/api/articles/${id}`, {
+            method: &#39;PUT&#39;,
+            headers: {
+                &quot;Content-Type&quot;: &quot;application/json&quot;,
+            },
+            body: JSON.stringify({
+                title: document.getElementById(&#39;title&#39;).value,
+                content: document.getElementById(&#39;content&#39;).value,
+                imageUrl: document.getElementById(&#39;image-url&#39;).value
+            })
+        })
+            .then(() =&gt; {
+                alert(&#39;수정이 완료되었습니다.&#39;);
+                location.replace(`/articles/${id}`);
+            });
+    });
+}
+
+// 생성(등록) 기능: 제목, 본문, 이미지 주소(imageUrl)를 POST /api/articles로 보냅니다.
+// 이미지 주소는 위의 업로드 단계에서 숨김칸(image-url)에 저장해 둔 값입니다.
+const createButton = document.getElementById(&#39;create-btn&#39;);
+
+if (createButton) {
+    createButton.addEventListener(&#39;click&#39;, event =&gt; {
+        fetch(&#39;/api/articles&#39;, {
+            method: &#39;POST&#39;,
+            headers: {
+                &quot;Content-Type&quot;: &quot;application/json&quot;,
+            },
+            body: JSON.stringify({
+                title: document.getElementById(&#39;title&#39;).value,
+                content: document.getElementById(&#39;content&#39;).value,
+                imageUrl: document.getElementById(&#39;image-url&#39;).value
+            })
+        })
+            .then(() =&gt; {
+                alert(&#39;등록 완료되었습니다.&#39;);
+                location.replace(&#39;/articles&#39;);
+            });
+    });
+}
+
+// [8장 &#183; 글쓰기 도우미] &quot;AI 도움받기&quot; 버튼을 누르면 모달 창(글쓰기 도우미)을 엽니다.
+// 창을 열 때마다 이전 제안 영역과 질문 칸을 비워서 깨끗한 상태로 보여 줍니다.
+const aiAssistButton = document.getElementById(&#39;ai-assist-btn&#39;);
+
+if (aiAssistButton) {
+    aiAssistButton.addEventListener(&#39;click&#39;, event =&gt; {
+        // $(&#39;#aiAssistModal&#39;).modal(&#39;show&#39;)는 부트스트랩(jQuery) 기능으로 모달 창을 띄웁니다.
+        $(&#39;#aiAssistModal&#39;).modal(&#39;show&#39;);
+        document.getElementById(&#39;ai-suggestion&#39;).style.display = &#39;none&#39;;
+        document.getElementById(&#39;ai-question&#39;).value = &#39;&#39;;
+    });
+}
+
+// [8장 &#183; 글쓰기 도우미] 모달 안의 &quot;제안 받기&quot; 버튼: 지금 쓰는 제목&#183;본문&#183;질문을 모아 AI에게 보냅니다.
+const getSuggestionButton = document.getElementById(&#39;get-suggestion-btn&#39;);
+
+if (getSuggestionButton) {
+    getSuggestionButton.addEventListener(&#39;click&#39;, event =&gt; {
+        const title = document.getElementById(&#39;title&#39;).value;
+        const content = document.getElementById(&#39;content&#39;).value;
+        const question = document.getElementById(&#39;ai-question&#39;).value;
+
+        // 질문이 비어 있으면 AI가 무엇을 도와줄지 알 수 없으므로 막습니다.
+        if (!question.trim()) {
+            alert(&#39;고민되는 내용을 입력해주세요.&#39;);
+            return;
+        }
+
+        // 로딩 표시
+        document.getElementById(&#39;ai-loading&#39;).style.display = &#39;block&#39;;
+        document.getElementById(&#39;ai-suggestion&#39;).style.display = &#39;none&#39;;
+
+        // 서버(WritingSuggestionRequest record)의 필드 이름(title, content, question)과 똑같은 키로 JSON을 만듭니다.
+        const body = JSON.stringify({
+            title: title,
+            content: content,
+            question: question
+        });
+
+        // POST /api/ai-suggestions 호출 → 서버의 WritingAssistantService가 AI에게 물어본 결과를 받습니다.
+        fetch(&#39;/api/ai-suggestions&#39;, {
+            method: &#39;POST&#39;,
+            headers: {
+                &#39;Content-Type&#39;: &#39;application/json&#39;,
+            },
+            body: body
+        })
+            .then(response =&gt; {
+                return response.json();
+            })
+            .then(data =&gt; {
+                // 응답이 도착했으니 로딩 문구를 숨깁니다.
+                document.getElementById(&#39;ai-loading&#39;).style.display = &#39;none&#39;;
+
+                const suggestionContent = document.getElementById(&#39;ai-suggestion-content&#39;);
+
+                // 제안 목록(data.suggestions)을 클릭 가능한 목록 HTML로 만듭니다.
+                let html = &#39;&#39;;
+                if (data.suggestions &amp;&amp; data.suggestions.length &gt; 0) {
+                    html += &#39;&lt;ul class=&quot;list-group&quot;&gt;&#39;;
+                    data.suggestions.forEach((suggestion, index) =&gt; {
+                        // data-suggestion: 클릭했을 때 본문에 넣을 글을 담아 둡니다. 큰따옴표는 &amp;quot;로 바꿔 깨짐을 막습니다.
+                        html += `&lt;li class=&quot;list-group-item suggestion-item&quot; style=&quot;cursor: pointer;&quot; data-suggestion=&quot;${suggestion.replace(/&quot;/g, &#39;&amp;quot;&#39;)}&quot; title=&quot;클릭하면 본문에 추가됩니다&quot;&gt;
+                                ${suggestion}
+                                &lt;small class=&quot;text-muted float-right&quot;&gt;클릭하여 추가&lt;/small&gt;
+                             &lt;/li&gt;`;
+                    });
+                    html += &#39;&lt;/ul&gt;&#39;;
+                }
+
+                suggestionContent.innerHTML = html;
+                document.getElementById(&#39;ai-suggestion&#39;).style.display = &#39;block&#39;;
+            })
+    });
+}
+
+// [8장 &#183; 글쓰기 도우미] 제안 목록 중 하나를 클릭하면 본문 끝에 그 문장을 붙이고 모달을 닫습니다.
+// 이벤트 위임: 목록 항목이 나중에 만들어지므로 부모(suggestionContent)에 클릭 이벤트를 한 번만 답니다.
+const suggestionContent = document.getElementById(&#39;ai-suggestion-content&#39;);
+if (suggestionContent) {
+    suggestionContent.addEventListener(&#39;click&#39;, function(e) {
+        // 클릭한 곳에서 가장 가까운 제안 항목(.suggestion-item)을 찾습니다.
+        const suggestionItem = e.target.closest(&#39;.suggestion-item&#39;);
+        if (suggestionItem) {
+            const suggestion = suggestionItem.getAttribute(&#39;data-suggestion&#39;);
+            const contentTextarea = document.getElementById(&#39;content&#39;);
+
+            // 본문 끝에 줄바꿈 두 번을 넣고 제안을 붙입니다. (이미 줄바꿈으로 끝나면 줄바꿈을 더 넣지 않습니다)
+            const currentContent = contentTextarea.value;
+            const separator = currentContent &amp;&amp; !currentContent.endsWith(&#39;\n&#39;) ? &#39;\n\n&#39; : &#39;&#39;;
+            contentTextarea.value = currentContent + separator + suggestion;
+
+            $(&#39;#aiAssistModal&#39;).modal(&#39;hide&#39;);
+
+            contentTextarea.focus();
+        }
+    });
+}</code></pre></div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · 제안이 나오지 않음 → 앱(5단계 ▶)이 켜져 있는지 확인하세요. 꺼졌다면 다시 ▶하세요.<br>
+        · 버튼을 눌러도 반응이 없음 → 브라우저에서 새로고침(F5)하세요. 그래도 안 되면 개발자 도구(F12)의 Console 탭에 빨간 오류가 있는지 보세요.</div>
+      <div class="do" data-row="m8"><input type="checkbox" data-mission="m8"><span>🛠️ <b>미션 8</b>: 브라우저에서 AI 제안 목록을 받고, 하나를 클릭해 본문에 추가되는지 확인하고 체크하세요.</span></div>
+      <div class="quiz" data-q="q7" data-ans="2">
+        <p class="q-title">🧠 퀴즈 7. 제안 목록을 클릭했을 때 본문에 추가되도록 article.js가 이벤트를 붙이는 방식은?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">페이지를 새로 고치면서 추가한다</button>
+          <button class="opt" data-i="1">서버가 본문을 다시 저장한다</button>
+          <button class="opt" data-i="2">부모 영역에 클릭 이벤트를 한 번만 달아 두고, 눌린 항목을 찾는다(이벤트 위임)</button>
+        </div>
+        <p class="exp" hidden>정답은 ③입니다. 제안 항목은 나중에 만들어지므로, 부모 영역에 이벤트를 한 번만 달아 두면 됩니다.</p>
+      </div>
+    </section>
+
+    <section id="l7" class="lesson">
+      <h2><span class="no">7</span> 이미지 업로드 <small>(PDF 8.4 앞부분 · 이미지 업로드 기능 추가하기)</small></h2>
+      <div class="why">
+        💡 <b>업로드 흐름</b>: 브라우저가 파일을 보냄 → <b>UploadController</b>가 받음 → <b>FileStorageService</b>(설계도)가 <b>LocalFileStorageService</b>(실제 저장)에게 저장을 맡김 → 저장된 주소(<code>/uploads/...</code>)를 돌려줌 → 브라우저가 그 주소로 이미지를 보여 줌.<br>
+        <b>WebMvcConfig</b>는 <code>/uploads/</code> 주소를 실제 uploads 폴더와 연결하는 설정입니다.
+      </div>
+      <ol class="steps">
+        <li>
+          <p>글의 이미지 주소 필드와 DTO들입니다. 이미지가 없으면 값은 <code>null</code>입니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/domain/Article.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/domain/Article.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.domain;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@EntityListeners(AuditingEntityListener.class)
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Article {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, updatable = false)
+    private Long id;
+
+    @Column(name = &quot;title&quot;, nullable = false)
+    private String title;
+
+    @Column(name = &quot;content&quot;, nullable = false)
+    private String content;
+
+    // [8장 &#183; 이미지 업로드] 글에 붙은 이미지의 주소입니다. 예) /uploads/3f2a....png
+    // 이미지가 없는 글은 null입니다. DB 컬럼명은 image_url(자바는 camelCase, DB는 snake_case 관례).
+    @Column(name = &quot;image_url&quot;)
+    private String imageUrl;
+
+    @CreatedDate
+    @Column(name = &quot;created_at&quot;)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = &quot;updated_at&quot;)
+    private LocalDateTime updatedAt;
+
+    @Builder
+    public Article(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
+
+    // [8장] 수정 화면에서 이미지도 함께 바꿀 수 있도록 imageUrl을 받습니다.
+    public void update(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/AddArticleRequest.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/AddArticleRequest.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import me.shinsunyoung.springbootdeveloper.domain.Article;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class AddArticleRequest {
+    private String title;
+    private String content;
+    // [8장 &#183; 이미지 업로드] 글 등록 때 함께 보낼 이미지 주소입니다. 이미지가 없으면 null로 옵니다.
+    private String imageUrl;
+
+    public AddArticleRequest(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public Article toEntity() {
+        return Article.builder()
+                .title(title)
+                .content(content)
+                .imageUrl(imageUrl)
+                .build();
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/UpdateArticleRequest.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/UpdateArticleRequest.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class UpdateArticleRequest {
+    private String title;
+    private String content;
+    // [8장 &#183; 이미지 업로드] 글 수정 때 보낼 이미지 주소입니다. 이미지를 지우면 빈 값이 옵니다.
+    private String imageUrl;
+
+    public UpdateArticleRequest(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import lombok.Getter;
+import me.shinsunyoung.springbootdeveloper.domain.Article;
+
+@Getter
+public class ArticleResponse {
+    private final String title;
+    private final String content;
+    // [8장 &#183; 이미지 업로드] 응답으로 내보낼 이미지 주소입니다. 화면에서 &lt;img src=&quot;...&quot;&gt; 로 사용합니다.
+    private final String imageUrl;
+
+    public ArticleResponse(Article article) {
+        this.title = article.getTitle();
+        this.content = article.getContent();
+        this.imageUrl = article.getImageUrl();
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleViewResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleViewResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import me.shinsunyoung.springbootdeveloper.domain.Article;
+
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@Getter
+public class ArticleViewResponse {
+    private Long id;
+    private String title;
+    private String content;
+    // [8장 &#183; 이미지 업로드] 글 상세 화면(article.html)에서 이미지를 보여 줄 때 쓰는 주소입니다.
+    private String imageUrl;
+    private LocalDateTime createdAt;
+
+    public ArticleViewResponse(Article article) {
+        this.id = article.getId();
+        this.title = article.getTitle();
+        this.content = article.getContent();
+        this.imageUrl = article.getImageUrl();
+        this.createdAt = article.getCreatedAt();
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleListViewResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/ArticleListViewResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import lombok.Getter;
+import me.shinsunyoung.springbootdeveloper.domain.Article;
+
+@Getter
+public class ArticleListViewResponse {
+    private final Long id;
+    private final String title;
+    private final String content;
+    // [8장 &#183; 이미지 업로드] 글 목록 카드(articleList.html)의 썸네일 이미지 주소입니다.
+    private final String imageUrl;
+
+    public ArticleListViewResponse(Article article) {
+        this.id = article.getId();
+        this.title = article.getTitle();
+        this.content = article.getContent();
+        this.imageUrl = article.getImageUrl();
+    }
+}</code></pre></div>
+        </li>
+        <li>
+          <p>업로드 저장 코드입니다. 응답 상자, 설계도(인터페이스), 실제 저장(구현체), 요청을 받는 창구(컨트롤러), 웹 주소 연결(WebMvcConfig)을 차례로 봅니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/UploadResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/UploadResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+// [8장 &#183; 이미지 업로드 &#183; 응답 데이터]
+// 파일 저장이 끝나면 브라우저에 &quot;저장된 이미지 주소&quot;를 돌려주는 상자입니다.
+// 응답 예) {&quot;imageUrl&quot;: &quot;/uploads/3f2a....png&quot;}
+// 브라우저는 이 주소로 이미지를 다시 불러와서 미리보기를 보여 줍니다.
+public record UploadResponse(
+        String imageUrl
+) {}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/service/FileStorageService.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/service/FileStorageService.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.service;
+
+import me.shinsunyoung.springbootdeveloper.dto.UploadResponse;
+
+// [8장 &#183; 이미지 업로드 &#183; 저장 &quot;설계도&quot;(인터페이스)]
+// &quot;파일을 어디에 저장할지&quot;는 적지 않고 &quot;저장한다&quot;는 약속(store)만 정합니다.
+// 실제 저장 방법은 구현체가 맡습니다.
+//   - 지금: LocalFileStorageService (내 PC의 uploads 폴더에 저장)
+//   - 나중: 클라우드 저장소(AWS S3 등)용 구현체를 새로 만들어 끼우기만 하면 됩니다.
+// 컨트롤러는 이 인터페이스만 알기 때문에, 저장 방식이 바뀌어도 컨트롤러 코드는 그대로입니다.
+// (PDF 8장의 &quot;의존성 역전 원칙(DIP)&quot; 설명과 같은 이야기입니다.)
+public interface FileStorageService {
+
+    // bytes: 업로드된 파일의 내용(바이트), filename: 원래 파일 이름
+    // 반환값: 저장 후의 주소를 담은 UploadResponse
+    UploadResponse store(byte[] bytes, String filename);
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/service/LocalFileStorageService.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/service/LocalFileStorageService.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.service;
+
+import me.shinsunyoung.springbootdeveloper.dto.UploadResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+// [8장 &#183; 이미지 업로드 &#183; 내 PC에 저장하는 구현체]
+// FileStorageService의 실제 구현입니다. 파일을 프로젝트의 uploads 폴더에 저장합니다.
+// 서버를 운영할 때는 이 방식 대신 클라우드 저장소를 쓰는 것이 일반적입니다(인터페이스 덕분에 교체 쉬움).
+@Service
+public class LocalFileStorageService implements FileStorageService {
+
+    // 파일을 저장할 &quot;절대 경로&quot; 폴더입니다. 예) C:/chapter8/uploads (자바 주석에서는 역슬래시를 쓰면 안 됩니다)
+    private final Path uploadDir;
+
+    // 생성자: application.yml의 app.upload-dir 값을 읽습니다.
+    // 값이 없으면 기본값 &quot;uploads&quot;(프로젝트 안의 uploads 폴더)를 씁니다. &quot;:&quot; 뒤가 기본값입니다.
+    public LocalFileStorageService(@Value(&quot;${app.upload-dir:uploads}&quot;) String uploadDir) {
+        // toAbsolutePath(): 상대 경로를 전체 경로로 바꾸고, normalize(): ..\ 같은 중복 경로를 정리합니다.
+        this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+    }
+
+    @Override
+    public UploadResponse store(byte[] bytes, String filename) {
+        try {
+            // 1) 저장 폴더가 없으면 만듭니다. (이미 있으면 아무 일도 하지 않습니다)
+            Files.createDirectories(uploadDir);
+
+            // 2) 확장자(.png, .jpg 등)를 원래 파일 이름에서 잘라 냅니다. 점이 없으면 .png로 정합니다.
+            String ext = filename.contains(&quot;.&quot;)
+                    ? filename.substring(filename.lastIndexOf(&#39;.&#39;))
+                    : &quot;.png&quot;;
+
+            // 3) 같은 이름의 파일이 덮어써지지 않도록 UUID(무작위 고유 문자열)를 이름으로 씁니다.
+            //    예) 3f2a9c1e-....png
+            String saved = UUID.randomUUID() + ext;
+
+            // 4) 실제로 디스크에 파일 내용을 씁니다.
+            Files.write(uploadDir.resolve(saved), bytes);
+
+            // 5) 브라우저가 이미지를 볼 수 있는 &quot;웹 주소&quot;를 돌려줍니다.
+            //    WebMvcConfig가 /uploads/** 주소를 uploads 폴더와 연결해 줍니다.
+            return new UploadResponse(&quot;/uploads/&quot; + saved);
+
+        } catch (IOException e) {
+            // 파일 쓰기에 실패하면 실행을 멈추고 오류를 알립니다.
+            throw new RuntimeException();
+        }
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/controller/UploadController.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/controller/UploadController.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.controller;
+
+import me.shinsunyoung.springbootdeveloper.dto.UploadResponse;
+import me.shinsunyoung.springbootdeveloper.service.FileStorageService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+// [8장 &#183; 이미지 업로드 &#183; 컨트롤러]
+// 브라우저가 보낸 &quot;파일&quot;을 받아서 저장하고, 저장된 주소를 돌려주는 창구입니다.
+// @RestController: 화면(HTML)이 아니라 데이터(JSON)를 돌려주는 컨트롤러라는 뜻입니다.
+@RestController
+public class UploadController {
+
+    // 실제 저장은 인터페이스에게 맡깁니다. 어떤 구현체(LocalFileStorageService 등)인지는 여기서 몰라도 됩니다.
+    private final FileStorageService fileStorageService;
+
+    // 생성자 주입: 스프링이 FileStorageService 구현체를 찾아서 넣어 줍니다.
+    public UploadController(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
+    }
+
+    // POST /api/upload 요청이 오면 실행됩니다.
+    // @RequestParam(&quot;file&quot;): 폼 데이터의 key가 &quot;file&quot;인 값(업로드된 파일)을 꺼냅니다.
+    // 처리 순서: 파일 내용(bytes)과 원래 이름을 꺼내서 저장 → 저장 주소를 JSON으로 응답
+    // HttpStatus.CREATED(201): &quot;새 자원이 만들어졌다&quot;는 뜻의 상태 코드입니다.
+    @PostMapping(&quot;/api/upload&quot;)
+    public ResponseEntity&lt;UploadResponse&gt; uploadFile(@RequestParam(&quot;file&quot;) MultipartFile file) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(fileStorageService.store(
+                        file.getBytes(),
+                        file.getOriginalFilename()
+                ));
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/config/WebMvcConfig.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/config/WebMvcConfig.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+// [8장 &#183; 이미지 업로드 &#183; 저장된 이미지를 브라우저에 보여 주기 위한 설정]
+// 스프링 부트는 기본적으로 static, public 폴더만 웹 주소로 보여 줍니다.
+// 우리가 만든 uploads 폴더는 그 밖에 있어서, 주소(/uploads/...)와 폴더를 직접 연결해 줘야 합니다.
+// 예) 브라우저가 /uploads/abc.png 를 요청 → 프로젝트의 uploads/abc.png 파일을 보내 줌
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // &quot;/uploads/**&quot; : /uploads/로 시작하는 모든 주소
+        // &quot;file:uploads/&quot; : 프로젝트 폴더 안의 uploads 폴더(파일 시스템 경로)
+        registry.addResourceHandler(&quot;/uploads/**&quot;)
+                .addResourceLocations(&quot;file:uploads/&quot;);
+    }
+}</code></pre></div>
+        </li>
+        <li>
+          <p>테스트용 더미 글 데이터입니다. 위치는 <code>resources → import.sql</code>입니다. 이미지 칸이 NULL로 들어갑니다.</p>
+          <div class="codebox" data-file="src/main/resources/import.sql"><div class="bar"><span class="fname">src/main/resources/import.sql</span><div><button class="copy">전체 복사</button></div></div><pre><code>-- [8장 &#183; 이미지 업로드] 앱을 켤 때 넣는 테스트용 더미 글입니다(DB는 메모리 H2라서 껐다 켜면 다시 들어갑니다).
+-- article 테이블에 image_url 컬럼이 생겼으므로, 더미 글의 이미지는 NULL(이미지 없음)로 넣습니다.
+INSERT INTO article (title, content, image_url, created_at, updated_at) VALUES (&#39;제목 1&#39;, &#39;내용 1&#39;, NULL, NOW(), NOW())
+INSERT INTO article (title, content, image_url, created_at, updated_at) VALUES (&#39;제목 2&#39;, &#39;내용 2&#39;, NULL, NOW(), NOW())
+INSERT INTO article (title, content, image_url, created_at, updated_at) VALUES (&#39;제목 3&#39;, &#39;내용 3&#39;, NULL, NOW(), NOW())</code></pre></div>
+        </li>
+        <li>
+          <p>업로드 테스트용 그림을 Terminal에서 만듭니다. 바탕화면이 아니라 임시 폴더(<code>$env:TEMP</code>)에 만들어서 어느 PC에서나 같습니다. 앱이 켜져 있어야 합니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>Add-Type -AssemblyName System.Drawing
+$bmp = New-Object System.Drawing.Bitmap 200, 120
+$g = [System.Drawing.Graphics]::FromImage($bmp); $g.Clear([System.Drawing.Color]::SteelBlue); $g.Dispose()
+$bmp.Save("$env:TEMP\ch8-sample.png", [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
+Test-Path "$env:TEMP\ch8-sample.png"</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: 마지막 줄에 <code>True</code>가 나옵니다.</div>
+        </li>
+        <li>
+          <p>그림을 업로드합니다. Windows PowerShell에서 <code>curl</code>은 다른 명령과 연결되어 있으므로 반드시 <b>curl.exe</b>라고 씁니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>curl.exe -s -w "`nHTTP %{http_code}`n" -F "file=@$env:TEMP\ch8-sample.png" http://localhost:8080/api/upload</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: <code>{"imageUrl":"/uploads/....png"}</code> 한 줄과 <code>HTTP 201</code>이 나옵니다. 가운데 숫자는 매번 다릅니다.</div>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal</span><div><button class="copy">복사</button></div></div><pre><code>Get-ChildItem C:\chapter8\uploads</code></pre></div>
+          <div class="ok">✅ <b>성공 기준</b>: 방금 올린 <code>.png</code> 파일이 보입니다. 왼쪽 Project 창에서 <code>uploads</code> 폴더가 안 보이면 폴더를 우클릭 → Reload from Disk를 누르세요.</div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>자주 나는 오류</b><br>
+        · <code>curl</code>을 그대로 쓰면 오류 또는 엉뚱한 결과가 나옵니다 → 반드시 <code>curl.exe</code>를 쓰세요.<br>
+        · <code>415</code> 또는 파일 오류 → <code>-F "file=@경로"</code>에서 <code>@</code> 기호와 파일 경로를 확인하세요.</div>
+      <div class="do" data-row="m9"><input type="checkbox" data-mission="m9"><span>🛠️ <b>미션 9</b>: <code>HTTP 201</code>과 <code>imageUrl</code> 응답을 확인하고 체크하세요.</span></div>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="quiz" data-q="q8" data-ans="2">
+        <p class="q-title">🧠 퀴즈 8. 업로드 API가 돌려주는 JSON에서 저장된 이미지 주소의 이름표(키)는 무엇일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">url</button>
+          <button class="opt" data-i="1">path</button>
+          <button class="opt" data-i="2">imageUrl</button>
+        </div>
+        <p class="exp" hidden>정답은 imageUrl입니다. UploadResponse record의 필드 이름이 그대로 JSON 키가 됩니다.</p>
+      </div>
+    </section>
+
+    <section id="l8" class="lesson">
+      <h2><span class="no">8</span> 섬네일 자동 생성 <small>(PDF 8.4 · 이번 실습에서는 꺼 둠)</small></h2>
+      <button class="copy-lesson">이 단계 파일 한 번에 복사</button>
+      <div class="why">
+        💡 <b>섬네일 생성</b>은 글의 제목과 본문을 AI <b>이미지 모델(ImageModel)</b>에 보내서 그림을 받아 저장하는 기능입니다. 책은 이 기능을 OpenAI 이미지 모델로 만듭니다.<br>
+        <b>그런데</b> OpenRouter의 <b>무료 모델은 텍스트만 만들 수 있고, 이미지 생성을 지원하지 않습니다</b>. 그래서 이 기능은 코드는 남겨 두고, <code>app.thumbnail.enabled</code>를 <code>false</code>로 꺼 둡니다.
+      </div>
+      <ol class="steps">
+        <li>
+          <p>섬네일 설정이 꺼져 있는지 확인합니다. <code>application.yml</code>에서 <kbd>Ctrl</kbd> + <kbd>F</kbd>로 <code>thumbnail</code>을 검색해 보세요.</p>
+          <div class="ok">✅ <b>성공 기준</b>: <code>enabled: false</code>가 보입니다.</div>
+        </li>
+        <li>
+          <p>꺼 둔 기능의 요청이 404인지 Terminal(앱 실행 중)에서 확인합니다. 404는 "이 기능은 지금 없다"는 뜻이므로 <b>정상</b>입니다.</p>
+          <div class="codebox"><div class="bar"><span class="fname">IntelliJ Terminal (새 탭)</span><div><button class="copy">복사</button></div></div><pre><code>try { Invoke-RestMethod -Method Post -Uri http://localhost:8080/api/ai-thumbnails -ContentType "application/json" -Body '{"title":"x","content":"y"}' | Out-Null; "예상과 다름" } catch { "status code: " + [int]$_.Exception.Response.StatusCode }</code></pre></div>
+          <div class="ok">✅ <b>이렇게 나오면 성공</b>: <code>status code: 404</code>가 나옵니다.</div>
+        </li>
+        <li>
+          <p>섬네일 관련 코드 파일입니다. 기능을 켜면(<code>true</code>) 여기 코드가 살아나지만, 무료 모델에서는 이미지 생성이 실패합니다. 프롬프트 파일에는 주석을 넣지 않았습니다.</p>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/GeneratorThumbnailRequest.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/GeneratorThumbnailRequest.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+import java.util.Map;
+
+// [8장 &#183; 섬네일 생성 &#183; 요청 데이터]
+// 섬네일을 만들 때 AI에게 참고 자료로 줄 &quot;제목&quot;과 &quot;본문&quot;을 담는 상자입니다.
+// 제목과 본문은 프롬프트(thumbnail-generator.st)의 {title}, {content} 자리에 들어갑니다.
+public record GeneratorThumbnailRequest(
+        String title,     // 글 제목
+        String content    // 글 본문
+) {
+
+    // 프롬프트 템플릿 빈칸에 넣을 값을 Map으로 묶습니다. 키 이름이 템플릿 {이름}과 같아야 합니다.
+    public Map&lt;String, Object&gt; toMap() {
+        return Map.of(
+                &quot;title&quot;, title,
+                &quot;content&quot;, content
+        );
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/dto/GeneratorThumbnailResponse.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/dto/GeneratorThumbnailResponse.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.dto;
+
+// [8장 &#183; 섬네일 생성 &#183; 응답 데이터]
+// 생성된 섬네일을 저장한 뒤 그 &quot;이미지 주소(imageUrl)&quot;만 돌려주는 상자입니다.
+// 이번 실습에서는 섬네일 기능을 꺼 두었기 때문에 이 응답은 실제로 나오지 않습니다.
+public record GeneratorThumbnailResponse(String imageUrl) {}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/service/ThumbnailGeneratorService.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/service/ThumbnailGeneratorService.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.service;
+
+import me.shinsunyoung.springbootdeveloper.dto.GeneratorThumbnailRequest;
+import me.shinsunyoung.springbootdeveloper.dto.GeneratorThumbnailResponse;
+import me.shinsunyoung.springbootdeveloper.dto.UploadResponse;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.image.Image;
+import org.springframework.ai.image.ImageModel;
+import org.springframework.ai.image.ImagePrompt;
+import org.springframework.ai.image.ImageResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
+import java.net.URI;
+
+// [8장 &#183; 섬네일 자동 생성 &#183; 서비스]
+// 제목과 본문으로 AI 이미지 모델(ImageModel)을 호출해 섬네일을 만들고, 로컬에 저장합니다.
+// 중요: 무료 모델(openrouter/free)은 이미지 생성을 지원하지 않아서 기본값으로 꺼 두었습니다.
+//       @ConditionalOnProperty: app.thumbnail.enabled=true 일 때만 이 클래스를 등록합니다.
+@Service
+@ConditionalOnProperty(name = &quot;app.thumbnail.enabled&quot;, havingValue = &quot;true&quot;)
+public class ThumbnailGeneratorService {
+
+    private final ImageModel imageModel;
+    private final PromptTemplate template;
+    private final FileStorageService fileStorageService;
+    private final RestClient restClient = RestClient.create();
+
+    public ThumbnailGeneratorService(
+            ImageModel imageModel,
+            FileStorageService fileStorageService,
+            @Value(&quot;classpath:prompts/thumbnail-generator.st&quot;) Resource promptResource
+    ) {
+        this.imageModel = imageModel;
+        this.fileStorageService = fileStorageService;
+        this.template = new PromptTemplate(promptResource);
+    }
+
+    // 전체 흐름: 프롬프트 만들기 → 이미지 생성 AI 호출 → 이미지 내려받기 → 로컬 저장 → 주소 반환
+    public GeneratorThumbnailResponse generateThumbnail(GeneratorThumbnailRequest request) {
+        String prompt = template.create(request.toMap()).getContents();
+
+        // 이미지 생성 AI에게 프롬프트를 보냅니다. (OpenRouter 무료 모델에서는 이 호출이 실패합니다)
+        ImageResponse response = imageModel.call(new ImagePrompt(prompt));
+        Image image = response.getResult().getOutput();
+
+        // AI가 준 이미지 &quot;주소(URL)&quot;에서 실제 이미지 데이터(바이트)를 내려받습니다.
+        byte[] bytes = restClient.get()
+                .uri(URI.create(image.getUrl()))
+                .retrieve()
+                .body(byte[].class);
+
+        // 내려받은 이미지를 업로드와 같은 방식으로 저장합니다(FileStorageService 재사용).
+        UploadResponse saved = fileStorageService.store(bytes, &quot;thumbnail.png&quot;);
+
+        return new GeneratorThumbnailResponse(saved.imageUrl());
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/java/me/shinsunyoung/springbootdeveloper/controller/ThumbnailApiController.java"><div class="bar"><span class="fname">src/main/java/me/shinsunyoung/springbootdeveloper/controller/ThumbnailApiController.java</span><div><button class="copy">전체 복사</button></div></div><pre><code>package me.shinsunyoung.springbootdeveloper.controller;
+
+import lombok.RequiredArgsConstructor;
+import me.shinsunyoung.springbootdeveloper.dto.GeneratorThumbnailRequest;
+import me.shinsunyoung.springbootdeveloper.dto.GeneratorThumbnailResponse;
+import me.shinsunyoung.springbootdeveloper.service.ThumbnailGeneratorService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+// [8장 &#183; 섬네일 자동 생성 &#183; API 창구]
+// 원래 책에서는 BlogApiController 안에 있던 섬네일 주소를, 기능을 켜고 끌 수 있도록 따로 뺀 파일입니다.
+// @ConditionalOnProperty: app.thumbnail.enabled=true 일 때만 이 주소(/api/ai-thumbnails)가 살아납니다.
+//   - 꺼져 있으면(false, 기본값) 요청 시 404 Not Found가 나오는 것이 정상입니다.
+@RequiredArgsConstructor
+@RestController
+@ConditionalOnProperty(name = &quot;app.thumbnail.enabled&quot;, havingValue = &quot;true&quot;)
+public class ThumbnailApiController {
+
+    // 실제 섬네일 생성은 서비스가 맡습니다. 컨트롤러는 &quot;요청을 받고 결과를 돌려주는&quot; 역할만 합니다.
+    private final ThumbnailGeneratorService thumbnailGeneratorService;
+
+    // POST /api/ai-thumbnails  {&quot;title&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot;} → {&quot;imageUrl&quot;: &quot;/uploads/....png&quot;}
+    @PostMapping(&quot;/api/ai-thumbnails&quot;)
+    public ResponseEntity&lt;GeneratorThumbnailResponse&gt; thumbnailGenerator(@RequestBody GeneratorThumbnailRequest request) {
+        GeneratorThumbnailResponse response = thumbnailGeneratorService.generateThumbnail(request);
+
+        return ResponseEntity.ok()
+                .body(response);
+    }
+}</code></pre></div>
+          <div class="codebox" data-file="src/main/resources/prompts/thumbnail-generator.st"><div class="bar"><span class="fname">src/main/resources/prompts/thumbnail-generator.st</span><div><button class="copy">전체 복사</button></div></div><pre><code>다음 글을 위한 전문적인 블로그 썸네일 이미지를 제작해 주세요.
+이미지는 반드시 콘텐츠와 관련성이 있어야 합니다.
+
+제목: {title}
+내용: {content}</code></pre></div>
+        </li>
+      </ol>
+      <div class="warn">⚠️ <b>기능을 켜지 마세요(이번 실습 기준)</b>. <code>enabled</code>를 <code>true</code>로 바꾸면 이미지 생성 요청이 OpenRouter 무료 모델로 가서 실패합니다. 섬네일까지 완성하려면 <b>이미지 생성을 지원하는 별도 서비스</b>(계정과 비용이 필요)를 연결해야 합니다.</div>
+      <div class="do" data-row="m10"><input type="checkbox" data-mission="m10"><span>🛠️ <b>미션 10</b>: <code>status code: 404</code>를 확인하고 체크하세요. (404가 정상입니다)</span></div>
+      <div class="quiz" data-q="q9" data-ans="1">
+        <p class="q-title">🧠 퀴즈 9. 섬네일 요청에 404가 나오는 것은 어떤 의미일까요?</p>
+        <div class="opts">
+          <button class="opt" data-i="0">앱이 고장 났다</button>
+          <button class="opt" data-i="1">섬네일 기능을 설정에서 꺼 두었다(정상)</button>
+          <button class="opt" data-i="2">OpenRouter 키가 틀렸다</button>
+        </div>
+        <p class="exp" hidden>정답은 ②입니다. 켜져 있지 않은 기능의 주소는 존재하지 않으므로 404가 나옵니다.</p>
+      </div>
+    </section>
+
+    <section id="l9" class="lesson">
+      <h2><span class="no">9</span> 마무리 <small>(PDF 학습 마무리 · 핵심 요약)</small></h2>
+      <div class="why">
+        💡 <b>핵심 요약</b><br>
+        1. 스프링 AI는 여러 AI 모델을 같은 방식으로 부르게 해 줍니다.<br>
+        2. ChatClient(글), ImageModel(이미지) 같은 컴포넌트로 복잡한 API 호출 없이 기능을 만듭니다.<br>
+        3. 프롬프트 템플릿으로 입력을 구조화하면 재사용하고 고치기 쉽습니다.<br>
+        4. AI 응답은 JSON, 이미지 등으로 돌아오고, 서비스 로직에 맞게 가공해 화면에 씁니다.
+      </div>
+      <h3>자주 나는 문제 모음 (IntelliJ)</h3>
+      <table>
+        <tr><th>증상</th><th>원인</th><th>해결</th></tr>
+        <tr><td>Project SDK is not defined</td><td>JDK 미지정</td><td>File → Project Structure → Project에서 corretto-25</td></tr>
+        <tr><td>cannot find symbol (getter, builder)</td><td>Lombok 처리 꺼짐 또는 캐시 문제</td><td>Settings에서 Annotation processing 체크 → Invalidate Caches → Invalidate and Restart</td></tr>
+        <tr><td>Could not resolve placeholder 'OPENROUTER_API_KEY'</td><td>환경 변수가 IntelliJ에 전달되지 않음</td><td>Windows 환경 변수 확인 후 IntelliJ 완전히 종료 → 재실행</td></tr>
+        <tr><td>401 / Missing Authentication header (앱은 켜졌는데 AI 제안이 500)</td><td>앱이 키를 받지 못함 (IntelliJ가 환경 변수 등록 전에 켜짐)</td><td>IntelliJ Terminal에서 <code>$env:OPENROUTER_API_KEY</code> 확인 → 비어 있으면 IntelliJ를 File → Exit로 끈 뒤 다시 켜기. 값이 있는데도 401이면 키를 다시 발급</td></tr>
+        <tr><td>404 (ai-suggestions)</td><td>base-url에 /v1이 붙음</td><td>https://openrouter.ai/api 로 수정</td></tr>
+        <tr><td>Port 8080 was already in use</td><td>이전 실행이 남음</td><td>Run 창에서 ■ 정지 후 다시 ▶</td></tr>
+        <tr><td>브라우저에서 AI 제안이 안 나옴</td><td>앱이 꺼짐</td><td>▶로 다시 실행 후 새로고침</td></tr>
+        <tr><td>한글이 깨짐</td><td>인코딩 설정</td><td>File Encodings를 UTF-8로, 파일을 다시 열기</td></tr>
+      </table>
+      <div class="do" data-row="m11"><input type="checkbox" data-mission="m11"><span>🛠️ <b>미션 11</b>: Run 창의 ■으로 앱을 끄고, 실습이 끝났으면 OpenRouter Keys 페이지에서 실습용 키를 삭제하세요. 체크하세요.</span></div>
+      <div class="tip">🚀 <b>다음으로 해 볼 것</b>: ① <code>writing-assistant.st</code>의 문장을 바꿔 제안이 어떻게 달라지는지 보기 ② 글 목록(articleList.html)에서 업로드한 이미지가 보이는지 확인하기 ③ 섬네일을 다른 이미지 서비스로 연결하는 방법 생각해 보기.</div>
+      <footer class="end">이 자습서는 책 8장의 순서를 따르며, 무료 모델 사용을 위해 일부 단계를 바꾸었습니다(키 발급, 섬네일 건너뛰기). 파일 내용은 자습서를 만든 시점의 프로젝트 스냅샷입니다.</footer>
+    </section>
+
+  </main>
+</div>
+
+<div class="dash" id="dash" aria-label="진행 상황">
+  <div class="ring">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="track" cx="18" cy="18" r="15.9155" pathLength="100"></circle>
+      <circle class="bar" id="ringM" cx="18" cy="18" r="15.9155" pathLength="100" stroke-dasharray="0 100"></circle>
+      <text class="pct" id="ringMPct" x="18" y="18">0%</text>
+    </svg>
+    미션 <b id="ringMLabel">0/0</b>
+  </div>
+  <div class="ring">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="track" cx="18" cy="18" r="15.9155" pathLength="100"></circle>
+      <circle class="bar" id="ringQ" cx="18" cy="18" r="15.9155" pathLength="100" stroke-dasharray="0 100"></circle>
+      <text class="pct" id="ringQPct" x="18" y="18">0%</text>
+    </svg>
+    퀴즈 정답 <b id="ringQLabel">0/0</b>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'ch8-tutorial-v2';
+  var S = { m: {}, q: {} };
+  try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* 저장소를 못 쓰면 메모리에서만 동작합니다 */ }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 무시 */ } }
+
+  // 진행률 링 갱신
+  function setRing(id, done, total) {
+    var pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById(id).setAttribute('stroke-dasharray', pct + ' 100');
+    document.getElementById(id + 'Pct').textContent = pct + '%';
+    document.getElementById(id + 'Label').textContent = done + '/' + total;
+  }
+  function refresh() {
+    var ms = [].slice.call(document.querySelectorAll('input[data-mission]'));
+    var qs = [].slice.call(document.querySelectorAll('.quiz'));
+    var mDone = ms.filter(function (c) { return c.checked; }).length;
+    var qDone = qs.filter(function (b) { return S.q[b.dataset.q] === Number(b.dataset.ans); }).length;
+    setRing('ringM', mDone, ms.length);
+    setRing('ringQ', qDone, qs.length);
+  }
+
+  // 미션: 줄 아무 곳을 눌러도 체크가 바뀌고, 상태를 저장합니다.
+  document.querySelectorAll('.do').forEach(function (row) {
+    var cb = row.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    var id = cb.dataset.mission;
+    cb.checked = !!S.m[id];
+    row.addEventListener('click', function (e) {
+      if (e.target.tagName === 'INPUT') return;
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change'));
+    });
+    cb.addEventListener('change', function () { S.m[id] = cb.checked; save(); refresh(); });
+  });
+
+  // 퀴즈: 한 번 고르면 고정, 정답과 해설 표시
+  document.querySelectorAll('.quiz').forEach(function (box) {
+    var id = box.dataset.q;
+    var ans = Number(box.dataset.ans);
+    var opts = [].slice.call(box.querySelectorAll('.opt'));
+    var exp = box.querySelector('.exp');
+    function show(idx) {
+      opts.forEach(function (o, i) {
+        o.disabled = true;
+        if (i === ans) o.classList.add('right');
+        if (i === idx && idx !== ans) o.classList.add('wrong');
+      });
+      exp.hidden = false;
+    }
+    if (S.q[id] !== undefined) show(S.q[id]);
+    opts.forEach(function (o, i) {
+      o.addEventListener('click', function () {
+        if (S.q[id] !== undefined) return;
+        S.q[id] = i; save(); show(i); refresh();
+      });
+    });
+  });
+
+  // 복사 기능
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok;
+  }
+  function flash(btn, msg) {
+    var old = btn.dataset.label || btn.textContent;
+    btn.dataset.label = old;
+    btn.textContent = msg;
+    setTimeout(function () { btn.textContent = old; }, 1600);
+  }
+  function copyText(text, btn) {
+    function done() { flash(btn, '복사됨 ✓'); }
+    function fail() { flash(btn, '직접 선택해 복사해 주세요'); }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { (fallbackCopy(text) ? done : fail)(); });
+    } else {
+      (fallbackCopy(text) ? done : fail)();
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var one = e.target.closest('.codebox .copy');
+    if (one) {
+      copyText(one.closest('.codebox').querySelector('code').textContent, one);
+      return;
+    }
+    var all = e.target.closest('.copy-lesson');
+    if (all) {
+      var sec = all.closest('.lesson');
+      var parts = [].slice.call(sec.querySelectorAll('.codebox[data-file]')).map(function (b) {
+        return '=== ' + b.dataset.file + ' ===\n' + b.querySelector('code').textContent;
+      });
+      copyText(parts.join('\n\n'), all);
+    }
+  });
+
+  // 목차 (모바일 햄버거)
+  var toc = document.getElementById('toc');
+  document.getElementById('menuBtn').addEventListener('click', function () { toc.classList.toggle('open'); });
+  toc.addEventListener('click', function (e) { if (e.target.closest('a')) toc.classList.remove('open'); });
+
+  // 자습서 HTML 다운로드 (현재 상태 포함)
+  document.getElementById('dlBtn').addEventListener('click', function () {
+    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'Chapter8OpenRouterTutorial.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
