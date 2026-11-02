@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<!-- AI 코드 검증 자습서 v3 · 2026-11-01 · 세 주제 결함 11개 + 정답 숨김 + 내 말로 설명 + 10장 팀 프로젝트 적용 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI 코드 검증 자습서 — 실습: 맛집 리뷰 · 여행 코스 · 고객 관리</title>
+<style>
+:root{--bg:#EEF0F3;--paper:#fff;--ink:#18213A;--muted:#5F677A;--line:#DCDFE5;--soft:#F5F6F8;--side:#141C31;--sideInk:#E9E6DD;--sideMuted:#97A0B4;--gold:#B8954B;--green:#2F6B50;--greenSoft:#E8F3EC;--red:#B4233A;--redSoft:#FBECEE;--amberSoft:#FFF6DE;--code:#141B2E;--codeInk:#E4E8F2;--cmt:#8C9BBA;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1220;--paper:#151C2E;--ink:#E9ECF2;--muted:#9AA2B5;--line:#2A3350;--soft:#1B2338;--side:#090E1B;--greenSoft:#15281F;--redSoft:#2A1A21;--amberSoft:#2A2414;--code:#0A0F1C;color-scheme:dark}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16.5px;line-height:1.8;word-break:keep-all}
+.top{position:sticky;top:0;z-index:30;background:var(--side);color:var(--sideInk);display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(184,149,75,.4)}
+.top b{flex:1;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top button{border:1px solid rgba(255,255,255,.3);background:transparent;color:var(--sideInk);border-radius:4px;padding:6px 11px;font:inherit;font-size:13.5px;cursor:pointer}
+.top button.gold{background:var(--gold);border-color:var(--gold);color:#141826;font-weight:700}
+#menuBtn{display:none}
+.wrap{display:grid;grid-template-columns:280px minmax(0,1fr)}
+nav.side{position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;background:var(--side);color:var(--sideInk);padding:16px 0 40px}
+nav.side h6{margin:16px 20px 4px;font-size:12px;color:var(--gold);letter-spacing:.05em;font-weight:700}
+nav.side a{display:flex;gap:8px;padding:6px 20px;color:var(--sideInk);text-decoration:none;font-size:14px;line-height:1.5;border-left:3px solid transparent}
+nav.side a:hover{background:rgba(255,255,255,.05)}
+nav.side a.on{border-left-color:var(--gold);background:rgba(184,149,75,.12);font-weight:700}
+nav.side a .ck{color:var(--sideMuted);width:16px;flex:none}
+nav.side a.done .ck{color:#6BC198}
+main{padding:24px clamp(12px,3vw,40px) 140px;min-width:0}
+section.lesson{background:var(--paper);border:1px solid var(--line);border-radius:10px;max-width:880px;margin:0 auto 22px;padding:26px clamp(16px,4vw,40px)}
+.chip{display:inline-block;font-size:12.5px;color:var(--gold);font-weight:700;letter-spacing:.04em}
+h2{font-size:clamp(21px,3vw,26px);margin:4px 0 16px;line-height:1.4}
+h4{font-size:16.5px;margin:22px 0 8px}
+p{margin:0 0 12px}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.86em;background:var(--soft);border:1px solid var(--line);border-radius:3px;padding:1px 5px;word-break:break-all}
+.why{background:var(--amberSoft);border-left:5px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 16px;margin:0 0 18px}
+.why-t,.warn-t,.do-t,.quiz-t,.ok-t{font-weight:700;margin-bottom:4px}
+.why p:last-child{margin:0}
+.term{background:var(--soft);border:1px dashed var(--line);border-radius:6px;padding:10px 14px;margin:12px 0;font-size:15.5px}
+.warn{background:var(--redSoft);border-left:5px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0}
+.warn p:last-child{margin-bottom:0}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:10px 0 18px}
+ol.steps>li{counter-increment:s;position:relative;padding:2px 0 14px 46px;border-left:1px solid var(--line);margin-left:16px}
+ol.steps>li:last-child{border-left-color:transparent}
+ol.steps>li::before{content:counter(s);position:absolute;left:-16px;top:0;width:32px;height:32px;border-radius:50%;background:var(--paper);border:2px solid var(--gold);color:var(--gold);font-weight:700;display:grid;place-items:center;font-size:14px}
+ol.steps>li>b{display:block;margin-bottom:4px}
+.code{position:relative;margin:8px 0 12px}
+.code .cap{font-size:12.5px;color:var(--sideMuted);background:var(--side);padding:6px 12px;border-radius:6px 6px 0 0}
+.code pre{margin:0;background:var(--code);color:var(--codeInk);padding:13px 14px;overflow-x:auto;border-radius:0 0 6px 6px;font-family:"JetBrains Mono",Consolas,monospace;font-size:13.3px;line-height:1.65}
+.code .cap + pre{border-radius:0 0 6px 6px}
+.code pre:first-child{border-radius:6px}
+.code pre .c{color:var(--cmt)}
+.copy{position:absolute;top:5px;right:6px;background:var(--side);color:var(--gold);border:1px solid var(--gold);border-radius:3px;font-size:12px;padding:2px 9px;cursor:pointer}
+.copy:hover{background:var(--gold);color:#141826}
+.os{font-size:13px;color:var(--muted);margin:8px 0 2px;font-weight:700}
+.ok{border:1px solid var(--green);background:var(--greenSoft);border-radius:8px;padding:10px 14px;margin:8px 0 12px}
+.ok-t{color:var(--green)}
+.ok pre{margin:6px 0 0;white-space:pre-wrap;word-break:break-all;font-family:"JetBrains Mono",Consolas,monospace;font-size:13px}
+.okline{color:var(--green);font-weight:700;font-size:15px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;margin:10px 0 14px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+th,td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--side);color:var(--sideInk);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.bad,.bad{color:var(--red);font-weight:700}
+td.good{color:var(--green);font-weight:700}
+.cap2{font-size:13.5px;color:var(--muted)}
+figure.shot{margin:10px 0 16px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper)}
+.shot-bar{display:flex;align-items:center;gap:6px;background:var(--soft);padding:7px 10px;border-bottom:1px solid var(--line)}
+.shot-bar span{width:10px;height:10px;border-radius:50%;background:#E06C6C}
+.shot-bar span:nth-child(2){background:#E8C15C}.shot-bar span:nth-child(3){background:#6CC07A}
+.shot-bar em{font-style:normal;font-size:12.5px;color:var(--muted);margin-left:8px}
+.shot.term .shot-body{background:#0F1526;color:#D8DEEA}
+.shot.term pre{margin:0;padding:12px 14px;overflow-x:auto;font-family:"JetBrains Mono",Consolas,monospace;font-size:12.8px;line-height:1.6}
+.shot-body .mock{padding:14px 16px;color:var(--ink)}
+.mock h5{margin:0 0 10px;font-size:16px}
+.mt{min-width:0;font-size:13.5px}.mt th{background:var(--soft);color:var(--ink)}
+.btnm{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:1px 8px;font-size:12.5px;margin-left:6px}
+.alertm{max-width:300px;margin:6px auto;border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.15);font-size:14px}
+figcaption{font-size:12.5px;color:var(--muted);padding:6px 12px;border-top:1px solid var(--line)}
+.do{border:2px solid var(--green);border-radius:10px;padding:14px 16px;margin:20px 0 12px}
+.do-t{color:var(--green)}
+.done{background:var(--green);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.do.is-done{background:var(--greenSoft)}
+.do.is-done .done{background:transparent;color:var(--green);border:1px solid var(--green)}
+.quiz{border:2px solid var(--gold);border-radius:10px;padding:14px 16px;margin:12px 0 0}
+.quiz-t{color:var(--gold)}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:9px 12px;font:inherit;font-size:15px;cursor:pointer}
+.opt:hover{border-color:var(--gold)}
+.opt.right{background:var(--greenSoft);border-color:var(--green);font-weight:700}
+.opt.wrong{background:var(--redSoft);border-color:var(--red)}
+.exp{margin-top:10px;font-size:15px;background:var(--soft);border-radius:6px;padding:10px 12px}
+details.ans{border:1px solid var(--line);border-radius:6px;margin:8px 0}
+details.ans summary{cursor:pointer;padding:9px 12px;font-weight:700;color:var(--gold)}
+details.ans>div{padding:0 12px 6px}
+.dash{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,.18);padding:10px 14px;display:flex;align-items:center;gap:12px;font-size:13px}
+.ring{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--p)*1%),var(--soft) 0)}
+.ring span{width:42px;height:42px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-weight:700;font-size:13px}
+.dash small{display:block;color:var(--muted);line-height:1.5}
+.dash button{border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;padding:0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--side);color:#fff;padding:8px 16px;border-radius:4px;opacity:0;transition:.25s;z-index:50;font-size:14px;pointer-events:none}
+.toast.show{opacity:1}
+.scrim{display:none}
+.goal{border:2px dashed var(--gold);border-radius:10px;padding:12px 16px;margin:16px 0 10px}
+.goal-t{font-weight:700;color:var(--gold);margin-bottom:4px}.goal p:last-child{margin:0}
+details.hint{border:1px solid var(--line);border-radius:6px;margin:8px 0;background:var(--soft)}
+details.hint summary{cursor:pointer;padding:8px 12px;font-weight:700}
+details.hint>div{padding:0 12px 6px}
+.explain{border:2px solid #6B7FD7;border-radius:10px;padding:12px 16px;margin:18px 0 8px}
+.explain-t{font-weight:700;color:#6B7FD7;margin-bottom:4px}
+.explain textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit;font-size:15px;background:var(--paper);color:var(--ink);resize:vertical}
+.explain-s{font-size:13px;color:var(--muted);margin-top:4px}
+.explain.filled .explain-s{color:var(--green);font-weight:700}
+.tp{display:inline-block;font-size:12px;font-weight:700;border-radius:20px;padding:1px 10px;margin-left:6px;vertical-align:2px}
+.t1{background:#FDEBD9;color:#9A4A0B}.t2{background:#E3F4E8;color:#1F6B3A}.t3{background:#E1ECFB;color:#1E4E8C}.t0{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.topicbox{border:2px solid var(--gold);border-radius:10px;padding:14px 16px;margin:0 0 18px}.topicbox p:last-child{margin:0}
+.navhead{padding:4px 20px 12px;border-bottom:1px solid rgba(184,149,75,.3);margin-bottom:6px}.navhead small{display:block;color:var(--sideMuted);font-size:12.5px;line-height:1.6;margin-top:4px}
+@media (max-width:1000px){
+ .wrap{grid-template-columns:minmax(0,1fr)}
+ #menuBtn{display:inline-block}
+ nav.side{position:fixed;left:0;top:52px;bottom:0;height:auto;width:min(300px,86vw);z-index:35;transform:translateX(-102%);transition:transform .25s}
+ body.drawer nav.side{transform:none}
+ body.drawer .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:34}
+ .top .hide-sm{display:none}
+ main{padding:14px 8px 140px}
+}
+@media (max-width:560px){.dash{padding:6px 10px;gap:8px;right:8px;bottom:8px}.ring{width:42px;height:42px}.ring span{width:32px;height:32px;font-size:11px}.dash small{font-size:11px}}
+@media print{.top,nav.side,.dash,.copy,.toast{display:none!important}.wrap{display:block}section.lesson{page-break-before:always;border:0}details.ans>div{display:block}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top"><button id="menuBtn" aria-label="목차">☰</button><b>🔍 AI 코드 검증 자습서 · 🍽️ 맛집 · 🧳 여행 · 📊 고객 관리</b><button class="hide-sm" id="printBtn">🖨 인쇄</button><button class="gold" id="dlBtn">⬇ 다운로드</button></header>
+<div class="scrim" id="scrim"></div>
+<div class="wrap">
+<nav class="side" aria-label="목차"><div class="navhead"><b>🔍 AI 코드 검증 자습서</b><small>실습 프로젝트 defect-lab<br>🍽️ 맛집 리뷰 · 🧳 여행 코스 · 📊 고객 관리</small></div><h6>시작하기</h6><a href="#l0"><span class="ck">○</span><span> 이 자습서로 무엇을 하나요</span></a><h6>1장 준비</h6><a href="#l1-1"><span class="ck">○</span><span> 1-1. 실습용 DB 만들기</span></a><a href="#l1-2"><span class="ck">○</span><span> 1-2. 프로젝트 열기</span></a><a href="#l1-3"><span class="ck">○</span><span> 1-3. 서버 실행하고 로그인하기</span></a><a href="#l1-4"><span class="ck">○</span><span> 1-4. 요청이 지나가는 길 알기</span></a><h6>2장 결함 눈으로 보기</h6><a href="#l2-1"><span class="ck">○</span><span>🍽️ 2-1. 스크립트가 실행되는 리뷰 (⑤)</span></a><a href="#l2-2"><span class="ck">○</span><span>📊 2-2. 전화번호 노출과 남의 가게 손님 (⑧ ⑦)</span></a><a href="#l2-3"><span class="ck">○</span><span>🍽️ 2-3. 콘솔에서 SQL 세어 보기 (①)</span></a><a href="#l2-4"><span class="ck">○</span><span>🧳 2-4. 느린 여행 화면과 AI 추천 에러 (⑪ ⑩)</span></a><h6>3장 빨간불 확인</h6><a href="#l3-1"><span class="ck">○</span><span> 3-1. 미션 테스트 실행하기</span></a><a href="#l3-2"><span class="ck">○</span><span> 3-2. Before 숫자 기록하기</span></a><h6>4장 쉬운 결함 고치기</h6><a href="#l4-1"><span class="ck">○</span><span>🍽️ 4-1. 스크립트 실행 막기 (⑤ XSS)</span></a><a href="#l4-2"><span class="ck">○</span><span>📊 4-2. 전화번호 가리기 (⑧)</span></a><h6>5장 남의 것 막기</h6><a href="#l5-1"><span class="ck">○</span><span>🍽️ 5-1. 남의 리뷰 수정 막기 (④)</span></a><a href="#l5-2"><span class="ck">○</span><span>📊 5-2. 남의 가게 손님 막기 (⑦)</span></a><h6>6장 느린 목록 고치기</h6><a href="#l6-1"><span class="ck">○</span><span>🍽️ 6-1. N+1이 생기는 이유 (①)</span></a><a href="#l6-2"><span class="ck">○</span><span>🍽️ 6-2. SQL 1번으로 줄이기</span></a><h6>7장 동시성 고치기</h6><a href="#l7-1"><span class="ck">○</span><span>📊 7-1. 포인트가 틀리는 이유와 해결 (③)</span></a><a href="#l7-2"><span class="ck">○</span><span>📊 7-2. 쿠폰 한 번만 쓰게 하기 (⑥)</span></a><a href="#l7-3"><span class="ck">○</span><span>🍽️ 7-3. 찜 숫자와 중복 찜 고치기 (②)</span></a><a href="#l7-4"><span class="ck">○</span><span>🧳 7-4. 북마크 중복 막기 (⑨)</span></a><h6>8장 외부 연동 고치기</h6><a href="#l8a-1"><span class="ck">○</span><span>🧳 8-1. AI가 지어낸 관광지 걸러내기 (⑩)</span></a><a href="#l8a-2"><span class="ck">○</span><span>🧳 8-2. 느린 외부 API에 타임아웃 걸기 (⑪)</span></a><h6>9장 마무리</h6><a href="#l8-1"><span class="ck">○</span><span> 9-1. 전체 초록불과 기록</span></a><a href="#l8-2"><span class="ck">○</span><span> 9-2. 팀원에게 설명하고 면접 답변 만들기</span></a><h6>10장 내 팀 프로젝트에 적용하기</h6><a href="#l9-1"><span class="ck">○</span><span> 10-1. 내 코드에서 결함 후보 찾기</span></a><a href="#l9-2"><span class="ck">○</span><span> 10-2. 내 프로젝트에 테스트 환경 만들기</span></a><a href="#l9-3"><span class="ck">○</span><span> 10-3. 미션 테스트를 내 것으로 바꾸기</span></a><a href="#l9-4"><span class="ck">○</span><span> 10-4. 팀에 공유하기</span></a></nav>
+<main>
+<section class="lesson" id="l0"><span class="chip">시작하기</span> <span class="tp t0">공통</span><h2>이 자습서로 무엇을 하나요</h2><div class="topicbox"><b>📌 이 자습서의 주제</b>
+<p>이 자습서는 팀 프로젝트 주제 하나가 아니라, 연습용 실습 프로젝트 <code>defect-lab</code>으로 진행합니다. 실습 프로젝트에는 <b>세 주제의 기능이 모두</b> 들어 있습니다.</p>
+<div class="tw"><table><thead><tr><th>표시</th><th>주제</th><th>실습 프로젝트 안의 기능</th><th>결함</th></tr></thead><tbody>
+<tr><td><span class="tp t1">🍽️ 주제 1</span></td><td>부산 로컬 맛집 리뷰</td><td>맛집 목록 · 리뷰 · 찜</td><td>① ② ④ ⑤</td></tr>
+<tr><td><span class="tp t2">🧳 주제 2</span></td><td>AI 부산 여행 코스</td><td>관광지 · 북마크 · AI 추천 코스 · 날씨 API</td><td>⑨ ⑩ ⑪</td></tr>
+<tr><td><span class="tp t3">📊 주제 3</span></td><td>단골 고객 관리 (CRM)</td><td>매장 · 고객 · 포인트 · 쿠폰</td><td>③ ⑥ ⑦ ⑧</td></tr>
+<tr><td><span class="tp t0">공통</span></td><td>모든 주제</td><td>준비 · 테스트 · 기록 · 9장 내 팀 프로젝트 적용</td><td>—</td></tr>
+</tbody></table></div>
+<p><b>모든 학생이 결함 11개를 모두 합니다.</b> 내 팀 주제가 아니어도 같은 원리가 내 프로젝트에 나오기 때문입니다.</p>
+<p>내 팀 주제의 결함부터 먼저 해도 됩니다. 🍽️ 주제 1 팀은 ① ② ④ ⑤, 🧳 주제 2 팀은 ⑨ ⑩ ⑪, 📊 주제 3 팀은 ③ ⑥ ⑦ ⑧부터 시작하세요.</p></div><div class="why"><div class="why-t">💡 왜 하나요?</div><p>AI가 만든 코드는 화면에서는 잘 돌아갑니다.</p>
+<p>그런데 <b>데이터가 많을 때, 여러 사람이 동시에 쓸 때, 나쁜 의도의 사용자가 올 때</b> 깨지는 경우가 많습니다.</p>
+<p>회사는 이런 결함을 찾아서 고칠 수 있는 신입을 원합니다. 이 자습서는 그 과정을 처음부터 끝까지 직접 해 보게 합니다.</p></div>
+<h4>오늘 고칠 결함 11개</h4>
+<div class="tw"><table><thead><tr><th>번호</th><th>결함</th><th>어떤 일이 생기나</th><th>주제</th><th>고치는 장</th></tr></thead><tbody>
+<tr><td>①</td><td>목록이 느림 (N+1)</td><td>맛집 50개를 보여 주는데 DB에 51번 질문함</td><td>🍽️ 맛집 리뷰</td><td>6장</td></tr>
+<tr><td>②</td><td>찜 숫자가 틀림</td><td>100명이 동시에 찜해도 숫자가 100이 안 됨</td><td>🍽️ 맛집 리뷰</td><td>7장</td></tr>
+<tr><td>③</td><td>포인트가 틀림</td><td>동시에 쓰면 덜 빠지거나, 가진 것보다 더 씀</td><td>📊 고객 관리</td><td>7장</td></tr>
+<tr><td>④</td><td>남의 리뷰 수정</td><td>주소의 번호만 바꾸면 남의 글을 고침</td><td>🍽️ 맛집 리뷰</td><td>5장</td></tr>
+<tr><td>⑤</td><td>스크립트 실행 (XSS)</td><td>리뷰에 넣은 스크립트가 다른 사람 화면에서 실행됨</td><td>🍽️ 맛집 리뷰</td><td>4장</td></tr>
+<tr><td>⑥</td><td>쿠폰 여러 번 사용</td><td>쿠폰 1장을 동시에 여러 번 씀</td><td>📊 고객 관리</td><td>7장</td></tr>
+<tr><td>⑦</td><td>남의 가게 손님 보기</td><td>주소의 번호만 바꾸면 다른 매장 고객이 보임</td><td>📊 고객 관리</td><td>5장</td></tr>
+<tr><td>⑧</td><td>전화번호 노출</td><td>고객 전화번호가 가려지지 않음</td><td>📊 고객 관리</td><td>4장</td></tr>
+<tr><td>⑨</td><td>북마크 중복</td><td>같은 관광지를 연타하면 여러 번 저장됨</td><td>🧳 여행 코스</td><td>7장</td></tr>
+<tr><td>⑩</td><td>AI가 지어낸 관광지</td><td>AI가 없는 관광지를 섞으면 화면이 500 에러</td><td>🧳 여행 코스</td><td>8장</td></tr>
+<tr><td>⑪</td><td>느린 외부 API</td><td>날씨 API가 느리면 우리 화면도 5초 넘게 멈춤</td><td>🧳 여행 코스</td><td>8장</td></tr>
+</tbody></table></div>
+<h4>준비물</h4>
+<ul><li><code>defect-lab.zip</code> (실습 프로젝트)</li><li><code>AI코드_검증일지.xlsx</code> (기록용 엑셀)</li><li>IntelliJ IDEA, JDK 21, MySQL 8, MySQL Workbench</li></ul>
+<h4>이 자습서의 순서</h4>
+<p>결함을 <b>눈으로 보고</b> → 테스트로 <b>숫자를 재고</b> → <b>직접 고치고</b> → 다시 <b>숫자를 재고</b> → <b>내 말로 설명</b>합니다. 고치기 전과 후의 숫자가 여러분 포트폴리오의 증거가 됩니다.</p>
+<p>결함을 고치는 레슨(4~8장)은 <b>정답이 숨겨져 있습니다.</b> 🎯 목표를 읽고 직접 고쳐 본 뒤, 막히면 💡 힌트 1 → 힌트 2 → 🔑 정답 순서로 펼치세요.</p>
+<p>고친 뒤에는 <b>✍️ 내 말로 설명하기</b> 칸에 3줄을 적습니다. 남에게 설명할 수 있어야 팀 프로젝트에서 혼자 찾을 수 있습니다.</p>
+<p>마지막 <b>10장</b>에서는 같은 방법을 <b>내 팀 프로젝트 코드</b>에 그대로 적용합니다. 이 자습서의 진짜 목표는 10장입니다.</p>
+<p>미션 · 퀴즈 · 설명을 하면 오른쪽 아래 달성률이 올라갑니다. 진행 상태와 적은 설명은 이 브라우저에 자동 저장됩니다.</p>
+<div class="do" data-id="m0"><div class="do-t">🛠️ 미션</div><p>준비물 4가지(zip, 엑셀, IntelliJ·JDK 21, MySQL 8)를 모두 내 PC에 준비했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q0" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>이 자습서에서 “포트폴리오의 증거”가 되는 것은 무엇인가요?</p><div class="opts"><button class="opt" type="button" data-i="0">코드를 몇 줄 썼는지</button><button class="opt" type="button" data-i="1">고치기 전과 후의 숫자</button><button class="opt" type="button" data-i="2">AI에게 물어본 횟수</button></div><div class="exp" hidden>결함을 고치기 전(Before)과 고친 후(After)의 숫자가 “측정했고 고쳤다”는 증거가 됩니다.</div></div></section>
+<section class="lesson" id="l1-1"><span class="chip">1장 준비</span> <span class="tp t0">공통</span><h2>1-1. 실습용 DB 만들기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>실습 프로젝트는 MySQL에 데이터를 저장합니다. 실행용 DB와 테스트용 DB를 따로 만듭니다.</p></div><ol class="steps"><li><b>MySQL Workbench를 열고 root 계정으로 접속합니다.</b></li><li><b>새 쿼리 탭에 아래 SQL을 붙여 넣습니다.</b><div class="code"><div class="cap">MySQL Workbench</div><pre>CREATE DATABASE defectlab;
+CREATE DATABASE defectlab_test;
+CREATE USER 'lab'@'localhost' IDENTIFIED BY 'lab1234';
+GRANT ALL ON defectlab.* TO 'lab'@'localhost';
+GRANT ALL ON defectlab_test.* TO 'lab'@'localhost';</pre><button class="copy" type="button">복사</button></div></li><li><b>번개 모양 버튼(Execute)을 누릅니다.</b><p class="okline">✅ 성공 기준: 아래 Action Output에 초록색 체크가 5줄 나옵니다.</p></li></ol><div class="term"><b>📖 defectlab_test</b> — 테스트만 쓰는 DB입니다. 테스트가 데이터를 지우고 다시 만들어도 실행용 DB에는 영향이 없습니다.</div><div class="warn"><div class="warn-t">⚠️ Operation CREATE USER failed 에러가 나면</div><p>lab 계정이 이미 있다는 뜻입니다. 아래를 실행한 뒤 처음 SQL을 다시 실행하세요.</p><div class="code"><pre>DROP USER 'lab'@'localhost';</pre><button class="copy" type="button">복사</button></div></div><div class="do" data-id="m1-1"><div class="do-t">🛠️ 미션</div><p>SQL 5줄을 실행해 초록 체크 5개를 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q1-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>테스트용 DB(defectlab_test)를 따로 만드는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">속도가 빨라서</button><button class="opt" type="button" data-i="1">테스트가 데이터를 지워도 실행용 DB에 영향이 없게 하려고</button><button class="opt" type="button" data-i="2">MySQL 규칙이라서</button></div><div class="exp" hidden>테스트는 시작할 때마다 테이블을 비웁니다. 실행용 DB와 분리해야 안전합니다.</div></div></section>
+<section class="lesson" id="l1-2"><span class="chip">1장 준비</span> <span class="tp t0">공통</span><h2>1-2. 프로젝트 열기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>압축을 풀고 IntelliJ로 열면, Gradle이 필요한 라이브러리를 인터넷에서 내려받습니다. 처음 한 번은 몇 분 걸립니다.</p></div><ol class="steps"><li><b><code>defect-lab.zip</code>의 압축을 풉니다.</b><p>예: <code>C:\study\defect-lab</code></p></li><li><b>IntelliJ → File → Open → <code>defect-lab</code> 폴더를 선택합니다.</b><p>“Trust Project”가 나오면 Trust를 누릅니다.</p></li><li><b>오른쪽 아래 진행 막대가 끝날 때까지 기다립니다.</b><p class="okline">✅ 성공 기준: 왼쪽 프로젝트 창에 <code>src/main/java</code>가 보이고, 오른쪽 아래 진행 막대가 사라집니다.</p></li></ol><h4>프로젝트 구조</h4><figure class="shot term"><div class="shot-bar"><span></span><span></span><span></span><em>프로젝트 창</em></div><div class="shot-body"><pre>defect-lab
+├─ src/main/java/com/academy/defectlab
+│   ├─ store    맛집 · 찜
+│   ├─ review   리뷰
+│   ├─ point    고객 · 포인트
+│   ├─ crm      매장 · 쿠폰 · 고객 화면
+│   ├─ member   회원 · 로그인
+│   └─ config   보안 설정 · 실습 데이터
+├─ src/main/resources/templates   타임리프 화면
+└─ src/test/java/.../Mission*.java   미션 테스트 (고치지 않음)</pre></div><figcaption>폴더 구조 예시입니다.</figcaption></figure><div class="warn"><div class="warn-t">⚠️ JDK 21을 찾지 못한다는 메시지가 나오면</div><p>File → Project Structure → Project → SDK에서 21 버전을 고르고 Apply를 누릅니다.</p></div><div class="do" data-id="m1-2"><div class="do-t">🛠️ 미션</div><p>IntelliJ로 프로젝트를 열고 진행 막대가 끝난 것을 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q1-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>Mission으로 시작하는 테스트 파일은 어떻게 해야 하나요?</p><div class="opts"><button class="opt" type="button" data-i="0">결함을 고치려면 수정해도 된다</button><button class="opt" type="button" data-i="1">고치지 않는다. src/main 코드만 고친다</button><button class="opt" type="button" data-i="2">지워도 된다</button></div><div class="exp" hidden>테스트는 “정답 기준”입니다. 테스트를 고치면 검증이 의미가 없어집니다.</div></div></section>
+<section class="lesson" id="l1-3"><span class="chip">1장 준비</span> <span class="tp t0">공통</span><h2>1-3. 서버 실행하고 로그인하기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>결함을 눈으로 확인하려면 서버를 켜야 합니다. 서버가 시작되면 맛집 100개, 리뷰 2,000개, 매장 2개, 고객 41명, 쿠폰 1장, 관광지 10곳이 자동으로 들어갑니다. 모두 가짜 데이터입니다.</p></div><ol class="steps"><li><b><code>src/main/java/com/academy/defectlab/DefectLabApplication.java</code>를 엽니다.</b></li><li><b>main 메서드 왼쪽의 초록 ▶ 버튼 → Run을 누릅니다.</b><div class="ok"><div class="ok-t">✅ 이렇게 나오면 성공</div><pre>... Started DefectLabApplication in 12.5 seconds (process running for 13.7)</pre></div></li><li><b>브라우저에서 접속합니다.</b><div class="code"><div class="cap">브라우저 주소창</div><pre>http://localhost:8080</pre><button class="copy" type="button">복사</button></div></li><li><b>로그인 화면에서 아래 계정으로 로그인합니다.</b><div class="tw"><table><thead><tr><th>이메일</th><th>비밀번호</th><th>고객 관리에서의 역할</th></tr></thead><tbody>
+<tr><td>user1@test.com</td><td>1234</td><td>해운대 국밥집 사장님</td></tr>
+<tr><td>user2@test.com</td><td>1234</td><td>서면 단골식당 사장님</td></tr></tbody></table></div><p class="okline">✅ 성공 기준: “🍽️ 부산 맛집 목록” 표가 보입니다.</p></li></ol><figure class="shot browser"><div class="shot-bar"><span></span><span></span><span></span><em>localhost:8080/stores</em></div><div class="shot-body"><div class="mock"><h5>🍽️ 부산 맛집 목록 <span class="btnm">👥 내 매장 고객</span><span class="btnm">🧳 여행 코스</span></h5>
+<table class="mt"><tr><th>이름</th><th>지역</th><th>리뷰 수</th><th>찜</th></tr>
+<tr><td>부산 맛집 1</td><td>수영구</td><td>21</td><td>0</td></tr><tr><td>부산 맛집 2</td><td>부산진구</td><td>20</td><td>0</td></tr><tr><td>…</td><td>…</td><td>…</td><td>…</td></tr></table></div></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure><div class="warn"><div class="warn-t">⚠️ Communications link failure 가 나오면</div><p>MySQL이 꺼져 있거나, 1-1의 DB를 만들지 않은 것입니다. MySQL을 켜고 1-1을 다시 확인하세요.</p></div><div class="warn"><div class="warn-t">⚠️ Port 8080 was already in use 가 나오면</div><p>이미 서버가 켜져 있습니다. IntelliJ 아래 Run 창의 빨간 ■ 버튼으로 이전 서버를 끄고 다시 실행하세요.</p></div><div class="do" data-id="m1-3"><div class="do-t">🛠️ 미션</div><p>user1@test.com으로 로그인해 맛집 목록 표를 봤다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q1-3" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>실습 데이터(맛집·리뷰·고객·관광지)는 언제 들어가나요?</p><div class="opts"><button class="opt" type="button" data-i="0">직접 SQL로 넣어야 한다</button><button class="opt" type="button" data-i="1">서버가 시작될 때 DataInitializer가 자동으로 넣는다</button><button class="opt" type="button" data-i="2">테스트를 돌려야 들어간다</button></div><div class="exp" hidden>config/DataInitializer.java가 서버 시작 직후 실행되어 가짜 데이터를 넣습니다.</div></div></section>
+<section class="lesson" id="l1-4"><span class="chip">1장 준비</span> <span class="tp t0">공통</span><h2>1-4. 요청이 지나가는 길 알기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>결함을 찾으려면 “지금 이 코드가 어느 단계에서 실행되는지” 알아야 합니다. 이 표를 보지 않고 그릴 수 있으면 결함 위치를 훨씬 빨리 찾습니다.</p></div><div class="tw"><table><thead><tr><th>순서</th><th>단계</th><th>하는 일</th><th>이 실습에서 생기는 결함</th></tr></thead><tbody>
+<tr><td>1</td><td>브라우저</td><td>주소로 요청을 보냄</td><td>주소의 번호를 바꿀 수 있음 → ④ ⑦</td></tr>
+<tr><td>2</td><td>Security 필터 체인</td><td>로그인했는지 검사 (어떤 데이터의 주인인지는 검사하지 않음)</td><td>—</td></tr>
+<tr><td>3</td><td>DispatcherServlet</td><td>주소에 맞는 컨트롤러 메서드를 찾아 호출</td><td>—</td></tr>
+<tr><td>4</td><td>Controller</td><td>요청 값을 받아 Service 호출, 결과를 Model에 담음</td><td>—</td></tr>
+<tr><td>5</td><td>Service</td><td>@Transactional 안에서 업무 처리, 외부 API·AI 호출</td><td>주인 검사 누락 ④ ⑦, 동시성 ② ③ ⑥ ⑨, 마스킹 누락 ⑧, AI 결과 미검증 ⑩, 타임아웃 없음 ⑪</td></tr>
+<tr><td>6</td><td>Repository · Hibernate</td><td>엔티티 작업을 SQL로 바꿔 MySQL에 실행</td><td>SQL 반복 ①</td></tr>
+<tr><td>7</td><td>MySQL</td><td>데이터 저장·조회, 행 잠금</td><td>Deadlock ②</td></tr>
+<tr><td>8</td><td>Thymeleaf</td><td>Model 값으로 HTML을 만들어 응답</td><td>스크립트 실행 ⑤</td></tr>
+</tbody></table></div><div class="term"><b>📖 필터 체인</b> — 요청이 컨트롤러에 도착하기 전에 차례로 거치는 검사 객체들의 묶음입니다. 로그인 여부는 여기서 검사하지만, “이 리뷰가 이 사람 것인지”는 검사하지 않습니다. 그 검사는 Service에서 직접 해야 합니다.</div><div class="do" data-id="m1-4"><div class="do-t">🛠️ 미션</div><p>빈 종이에 8단계를 보지 않고 그려 보고, 각 단계 옆에 이 실습의 결함 번호를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q1-4" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>“이 리뷰가 로그인한 사람의 것인지” 검사는 어디서 해야 하나요?</p><div class="opts"><button class="opt" type="button" data-i="0">Security 필터 체인이 자동으로 해 준다</button><button class="opt" type="button" data-i="1">Service에서 직접 비교한다</button><button class="opt" type="button" data-i="2">Thymeleaf 화면에서 버튼을 숨긴다</button></div><div class="exp" hidden>필터 체인은 로그인 여부만 검사합니다. 데이터의 주인 검사는 Service에서 직접 해야 합니다.</div></div></section>
+<section class="lesson" id="l2-1"><span class="chip">2장 결함 눈으로 보기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>2-1. 스크립트가 실행되는 리뷰 (⑤)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>결함을 먼저 눈으로 보면, 나중에 테스트 숫자가 무엇을 뜻하는지 바로 이해됩니다.</p></div><ol class="steps"><li><b>user1@test.com으로 로그인한 상태에서 “부산 맛집 1”을 누릅니다.</b></li><li><b>브라우저에 경고창이 뜨는지 확인합니다.</b><figure class="shot browser"><div class="shot-bar"><span></span><span></span><span></span><em>localhost:8080/stores/1</em></div><div class="shot-body"><div class="mock"><div class="alertm">localhost:8080 내용:<br><b>XSS: 이 창이 뜨면 결함입니다</b><br><span class="btnm">확인</span></div></div></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure></li></ol><div class="term"><b>📖 XSS</b> — 사용자가 입력한 글 안의 &lt;script&gt; 코드가 다른 사람 브라우저에서 실행되는 보안 결함입니다. 실제 공격에서는 경고창 대신 로그인 정보를 빼 가는 코드가 들어갑니다.</div><p>리뷰 하나에 <code>&lt;script&gt;alert(...)&lt;/script&gt;</code>가 들어 있고, 화면이 이것을 글자가 아니라 코드로 실행했습니다.</p><div class="do" data-id="m2-1"><div class="do-t">🛠️ 미션</div><p>1번 맛집에서 경고창이 뜨는 것을 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q2-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>경고창이 뜬 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">브라우저 오류</button><button class="opt" type="button" data-i="1">리뷰 속 스크립트가 글자가 아니라 코드로 실행되어서</button><button class="opt" type="button" data-i="2">서버가 꺼져서</button></div><div class="exp" hidden>화면이 리뷰 내용을 HTML로 해석해 출력했기 때문입니다. 4장에서 고칩니다.</div></div></section>
+<section class="lesson" id="l2-2"><span class="chip">2장 결함 눈으로 보기</span> <span class="tp t3">📊 주제 3 고객 관리</span><h2>2-2. 전화번호 노출과 남의 가게 손님 (⑧ ⑦)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>고객 관리 화면은 개인정보를 다룹니다. 사장님은 자기 매장 고객만 봐야 하고, 전화번호는 가려야 합니다.</p></div><ol class="steps"><li><b>오른쪽 위에서 로그아웃하고 user2@test.com(서면 단골식당 사장님)으로 다시 로그인합니다.</b></li><li><b>“👥 내 매장 고객”을 누릅니다.</b><figure class="shot browser"><div class="shot-bar"><span></span><span></span><span></span><em>localhost:8080/customers</em></div><div class="shot-body"><div class="mock"><h5>👥 내 매장 고객</h5><table class="mt"><tr><th>매장</th><th>이름</th><th>전화번호</th></tr><tr><td>서면 단골식당</td><td>테스트고객</td><td class="bad">010-1234-5678</td></tr><tr><td>서면 단골식당</td><td>서면손님1</td><td class="bad">010-2000-0001</td></tr></table></div></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure><p>전화번호가 그대로 보입니다. (⑧)</p></li><li><b>주소창에 아래 주소를 입력합니다.</b><div class="code"><div class="cap">브라우저 주소창</div><pre>http://localhost:8080/customers/3</pre><button class="copy" type="button">복사</button></div><p>3번은 <b>해운대 국밥집</b>의 고객입니다. 서면 사장님인데도 “해운대손님1”이 보입니다. (⑦)</p></li></ol><div class="term"><b>📖 IDOR</b> — 주소나 요청 안의 번호(id)만 바꿔서 다른 사람의 데이터에 접근하는 보안 결함입니다.</div><p>목록에는 내 매장 고객만 나오지만, 상세 화면은 검사하지 않습니다. <b>목록에서 숨기는 것은 보안이 아닙니다.</b></p><div class="do" data-id="m2-2"><div class="do-t">🛠️ 미션</div><p>user2로 /customers/3에 들어가 다른 매장 고객이 보이는 것을 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q2-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>목록에 내 매장 고객만 나오면 안전한가요?</p><div class="opts"><button class="opt" type="button" data-i="0">안전하다</button><button class="opt" type="button" data-i="1">안전하지 않다. 상세 주소를 직접 입력하면 볼 수 있다</button><button class="opt" type="button" data-i="2">로그인했으니 안전하다</button></div><div class="exp" hidden>서버가 상세 조회 때마다 “이 고객이 로그인한 사장님 매장 고객인지” 확인해야 합니다.</div></div></section>
+<section class="lesson" id="l2-3"><span class="chip">2장 결함 눈으로 보기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>2-3. 콘솔에서 SQL 세어 보기 (①)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>화면은 빨리 떠도, 뒤에서 DB에 질문을 너무 많이 보내면 데이터가 늘어날수록 느려집니다.</p></div><ol class="steps"><li><b>IntelliJ 아래 Run 창에서 휴지통 버튼으로 로그를 지웁니다.</b></li><li><b>브라우저에서 맛집 목록(http://localhost:8080/stores)을 새로고침합니다.</b></li><li><b>Run 창에 <code>select</code>가 몇 번 찍혔는지 봅니다.</b><figure class="shot term"><div class="shot-bar"><span></span><span></span><span></span><em>Run 창</em></div><div class="shot-body"><pre>select s1_0.id, s1_0.area, s1_0.name, s1_0.zzim_count from store s1_0
+select r1_0.store_id, r1_0.id, ... from review r1_0 ... where r1_0.store_id=?
+select r1_0.store_id, r1_0.id, ... from review r1_0 ... where r1_0.store_id=?
+select r1_0.store_id, r1_0.id, ... from review r1_0 ... where r1_0.store_id=?
+... (같은 모양이 100번 가까이 반복)</pre></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure></li></ol><div class="term"><b>📖 N+1</b> — 목록을 1번 조회한 뒤, 목록의 항목 개수(N)만큼 연결된 데이터를 다시 조회하는 문제입니다. 맛집 100개면 1 + 100번 조회합니다.</div><div class="do" data-id="m2-3"><div class="do-t">🛠️ 미션</div><p>맛집 목록을 열 때 review 조회 SQL이 반복되는 것을 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q2-3" data-ans="2"><div class="quiz-t">🧠 퀴즈</div><p>맛집이 100개일 때 N+1이면 SQL이 대략 몇 번 실행되나요?</p><div class="opts"><button class="opt" type="button" data-i="0">1번</button><button class="opt" type="button" data-i="1">2번</button><button class="opt" type="button" data-i="2">101번</button></div><div class="exp" hidden>맛집 목록 1번 + 맛집마다 리뷰 조회 100번 = 101번입니다.</div></div></section>
+<section class="lesson" id="l2-4"><span class="chip">2장 결함 눈으로 보기</span> <span class="tp t2">🧳 주제 2 여행 코스</span><h2>2-4. 느린 여행 화면과 AI 추천 에러 (⑪ ⑩)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>여행 코스 기능은 외부 API와 AI를 사용합니다. 바깥 서비스가 느리거나 틀린 답을 줄 때 우리 서비스가 어떻게 되는지 봅니다.</p></div><ol class="steps"><li><b>맛집 목록 위쪽의 “🧳 여행 코스”를 누릅니다.</b><p>화면이 뜰 때까지 <b>5초 넘게</b> 걸립니다. 외부 날씨 API(실습용 가짜)가 5초 늦게 응답하고, 우리 화면도 그 시간 동안 같이 멈춥니다. (⑪)</p></li><li><b>“🤖 AI 추천 코스”를 누릅니다.</b><figure class="shot browser"><div class="shot-bar"><span></span><span></span><span></span><em>localhost:8080/courses/ai</em></div><div class="shot-body"><div class="mock"><h5>Whitelabel Error Page</h5><p class="bad">There was an unexpected error (type=Internal Server Error, status=500).</p></div></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure></li><li><b>IntelliJ Run 창의 에러를 봅니다.</b><figure class="shot term"><div class="shot-bar"><span></span><span></span><span></span><em>Run 창</em></div><div class="shot-body"><pre>jakarta.persistence.EntityNotFoundException: Unable to find com.academy.defectlab.trip.Place with id 9999</pre></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure><p>AI가 DB에 없는 9999번 관광지를 섞어서 추천했고, 코드는 그 번호를 그대로 믿었습니다. (⑩)</p></li></ol><div class="term"><b>📖 외부 API</b> — 우리 서버가 아닌 다른 회사 서버(날씨, 관광 정보, AI 모델)에 HTTP로 요청해 데이터를 받아오는 기능입니다. 그 서버가 느리거나 멈추면 우리 서비스도 영향을 받습니다.</div><div class="do" data-id="m2-4"><div class="do-t">🛠️ 미션</div><p>여행 코스 화면이 5초 넘게 걸리는 것과 AI 추천 화면의 500 에러를 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q2-4" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>AI 추천 화면이 500 에러가 난 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">AI 서버가 꺼져서</button><button class="opt" type="button" data-i="1">AI가 DB에 없는 관광지 번호를 섞었고, 코드가 확인 없이 그대로 썼기 때문</button><button class="opt" type="button" data-i="2">로그인을 안 해서</button></div><div class="exp" hidden>AI 결과는 사실이 아닐 수 있습니다. 공지의 AI 규칙대로 “AI가 고른 번호는 DB와 대조”해야 합니다.</div></div></section>
+<section class="lesson" id="l3-1"><span class="chip">3장 빨간불 확인</span> <span class="tp t0">공통</span><h2>3-1. 미션 테스트 실행하기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>눈으로 본 결함을 <b>숫자로</b> 재는 단계입니다. 테스트가 실패(빨간불)하면 결함이 있다는 뜻이고, 지금은 그게 정상입니다.</p></div><ol class="steps"><li><b>서버를 끕니다. (Run 창의 빨간 ■)</b><p>테스트는 서버와 따로 실행됩니다.</p></li><li><b>IntelliJ 아래 Terminal 탭을 엽니다.</b></li><li><b>테스트를 실행합니다.</b><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat test</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew test</pre><button class="copy" type="button">복사</button></div></li><li><b>맨 아래 결과를 확인합니다.</b><div class="ok"><div class="ok-t">✅ 지금은 이렇게 나오면 정상 (13개 실패)</div><pre>15 tests completed, 13 failed
+&gt; Task :test FAILED
+BUILD FAILED in 1m 5s</pre></div></li></ol><div class="term"><b>📖 테스트</b> — 코드가 기대대로 동작하는지 자동으로 확인하는 코드입니다. 이 프로젝트의 Mission 테스트는 “결함이 없으면 통과”하도록 만들어져 있습니다.</div><div class="warn"><div class="warn-t">⚠️ 한글이 깨져서 보이면</div><p>IntelliJ에서 <code>src/test/java</code> 폴더를 오른쪽 클릭 → <b>Run 'Tests in ...'</b>으로 실행하세요. 결과가 트리 모양으로 보이고 한글도 잘 보입니다.</p></div><div class="warn"><div class="warn-t">⚠️ 다시 실행해도 결과가 그대로면</div><p>Gradle이 이전 결과를 재사용한 것입니다. cleanTest를 붙여 실행하세요.</p><div class="code"><pre>.\gradlew.bat cleanTest test</pre><button class="copy" type="button">복사</button></div></div><div class="do" data-id="m3-1"><div class="do-t">🛠️ 미션</div><p>테스트를 실행해 “15 tests completed, 13 failed”를 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q3-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>지금 테스트가 13개 실패하는 것은?</p><div class="opts"><button class="opt" type="button" data-i="0">내가 뭔가 잘못 설치한 것</button><button class="opt" type="button" data-i="1">결함이 있어서 생기는 정상 결과</button><button class="opt" type="button" data-i="2">MySQL 오류</button></div><div class="exp" hidden>이 프로젝트는 결함을 일부러 넣어 두었습니다. 고칠수록 실패가 줄어듭니다.</div></div></section>
+<section class="lesson" id="l3-2"><span class="chip">3장 빨간불 확인</span> <span class="tp t0">공통</span><h2>3-2. Before 숫자 기록하기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>고치기 전 숫자가 없으면 “좋아졌다”를 증명할 수 없습니다. 지금 숫자를 꼭 적어 두세요.</p></div><ol class="steps"><li><b>테스트 결과에서 <code>[측정]</code>으로 시작하는 줄을 찾습니다.</b><figure class="shot term"><div class="shot-bar"><span></span><span></span><span></span><em>테스트 결과</em></div><div class="shot-body"><pre>[측정] 맛집 50개 목록 조회에 실행된 SQL 수 = 51
+[측정] 같은 회원 찜 30건 동시 요청 → store.zzim_count = 1, zzim 행 수 = 3
+[측정] 찜 100건 동시 요청 → store.zzim_count = 11, zzim 행 수 = 28, 예외 발생 = 72건
+[측정] 1000점에 100점 × 20번 동시 → 성공 = 20번 (정상 10), 남은 포인트 = 700
+[측정] 10000점 - (100점 × 100번 동시) → 남은 포인트 = 8900 (정상 0), 성공 = 100
+[측정] 쿠폰 1장에 사용 요청 10건 동시 → 성공 = 9번 (정상 1)
+[측정] 같은 회원 북마크 30건 동시 요청 → bookmark 행 수 = 10 (정상 1)
+[측정] 날씨 조회 걸린 시간 = 5285ms (정상 2000ms 미만), 결과 = 맑음 22℃
+Mission4_ReviewSecurityTest > 남의_리뷰는_수정할_수_없다_IDOR() FAILED
+    Status expected:&lt;403&gt; but was:&lt;302&gt;
+Mission6_CustomerSecurityTest > 다른_매장_고객은_볼_수_없다_IDOR() FAILED
+    Status expected:&lt;403&gt; but was:&lt;200&gt;
+Mission8_AiCourseTest > AI가_DB에_없는_관광지를_섞어도_있는_것만_보여준다() FAILED
+    EntityNotFoundException: Unable to find ...Place with id 9999</pre></div><figcaption>동시성 숫자(찜·포인트·쿠폰·북마크)는 실행할 때마다 달라집니다.</figcaption></figure></li><li><b><code>AI코드_검증일지.xlsx</code>의 “검증일지” 시트를 엽니다.</b></li><li><b>결함 1개마다 한 줄씩, 노란 칸을 채웁니다.</b><div class="tw"><table><thead><tr><th>칸</th><th>예시 (결함 ①)</th></tr></thead><tbody>
+<tr><td>날짜</td><td>오늘 날짜</td></tr><tr><td>이름 · 역할</td><td>내 이름 · 내 역할</td></tr><tr><td>기능</td><td>맛집 목록</td></tr>
+<tr><td>결함 유형</td><td>성능(N+1·쿼리)</td></tr><tr><td>결함 내용</td><td>맛집 목록에서 맛집마다 리뷰를 따로 조회</td></tr>
+<tr><td>발견 근거</td><td>Mission1 테스트 실패, SQL 로그 반복</td></tr><tr><td>Before</td><td>SQL 51회</td></tr><tr><td>상태</td><td>발견</td></tr></tbody></table></div></li><li><b>동시성 결함(②③⑥⑨)은 테스트를 3번 돌려 숫자 3개를 모두 적습니다.</b><div class="code"><pre>.\gradlew.bat cleanTest test</pre><button class="copy" type="button">복사</button></div></li></ol><div class="do" data-id="m3-2"><div class="do-t">🛠️ 미션</div><p>검증일지에 결함 11개의 Before 숫자를 모두 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q3-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>동시성 결함의 숫자를 3번 재는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">엑셀 칸이 3개라서</button><button class="opt" type="button" data-i="1">동시에 실행되는 순서가 매번 달라 결과도 달라지기 때문</button><button class="opt" type="button" data-i="2">선생님이 시켜서</button></div><div class="exp" hidden>스레드가 실행되는 순서가 매번 달라서 숫자가 바뀝니다. 여러 번 재야 믿을 수 있습니다.</div></div></section>
+<section class="lesson" id="l4-1"><span class="chip">4장 쉬운 결함 고치기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>4-1. 스크립트 실행 막기 (⑤ XSS)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>2-1에서 본 경고창을 없앱니다. 타임리프에는 값을 출력하는 속성이 두 가지 있고, 어떤 것을 쓰느냐에 따라 결과가 달라집니다.</p></div><ol class="steps"><li><b><code>src/main/resources/templates/stores/detail.html</code>을 열고 리뷰 내용을 출력하는 줄을 찾습니다.</b><div class="code"><div class="cap">고치기 전</div><pre>&lt;div th:utext="${r.content}"&gt;리뷰 내용&lt;/div&gt;
+<span class="c">&lt;!-- th:utext: r.content() 값을 HTML로 해석해서 그대로 출력한다 --&gt;</span></pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>리뷰 속 <code>&lt;script&gt;</code>가 실행되지 않고 글자로만 보이게 하세요.</p><p>통과해야 할 테스트: <code>Mission4 … 리뷰_속_스크립트는_글자로만_출력된다_XSS()</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>타임리프에서 글자를 출력하는 가장 기본 속성은 무엇이었나요? 다른 템플릿 파일(list.html)에서 이름을 출력하는 줄을 보세요.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p><code>th:utext</code>의 u는 unescaped(특수문자를 바꾸지 않음)라는 뜻입니다. 특수문자를 바꿔서 출력하는 속성을 쓰면 됩니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">고친 후</div><pre>&lt;div th:text="${r.content}"&gt;리뷰 내용&lt;/div&gt;
+<span class="c">&lt;!-- th:text: StoreController.detail()이 model에 담은 ReviewView의 content 값을</span>
+     &lt; &gt; 를 &amp;lt; &amp;gt; 로 바꿔 글자로만 출력 → 리뷰 속 스크립트가 실행되지 않는다 --&gt;</pre><button class="copy" type="button">복사</button></div><div class="tw"><table><thead><tr><th>속성</th><th>하는 일</th><th>&lt;script&gt;가 들어오면</th></tr></thead><tbody>
+<tr><td><code>th:utext</code></td><td>값을 HTML로 해석해 그대로 출력</td><td class="bad">실행됨</td></tr>
+<tr><td><code>th:text</code></td><td>&lt; &gt; 를 &amp;lt; &amp;gt; 로 바꿔 글자로 출력</td><td class="good">글자로만 보임</td></tr></tbody></table></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission4*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission4*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ XSS가 PASSED면 성공 (IDOR는 5장에서 고침)</div><pre>Mission4_ReviewSecurityTest &gt; 리뷰_속_스크립트는_글자로만_출력된다_XSS() PASSED
+Mission4_ReviewSecurityTest &gt; 남의_리뷰는_수정할_수_없다_IDOR() FAILED
+Mission4_ReviewSecurityTest &gt; 본인_리뷰는_수정할_수_있다() PASSED</pre></div><div class="explain" data-id="e4-1"><div class="explain-t">✍️ 내 말로 설명하기 — 스크립트 실행 (⑤)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ AI 답변도 마찬가지입니다</div><p>AI가 만든 문장을 화면에 출력할 때도 반드시 th:text를 씁니다. AI 답변에도 스크립트가 섞일 수 있습니다.</p></div><div class="do" data-id="m4-1"><div class="do-t">🛠️ 미션</div><p>XSS 테스트 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q4-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>사용자 입력이나 AI 답변을 출력할 때 써야 하는 것은?</p><div class="opts"><button class="opt" type="button" data-i="0">th:utext</button><button class="opt" type="button" data-i="1">th:text</button><button class="opt" type="button" data-i="2">둘 다 같다</button></div><div class="exp" hidden>th:text는 특수문자를 바꿔서 글자로만 출력하므로 스크립트가 실행되지 않습니다.</div></div></section>
+<section class="lesson" id="l4-2"><span class="chip">4장 쉬운 결함 고치기</span> <span class="tp t3">📊 주제 3 고객 관리</span><h2>4-2. 전화번호 가리기 (⑧)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>전화번호는 개인정보입니다. 화면으로 보내기 <b>전에</b> 가려 두면, 어떤 화면이나 로그에서도 원문이 새지 않습니다.</p></div><ol class="steps"><li><b><code>crm/CustomerService.java</code>의 <code>toView</code>를 찾습니다.</b><div class="code"><div class="cap">고치기 전</div><pre>private CustomerView toView(Customer c) {
+    return new CustomerView(c.getId(), c.getName(), c.getPhone(), c.getPoint(), c.getShop().getName());
+}</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>고객 목록에서 <code>010-1234-5678</code>이 <code>010-****-5678</code>처럼 보이게 하세요.</p><p>통과해야 할 테스트: <code>Mission6 … 고객_목록의_전화번호는_가려서_보여준다()</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>화면(HTML)을 고치지 말고, CustomerView를 만드는 <code>toView</code>에서 전화번호를 바꿔 넣으세요.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>문자열의 일부를 바꾸는 <code>String.replaceAll(정규식, 바꿀문자)</code>을 씁니다. 숫자 3개 - 숫자 3~4개 - 숫자 4개를 세 묶음으로 나누고 가운데만 <code>****</code>로 바꿉니다. 별도 클래스 <code>MaskingUtil</code>로 만들면 다른 곳에서도 쓸 수 있습니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">crm/MaskingUtil.java (새 파일: crm 폴더 오른쪽 클릭 → New → Java Class)</div><pre>package com.academy.defectlab.crm;
+
+public final class MaskingUtil {
+
+    private MaskingUtil() {
+    }
+
+    public static String phone(String phone) {
+<span class="c">        // CustomerService.toView()에서 호출 → 가린 번호를 리턴</span>
+        if (phone == null) {
+            return null;
+        }
+        return phone.replaceAll("(\\d{3})-(\\d{3,4})-(\\d{4})", "$1-****-$3");
+<span class="c">        // (\d{3}) 첫 숫자 3개 / (\d{3,4}) 가운데 3~4개 / (\d{4}) 끝 4개</span>
+<span class="c">        // $1, $3 은 첫째·셋째 묶음을 그대로 두고 가운데만 **** 로 바꾼다</span>
+    }
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">CustomerService.toView — 고친 후</div><pre>return new CustomerView(c.getId(), c.getName(), MaskingUtil.phone(c.getPhone()), c.getPoint(), c.getShop().getName());
+<span class="c">// CustomerController가 이 CustomerView를 model에 담아 customers/list.html, detail.html로 전달한다</span>
+<span class="c">// 화면에는 이미 가려진 번호만 도착한다</span></pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission6*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission6*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 전화번호 테스트가 PASSED면 성공</div><pre>Mission6_CustomerSecurityTest &gt; 고객_목록의_전화번호는_가려서_보여준다() PASSED
+Mission6_CustomerSecurityTest &gt; 우리_매장_고객은_볼_수_있다() PASSED
+Mission6_CustomerSecurityTest &gt; 다른_매장_고객은_볼_수_없다_IDOR() FAILED</pre></div><div class="explain" data-id="e4-2"><div class="explain-t">✍️ 내 말로 설명하기 — 전화번호 노출 (⑧)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ replaceAll 안의 역슬래시</div><p>자바 문자열 안에서 정규식의 <code>\d</code>는 <code>\\d</code>처럼 역슬래시를 두 번 씁니다. 하나만 쓰면 컴파일 에러가 납니다.</p></div><div class="do" data-id="m4-2"><div class="do-t">🛠️ 미션</div><p>전화번호 테스트 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q4-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>마스킹을 화면(HTML)이 아니라 서비스에서 하는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">코드가 짧아서</button><button class="opt" type="button" data-i="1">화면·로그·다른 응답 어디로 가도 원문이 새지 않게 하려고</button><button class="opt" type="button" data-i="2">속도 때문에</button></div><div class="exp" hidden>서비스에서 가려 두면 그 뒤 어디로 전달되어도 가려진 값만 나갑니다.</div></div></section>
+<section class="lesson" id="l5-1"><span class="chip">5장 남의 것 막기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>5-1. 남의 리뷰 수정 막기 (④)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>화면에서는 내 리뷰에만 “수정” 링크가 보입니다. 하지만 주소를 직접 보내면 서버는 검사하지 않습니다. 1-4에서 본 것처럼, 데이터 주인 검사는 <b>Service</b>에서 해야 합니다.</p></div><ol class="steps"><li><b><code>review/ReviewService.java</code>의 <code>edit</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>@Transactional
+public Long edit(Long reviewId, Long loginMemberId, String content) {
+    Review review = getReview(reviewId);
+    review.edit(content);
+    return review.getStore().getId();
+}</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>user2가 user1의 리뷰를 수정하려고 하면 403(Forbidden)이 나오게 하세요. 내 리뷰는 계속 수정할 수 있어야 합니다.</p><p>통과해야 할 테스트: <code>Mission4</code> 3개 모두</p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>메서드가 받아 놓고 <b>한 번도 쓰지 않는</b> 값이 있습니다. 그 값을 어디에 써야 할까요?</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p><code>review.getWriter().getId()</code>와 <code>loginMemberId</code>가 다르면 예외를 던지세요. 403을 만드는 예외는 <code>org.springframework.security.access.AccessDeniedException</code>입니다. 수정 화면을 여는 <code>findForEdit</code>에도 같은 검사가 필요합니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">import 묶음에 추가</div><pre>import org.springframework.security.access.AccessDeniedException;</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">ReviewService.java — 고친 후</div><pre>private void checkWriter(Review review, Long loginMemberId) {
+    if (!review.getWriter().getId().equals(loginMemberId)) {
+<span class="c">        // review.getWriter()는 Member 엔티티. getId()로 작성자 id를 꺼내 로그인한 회원 id와 비교한다</span>
+        throw new AccessDeniedException("작성자만 수정할 수 있습니다");
+<span class="c">        // 이 예외가 Security 필터 체인까지 올라가면</span>
+<span class="c">        // ExceptionTranslationFilter 객체가 받아서 403(Forbidden) 응답으로 바꾼다</span>
+    }
+}
+
+public ReviewView findForEdit(Long reviewId, Long loginMemberId) {
+    Review review = getReview(reviewId);
+    checkWriter(review, loginMemberId);
+    return toView(review);
+}
+
+@Transactional
+public Long edit(Long reviewId, Long loginMemberId, String content) {
+    Review review = getReview(reviewId);
+    checkWriter(review, loginMemberId);
+<span class="c">    // 작성자가 아니면 여기서 예외 → 아래 수정 코드는 실행되지 않는다</span>
+    review.edit(content);
+    return review.getStore().getId();
+<span class="c">    // ReviewController.edit()로 맛집 id를 리턴 → "redirect:/stores/{id}"</span>
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission4*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission4*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 3개 모두 PASSED</div><pre>Mission4_ReviewSecurityTest &gt; 리뷰_속_스크립트는_글자로만_출력된다_XSS() PASSED
+Mission4_ReviewSecurityTest &gt; 남의_리뷰는_수정할_수_없다_IDOR() PASSED
+Mission4_ReviewSecurityTest &gt; 본인_리뷰는_수정할_수_있다() PASSED</pre></div><div class="explain" data-id="e5-1"><div class="explain-t">✍️ 내 말로 설명하기 — 남의 리뷰 수정 (④)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ “본인_리뷰는_수정할_수_있다”가 FAILED가 되면</div><p>비교 조건을 반대로 쓴 것입니다. <code>!</code>(같지 않으면)가 붙어 있는지 확인하세요.</p></div><div class="do" data-id="m5-1"><div class="do-t">🛠️ 미션</div><p>Mission4 3개 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q5-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>수정 버튼을 화면에서 숨기면 안전한가요?</p><div class="opts"><button class="opt" type="button" data-i="0">안전하다</button><button class="opt" type="button" data-i="1">안전하지 않다. 주소를 직접 보내면 서버가 처리한다</button><button class="opt" type="button" data-i="2">로그인했으니 안전하다</button></div><div class="exp" hidden>화면은 사용자가 바꿀 수 있습니다. 검사는 항상 서버에서 해야 합니다.</div></div></section>
+<section class="lesson" id="l5-2"><span class="chip">5장 남의 것 막기</span> <span class="tp t3">📊 주제 3 고객 관리</span><h2>5-2. 남의 가게 손님 막기 (⑦)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>5-1과 같은 원리입니다. 이번에는 스스로 해 보는 비중을 늘립니다.</p></div><ol class="steps"><li><b><code>crm/CustomerService.java</code>의 <code>findCustomer</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>public CustomerView findCustomer(Long customerId, Long ownerId) {
+    Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -&gt; new IllegalArgumentException("고객이 없습니다"));
+    return toView(customer);
+}</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>서면 사장님(user2)이 해운대 매장 고객을 보려 하면 403이 나오게 하세요. 우리 매장 고객은 계속 보여야 합니다.</p><p>통과해야 할 테스트: <code>Mission6</code> 3개 모두</p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>5-1과 무엇이 같고 무엇이 다를까요? 이번에는 “작성자”가 아니라 “고객이 속한 매장의 사장님”과 비교합니다.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>고객 → 매장 → 사장님 순서로 따라갑니다: <code>customer.getShop().getOwner().getId()</code></p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">CustomerService.java — 고친 후 (import AccessDeniedException 추가)</div><pre>public CustomerView findCustomer(Long customerId, Long ownerId) {
+<span class="c">    // CustomerController.detail()에서 호출. ownerId = 로그인한 사장님의 회원 id</span>
+    Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -&gt; new IllegalArgumentException("고객이 없습니다"));
+    if (!customer.getShop().getOwner().getId().equals(ownerId)) {
+<span class="c">        // customer.getShop()은 Hibernate가 넣어 둔 Shop 프록시 객체(LAZY)</span>
+<span class="c">        // getOwner()를 부를 때 Hibernate가 select ... from shop 을 실행해 매장을 채운다</span>
+<span class="c">        // getOwner().getId()는 shop.owner_id 외래키 값이라 members 테이블은 조회하지 않는다</span>
+        throw new AccessDeniedException("우리 매장 고객만 볼 수 있습니다");
+    }
+    return toView(customer);
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission6*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission6*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 3개 모두 PASSED</div><pre>Mission6_CustomerSecurityTest &gt; 고객_목록의_전화번호는_가려서_보여준다() PASSED
+Mission6_CustomerSecurityTest &gt; 우리_매장_고객은_볼_수_있다() PASSED
+Mission6_CustomerSecurityTest &gt; 다른_매장_고객은_볼_수_없다_IDOR() PASSED</pre></div><div class="explain" data-id="e5-2"><div class="explain-t">✍️ 내 말로 설명하기 — 남의 가게 손님 보기 (⑦)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m5-2"><div class="do-t">🛠️ 미션</div><p>Mission6 3개 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q5-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>4장·5장을 마치면 처음 13개였던 실패 테스트는 몇 개 남나요?</p><div class="opts"><button class="opt" type="button" data-i="0">11개</button><button class="opt" type="button" data-i="1">9개</button><button class="opt" type="button" data-i="2">0개</button></div><div class="exp" hidden>XSS·마스킹·IDOR 2개, 모두 4개를 고쳤으니 9개가 남습니다.</div></div></section>
+<section class="lesson" id="l6-1"><span class="chip">6장 느린 목록 고치기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>6-1. N+1이 생기는 이유 (①)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>원인을 JPA 동작으로 설명할 수 있어야 면접에서 통합니다. 고치기 전에 먼저 이해합니다.</p></div><p><code>store/StoreService.java</code>의 <code>findStoreList</code>를 보세요.</p><div class="code"><div class="cap">StoreService.java — 고치기 전</div><pre>List&lt;Store&gt; stores = storeRepository.findAll();
+<span class="c">// SimpleJpaRepository.findAll() → EntityManager가 select ... from store 를 1번 실행</span>
+for (Store store : stores) {
+    result.add(new StoreListDto(..., (long) store.getReviews().size()));
+<span class="c">    // store.getReviews()는 아직 비어 있는 PersistentBag 객체 (Hibernate가 List 자리에 넣어 둔 지연 로딩 컬렉션)</span>
+<span class="c">    // .size()를 부르는 순간 Hibernate가 select ... from review where store_id=? 를 실행한다</span>
+<span class="c">    // 맛집 50개면 이 줄에서 50번 → 총 1 + 50 = 51번</span>
+}</pre><button class="copy" type="button">복사</button></div><p>하나가 더 있습니다. <code>review/Review.java</code>를 보세요.</p><div class="code"><div class="cap">Review.java — 고치기 전</div><pre>@ManyToOne
+@JoinColumn(name = "store_id")
+private Store store;
+<span class="c">// @ManyToOne에 fetch를 적지 않으면 기본값은 EAGER(즉시 로딩)</span>
+<span class="c">// 리뷰를 조회할 때마다 맛집·작성자도 바로 함께 조회한다</span></pre><button class="copy" type="button">복사</button></div><div class="tw"><table><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody>
+<tr><td>LAZY (지연 로딩)</td><td>연결된 엔티티를 실제로 값을 꺼낼 때 조회한다</td></tr>
+<tr><td>EAGER (즉시 로딩)</td><td>엔티티를 조회할 때 연결된 엔티티도 바로 조회한다</td></tr>
+<tr><td>PersistentBag</td><td>Hibernate가 @OneToMany List 자리에 넣어 두는 컬렉션. 처음 사용할 때 SQL을 실행해 채운다</td></tr></tbody></table></div><div class="explain" data-id="e6-1"><div class="explain-t">✍️ 내 말로 설명하기 — 목록이 느린 이유 (①) — 원인만</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m6-1"><div class="do-t">🛠️ 미션</div><p>N+1이 생기는 줄을 찾고, 내 말로 원인을 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q6-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>이 코드에서 SQL이 반복 실행되는 순간은?</p><div class="opts"><button class="opt" type="button" data-i="0">findAll()을 부를 때</button><button class="opt" type="button" data-i="1">getReviews().size()를 부를 때</button><button class="opt" type="button" data-i="2">return 할 때</button></div><div class="exp" hidden>size()를 부를 때 Hibernate가 그 맛집의 리뷰를 조회해서 PersistentBag을 채웁니다.</div></div></section>
+<section class="lesson" id="l6-2"><span class="chip">6장 느린 목록 고치기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>6-2. SQL 1번으로 줄이기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>목록 화면에 필요한 것은 “맛집 정보 + 리뷰 개수”뿐입니다. 리뷰를 전부 가져오지 말고, DB가 개수만 세게 합니다.</p></div><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>맛집 50개 목록을 SQL <b>1번</b>으로 조회하게 하세요.</p><p>통과해야 할 테스트: <code>Mission1</code> (<code>[측정] … SQL 수 = 1</code>)</p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>두 가지를 합니다. ① Review의 @ManyToOne 두 개에 <code>fetch = FetchType.LAZY</code>를 붙입니다. ② 반복문 대신 Repository에 목록 전용 쿼리를 만듭니다.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>JPQL의 <code>select new 패키지.StoreListDto(...)</code>를 쓰면 DTO를 바로 만들 수 있습니다. <code>from Store s left join s.reviews r</code>, <code>group by</code>, <code>count(r.id)</code>를 조합해 보세요. 작성자를 LAZY로 바꿨으니, 상세 화면 리뷰 조회는 <code>join fetch r.writer</code>로 작성자를 함께 가져옵니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">① Review.java</div><pre>@ManyToOne(fetch = FetchType.LAZY)
+<span class="c">// LAZY: Hibernate가 진짜 Store 대신 프록시 객체를 넣어 두고, 실제 값을 꺼낼 때만 조회한다</span>
+@JoinColumn(name = "store_id")
+private Store store;
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "member_id")
+private Member writer;</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">② StoreRepository.java 전체</div><pre>package com.academy.defectlab.store;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface StoreRepository extends JpaRepository&lt;Store, Long&gt; {
+
+    @Query("""
+            select new com.academy.defectlab.store.StoreListDto(s.id, s.name, s.area, s.zzimCount, count(r.id))
+            from Store s left join s.reviews r
+            group by s.id, s.name, s.area, s.zzimCount
+            order by s.id
+            """)
+<span class="c">    // select new: 엔티티가 아니라 StoreListDto 생성자를 바로 호출해 필요한 값만 담는다 (패키지 이름까지 전부 적기)</span>
+<span class="c">    // left join s.reviews r: 리뷰가 없는 맛집도 빠지지 않게 store 기준으로 review를 붙인다</span>
+<span class="c">    // group by + count(r.id): MySQL이 맛집마다 리뷰 개수를 세어 준다 → SQL 1번</span>
+    List&lt;StoreListDto&gt; findStoreList();
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">③ StoreService.findStoreList (쓰지 않는 import java.util.ArrayList는 지워도 됨)</div><pre>public List&lt;StoreListDto&gt; findStoreList() {
+<span class="c">    // StoreController.list()에서 호출 → 결과를 컨트롤러로 리턴 → model "stores" → stores/list.html</span>
+    return storeRepository.findStoreList();
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">④ ReviewRepository.java 전체</div><pre>package com.academy.defectlab.review;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ReviewRepository extends JpaRepository&lt;Review, Long&gt; {
+
+    @Query("select r from Review r join fetch r.writer where r.store.id = :storeId order by r.id desc")
+<span class="c">    // join fetch r.writer: review 조회 SQL에 members를 JOIN 해서</span>
+<span class="c">    // 각 Review의 writer를 프록시가 아닌 실제 Member 객체로 바로 채운다 → 리뷰마다 추가 조회 없음</span>
+    List&lt;Review&gt; findByStoreIdOrderByIdDesc(@Param("storeId") Long storeId);
+<span class="c">    // @Param("storeId"): 쿼리의 :storeId 자리에 메서드 인자 값을 넣는다</span>
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission1*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission1*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ SQL 수 = 1, PASSED</div><pre>[측정] 맛집 50개 목록 조회에 실행된 SQL 수 = 1
+Mission1_StoreQueryCountTest &gt; 맛집_목록은_SQL_1번으로_조회한다() PASSED</pre></div><div class="explain" data-id="e6-2"><div class="explain-t">✍️ 내 말로 설명하기 — 목록이 느린 결함 (①) — 고친 방법과 숫자</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ Could not resolve ... StoreListDto 에러</div><p><code>select new</code> 뒤의 클래스 이름은 패키지까지 정확히 적어야 합니다.</p></div><div class="warn"><div class="warn-t">⚠️ LazyInitializationException 이 나면</div><p>트랜잭션이 끝난 뒤 LAZY 데이터를 꺼낸 것입니다. 서비스 메서드에 <code>@Transactional</code>이 있는지, join fetch로 미리 가져왔는지 확인하세요.</p></div><div class="do" data-id="m6-2"><div class="do-t">🛠️ 미션</div><p>Mission1 PASSED, SQL 수 = 1을 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q6-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>목록 화면에 DTO 직접 조회(select new)를 쓰는 장점은?</p><div class="opts"><button class="opt" type="button" data-i="0">엔티티를 수정할 수 있다</button><button class="opt" type="button" data-i="1">필요한 값만 SQL 1번으로 가져온다</button><button class="opt" type="button" data-i="2">코드가 길어진다</button></div><div class="exp" hidden>리뷰 엔티티를 메모리에 올리지 않고 DB가 개수만 세어 주므로 SQL 1번으로 끝납니다.</div></div></section>
+<section class="lesson" id="l7-1"><span class="chip">7장 동시성 고치기</span> <span class="tp t3">📊 주제 3 고객 관리</span><h2>7-1. 포인트가 틀리는 이유와 해결 (③)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>혼자 쓸 때는 완벽한 코드가, 여러 사람이 동시에 쓰면 틀립니다. AI 초안에서 가장 놓치기 쉬운 결함입니다.</p></div><h4>무슨 일이 생기나</h4><div class="tw"><table><thead><tr><th>순서</th><th>요청 A</th><th>요청 B</th><th>DB 포인트</th></tr></thead><tbody><tr><td>1</td><td>읽기: 10000</td><td></td><td>10000</td></tr><tr><td>2</td><td></td><td>읽기: 10000</td><td>10000</td></tr><tr><td>3</td><td>10000−100 = 9900 저장</td><td></td><td>9900</td></tr><tr><td>4</td><td></td><td>10000−100 = 9900 저장</td><td class="bad">9900 (9800이어야 함)</td></tr></tbody></table></div><div class="term"><b>📖 갱신 유실</b> — 두 요청이 같은 값을 읽고 각자 계산해 저장하면서, 먼저 저장한 값이 덮어써져 사라지는 현상입니다. @Transactional만 붙여서는 막히지 않습니다.</div><ol class="steps"><li><b><code>point/PointService.java</code>의 <code>use</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>Customer customer = customerRepository.findById(customerId).orElseThrow(...);
+customer.usePoint(amount);
+<span class="c">// 읽고(select) → 자바에서 빼고 → 커밋 때 변경 감지(dirty checking)로 update 저장</span>
+<span class="c">// 읽기와 저장 사이에 다른 요청이 끼어들 수 있다</span></pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>동시에 써도 잔액이 정확하고, 잔액보다 많이 쓸 수 없게 하세요.</p><p>통과해야 할 테스트: <code>Mission3</code> 2개</p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>“읽고 → 계산하고 → 저장”을 자바에서 하지 말고, <b>SQL 한 문장</b>으로 끝내세요. update 문 안에서 빼기를 할 수 있습니다.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p><code>update Customer c set c.point = c.point - :amount where c.id = :id and c.point &gt;= :amount</code> — 이 쿼리는 바뀐 행 수를 리턴합니다. 0이면 무엇을 뜻할까요? Repository 메서드에는 <code>@Modifying</code>이 필요합니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">CustomerRepository.java 전체</div><pre>package com.academy.defectlab.point;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface CustomerRepository extends JpaRepository&lt;Customer, Long&gt; {
+
+    List&lt;Customer&gt; findByShopOwnerIdOrderByIdAsc(Long ownerId);
+
+    @Modifying(clearAutomatically = true)
+<span class="c">    // @Modifying: select가 아니라 update 쿼리라는 표시</span>
+<span class="c">    // clearAutomatically: 실행 후 EntityManager의 1차 캐시를 비워, 옛 포인트 값을 가진 Customer 객체가 남지 않게 한다</span>
+    @Query("update Customer c set c.point = c.point - :amount where c.id = :id and c.point &gt;= :amount")
+<span class="c">    // 잔액 확인(point &gt;= amount)과 차감이 SQL 한 문장 안에서 일어난다</span>
+<span class="c">    // MySQL이 이 행을 잠근 상태에서 처리하므로 다른 요청이 끼어들 수 없다</span>
+    int usePoint(@Param("id") Long id, @Param("amount") int amount);
+<span class="c">    // 리턴값 = 실제로 바뀐 행 수. 0이면 잔액 부족(또는 고객 없음)</span>
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">PointService.use — 고친 후</div><pre>@Transactional
+public void use(Long customerId, int amount) {
+    int updated = customerRepository.usePoint(customerId, amount);
+<span class="c">    // 읽고 → 빼고 → 저장하던 3단계를 DB update 한 번으로 바꿨다</span>
+    if (updated == 0) {
+        if (!customerRepository.existsById(customerId)) {
+            throw new IllegalArgumentException("고객이 없습니다");
+        }
+        throw new IllegalStateException("포인트가 부족합니다");
+    }
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기 (3번 반복)</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission3*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission3*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 2개 모두 PASSED</div><pre>[측정] 1000점에 100점 × 20번 동시 → 성공 = 10번 (정상 10), 남은 포인트 = 0
+Mission3_PointConcurrencyTest &gt; 포인트_1000점에서_100점씩_20번_동시_사용하면_10번만_성공한다() PASSED
+[측정] 10000점 - (100점 × 100번 동시) → 남은 포인트 = 0 (정상 0), 성공 = 100
+Mission3_PointConcurrencyTest &gt; 포인트_10000점에서_100점씩_100번_동시_사용하면_0점이_된다() PASSED</pre></div><div class="explain" data-id="e7-1"><div class="explain-t">✍️ 내 말로 설명하기 — 포인트 갱신 유실 (③)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m7-1"><div class="do-t">🛠️ 미션</div><p>Mission3 2개 PASSED를 3번 연속 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q7-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>@Transactional만 붙이면 갱신 유실이 막히나요?</p><div class="opts"><button class="opt" type="button" data-i="0">막힌다</button><button class="opt" type="button" data-i="1">막히지 않는다. 일반 select는 잠그지 않고 읽기 때문</button><button class="opt" type="button" data-i="2">MySQL이 알아서 막는다</button></div><div class="exp" hidden>MySQL InnoDB의 기본 설정에서 일반 select는 잠금 없이 읽습니다. 조건부 update나 락이 필요합니다.</div></div></section>
+<section class="lesson" id="l7-2"><span class="chip">7장 동시성 고치기</span> <span class="tp t3">📊 주제 3 고객 관리</span><h2>7-2. 쿠폰 한 번만 쓰게 하기 (⑥)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>7-1과 같은 원리입니다. 이번에는 힌트를 줄였습니다. 7-1을 이해했는지 확인하는 레슨입니다.</p></div><ol class="steps"><li><b><code>crm/CouponService.java</code>의 <code>use</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>Coupon coupon = couponRepository.findById(couponId).orElseThrow(...);
+coupon.use();
+<span class="c">// coupon.use(): used가 false면 true로 바꿈 → 10명이 동시에 “false”를 읽으면 모두 통과</span></pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>같은 쿠폰에 동시 요청 10건이 와도 1번만 성공하게 하세요.</p><p>통과해야 할 테스트: <code>Mission5</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>7-1의 <code>where ... and c.point &gt;= :amount</code>가 쿠폰에서는 어떤 조건이 될까요?</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">CouponRepository.java 전체</div><pre>package com.academy.defectlab.crm;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface CouponRepository extends JpaRepository&lt;Coupon, Long&gt; {
+
+    @Modifying(clearAutomatically = true)
+    @Query("update Coupon c set c.used = true where c.id = :id and c.used = false")
+<span class="c">    // 여러 요청이 동시에 와도 MySQL이 행을 잠그고 차례로 처리한다</span>
+<span class="c">    // 먼저 처리된 요청만 used를 true로 바꾸고(리턴 1), 나머지는 조건이 맞지 않아 리턴 0</span>
+    int useIfUnused(@Param("id") Long id);
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">CouponService.use — 고친 후</div><pre>@Transactional
+public void use(Long couponId) {
+    int updated = couponRepository.useIfUnused(couponId);
+    if (updated == 0) {
+        if (!couponRepository.existsById(couponId)) {
+            throw new IllegalArgumentException("쿠폰이 없습니다");
+        }
+        throw new IllegalStateException("이미 사용한 쿠폰입니다");
+    }
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기 (3번 반복)</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission5*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission5*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 이렇게 나오면 성공</div><pre>[측정] 쿠폰 1장에 사용 요청 10건 동시 → 성공 = 1번 (정상 1)
+Mission5_CouponConcurrencyTest &gt; 같은_쿠폰을_동시에_10번_사용해도_1번만_성공한다() PASSED</pre></div><div class="explain" data-id="e7-2"><div class="explain-t">✍️ 내 말로 설명하기 — 쿠폰 여러 번 사용 (⑥)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m7-2"><div class="do-t">🛠️ 미션</div><p>Mission5 PASSED, 성공 = 1번을 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q7-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>쿠폰 결함과 포인트 결함의 공통 원인은?</p><div class="opts"><button class="opt" type="button" data-i="0">DB가 느려서</button><button class="opt" type="button" data-i="1">확인과 변경이 나뉘어 있어 그 사이에 다른 요청이 끼어들어서</button><button class="opt" type="button" data-i="2">쿠폰이 많아서</button></div><div class="exp" hidden>확인(select)과 변경(update)을 SQL 한 문장으로 합치면 끼어들 틈이 없어집니다.</div></div></section>
+<section class="lesson" id="l7-3"><span class="chip">7장 동시성 고치기</span> <span class="tp t1">🍽️ 주제 1 맛집 리뷰</span><h2>7-3. 찜 숫자와 중복 찜 고치기 (②)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>가장 어려운 미션입니다. 갱신 유실, 중복 저장, 교착 상태(Deadlock) 세 가지가 한꺼번에 들어 있습니다.</p></div><ol class="steps"><li><b>테스트 결과에서 Deadlock을 찾아봅니다.</b><figure class="shot term"><div class="shot-bar"><span></span><span></span><span></span><em>테스트 결과</em></div><div class="shot-body"><pre>SQL Error: 1213, SQLState: 40001
+Deadlock found when trying to get lock; try restarting transaction
+[측정] 찜 100건 동시 요청 → store.zzim_count = 11, zzim 행 수 = 28, 예외 발생 = 72건</pre></div><figcaption>숫자·문구는 환경마다 조금 다를 수 있습니다.</figcaption></figure></li><li><b>왜 Deadlock이 나는지 이해합니다.</b><div class="tw"><table><thead><tr><th>순서</th><th>요청 A</th><th>요청 B</th></tr></thead><tbody>
+<tr><td>1</td><td>zzim insert → 외래키 검사 때문에 store 행에 <b>공유 락</b></td><td></td></tr>
+<tr><td>2</td><td></td><td>zzim insert → 같은 store 행에 <b>공유 락</b></td></tr>
+<tr><td>3</td><td>store update → <b>배타 락</b> 필요, B를 기다림</td><td></td></tr>
+<tr><td>4</td><td></td><td>store update → <b>배타 락</b> 필요, A를 기다림 → 서로 기다림 = Deadlock</td></tr></tbody></table></div><div class="term"><b>📖 공유 락 / 배타 락</b> — 공유 락은 여러 트랜잭션이 함께 걸 수 있는 읽기용 잠금이고, 배타 락은 한 트랜잭션만 걸 수 있는 쓰기용 잠금입니다.</div></li><li><b><code>store/StoreService.java</code>의 <code>zzim</code>을 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>if (zzimRepository.existsByMemberIdAndStoreId(memberId, storeId)) { throw ... }
+Store store = findStore(storeId);
+zzimRepository.save(new Zzim(member, store));   // ① insert (store 행에 공유 락)
+store.addZzimCount();                           // ② 커밋 때 update (배타 락 필요)</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>100명이 동시에 찜하면 찜 수 100, 예외 0건. 같은 회원이 30번 연타해도 1번만 저장되게 하세요.</p><p>통과해야 할 테스트: <code>Mission2</code> 2개</p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>문제가 3개입니다. ① 찜 수 +1은 7-1처럼 DB에서 계산. ② 중복 저장은 DB의 유니크 제약으로 막기. ③ Deadlock은 <b>update와 insert의 순서</b>를 바꿔서 해결.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>update를 먼저 하면 store 행에 배타 락이 먼저 걸려, 같은 맛집 요청이 한 줄로 서서 기다립니다. 유니크 제약은 <code>@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "store_id"}))</code>. insert는 <code>saveAndFlush</code>로 바로 실행해야 중복 에러가 그 자리에서 납니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">① Zzim.java 클래스 위 어노테이션</div><pre>@Entity
+@Table(name = "zzim", uniqueConstraints = @UniqueConstraint(
+        name = "uk_zzim_member_store", columnNames = {"member_id", "store_id"}))
+<span class="c">// Hibernate가 테이블을 만들 때 (member_id, store_id) 조합에 UNIQUE 제약을 만든다</span>
+<span class="c">// 같은 회원·같은 맛집 조합을 두 번 insert 하면 MySQL이 거부한다</span></pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">② StoreRepository.java에 추가 (import 2줄 포함)</div><pre>import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.repository.query.Param;
+
+@Modifying(clearAutomatically = true)
+@Query("update Store s set s.zzimCount = s.zzimCount + 1 where s.id = :id")
+<span class="c">// 자바에서 읽고 더하지 않고 MySQL이 행에 배타 락을 건 상태에서 +1 한다 → 갱신 유실 없음</span>
+int increaseZzim(@Param("id") Long id);
+<span class="c">// 리턴값 = 바뀐 행 수. 0이면 맛집이 없음</span></pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">③ StoreService.zzim — 고친 후</div><pre>@Transactional
+public void zzim(Long storeId, Long memberId) {
+<span class="c">    // StoreController.zzim()에서 호출</span>
+    if (zzimRepository.existsByMemberIdAndStoreId(memberId, storeId)) {
+        throw new IllegalStateException("이미 찜한 맛집입니다");
+<span class="c">        // 빠른 확인용. 동시 요청은 이 검사를 통과할 수 있으므로 진짜 방어는 유니크 제약이 한다</span>
+    }
+    int updated = storeRepository.increaseZzim(storeId);
+<span class="c">    // ① 먼저 store 행을 update → 이 트랜잭션이 끝날 때까지 store 행에 배타 락</span>
+<span class="c">    //    같은 맛집 찜 요청은 여기서 한 줄로 기다리므로 Deadlock이 생기지 않는다</span>
+    if (updated == 0) {
+        throw new IllegalArgumentException("맛집이 없습니다");
+    }
+    Member member = memberRepository.getReferenceById(memberId);
+    Store store = storeRepository.getReferenceById(storeId);
+<span class="c">    // getReferenceById: select 없이 id만 가진 프록시 객체를 만든다 (외래키 저장용)</span>
+    zzimRepository.saveAndFlush(new Zzim(member, store));
+<span class="c">    // ② 그다음 insert. saveAndFlush는 insert를 바로 실행한다</span>
+<span class="c">    //    중복이면 DataIntegrityViolationException → 트랜잭션 전체(①의 +1 포함)가 롤백된다</span>
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기 (3번 반복)</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission2*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission2*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 2개 PASSED, 예외 0건</div><pre>[측정] 같은 회원 찜 30건 동시 요청 → store.zzim_count = 1, zzim 행 수 = 1
+Mission2_ZzimConcurrencyTest &gt; 같은_회원이_동시에_30번_찜해도_1번만_저장된다() PASSED
+[측정] 찜 100건 동시 요청 → store.zzim_count = 100, zzim 행 수 = 100, 예외 발생 = 0건
+Mission2_ZzimConcurrencyTest &gt; 서로_다른_회원_100명이_동시에_찜하면_찜수는_100이다() PASSED</pre></div><div class="explain" data-id="e7-3"><div class="explain-t">✍️ 내 말로 설명하기 — 찜 숫자·중복 찜·Deadlock (②)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ 예외 발생이 0건이 아니고 Deadlock이 남아 있으면</div><p><b>increaseZzim(update)이 saveAndFlush(insert)보다 먼저</b> 있는지 확인하세요.</p></div><div class="do" data-id="m7-3"><div class="do-t">🛠️ 미션</div><p>Mission2 2개 PASSED, 예외 0건을 3번 연속 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q7-3" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>찜 코드에서 update를 insert보다 먼저 실행하는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">코드가 보기 좋아서</button><button class="opt" type="button" data-i="1">먼저 배타 락을 잡아 요청을 한 줄로 세우고 Deadlock을 없애려고</button><button class="opt" type="button" data-i="2">insert가 느려서</button></div><div class="exp" hidden>insert를 먼저 하면 외래키 검사로 공유 락이 걸리고, 이어지는 update가 서로를 기다리며 Deadlock이 납니다.</div></div></section>
+<section class="lesson" id="l7-4"><span class="chip">7장 동시성 고치기</span> <span class="tp t2">🧳 주제 2 여행 코스</span><h2>7-4. 북마크 중복 막기 (⑨)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>7-3의 중복 찜과 같은 원리입니다. 이번에는 숫자 증가가 없어서 더 단순합니다. 힌트 하나로 스스로 해 보세요.</p></div><ol class="steps"><li><b><code>trip/BookmarkService.java</code>의 <code>bookmark</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>if (bookmarkRepository.existsByMemberIdAndPlaceId(memberId, placeId)) {
+    throw new IllegalStateException("이미 북마크한 관광지입니다");
+}
+...
+bookmarkRepository.save(new Bookmark(member, place));
+<span class="c">// 30개 요청이 동시에 exists 검사를 통과하면 모두 save 된다</span></pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>같은 회원이 같은 관광지를 동시에 30번 북마크해도 1번만 저장되게 하세요.</p><p>통과해야 할 테스트: <code>Mission7</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>7-3의 ①(유니크 제약)과 ③의 <code>saveAndFlush</code>를 떠올리세요. 이번에는 숫자 +1이 없으니 Deadlock 걱정도 없습니다.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">Bookmark.java 클래스 위 어노테이션</div><pre>@Entity
+@Table(name = "bookmark", uniqueConstraints = @UniqueConstraint(
+        name = "uk_bookmark_member_place", columnNames = {"member_id", "place_id"}))
+<span class="c">// Hibernate가 테이블을 만들 때 (member_id, place_id) 조합에 UNIQUE 제약을 만든다</span></pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">BookmarkService.bookmark — save를 saveAndFlush로</div><pre>bookmarkRepository.saveAndFlush(new Bookmark(member, place));
+<span class="c">// saveAndFlush: insert를 바로 실행. 중복이면 UNIQUE 제약 위반으로</span>
+<span class="c">// DataIntegrityViolationException이 이 자리에서 나고 트랜잭션이 롤백된다</span>
+<span class="c">// TripController.bookmark()가 이 예외를 잡아 “이미 북마크한 관광지입니다”를 보여 준다</span></pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기 (3번 반복)</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission7*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission7*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 이렇게 나오면 성공</div><pre>[측정] 같은 회원 북마크 30건 동시 요청 → bookmark 행 수 = 1 (정상 1)
+Mission7_BookmarkConcurrencyTest &gt; 같은_회원이_동시에_30번_북마크해도_1번만_저장된다() PASSED</pre></div><div class="explain" data-id="e7-4"><div class="explain-t">✍️ 내 말로 설명하기 — 북마크 중복 (⑨)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m7-4"><div class="do-t">🛠️ 미션</div><p>Mission7 PASSED를 3번 연속 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q7-4" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>exists로 먼저 확인하는데도 중복이 생기는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">exists가 고장 나서</button><button class="opt" type="button" data-i="1">여러 요청이 동시에 “없음”을 확인한 뒤 각자 저장하기 때문</button><button class="opt" type="button" data-i="2">MySQL이 느려서</button></div><div class="exp" hidden>확인과 저장 사이에 다른 요청이 끼어듭니다. 최종 방어는 DB의 UNIQUE 제약이 해야 합니다.</div></div></section>
+<section class="lesson" id="l8a-1"><span class="chip">8장 외부 연동 고치기</span> <span class="tp t2">🧳 주제 2 여행 코스</span><h2>8-1. AI가 지어낸 관광지 걸러내기 (⑩)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>AI는 DB에 없는 관광지를 그럴듯하게 만들어 낼 수 있습니다. 공지의 AI 사용 규칙 “<b>AI가 고른 번호는 DB와 대조 (없는 데이터 버림)</b>”을 코드로 구현합니다.</p></div><div class="term"><b>📖 AI 결과 검증</b> — AI가 준 답을 그대로 쓰지 않고, 우리 DB에 실제로 있는 데이터인지 확인한 뒤 쓰는 것입니다. OWASP가 정리한 LLM 위험 목록의 “잘못된 정보(LLM09)”에 대한 대응입니다.</div><ol class="steps"><li><b><code>trip/AiCourseService.java</code>의 <code>recommend</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>List&lt;Long&gt; ids = aiPlanner.recommendPlaceIds(request);
+return ids.stream()
+        .map(placeRepository::getReferenceById)
+<span class="c">        // getReferenceById: select 없이 id만 가진 Place 프록시 객체를 만든다 (없는 번호여도 일단 만들어짐)</span>
+        .map(p -&gt; new PlaceView(p.getId(), p.getName(), p.getArea()))
+<span class="c">        // p.getName()에서 Hibernate가 select를 실행 → 9999번은 없으니 EntityNotFoundException → 500</span>
+        .toList();</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>AI가 <code>[해운대, 9999, 광안리]</code>를 줘도 화면에는 실제로 있는 2곳만, AI가 준 순서대로 나오게 하세요.</p><p>통과해야 할 테스트: <code>Mission8</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p>번호를 하나씩 조회하지 말고, <code>placeRepository.findAllById(ids)</code>로 한 번에 조회해 보세요. DB에 있는 관광지만 돌아옵니다.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>findAllById는 순서를 보장하지 않습니다. 결과를 <code>Map&lt;Long, Place&gt;</code>(id → 관광지)로 만든 뒤, AI가 준 ids 순서대로 꺼내고 <code>null</code>(없는 번호)은 버리세요.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">AiCourseService.recommend — 고친 후</div><pre>public List&lt;PlaceView&gt; recommend(String request) {
+<span class="c">    // TripController.aiCourse()에서 호출 → AI가 고른 관광지 목록을 리턴</span>
+    List&lt;Long&gt; ids = aiPlanner.recommendPlaceIds(request);
+    Map&lt;Long, Place&gt; found = placeRepository.findAllById(ids).stream()
+            .collect(Collectors.toMap(Place::getId, Function.identity()));
+<span class="c">    // findAllById: SimpleJpaRepository가 select ... from place where id in (?, ?, ...) 를 1번 실행</span>
+<span class="c">    // DB에 실제로 있는 관광지만 Map에 담긴다 → AI가 지어낸 번호는 여기서 걸러진다</span>
+    return ids.stream()
+            .map(found::get)
+            .filter(Objects::nonNull)
+<span class="c">            // DB에 없는 번호(null)는 버린다</span>
+            .map(p -&gt; new PlaceView(p.getId(), p.getName(), p.getArea()))
+            .toList();
+<span class="c">            // AI가 고른 순서는 그대로 유지한다</span>
+}</pre><button class="copy" type="button">복사</button></div><div class="code"><div class="cap">추가할 import</div><pre>import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission8*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission8*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 이렇게 나오면 성공</div><pre>[측정] AI 추천 3개 중 화면에 나온 관광지 = [해운대해수욕장, 광안리해수욕장]
+Mission8_AiCourseTest &gt; AI가_DB에_없는_관광지를_섞어도_있는_것만_보여준다() PASSED</pre></div><p>서버를 켜고 🤖 AI 추천 코스를 다시 눌러 보면 500 에러 대신 실제 관광지 3곳이 보입니다.</p><div class="explain" data-id="e8a-1"><div class="explain-t">✍️ 내 말로 설명하기 — AI가 지어낸 관광지 (⑩)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m8a-1"><div class="do-t">🛠️ 미션</div><p>Mission8 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q8a-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>팀 프로젝트에서 AI가 추천한 맛집·관광지를 화면에 보여 주기 전에 해야 할 일은?</p><div class="opts"><button class="opt" type="button" data-i="0">AI를 믿고 그대로 보여 준다</button><button class="opt" type="button" data-i="1">AI가 고른 번호를 DB에서 조회해 실제로 있는 것만 보여 준다</button><button class="opt" type="button" data-i="2">AI에게 한 번 더 물어본다</button></div><div class="exp" hidden>AI 결과는 틀릴 수 있습니다. DB와 대조해 없는 데이터는 버리는 것이 공지의 AI 규칙입니다.</div></div></section>
+<section class="lesson" id="l8a-2"><span class="chip">8장 외부 연동 고치기</span> <span class="tp t2">🧳 주제 2 여행 코스</span><h2>8-2. 느린 외부 API에 타임아웃 걸기 (⑪)</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>외부 서버가 느려지면, 우리 서버도 그 응답을 기다리느라 화면이 멈춥니다. 사용자가 많으면 기다리는 요청이 쌓여 서비스 전체가 느려집니다. <b>정해진 시간까지만 기다리고</b>, 넘으면 안내 문구를 보여 줍니다.</p></div><div class="term"><b>📖 타임아웃</b> — 정해진 시간 안에 연결되거나 응답이 오지 않으면 기다리기를 멈추고 예외를 내는 설정입니다. 연결 타임아웃은 서버에 접속하는 시간, 읽기 타임아웃은 접속 후 응답을 기다리는 시간입니다.</div><ol class="steps"><li><b><code>trip/WeatherService.java</code>를 봅니다.</b><div class="code"><div class="cap">고치기 전</div><pre>public WeatherService(@Value("${app.weather.url}") String weatherUrl) {
+    this.restClient = RestClient.builder()
+            .baseUrl(weatherUrl)
+            .build();
+<span class="c">    // 타임아웃 설정이 없다 → 외부 서버가 응답할 때까지 무한정 기다린다</span>
+}
+
+public String today() {
+    return restClient.get()
+            .retrieve()
+            .body(String.class);
+<span class="c">    // 예외 처리도 없다 → 외부 서버가 에러를 주면 우리 화면도 500</span>
+}</pre><button class="copy" type="button">복사</button></div></li></ol><div class="goal"><div class="goal-t">🎯 직접 고쳐 보세요</div><p>외부 날씨 API가 5초 늦게 응답해도 <b>2초 안에</b> “날씨 정보를 불러오지 못했습니다”를 리턴하게 하세요.</p><p>통과해야 할 테스트: <code>Mission9</code></p></div><p class="cap2">힌트 1 → 힌트 2 → 정답 순서로 펼치세요. 정답을 보기 전에 최소 10분은 스스로 시도해 보세요.</p><details class="hint"><summary>💡 힌트 1 보기</summary><div><p><code>SimpleClientHttpRequestFactory</code> 객체에 <code>setConnectTimeout(1000)</code>, <code>setReadTimeout(1000)</code>(밀리초)을 설정하고, <code>RestClient.builder().requestFactory(factory)</code>로 넣습니다.</p></div></details><details class="hint"><summary>💡 힌트 2 보기</summary><div><p>타임아웃이 나면 <code>RestClientException</code>이 발생합니다. <code>today()</code>에서 try-catch로 잡아 안내 문장을 리턴하세요.</p></div></details><details class="ans"><summary>🔑 정답 코드 펼치기 (먼저 스스로 해 보세요)</summary><div><div class="code"><div class="cap">WeatherService.java — 고친 후 전체</div><pre>package com.academy.defectlab.trip;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+
+@Service
+public class WeatherService {
+
+    public static final String FALLBACK = "날씨 정보를 불러오지 못했습니다";
+
+    private final RestClient restClient;
+
+    public WeatherService(@Value("${app.weather.url}") String weatherUrl) {
+<span class="c">        // application.yml의 app.weather.url 값을 StandardEnvironment 객체가 찾아 넣는다</span>
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(1000);
+<span class="c">        // 연결 타임아웃 1초: 외부 서버에 1초 안에 연결되지 않으면 포기</span>
+        factory.setReadTimeout(1000);
+<span class="c">        // 읽기 타임아웃 1초: 연결 후 1초 안에 응답이 오지 않으면 포기</span>
+        this.restClient = RestClient.builder()
+                .baseUrl(weatherUrl)
+                .requestFactory(factory)
+                .build();
+<span class="c">        // RestClient가 HTTP 요청을 보낼 때 위 타임아웃 설정을 가진 factory 객체를 사용한다</span>
+    }
+
+    public String today() {
+<span class="c">        // TripController.places()에서 호출 → model "weather" → places/list.html의 ${weather}</span>
+        try {
+            return restClient.get()
+                    .retrieve()
+                    .body(String.class);
+        } catch (RestClientException e) {
+<span class="c">            // 타임아웃·연결 실패·에러 응답이면 RestClientException이 난다</span>
+<span class="c">            // 화면 전체를 멈추거나 500으로 만들지 않고 안내 문장을 대신 리턴한다</span>
+            return FALLBACK;
+        }
+    }
+}</pre><button class="copy" type="button">복사</button></div></div></details><h4>확인하기</h4><p class="os">Windows(IntelliJ 터미널, PowerShell)</p><div class="code"><pre>.\gradlew.bat cleanTest test --tests "*Mission9*"</pre><button class="copy" type="button">복사</button></div><p class="os">Mac · WSL</p><div class="code"><pre>./gradlew cleanTest test --tests "*Mission9*"</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ 이렇게 나오면 성공</div><pre>[측정] 날씨 조회 걸린 시간 = 1055ms (정상 2000ms 미만), 결과 = 날씨 정보를 불러오지 못했습니다
+Mission9_WeatherTimeoutTest &gt; 외부_API가_느려도_2초_안에_안내_문구를_보여준다() PASSED</pre></div><p>서버를 켜고 🧳 여행 코스를 다시 열면 약 1초 만에 화면이 뜨고, “오늘 날씨: 날씨 정보를 불러오지 못했습니다”가 보입니다.</p><div class="explain" data-id="e8a-2"><div class="explain-t">✍️ 내 말로 설명하기 — 느린 외부 API (⑪)</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="warn"><div class="warn-t">⚠️ 팀 프로젝트의 TourAPI · 날씨 API · AI 호출에도</div><p>외부로 나가는 모든 호출(RestClient, RestTemplate, WebClient, Spring AI의 ChatClient)에 타임아웃과 실패 안내를 넣으세요. 공지의 평가 기준 “AI 기능: 실패 안내”가 바로 이것입니다.</p></div><div class="do" data-id="m8a-2"><div class="do-t">🛠️ 미션</div><p>Mission9 PASSED를 확인하고, 내 말로 설명하기를 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q8a-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>외부 API에 타임아웃이 없으면 생기는 일은?</p><div class="opts"><button class="opt" type="button" data-i="0">아무 일도 없다</button><button class="opt" type="button" data-i="1">외부 서버가 느려지면 우리 화면도 같이 멈추고, 요청이 쌓여 서비스 전체가 느려진다</button><button class="opt" type="button" data-i="2">외부 서버가 빨라진다</button></div><div class="exp" hidden>우리 서버의 요청 처리 스레드가 응답을 기다리며 묶입니다. 정해진 시간만 기다리고 안내 문구로 바꿔야 합니다.</div></div></section>
+<section class="lesson" id="l8-1"><span class="chip">9장 마무리</span> <span class="tp t0">공통</span><h2>9-1. 전체 초록불과 기록</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>전체 테스트를 돌려 15개 모두 통과하는지 확인하고, 내가 쓴 설명을 검증일지에 옮깁니다.</p></div><ol class="steps"><li><b>전체 테스트를 3번 실행합니다.</b><div class="code"><pre>.\gradlew.bat cleanTest test</pre><button class="copy" type="button">복사</button></div><div class="ok"><div class="ok-t">✅ PASSED 15개 + BUILD SUCCESSFUL (3번 모두)</div><pre>... PASSED (15개)
+BUILD SUCCESSFUL in 51s</pre></div></li><li><b>내가 쓴 설명을 한 번에 복사합니다.</b><p>아래 버튼을 누르면 “✍️ 내 말로 설명하기”에 적은 내용이 모두 복사됩니다. 검증일지의 “원인” “개선 방법” 칸에 나눠 붙이세요.</p><button type="button" class="done" id="copyExplains">✍️ 내 설명 모두 복사</button><p class="cap2" id="explainCount"></p></li><li><b>검증일지 11줄의 After를 채우고 상태를 “완료”로 바꿉니다.</b><div class="tw"><table><thead><tr><th>결함</th><th>Before</th><th>After</th></tr></thead><tbody>
+<tr><td>① 목록 N+1</td><td>SQL 51회</td><td>SQL 1회</td></tr><tr><td>② 찜 100명 동시</td><td>찜 수 11, 예외 72건</td><td>찜 수 100, 예외 0건</td></tr>
+<tr><td>③ 포인트 1000점 20번</td><td>20번 성공</td><td>10번 성공</td></tr><tr><td>④ 남의 리뷰 수정</td><td>302 (수정됨)</td><td>403</td></tr>
+<tr><td>⑤ 리뷰 속 스크립트</td><td>실행됨</td><td>글자로 출력</td></tr><tr><td>⑥ 쿠폰 10건 동시</td><td>9번 성공</td><td>1번 성공</td></tr>
+<tr><td>⑦ 남의 가게 손님</td><td>200 (보임)</td><td>403</td></tr><tr><td>⑧ 전화번호</td><td>010-1234-5678</td><td>010-****-5678</td></tr><tr><td>⑨ 북마크 30번 동시</td><td>10행</td><td>1행</td></tr><tr><td>⑩ AI 추천 [1, 9999, 2]</td><td>500 에러</td><td>실제 관광지만</td></tr><tr><td>⑪ 날씨 API 5초 지연</td><td>5,285ms</td><td>약 1,000ms + 안내 문구</td></tr></tbody></table></div><p class="cap2">내 숫자로 바꿔서 적으세요. 동시성 숫자는 사람마다 다릅니다.</p></li></ol><div class="do" data-id="m8-1"><div class="do-t">🛠️ 미션</div><p>전체 15개 PASSED를 3번 확인하고, 검증일지 11줄을 “완료”로 바꿨다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q8-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>Before/After 표 아래에 꼭 적어야 하는 것은?</p><div class="opts"><button class="opt" type="button" data-i="0">내 이름</button><button class="opt" type="button" data-i="1">측정 조건(데이터 개수, 동시 요청 수, 실행 횟수)</button><button class="opt" type="button" data-i="2">날씨</button></div><div class="exp" hidden>조건이 없는 숫자는 믿을 수 없습니다. 같은 조건에서 쟀다는 것을 보여 줘야 합니다.</div></div></section>
+<section class="lesson" id="l8-2"><span class="chip">9장 마무리</span> <span class="tp t0">공통</span><h2>9-2. 팀원에게 설명하고 면접 답변 만들기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>남에게 설명할 수 있어야 진짜 이해한 것입니다. 수업 대신 팀원끼리 서로 확인합니다.</p></div><h4>팀원 설명 5분 (2명씩 짝)</h4><ol class="steps"><li><b>내가 고친 결함 1개를 화면 없이 설명합니다</b>“무엇이 문제 → 왜 생김(어떤 객체가 무엇을) → 어떻게 고침 → 숫자 전후”</li><li><b>듣는 사람은 질문 2개를 합니다</b>예: “@Transactional만 붙이면 안 돼?”, “버튼을 숨기면 안 돼?”</li><li><b>대답을 못 한 질문은 해당 레슨으로 돌아가 다시 봅니다</b></li></ol><h4>60초 면접 답변 순서</h4><ol class="steps"><li><b>무엇을 만들었나</b>“맛집 목록 기능을 AI 초안으로 만들었습니다.”</li><li><b>무엇이 이상했나</b>“테스트 데이터를 넣고 SQL 로그를 보니 쿼리가 51번 실행됐습니다.”</li><li><b>원인</b>“리뷰 컬렉션이 지연 로딩이라 맛집마다 size()를 부를 때 조회가 추가로 실행됐습니다.”</li><li><b>해결</b>“DB가 리뷰 개수만 세는 DTO 조회로 바꿨습니다.”</li><li><b>결과</b>“SQL이 51번에서 1번이 됐고, 쿼리 수 테스트로 다시 생기지 않게 했습니다.”</li><li><b>배운 점</b>“AI 코드는 데이터가 쌓였을 때 무엇이 깨지는지 직접 측정해야 한다는 걸 배웠습니다.”</li></ol><div class="do" data-id="m8-2"><div class="do-t">🛠️ 미션</div><p>짝에게 결함 1개를 설명하고 질문 2개에 답했다. 60초 답변 3개(성능·동시성·보안)를 소리 내어 연습했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q8-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>면접관이 “AI를 썼는데 본인은 뭘 했나요?”라고 물으면 가장 좋은 답은?</p><div class="opts"><button class="opt" type="button" data-i="0">AI가 다 했습니다</button><button class="opt" type="button" data-i="1">AI 초안을 테스트와 측정으로 검증하고, 결함을 찾아 숫자로 개선했습니다</button><button class="opt" type="button" data-i="2">AI를 안 썼습니다</button></div><div class="exp" hidden>초안은 AI, 검증과 개선은 나. 검증일지와 커밋 기록이 그 근거가 됩니다.</div></div></section>
+<section class="lesson" id="l9-1"><span class="chip">10장 내 팀 프로젝트에 적용하기</span> <span class="tp t0">내 팀 주제 (1 · 2 · 3)</span><h2>10-1. 내 코드에서 결함 후보 찾기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>실습 프로젝트에서 본 결함은 팀 프로젝트에서도 똑같은 모양으로 나타납니다. 이름만 다를 뿐입니다. IntelliJ의 <b>전체 검색(Ctrl+Shift+F)</b>으로 후보를 찾습니다.</p></div><div class="tw"><table><thead><tr><th>결함</th><th>검색어 (Ctrl+Shift+F)</th><th>이렇게 생겼으면 후보</th><th>실습 레슨</th></tr></thead><tbody>
+<tr><td>N+1</td><td><code>@ManyToOne</code></td><td>바로 아래에 <code>fetch = FetchType.LAZY</code>가 없다</td><td>6장</td></tr>
+<tr><td>N+1</td><td><code>.size()</code>, <code>for (</code></td><td>Service 반복문 안에서 <code>getReviews()</code>, <code>getVisits()</code>처럼 연결된 목록을 꺼낸다</td><td>6장</td></tr>
+<tr><td>N+1</td><td><code>th:each</code></td><td>템플릿 반복 안에서 <code>${s.reviews.size()}</code>처럼 연결된 목록을 꺼낸다</td><td>6장</td></tr>
+<tr><td>갱신 유실</td><td><code>() + 1</code>, <code>() - </code>, <code>setPoint</code>, <code>setCount</code></td><td>findById로 읽고 → 자바에서 더하거나 빼고 → 저장한다 (찜 수, 포인트, 조회수, 북마크 수)</td><td>7장</td></tr>
+<tr><td>중복 저장</td><td><code>existsBy</code></td><td>exists로 확인한 뒤 save 한다. 엔티티에 <code>uniqueConstraints</code>가 없다</td><td>7-3</td></tr>
+<tr><td>한 번만 써야 하는 것</td><td><code>used</code>, <code>isUsed</code></td><td>사용 여부를 if로 확인한 뒤 true로 바꾼다 (쿠폰)</td><td>7-2</td></tr>
+<tr><td>IDOR</td><td><code>@PathVariable</code></td><td>수정·삭제·상세 메서드가 로그인한 사람과 데이터 주인을 비교하지 않는다</td><td>5장</td></tr>
+<tr><td>AI 결과 미검증</td><td><code>ChatClient</code>, <code>recommend</code></td><td>AI가 돌려준 번호·이름을 DB 조회 없이 화면에 쓴다</td><td>8-1</td></tr>
+<tr><td>타임아웃 없음</td><td><code>RestClient</code>, <code>RestTemplate</code>, <code>WebClient</code></td><td>외부 API(TourAPI·날씨·AI)를 부르는데 타임아웃과 try-catch가 없다</td><td>8-2</td></tr>
+<tr><td>XSS</td><td><code>th:utext</code>, <code>innerHTML</code></td><td>리뷰·후기·AI 답변을 이것으로 출력한다</td><td>4-1</td></tr>
+<tr><td>개인정보</td><td><code>getPhone()</code>, <code>log.info(</code></td><td>전화번호가 가려지지 않고 화면·로그로 나간다</td><td>4-2</td></tr>
+<tr><td>비밀값</td><td><code>secret</code>, <code>api-key</code>, <code>password:</code></td><td>application.yml에 실제 값이 그대로 적혀 있다 (<code>${...}</code>가 아니다)</td><td>보충자료 8장</td></tr>
+<tr><td>CSRF 끔</td><td><code>csrf</code></td><td><code>disable()</code>이 있다 → 화면(세션 로그인)까지 꺼져 있는지 확인</td><td>보충자료 8장</td></tr>
+</tbody></table></div><ol class="steps"><li><b>팀 프로젝트를 IntelliJ로 엽니다.</b></li><li><b>Ctrl+Shift+F를 누르고 위 표의 검색어를 하나씩 넣어 봅니다.</b><p>검색 결과를 더블클릭하면 그 줄로 이동합니다.</p></li><li><b>후보를 찾으면 검증일지에 상태 “발견”으로 한 줄 적습니다.</b><p>아직 확실하지 않아도 괜찮습니다. 10-3의 테스트로 진짜 결함인지 확인합니다.</p></li></ol><div class="warn"><div class="warn-t">⚠️ 후보가 하나도 없으면</div><p>내 담당 기능이 아직 적으면 정상입니다. 기능이 늘어날 때마다(특히 AI 초안을 받은 직후) 이 표로 다시 검색하세요.</p></div><div class="do" data-id="m9-1"><div class="do-t">🛠️ 미션</div><p>내 팀 프로젝트에서 결함 후보 3개를 찾아 검증일지에 “발견”으로 적었다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q9-1" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>팀 프로젝트에서 “찜 수를 findById로 읽고 +1 해서 저장”하는 코드를 찾았다면 어떤 결함 후보인가요?</p><div class="opts"><button class="opt" type="button" data-i="0">XSS</button><button class="opt" type="button" data-i="1">갱신 유실 (동시성)</button><button class="opt" type="button" data-i="2">N+1</button></div><div class="exp" hidden>읽고 → 계산 → 저장이 나뉘어 있으면 동시에 요청이 올 때 값이 사라질 수 있습니다. 7장과 같은 결함입니다.</div></div></section>
+<section class="lesson" id="l9-2"><span class="chip">10장 내 팀 프로젝트에 적용하기</span> <span class="tp t0">내 팀 주제 (1 · 2 · 3)</span><h2>10-2. 내 프로젝트에 테스트 환경 만들기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>결함 후보가 진짜인지는 테스트로 확인합니다. 실습 프로젝트와 같은 테스트 환경을 내 프로젝트에도 만듭니다. 팀에서 한 명(보통 부팀장)이 한 번 만들면 모두 함께 씁니다.</p></div><ol class="steps"><li><b>테스트용 DB를 만듭니다. (이름은 팀 DB 이름 + <code>_test</code>)</b><div class="code"><div class="cap">MySQL Workbench — 예: 팀 DB가 matzip인 경우</div><pre>CREATE DATABASE matzip_test;
+GRANT ALL ON matzip_test.* TO '팀DB계정'@'localhost';</pre><button class="copy" type="button">복사</button></div></li><li><b>build.gradle의 dependencies에 보안 테스트 도구가 있는지 확인하고, 없으면 추가합니다.</b><div class="code"><div class="cap">build.gradle</div><pre>testImplementation 'org.springframework.security:spring-security-test'</pre><button class="copy" type="button">복사</button></div><p>추가한 뒤 오른쪽 Gradle 창의 새로고침 버튼을 누릅니다.</p></li><li><b><code>src/test/resources/application.yml</code>을 만듭니다.</b><div class="code"><div class="cap">src/test/resources/application.yml (새 파일)</div><pre>spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/matzip_test?serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME:팀DB계정}
+    password: ${DB_PASSWORD}
+<span class="c">    # 비밀번호는 저장소에 적지 않는다. IntelliJ 실행 설정이나 터미널에서 환경변수로 넣는다</span>
+  jpa:
+    hibernate:
+      ddl-auto: create
+<span class="c">      # 테스트 시작마다 테이블을 새로 만든다 (테스트 DB에서만)</span>
+    properties:
+      hibernate:
+        generate_statistics: true
+<span class="c">        # SQL 실행 횟수를 세기 위해 Hibernate의 StatisticsImpl 객체를 켠다</span></pre><button class="copy" type="button">복사</button></div><p>이 파일이 있으면 테스트를 돌릴 때만 이 설정이 쓰이고, 실제 실행용 설정은 그대로입니다.</p></li><li><b>가짜 데이터를 넣는 코드가 있다면 테스트에서는 꺼지게 합니다.</b><p>CommandLineRunner로 데이터를 넣는 클래스 위에 아래를 붙입니다.</p><div class="code"><pre>@Profile("!test")
+<span class="c">// test 프로필이 아닐 때만 DefaultListableBeanFactory가 이 객체를 빈으로 등록한다</span></pre><button class="copy" type="button">복사</button></div><p>그리고 테스트 클래스 위에 <code>@ActiveProfiles("test")</code>를 붙입니다.</p></li><li><b>테이블 비우기 도구를 복사해 넣습니다.</b><div class="code"><div class="cap">src/test/java/★내패키지/DbCleaner.java — ★ 표시를 내 프로젝트 이름으로</div><pre>package ★내패키지;
+
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.sql.Statement;
+
+public final class DbCleaner {
+
+    private DbCleaner() {
+    }
+
+    public static void clean(JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute((ConnectionCallback&lt;Void&gt;) con -&gt; {
+<span class="c">            // 외래키 검사 끄기는 커넥션마다 적용되므로 같은 커넥션 하나에서 모두 실행한다</span>
+            try (Statement st = con.createStatement()) {
+                st.execute("SET FOREIGN_KEY_CHECKS = 0");
+                for (String table : new String[]{"★테이블1", "★테이블2", "★테이블3"}) {
+                    st.execute("TRUNCATE TABLE " + table);
+                }
+                st.execute("SET FOREIGN_KEY_CHECKS = 1");
+            }
+            return null;
+        });
+    }
+}</pre><button class="copy" type="button">복사</button></div></li></ol><div class="warn"><div class="warn-t">⚠️ GitHub Actions(CI)에서 테스트가 실패하면</div><p>CI 서버에는 MySQL이 없어서 DB를 쓰는 테스트가 실패할 수 있습니다. 부팀장과 상의해 워크플로에 MySQL 서비스를 추가합니다.</p><div class="code"><div class="cap">.github/workflows의 워크플로 파일 — 기존 jobs.build에 services·env만 추가</div><pre>jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          MYSQL_DATABASE: matzip_test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      DB_USERNAME: root
+      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}</pre><button class="copy" type="button">복사</button></div></div><div class="do" data-id="m9-2"><div class="do-t">🛠️ 미션</div><p>테스트 DB, test용 application.yml, DbCleaner를 만들고 아무 테스트나 1개 실행해 연결되는 것을 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q9-2" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>src/test/resources/application.yml을 따로 만드는 이유는?</p><div class="opts"><button class="opt" type="button" data-i="0">실행용 설정을 지우려고</button><button class="opt" type="button" data-i="1">테스트를 돌릴 때만 테스트 DB와 측정 설정을 쓰려고</button><button class="opt" type="button" data-i="2">파일이 많을수록 좋아서</button></div><div class="exp" hidden>테스트는 테이블을 지우고 다시 만듭니다. 실행용 DB와 분리해야 팀 데이터가 안전합니다.</div></div></section>
+<section class="lesson" id="l9-3"><span class="chip">10장 내 팀 프로젝트에 적용하기</span> <span class="tp t0">내 팀 주제 (1 · 2 · 3)</span><h2>10-3. 미션 테스트를 내 것으로 바꾸기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>실습 프로젝트의 Mission 테스트는 “틀”입니다. 이름만 바꾸면 내 프로젝트의 결함을 재는 테스트가 됩니다. 순서는 실습과 같습니다: <b>빨간불 확인 → 고치기 → 초록불</b>.</p></div><h4>이름 바꾸기 표 (예시)</h4><div class="tw"><table><thead><tr><th>실습 프로젝트</th><th>주제 1 맛집</th><th>주제 2 여행 코스</th><th>주제 3 고객 관리</th></tr></thead><tbody>
+<tr><td>Store · reviews</td><td>맛집 · 리뷰</td><td>코스 · 코스에 담긴 관광지</td><td>고객 · 방문 기록</td></tr>
+<tr><td>Bookmark 중복 (⑨)</td><td>찜 중복</td><td>북마크 중복</td><td>쿠폰 중복 발급</td></tr>
+<tr><td>AiCourseService (⑩)</td><td>AI 맛집 추천</td><td>AI 일정 생성</td><td>AI 재방문 문구 대상 고객</td></tr>
+<tr><td>WeatherService (⑪)</td><td>AI 리뷰 요약 호출</td><td>TourAPI · 날씨 API</td><td>AI 재방문 문구 호출</td></tr>
+<tr><td>찜 수 (zzimCount)</td><td>찜 수</td><td>북마크 수</td><td>포인트 · 쿠폰</td></tr>
+<tr><td>리뷰 작성자 검사</td><td>리뷰 · 맛집 작성자</td><td>후기 작성자</td><td>매장 사장님</td></tr>
+</tbody></table></div><p class="cap2">실제 클래스 이름은 우리 팀의 기능 명세·ERD를 따르세요.</p><h4>틀 ① 목록 SQL 수 재기 (N+1)</h4><div class="code"><div class="cap">틀 ① — ★ 부분을 내 이름으로</div><pre>@SpringBootTest
+@ActiveProfiles("test")
+class ★목록QueryCountTest {
+
+    @Autowired ★목록Service service;            // 예: StoreService
+    @Autowired EntityManagerFactory emf;
+    @Autowired JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        DbCleaner.clean(jdbcTemplate);
+<span class="c">        // ★ 목록 데이터 30개 이상 + 각각 연결된 데이터 3개씩 save (예: 맛집 30개 × 리뷰 3개)</span>
+    }
+
+    @Test
+    void 목록은_SQL_2번_이하로_조회한다() {
+        Statistics stats = emf.unwrap(SessionFactory.class).getStatistics();
+<span class="c">        // EntityManagerFactory의 실제 구현인 Hibernate SessionFactory에서 통계 객체를 꺼낸다</span>
+        stats.clear();
+
+        service.★목록조회메서드();
+
+        long sqlCount = stats.getPrepareStatementCount();
+        System.out.println("[측정] 목록 조회 SQL 수 = " + sqlCount);
+        assertThat(sqlCount).isLessThanOrEqualTo(2L);
+    }
+}</pre><button class="copy" type="button">복사</button></div><h4>틀 ② 동시 요청 (갱신 유실 · 중복 · 한 번만 쓰기)</h4><div class="code"><div class="cap">틀 ② — ★ 부분을 내 이름으로</div><pre>@SpringBootTest
+@ActiveProfiles("test")
+<span class="c">// 이 클래스에는 @Transactional을 붙이지 않는다 (준비 데이터가 커밋되어야 다른 스레드가 본다)</span>
+class ★동시성Test {
+
+    @Autowired ★Service service;                 // 예: BookmarkService, PointService
+    @Autowired JdbcTemplate jdbcTemplate;
+
+    @Test
+    void 동시에_100번_요청해도_숫자가_정확하다() throws InterruptedException {
+        DbCleaner.clean(jdbcTemplate);
+<span class="c">        // ★ 준비: 대상 데이터 1개 + (필요하면) 회원 100명 save</span>
+
+        AtomicInteger success = new AtomicInteger();
+        ExecutorService pool = Executors.newFixedThreadPool(32);
+        CountDownLatch ready = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(100);
+        for (int i = 0; i &lt; 100; i++) {
+            int idx = i;
+            pool.submit(() -&gt; {
+                try {
+                    ready.await();                 // 모두 출발선에 선 뒤 동시에 시작
+                    service.★동작(/* ★ 대상 id, 회원 id 등 */);
+                    success.incrementAndGet();
+                } catch (Exception ignored) {
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+        ready.countDown();
+        done.await();
+        pool.shutdown();
+
+<span class="c">        // ★ DB에서 다시 읽어 기대값과 비교 (예: 북마크 수 100, 쿠폰 성공 1번)</span>
+        System.out.println("[측정] 성공 = " + success.get());
+<span class="c">        // assertThat(★실제값).isEqualTo(★기대값);</span>
+    }
+}</pre><button class="copy" type="button">복사</button></div><h4>틀 ③ 남의 것 접근 막기 (IDOR)</h4><div class="code"><div class="cap">틀 ③ — 화면(세션 로그인) 주소 기준</div><pre>@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class ★IdorTest {
+
+    @Autowired MockMvc mockMvc;
+    @Autowired JdbcTemplate jdbcTemplate;
+
+    @Test
+    void 남의_데이터는_수정할_수_없다() throws Exception {
+        DbCleaner.clean(jdbcTemplate);
+<span class="c">        // ★ 준비: 회원 A, 회원 B save → A의 데이터(리뷰·후기·고객) save, 그 id를 targetId에 담기</span>
+        Long targetId = ★;
+
+        mockMvc.perform(post("★/reviews/{id}/edit", targetId)
+                        .param("★content", "바뀐 내용")
+                        .with(user("★회원B 이메일"))
+<span class="c">                        // 회원 B로 로그인한 상태를 흉내 낸다</span>
+                        .with(csrf()))
+<span class="c">                        // 화면 폼이 보내는 _csrf 토큰을 흉내 낸다</span>
+                .andExpect(status().isForbidden());
+    }
+}</pre><button class="copy" type="button">복사</button></div><div class="warn"><div class="warn-t">⚠️ 컨트롤러가 직접 만든 로그인 객체(예: CustomUserDetails)를 쓰면</div><p><code>user("이메일")</code>은 기본 UserDetails만 만듭니다. 우리 팀이 만든 클래스를 쓰면 <code>.with(user(new CustomUserDetails(회원)))</code>처럼 그 객체를 넣으세요. JWT로 호출하는 <code>/api</code> 주소는 <code>.header("Authorization", "Bearer " + 토큰)</code>으로 보냅니다.</p></div><ol class="steps"><li><b>틀 하나를 골라 ★ 부분을 바꿉니다.</b></li><li><b>테스트를 실행해 <b>먼저 빨간불</b>이 나오는지 봅니다.</b><p>빨간불이 나오면 진짜 결함입니다. Before 숫자를 검증일지에 적습니다. 초록불이 바로 나오면 결함이 없는 것이니, 그 사실도 “검증 완료”로 적어 둡니다.</p></li><li><b>실습에서 배운 방법으로 고치고 초록불을 확인합니다.</b><p>After 숫자를 적고 상태를 “완료”로 바꿉니다.</p></li></ol><div class="explain" data-id="e9-3"><div class="explain-t">✍️ 내 말로 설명하기 — 내 팀 프로젝트에서 찾은 결함</div>
+<p>정답을 보지 않고 3줄로 적어 보세요. 적은 내용은 자동 저장되고, 9-1에서 한 번에 복사해 검증일지 “원인” 칸에 붙일 수 있습니다.</p>
+<textarea rows="4" placeholder="1) 무엇이 문제였나: &#10;2) 왜 생겼나 (어떤 객체가 언제 무엇을 했나): &#10;3) 어떻게 고쳤고 숫자가 어떻게 바뀌었나: "></textarea>
+<div class="explain-s">아직 적지 않았습니다</div></div><div class="do" data-id="m9-3"><div class="do-t">🛠️ 미션</div><p>내 팀 프로젝트에서 틀 하나를 바꿔 빨간불 → 초록불까지 확인했다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q9-3" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>내 테스트를 처음 돌렸더니 바로 초록불이 나왔다면?</p><div class="opts"><button class="opt" type="button" data-i="0">테스트가 고장 난 것이니 지운다</button><button class="opt" type="button" data-i="1">결함이 없다는 뜻이므로 “검증 완료”로 기록한다</button><button class="opt" type="button" data-i="2">빨간불이 나올 때까지 코드를 망가뜨린다</button></div><div class="exp" hidden>초록불도 의미 있는 결과입니다. 검증했고 문제없음을 확인했다는 증거가 됩니다.</div></div></section>
+<section class="lesson" id="l9-4"><span class="chip">10장 내 팀 프로젝트에 적용하기</span> <span class="tp t0">내 팀 주제 (1 · 2 · 3)</span><h2>10-4. 팀에 공유하기</h2><div class="why"><div class="why-t">💡 왜 하나요?</div><p>테스트와 기록을 PR로 올리면, 팀 전체가 같은 결함을 다시 만들지 않게 됩니다. 공지의 평가 항목인 “PR 리뷰 기록”과 “개인 기여”의 증거도 됩니다.</p></div><ol class="steps"><li><b>AI 초안 커밋과 고친 커밋을 나눕니다.</b><div class="code"><div class="cap">커밋 메시지 예시 (공지의 커밋 타입 feat · fix · test 사용)</div><pre>feat: 북마크 기능 구현 (AI 초안)
+test: 북마크 동시 요청 테스트 추가 - 100건 중 34건 유실 확인
+fix: 북마크 수 갱신 유실 - DB update로 변경 (34건 유실 → 0건)</pre><button class="copy" type="button">복사</button></div></li><li><b>develop으로 PR을 올리고, 설명에 아래 표를 붙입니다.</b><div class="code"><div class="cap">PR 설명 (검증일지 README표 시트에서 복사해도 됨)</div><pre>## 검증 결과
+| 결함 | 발견 근거 | Before | After | 테스트 |
+|---|---|---|---|---|
+| 북마크 수 갱신 유실 | 동시 요청 테스트 | 100건 중 34건 유실 | 0건 | BookmarkConcurrencyTest |</pre><button class="copy" type="button">복사</button></div></li><li><b>리뷰하는 팀원은 10-1 표로 코드를 한 번 더 확인하고 댓글을 남깁니다.</b></li></ol><div class="do" data-id="m9-4"><div class="do-t">🛠️ 미션</div><p>결함 1개를 테스트와 함께 PR로 올렸고, 팀원 1명이 리뷰 댓글을 남겼다.</p><button class="done" type="button">완료했어요</button></div><div class="quiz" data-id="q9-4" data-ans="1"><div class="quiz-t">🧠 퀴즈</div><p>PR 설명에 Before/After 표를 넣으면 좋은 점은?</p><div class="opts"><button class="opt" type="button" data-i="0">PR이 길어 보여서</button><button class="opt" type="button" data-i="1">리뷰어가 무엇이 왜 좋아졌는지 바로 알고, 개인 기여의 증거가 남아서</button><button class="opt" type="button" data-i="2">규칙이라서</button></div><div class="exp" hidden>숫자와 테스트 이름이 있으면 리뷰가 빨라지고, 발표·면접에서 그대로 증거로 쓸 수 있습니다.</div></div></section>
+
+</main>
+</div>
+<div class="dash" aria-live="polite"><div class="ring" id="ring" style="--p:0"><span id="pct">0%</span></div><div><b>나의 진행</b><small id="mcnt">미션 0/0</small><small id="qcnt">퀴즈 0/0</small><small id="ecnt">설명 0/0</small><button id="resetBtn" type="button">기록 지우기</button></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+var SRC='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+var KEY='aiverify-tutorial-v3', st={};
+try{st=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){st={};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+var t=document.getElementById('toast');
+function toast(m){t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('show');},1500);}
+// copy
+document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){
+ var pre=b.parentNode.querySelector('pre');var txt=pre.innerText;
+ function ok(){toast('📋 복사했습니다');}
+ function fb(){var a=document.createElement('textarea');a.value=txt;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();
+   try{if(document.execCommand('copy'))ok();else toast('복사가 막혔습니다. 길게 눌러 직접 복사하세요');}catch(e){toast('복사가 막혔습니다. 길게 눌러 직접 복사하세요');}a.remove();}
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(ok,fb);}else fb();
+});});
+// missions
+var dos=[].slice.call(document.querySelectorAll('.do')),qs=[].slice.call(document.querySelectorAll('.quiz'));
+dos.forEach(function(d){var id=d.dataset.id,b=d.querySelector('.done');
+ function paint(){var on=!!(st.m&&st.m[id]);d.classList.toggle('is-done',on);b.textContent=on?'✔ 완료 (다시 누르면 취소)':'완료했어요';}
+ b.addEventListener('click',function(){st.m=st.m||{};st.m[id]=!st.m[id];save();paint();update();if(st.m[id])toast('🛠️ 미션 완료!');});paint();});
+// quizzes
+qs.forEach(function(q){var id=q.dataset.id,ans=+q.dataset.ans,opts=q.querySelectorAll('.opt'),exp=q.querySelector('.exp');
+ function paint(sel){opts.forEach(function(o,i){o.classList.remove('right','wrong');if(sel==null)return;if(i===ans)o.classList.add('right');else if(i===sel)o.classList.add('wrong');});exp.hidden=(sel==null);}
+ opts.forEach(function(o,i){o.addEventListener('click',function(){st.q=st.q||{};st.q[id]={sel:i,ok:i===ans};save();paint(i);update();toast(i===ans?'🎉 정답!':'❌ 다시 생각해 보세요. 해설을 읽어 보세요');});});
+ if(st.q&&st.q[id])paint(st.q[id].sel);});
+// explains
+var exs=[].slice.call(document.querySelectorAll('.explain'));
+exs.forEach(function(x){var id=x.dataset.id,ta=x.querySelector('textarea'),stt=x.querySelector('.explain-s');
+ function paint(){var v=(st.e&&st.e[id])||'';var ok=v.replace(/\s/g,'').length>=30;x.classList.toggle('filled',ok);stt.textContent=ok?'✔ 저장됨 ('+v.length+'자)':(v?'조금 더 적어 보세요 (30자 이상)':'아직 적지 않았습니다');}
+ ta.value=(st.e&&st.e[id])||'';paint();
+ ta.addEventListener('input',function(){st.e=st.e||{};st.e[id]=ta.value;save();paint();update();});});
+var ce=document.getElementById('copyExplains');
+if(ce){ce.addEventListener('click',function(){var out=exs.map(function(x){var v=(st.e&&st.e[x.dataset.id])||'';if(!v)return '';return '■ '+x.querySelector('.explain-t').textContent.replace('✍️ 내 말로 설명하기 — ','')+'\n'+v;}).filter(Boolean).join('\n\n');
+ if(!out){toast('아직 적은 설명이 없습니다');return;}
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(out).then(function(){toast('📋 내 설명을 모두 복사했습니다');},function(){fb(out);});}else fb(out);
+ function fb(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('📋 내 설명을 모두 복사했습니다');}catch(e){toast('복사가 막혔습니다');}a.remove();}
+});}
+// dashboard + nav marks
+function update(){
+ var m=dos.filter(function(d){return st.m&&st.m[d.dataset.id];}).length;
+ var q=qs.filter(function(x){return st.q&&st.q[x.dataset.id]&&st.q[x.dataset.id].ok;}).length;
+ var e=exs.filter(function(x){var v=(st.e&&st.e[x.dataset.id])||'';return v.replace(/\s/g,'').length>=30;}).length;
+ var p=Math.round((m+q+e)/(dos.length+qs.length+exs.length)*100);
+ document.getElementById('ecnt').textContent='설명 '+e+'/'+exs.length;
+ var ec=document.getElementById('explainCount');if(ec)ec.textContent='지금까지 적은 설명: '+e+'/'+exs.length+'개';
+ document.getElementById('ring').style.setProperty('--p',p);document.getElementById('pct').textContent=p+'%';
+ document.getElementById('mcnt').textContent='미션 '+m+'/'+dos.length;document.getElementById('qcnt').textContent='퀴즈 '+q+'/'+qs.length;
+ document.querySelectorAll('nav.side a').forEach(function(a){var sec=document.getElementById(a.getAttribute('href').slice(1));var d=sec.querySelector('.do');var on=d&&st.m&&st.m[d.dataset.id];a.classList.toggle('done',!!on);a.querySelector('.ck').textContent=on?'✔':'○';});
+}
+update();
+document.getElementById('resetBtn').addEventListener('click',function(){if(confirm('진행 기록을 모두 지울까요?')){st={};save();location.reload();}});
+// scrollspy
+var secs=[].slice.call(document.querySelectorAll('section.lesson'));var links={};document.querySelectorAll('nav.side a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
+function spy(){var cur=secs[0].id;secs.forEach(function(s){if(s.getBoundingClientRect().top<140)cur=s.id;});Object.keys(links).forEach(function(k){links[k].classList.toggle('on',k===cur);});}
+window.addEventListener('scroll',function(){requestAnimationFrame(spy);},{passive:true});spy();
+// drawer
+document.getElementById('menuBtn').addEventListener('click',function(){document.body.classList.toggle('drawer');});
+document.getElementById('scrim').addEventListener('click',function(){document.body.classList.remove('drawer');});
+document.querySelector('nav.side').addEventListener('click',function(e){if(e.target.closest('a'))document.body.classList.remove('drawer');});
+// download
+document.getElementById('dlBtn').addEventListener('click',function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([SRC],{type:'text/html;charset=utf-8'}));a.download='AiCodeVerificationTutorial.html';document.body.appendChild(a);a.click();a.remove();toast('⬇ 다운로드를 시작했습니다');});
+document.getElementById('printBtn').addEventListener('click',function(){document.querySelectorAll('details').forEach(function(d){d.open=true;});window.print();});
+})();
+</script>
+</body>
+</html>
