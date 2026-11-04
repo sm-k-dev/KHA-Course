@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring Boot 빌드(Build) 이해하기 - 학생 학습자료</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--sky:#eff6ff;--ink:#1f2937;--muted:#64748b;--line:#dbe3ef;--green:#15803d;--greenbg:#f0fdf4;--orange:#c2410c;--orangebg:#fff7ed}
+*{box-sizing:border-box} body{margin:0;background:#f4f7fb;color:var(--ink);font-family:"Noto Sans KR",Arial,sans-serif;line-height:1.75}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+.hero{background:linear-gradient(135deg,#172554,#2563eb);color:white;border-radius:20px;padding:38px 34px;margin-bottom:22px}
+.eyebrow{font-size:13px;letter-spacing:.08em;opacity:.85;font-weight:700}.hero h1{font-size:clamp(28px,5vw,42px);line-height:1.25;margin:10px 0 14px}.hero p{margin:0;color:#e0eaff;font-size:17px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:25px;margin:18px 0;box-shadow:0 5px 18px #0f172a08}
+h2{font-size:23px;color:var(--navy);margin:0 0 15px}h3{font-size:18px;margin:20px 0 8px;color:#1e3a8a}
+.lead{font-size:18px;font-weight:700}.definition{background:var(--sky);border-left:5px solid var(--blue);padding:17px 19px;border-radius:9px}
+.note{background:var(--orangebg);border-left:4px solid #f97316;padding:14px 17px;border-radius:8px}.success{background:var(--greenbg);border-left:4px solid #22c55e;padding:14px 17px;border-radius:8px}
+code{font-family:Consolas,monospace;background:#eef2ff;padding:2px 6px;border-radius:5px;color:#1d4ed8}
+pre{background:#0f172a;color:#e2e8f0;padding:18px;border-radius:10px;overflow-x:auto;font-size:14px;line-height:1.65}
+.tree{background:#f8fafc;border:1px solid var(--line);padding:18px;border-radius:10px;font-family:Consolas,monospace;white-space:pre;overflow-x:auto;line-height:1.55}
+.flow{display:grid;gap:9px;max-width:650px;margin:18px auto}.step{border:1px solid #bfdbfe;background:#eff6ff;padding:15px;border-radius:10px;text-align:center;font-weight:700}.step small{display:block;font-weight:400;color:#475569}.arrow{text-align:center;color:#64748b;font-size:23px;line-height:1}
+.step.result{background:var(--greenbg);border-color:#86efac;color:#166534}
+table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{background:#eff6ff;color:#1e3a8a}
+ul,ol{padding-left:24px}.tag{display:inline-block;background:#dbeafe;color:#1d4ed8;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:700}
+.quiz{border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}.quiz p{font-weight:700;margin:0 0 10px}.quiz label{display:block;padding:7px 9px;border-radius:7px;cursor:pointer}.quiz label:hover{background:#f1f5f9}.feedback{display:none;margin-top:9px;padding:10px;border-radius:7px}.btn{border:0;background:var(--blue);color:white;padding:11px 18px;border-radius:8px;font-weight:700;cursor:pointer}.btn:hover{background:#1d4ed8}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}
+@media print{body{background:white}.wrap{max-width:none;padding:0}.hero,.card{box-shadow:none;break-inside:avoid}.hero{border-radius:0}.quiz{break-inside:avoid}.btn{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">SPRING BOOT · 학생 학습자료</div>
+  <h1>빌드(Build)란 무엇일까?</h1>
+  <p>IntelliJ IDEA에서 Spring Boot 프로젝트를 개발할 때 꼭 알아야 하는 빌드의 의미와 실행 과정을 학습합니다.</p>
+</header>
+
+<section class="card">
+  <span class="tag">학습 목표</span>
+  <h2>이 자료를 학습하면</h2>
+  <ul>
+    <li>빌드(Build)가 무엇인지 설명할 수 있습니다.</li>
+    <li>소스 코드, 컴파일, 라이브러리, JAR 파일의 관계를 이해할 수 있습니다.</li>
+    <li>IntelliJ에서 Gradle 빌드를 실행하는 방법을 알 수 있습니다.</li>
+    <li>빌드(Build), 실행(Run), 배포(Deploy)의 차이를 구분할 수 있습니다.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>1. 빌드(Build)의 정확한 의미</h2>
+  <div class="definition">
+    <strong>빌드(Build)</strong>란 개발자가 작성한 소스 코드와 프로젝트 설정, 필요한 라이브러리 등을 바탕으로 프로그램을 검사·컴파일하고, 실행하거나 배포할 수 있는 결과물을 만드는 과정입니다.
+  </div>
+  <p>Spring Boot 프로젝트에는 Java 소스 코드뿐 아니라 HTML, CSS, JavaScript, 설정 파일, 외부 라이브러리 등이 포함될 수 있습니다. 이 파일들을 프로젝트 설정에 따라 처리하여 결과물을 만드는 작업이 빌드입니다.</p>
+  <p class="note"><strong>중요:</strong> 빌드는 단순히 파일을 압축하는 작업이 아닙니다. Java 컴파일, 리소스 처리, 테스트 실행(설정에 따라), JAR 생성 등 여러 작업이 포함될 수 있습니다.</p>
+</section>
+
+<section class="card">
+  <h2>2. 빌드하기 전 프로젝트 구조</h2>
+  <p>예를 들어 다음과 같은 Spring Boot 프로젝트가 있다고 가정하겠습니다.</p>
+  <div class="tree">MySpringProject/
+├─ src/
+│  └─ main/
+│     ├─ java/
+│     │  └─ com/example/
+│     │     └─ HelloController.java
+│     └─ resources/
+│        ├─ application.properties
+│        ├─ templates/
+│        └─ static/
+├─ build.gradle
+└─ settings.gradle</div>
+  <table>
+    <tr><th>파일 또는 폴더</th><th>역할</th></tr>
+    <tr><td><code>src/main/java</code></td><td>Java 클래스와 프로그램의 주요 로직을 작성하는 위치</td></tr>
+    <tr><td><code>src/main/resources</code></td><td>설정 파일, 화면 템플릿, 정적 파일 등을 저장하는 위치</td></tr>
+    <tr><td><code>build.gradle</code></td><td>Gradle 빌드 설정과 외부 라이브러리 의존성 등을 정의하는 파일</td></tr>
+    <tr><td><code>settings.gradle</code></td><td>Gradle 프로젝트 또는 여러 모듈의 구성을 정의하는 파일</td></tr>
+  </table>
+  <p>이 단계에서는 개발자가 작성한 원본 파일들이 주로 <code>src</code> 폴더에 있습니다. 아직 빌드 결과물이 생성되지 않았을 수 있습니다.</p>
+</section>
+
+<section class="card">
+  <h2>3. 빌드를 실행하면 어떤 일이 일어날까?</h2>
+  <div class="flow">
+    <div class="step">① 소스 코드와 설정 확인<small>프로젝트에 어떤 파일과 빌드 설정이 있는지 확인</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">② 필요한 라이브러리 준비<small>Spring Boot, 데이터베이스 드라이버 등 의존성 확인 및 다운로드</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">③ Java 컴파일<small>.java 소스 코드를 JVM이 실행할 수 있는 .class 바이트코드로 변환</small></div>
+    <div class="arrow">↓</div>
+    <div class="step">④ 리소스 처리 및 테스트<small>설정 파일·화면 리소스 처리, 설정된 테스트 작업 수행</small></div>
+    <div class="arrow">↓</div>
+    <div class="step result">⑤ 빌드 결과물 생성<small>예: 실행 가능한 Spring Boot JAR 파일</small></div>
+  </div>
+  <p class="note">모든 빌드에서 테스트가 자동으로 성공적으로 수행되는 것은 아닙니다. Gradle의 어떤 작업을 실행했는지, 프로젝트 설정이 어떻게 되어 있는지에 따라 세부 과정은 달라집니다.</p>
+</section>
+
+<section class="card">
+  <h2>4. 컴파일(Compile)이란?</h2>
+  <p>Java 컴파일은 Java 소스 코드 파일을 JVM(Java Virtual Machine)이 실행할 수 있는 바이트코드 파일로 변환하는 작업입니다.</p>
+  <pre>// 개발자가 작성하는 Java 소스 코드
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("안녕하세요!");
+    }
+}</pre>
+  <div class="flow">
+    <div class="step">Hello.java<small>개발자가 작성한 Java 소스 코드</small></div>
+    <div class="arrow">↓ 컴파일</div>
+    <div class="step result">Hello.class<small>JVM이 실행할 수 있는 바이트코드</small></div>
+  </div>
+  <p>컴파일 과정에서 문법이나 자료형 등의 오류가 발견되면 컴파일이 실패할 수 있습니다. 다만 컴파일 성공이 프로그램의 모든 기능이 정상이라는 뜻은 아닙니다.</p>
+</section>
+
+<section class="card">
+  <h2>5. Gradle은 무엇일까?</h2>
+  <p><strong>Gradle</strong>은 프로젝트에 필요한 라이브러리를 관리하고, 빌드 작업을 실행하는 빌드 도구(Build Tool)입니다.</p>
+  <p>IntelliJ IDEA는 Gradle과 연동하여 개발자가 버튼을 누르거나 명령어를 입력하면 빌드를 실행할 수 있도록 지원합니다.</p>
+  <h3>build.gradle 예시</h3>
+  <pre>plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.x.x'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}</pre>
+  <ul>
+    <li><code>plugins</code>: 프로젝트에서 사용할 Gradle 플러그인을 선언합니다.</li>
+    <li><code>dependencies</code>: 프로젝트가 사용하는 외부 라이브러리를 선언합니다.</li>
+    <li><code>implementation</code>: 애플리케이션 구현에 필요한 의존성을 지정합니다.</li>
+  </ul>
+  <p class="note">위 코드는 구조를 설명하기 위한 예시입니다. 실제 프로젝트에서는 Spring Boot 버전과 필요한 의존성을 프로젝트 상황에 맞게 지정해야 합니다.</p>
+</section>
+
+<section class="card">
+  <h2>6. IntelliJ IDEA에서 빌드하기</h2>
+  <h3>방법 1. Gradle 창에서 실행</h3>
+  <ol>
+    <li>IntelliJ IDEA에서 Spring Boot 프로젝트를 엽니다.</li>
+    <li>오른쪽의 <strong>Gradle</strong> 도구 창을 엽니다.</li>
+    <li><strong>Tasks → build → build</strong> 항목을 찾습니다.</li>
+    <li><code>build</code>를 더블클릭합니다.</li>
+    <li>하단 Build 창에서 실행 결과를 확인합니다.</li>
+  </ol>
+  <h3>방법 2. 터미널 명령어로 실행</h3>
+  <p>Windows 터미널에서는 프로젝트 최상위 폴더에서 다음 명령어를 실행합니다.</p>
+  <pre>gradlew.bat build</pre>
+  <p>macOS 또는 Linux에서는 다음 명령어를 사용합니다.</p>
+  <pre>./gradlew build</pre>
+  <div class="success"><strong>BUILD SUCCESSFUL</strong><br>Gradle이 요청된 빌드 작업을 오류 없이 완료했다는 의미입니다.</div>
+  <p class="note">반대로 <code>BUILD FAILED</code>가 표시되면 빌드 중 오류가 발생한 것입니다. Build 창이나 터미널의 오류 메시지를 확인해야 합니다.</p>
+</section>
+
+<section class="card">
+  <h2>7. 빌드가 끝나면 무엇이 만들어질까?</h2>
+  <p>Gradle Java 프로젝트의 일반적인 빌드 결과는 프로젝트 내부의 <code>build</code> 폴더에 저장됩니다.</p>
+  <div class="tree">MySpringProject/
+├─ src/                 ← 개발자가 작성한 원본 파일
+├─ build.gradle
+└─ build/               ← 빌드 결과가 저장되는 폴더
+   ├─ classes/
+   │  └─ java/
+   │     └─ main/
+   │        └─ ... .class
+   ├─ resources/
+   └─ libs/
+      └─ MySpringProject-0.0.1-SNAPSHOT.jar</div>
+  <ul>
+    <li><code>build/classes</code>: 컴파일된 Java 클래스 파일 등이 저장됩니다.</li>
+    <li><code>build/resources</code>: 빌드 과정에서 처리된 리소스 파일 등이 저장됩니다.</li>
+    <li><code>build/libs</code>: JAR 등 패키징 결과물이 저장될 수 있습니다.</li>
+  </ul>
+  <p><strong>JAR(Java ARchive)</strong>은 Java 클래스와 리소스 등을 하나의 파일로 묶는 파일 형식입니다. Spring Boot 프로젝트는 실행에 필요한 구성을 포함한 실행 가능한 JAR를 만들 수 있습니다.</p>
+  <p class="note">JAR 파일의 정확한 이름과 생성 여부는 프로젝트의 Gradle 설정 및 빌드 작업에 따라 달라집니다.</p>
+</section>
+
+<section class="card">
+  <h2>8. 빌드(Build), 실행(Run), 배포(Deploy)의 차이</h2>
+  <table>
+    <tr><th>구분</th><th>의미</th><th>예시</th></tr>
+    <tr><td><strong>코딩</strong></td><td>프로그램의 소스 코드를 작성하는 작업</td><td>Controller 클래스 작성</td></tr>
+    <tr><td><strong>빌드</strong></td><td>소스 코드 등을 처리하여 실행·배포 가능한 결과물을 만드는 작업</td><td>JAR 파일 생성</td></tr>
+    <tr><td><strong>실행</strong></td><td>프로그램을 실제로 동작시키는 작업</td><td>Spring Boot 서버 시작</td></tr>
+    <tr><td><strong>배포</strong></td><td>프로그램을 운영 환경에 설치하거나 전달하여 서비스하도록 하는 작업</td><td>운영 서버에 JAR 배포</td></tr>
+  </table>
+  <h3>빌드와 실행 명령어 비교</h3>
+  <p><strong>① 빌드 명령어</strong></p>
+  <pre>gradlew.bat build</pre>
+  <p>프로젝트를 빌드합니다. 설정에 따라 테스트와 JAR 생성 등이 수행됩니다.</p>
+  <p><strong>② JAR 실행 명령어</strong></p>
+  <pre>java -jar build/libs/MySpringProject-0.0.1-SNAPSHOT.jar</pre>
+  <p>생성된 실행 가능 JAR 파일을 실행합니다. 실제 파일명은 프로젝트의 결과물 이름에 맞춰야 합니다.</p>
+  <p><strong>③ 브라우저 접속 예시</strong></p>
+  <pre>http://localhost:8080</pre>
+  <p>서버가 정상 실행 중이고 해당 주소에 처리할 화면이나 API가 구성되어 있다면 브라우저에서 접속할 수 있습니다.</p>
+  <div class="note">IntelliJ의 초록색 <strong>Run</strong> 버튼으로 애플리케이션을 실행할 때도 내부적으로 컴파일 등 필요한 작업이 수행될 수 있습니다. 따라서 빌드와 실행은 서로 다른 개념이지만 실제 개발 과정에서는 연결되어 있습니다.</div>
+</section>
+
+<section class="card">
+  <h2>9. 핵심 용어 정리</h2>
+  <table>
+    <tr><th>용어</th><th>뜻</th></tr>
+    <tr><td>Source Code</td><td>개발자가 작성한 프로그램 소스 코드</td></tr>
+    <tr><td>Compile</td><td>Java 소스 코드를 바이트코드로 변환하는 작업</td></tr>
+    <tr><td>Bytecode</td><td>JVM이 실행할 수 있는 중간 형태의 코드</td></tr>
+    <tr><td>JVM</td><td>Java 바이트코드를 실행하는 가상 머신</td></tr>
+    <tr><td>Dependency</td><td>프로젝트가 사용하는 외부 라이브러리 등의 의존성</td></tr>
+    <tr><td>Gradle</td><td>빌드와 의존성 관리를 수행하는 도구</td></tr>
+    <tr><td>JAR</td><td>Java 클래스와 리소스 등을 묶는 파일 형식</td></tr>
+    <tr><td>Build</td><td>프로그램 결과물을 만드는 빌드 과정</td></tr>
+    <tr><td>Run</td><td>프로그램을 실행하는 작업</td></tr>
+    <tr><td>Deploy</td><td>프로그램을 운영 환경에 배포하는 작업</td></tr>
+  </table>
+</section>
+
+<section class="card">
+  <h2>10. 학습 확인 문제</h2>
+  <p>문제를 풀고 <strong>정답 확인</strong> 버튼을 눌러보세요.</p>
+  <div class="quiz" data-answer="2" data-explain="빌드는 소스 코드와 설정 등을 처리하여 실행 또는 배포에 필요한 결과물을 만드는 과정입니다.">
+    <p>문제 1. 빌드(Build)의 설명으로 가장 알맞은 것은?</p>
+    <label><input type="radio" name="q1" value="1"> ① 브라우저에서 웹사이트를 여는 작업</label>
+    <label><input type="radio" name="q1" value="2"> ② 소스 코드 등을 처리하여 실행·배포 가능한 결과물을 만드는 작업</label>
+    <label><input type="radio" name="q1" value="3"> ③ 데이터베이스에 회원 정보를 저장하는 작업</label>
+    <div class="feedback"></div>
+  </div>
+  <div class="quiz" data-answer="1" data-explain="Gradle은 프로젝트 빌드와 외부 라이브러리 의존성 관리를 수행하는 도구입니다.">
+    <p>문제 2. Gradle의 주요 역할은 무엇인가요?</p>
+    <label><input type="radio" name="q2" value="1"> ① 빌드와 의존성 관리</label>
+    <label><input type="radio" name="q2" value="2"> ② 웹 브라우저 역할</label>
+    <label><input type="radio" name="q2" value="3"> ③ MySQL 데이터 저장소 역할</label>
+    <div class="feedback"></div>
+  </div>
+  <div class="quiz" data-answer="3" data-explain="일반적인 Gradle 프로젝트에서 JAR 결과물은 build/libs 폴더에 생성될 수 있습니다.">
+    <p>문제 3. Gradle 프로젝트에서 JAR 결과물이 생성되는 일반적인 위치는?</p>
+    <label><input type="radio" name="q3" value="1"> ① src/main/java</label>
+    <label><input type="radio" name="q3" value="2"> ② src/test/java</label>
+    <label><input type="radio" name="q3" value="3"> ③ build/libs</label>
+    <div class="feedback"></div>
+  </div>
+  <div class="quiz" data-answer="2" data-explain="Run은 프로그램을 실제로 동작시키는 작업이고, Build는 결과물을 만드는 작업입니다.">
+    <p>문제 4. Build와 Run의 차이로 올바른 것은?</p>
+    <label><input type="radio" name="q4" value="1"> ① 두 용어는 완전히 같은 의미이다.</label>
+    <label><input type="radio" name="q4" value="2"> ② Build는 결과물을 만들고 Run은 프로그램을 실행한다.</label>
+    <label><input type="radio" name="q4" value="3"> ③ Run은 Java 코드를 작성하는 작업이다.</label>
+    <div class="feedback"></div>
+  </div>
+  <button class="btn" onclick="checkAnswers()">정답 확인</button>
+  <button class="btn" style="background:#475569" onclick="resetQuiz()">다시 풀기</button>
+  <p id="score" aria-live="polite" style="font-weight:700;margin-top:14px"></p>
+</section>
+
+<section class="card">
+  <h2>마무리: 이것만 기억하세요!</h2>
+  <div class="success">
+    <p><strong>빌드(Build)</strong> : 소스 코드 등을 처리하여 실행하거나 배포할 수 있는 결과물을 만드는 작업</p>
+    <p><strong>실행(Run)</strong> : 만들어진 프로그램을 실제로 동작시키는 작업</p>
+    <p><strong>배포(Deploy)</strong> : 프로그램을 운영 환경에 설치하여 사용자에게 서비스를 제공하는 작업</p>
+  </div>
+  <p class="lead">Spring Boot 개발에서는 코드를 작성한 뒤 빌드하고, 실행하여 테스트한 다음, 완성된 프로그램을 운영 서버에 배포합니다.</p>
+</section>
+<div class="footer">Spring Boot 기초 학습자료 · 학생용 · 브라우저에서 열어 학습하세요.</div>
+</div>
+<script>
+function checkAnswers(){
+  const quizzes=[...document.querySelectorAll('.quiz')];let score=0;
+  quizzes.forEach((q,i)=>{
+    const selected=q.querySelector('input:checked');const correct=selected&&selected.value===q.dataset.answer;
+    if(correct)score++;
+    const box=q.querySelector('.feedback');box.style.display='block';
+    box.style.background=correct?'#f0fdf4':'#fff7ed';
+    box.style.color=correct?'#166534':'#9a3412';
+    box.textContent=(correct?'정답입니다! ':'오답입니다. ')+q.dataset.explain;
+  });
+  document.getElementById('score').textContent=`총 ${quizzes.length}문제 중 ${score}문제 정답입니다.`;
+}
+function resetQuiz(){
+  document.querySelectorAll('.quiz input').forEach(x=>x.checked=false);
+  document.querySelectorAll('.feedback').forEach(x=>{x.style.display='none';x.textContent='';});
+  document.getElementById('score').textContent='';
+}
+</script>
+</body>
+</html>

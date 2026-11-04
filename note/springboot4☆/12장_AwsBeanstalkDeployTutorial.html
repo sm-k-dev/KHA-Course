@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<!-- AwsBeanstalkDeployTutorial v1 · 2026-11-03 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>12장 AWS 일래스틱 빈스톡 배포 100% 따라하기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#F2F5F8; --paper:#FFFFFF; --ink:#17212B; --sub:#55626F; --line:#D6DEE6;
+  --acc:#1F6F5C; --acc-soft:#E3F1EC; --warn:#9A5B0B; --warn-soft:#FCF1DF;
+  --err:#B4443A; --code-bg:#1C2631; --code-ink:#E6EDF3; --hl:#FFF3B0; --focus:#2563EB;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0F161D; --paper:#17212B; --ink:#E6EDF3; --sub:#9AA8B5; --line:#2C3A47;
+  --acc:#4FC1A0; --acc-soft:#143A31; --warn:#F0B35A; --warn-soft:#3A2A12;
+  --err:#F08A80; --code-bg:#0B1117; --code-ink:#E6EDF3; --hl:#4A4212; --focus:#7AA7FF; color-scheme:dark;}
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:16.5px;line-height:1.75;padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--acc)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+header.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;align-items:center;gap:12px}
+header.top h1{font-size:16px;margin:0;font-weight:700;flex:1;line-height:1.3}
+.btn{font:inherit;font-size:14px;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--acc)}
+#menuBtn{display:none}
+.wrap{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1180px;margin:0 auto}
+nav.side{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow:auto;padding:22px 14px;border-right:1px solid var(--line)}
+nav.side ol{list-style:none;margin:0;padding:0}
+nav.side a{display:flex;gap:10px;padding:7px 10px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.45}
+nav.side a:hover{background:var(--acc-soft)}
+nav.side .n{flex:0 0 26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--sub)}
+nav.side li.fin .n{background:var(--acc);border-color:var(--acc);color:#fff}
+main{padding:28px 28px 120px;max-width:820px;word-break:keep-all;overflow-wrap:anywhere}
+.hero{padding:8px 0 26px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.hero p.kicker{margin:0;color:var(--sub);font-size:14px}
+.hero h2{font-size:clamp(26px,4.4vw,38px);line-height:1.25;margin:6px 0 14px;letter-spacing:-.02em}
+.rail{display:flex;gap:4px;margin:18px 0 8px}
+.rail i{flex:1;height:10px;border-radius:3px;background:var(--line);transition:background .3s}
+.rail i.on{background:var(--acc)}
+.rail-l{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub)}
+section{padding:34px 0 10px;border-bottom:1px solid var(--line)}
+section h2{font-size:25px;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+section h2 .n{display:block;font-size:13px;color:var(--acc);font-weight:700;letter-spacing:0}
+section h3{font-size:18px;margin:28px 0 8px}
+.why,.ok,.warn,.do,.quiz{border-radius:10px;padding:14px 16px;margin:16px 0}
+.why{background:var(--paper);border:1px solid var(--line)}
+.why p{margin:.3em 0 0}
+.ok{background:var(--acc-soft);border-left:4px solid var(--acc)}
+.ok p,.warn p{margin:.3em 0 0}
+.warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
+.warn b{color:var(--warn)}
+dl.term{margin:8px 0;padding:10px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+dl.term dt{font-weight:700}
+dl.term dd{margin:2px 0 0;color:var(--sub)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 40px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:27px;height:27px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:13px;font-weight:700}
+code{font-family:"D2Coding","JetBrains Mono",Consolas,ui-monospace,monospace;font-size:.92em;background:var(--acc-soft);padding:1px 5px;border-radius:4px;word-break:break-all}
+.code{margin:12px 0;border-radius:10px;overflow:hidden;background:var(--code-bg)}
+.code-h{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 6px 14px;font-size:12.5px;color:#9FB0C0;border-bottom:1px solid #2C3A47}
+.code pre{margin:0;padding:14px;overflow-x:auto}
+.code pre code{background:none;color:var(--code-ink);padding:0;font-size:14px;word-break:normal;white-space:pre}
+.copy{font:inherit;font-size:12.5px;background:#2E4052;color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer}
+.copy.mini{background:var(--acc);margin-left:6px;padding:2px 8px;font-size:11.5px}
+.copy.done-c{background:var(--acc)}
+.cp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px}
+p.ex{font-size:14px;color:var(--sub);margin:-4px 0 12px}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.do{background:var(--paper);border:2px dashed var(--acc)}
+.do p{margin:.3em 0 .7em}
+.done{font:inherit;font-size:14px;border:1.5px solid var(--acc);background:transparent;color:var(--acc);border-radius:8px;padding:6px 14px;cursor:pointer}
+.done[aria-pressed=true]{background:var(--acc);color:#fff}
+.done[aria-pressed=true]::before{content:"✓ "}
+.quiz{background:var(--paper);border:1px solid var(--line)}
+.quiz p{margin:.3em 0 .6em}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{font:inherit;font-size:15px;text-align:left;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+.opts button.right{border-color:var(--acc);background:var(--acc-soft)}
+.opts button.wrong{border-color:var(--err);color:var(--err)}
+.expl{margin-top:10px!important;font-size:14.5px;color:var(--sub)}
+figure.shot{margin:16px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.shot-bar{display:flex;align-items:center;gap:6px;padding:7px 12px;background:#232F3E;color:#fff;font-size:12.5px}
+.shot-bar i{width:9px;height:9px;border-radius:50%;background:#56657A}
+.shot-bar span{margin-left:6px}
+.shot-body{padding:14px;font-size:14px;overflow-x:auto}
+figure.shot figcaption{font-size:12px;color:var(--sub);padding:6px 12px;border-top:1px solid var(--line)}
+.f{margin:6px 0}.f label{display:block;font-size:12.5px;font-weight:700}
+.f .in{border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--bg);word-break:break-all}
+.hl .in,.row.hl,.card.hl,.tree .hl{outline:2.5px solid #E8A33C;outline-offset:1px;border-radius:6px}
+.hl-t{background:var(--hl);text-decoration-color:var(--focus)}
+.banner{border:1.5px solid #3B82F6;border-radius:8px;padding:9px 12px;margin-bottom:10px;line-height:1.6}
+.btn-o{float:right;border:1.5px solid #3B82F6;border-radius:14px;padding:0 10px;font-size:12px;color:#3B82F6}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;overflow:hidden}
+.row{display:grid;grid-template-columns:1.2fr 1fr 1.6fr;gap:8px;padding:6px 8px;margin:4px 0;min-width:420px}
+.row.hd{font-weight:700;border-bottom:1px solid var(--line)}
+.tree div{padding:2px 0}.tree .i1{padding-left:18px}.tree .i2{padding-left:36px}.tree .dim{opacity:.5;text-decoration:line-through}
+pre.term-o{margin:0;background:var(--code-bg);color:var(--code-ink);padding:12px;border-radius:8px;overflow-x:auto;font-size:13px}
+.err{color:#FF8A80}
+.arch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.arch .box{border:1.5px solid var(--ink);border-radius:8px;padding:8px 12px;text-align:center;font-weight:700;background:var(--bg)}
+.arch .box small{font-weight:400;color:var(--sub)}
+.arch .grp{border:2px dashed var(--acc);border-radius:10px;padding:8px;display:flex;gap:8px;flex-wrap:wrap;position:relative;padding-top:24px}
+.arch .gt{position:absolute;top:4px;left:10px;font-size:12px;color:var(--acc);font-weight:700}
+.arch .arr{color:var(--sub);font-size:13px}
+#dash{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+#dash svg{width:54px;height:54px}
+#dash .t{font-size:12.5px;line-height:1.5}
+#dash .t b{font-size:15px}
+#reset{font:inherit;font-size:11.5px;border:0;background:none;color:var(--sub);text-decoration:underline;cursor:pointer;padding:0}
+@media (max-width:1000px){
+  #menuBtn{display:inline-block}
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  nav.side{position:fixed;top:0;left:0;bottom:0;width:min(300px,85vw);height:auto;background:var(--paper);z-index:40;transform:translateX(-105%);transition:transform .25s;padding-top:calc(22px + env(safe-area-inset-top,0px));box-shadow:4px 0 24px rgba(0,0,0,.2)}
+  nav.side.open{transform:none}
+  main{padding:20px 16px 130px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{header.top,#dash,nav.side{display:none}.wrap{display:block}}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="btn ghost" id="menuBtn" type="button" aria-label="목차 열기">☰ 목차</button>
+  <h1>12장 · AWS 일래스틱 빈스톡 배포 따라하기</h1>
+  <button class="btn" id="dl" type="button">⬇️ 문서 다운로드</button>
+</header>
+<div class="wrap">
+<nav class="side" id="side" aria-label="레슨 목차"><ol><li><a href="#l0"><span class="n">0</span>시작 전 준비와 전체 구조</a></li><li><a href="#l1"><span class="n">1</span>IAM 역할 2개 만들기</a></li><li><a href="#l2"><span class="n">2</span>빈스톡 환경 만들기</a></li><li><a href="#l3"><span class="n">3</span>이전 콘솔로 전환하고 RDS 추가하기</a></li><li><a href="#l4"><span class="n">4</span>내 PC에서 RDS 접속해 테이블 만들기</a></li><li><a href="#l5"><span class="n">5</span>jar 빌드하고 빈스톡에 업로드하기</a></li><li><a href="#l6"><span class="n">6</span>환경 속성 입력하기</a></li><li><a href="#l7"><span class="n">7</span>구글 로그인 리디렉션 URI 추가하기</a></li><li><a href="#l8"><span class="n">8</span>S3에 이미지 저장하기</a></li><li><a href="#l9"><span class="n">9</span>오류가 나면 로그 보기</a></li><li><a href="#l10"><span class="n">10</span>실습 끝나면 정리하기</a></li></ol></nav>
+<main>
+  <div class="hero">
+    <p class="kicker">스프링 부트 블로그 프로젝트 · 웹서버 + DB서버 + S3 저장소</p>
+    <h2>내 블로그를 인터넷에 올리는 11단계</h2>
+    <p>각 레슨은 <b>왜 하나요 → 단계 → 성공 확인 → 미션 → 퀴즈</b> 순서입니다. 코드와 값은 <b>복사</b> 버튼으로 붙여넣으세요. 진행 상황은 이 브라우저에 저장됩니다.</p>
+    <div class="rail" id="rail" aria-hidden="true"></div>
+    <div class="rail-l"><span>준비</span><span>배포 완료</span></div>
+  </div>
+  <section id="l0"><h2><span class="n">레슨 0</span>시작 전 준비와 전체 구조</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>지금까지는 내 PC에서만 서버를 실행했습니다. 다른 사람이 휴대폰으로 접속하려면 인터넷에 연결된 서버에 프로젝트를 올려야 합니다. 이 작업을 <b>배포</b>라고 합니다.</p></div>
+<h3>이번 실습에서 쓰는 AWS 서비스</h3>
+<dl class="term"><dt>리전(Region)</dt><dd>AWS 데이터센터가 있는 지역입니다. 이번 실습은 모두 <b>아시아 태평양(서울) ap-northeast-2</b>에서 합니다.</dd></dl>
+<dl class="term"><dt>EC2</dt><dd>AWS가 빌려주는 가상 서버 컴퓨터입니다. 스프링 부트 jar 파일이 여기서 실행됩니다.</dd></dl>
+<dl class="term"><dt>RDS</dt><dd>AWS가 관리해 주는 데이터베이스 서버입니다. 이번 실습은 MySQL 8.0을 씁니다.</dd></dl>
+<dl class="term"><dt>S3</dt><dd>파일을 저장하는 AWS 저장소입니다. 블로그에 올린 이미지가 저장됩니다. 저장소 1개를 <b>버킷</b>이라고 부릅니다.</dd></dl>
+<dl class="term"><dt>IAM</dt><dd>AWS 안에서 누가 무엇을 할 수 있는지 정하는 권한 관리 서비스입니다. <b>역할(Role)</b>은 권한 묶음입니다.</dd></dl>
+<dl class="term"><dt>일래스틱 빈스톡</dt><dd>EC2·RDS·보안 그룹 등을 한 화면에서 만들고 jar 파일을 올려 실행해 주는 서비스입니다.</dd></dl>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>전체 구조</span></div><div class="shot-body"><div class="arch"><div class="box me">내 PC<br><small>인텔리제이 · jar 빌드</small></div><div class="arr">jar 업로드 ➜</div><div class="grp"><div class="gt">일래스틱 빈스톡 환경</div><div class="box">EC2<br><small>nginx(80) ➜ 스프링(5000)</small></div><div class="box">RDS<br><small>MySQL 8 · blog DB</small></div></div><div class="arr">이미지 저장 ➜</div><div class="box">S3<br><small>uploads/ 폴더</small></div></div></div><figcaption>화면 예시 · 구조를 단순하게 그린 그림입니다.</figcaption></figure>
+<h3>준비물 체크</h3>
+<div class="tbl"><table><thead><tr><th>준비물</th><th>확인 방법</th></tr></thead><tbody><tr><td>AWS 계정 (결제 카드 등록 완료)</td><td><a href='https://console.aws.amazon.com' target='_blank' rel='noopener'>AWS 콘솔</a>에 로그인됩니다</td></tr><tr><td>chapter12 프로젝트</td><td>인텔리제이에서 열리고 로컬 실행이 됩니다</td></tr><tr><td>구글 OAuth 클라이언트 ID·보안 비밀</td><td>구글 클라우드 콘솔 → 사용자 인증 정보에서 확인됩니다</td></tr><tr><td>OpenAI API 키</td><td>AI 기능에 사용합니다</td></tr></tbody></table></div>
+<ol class="steps"><li>AWS 콘솔에 로그인합니다.</li><li>오른쪽 위 리전 메뉴를 누릅니다.</li><li><b>아시아 태평양(서울)</b>을 선택합니다.</li></ol>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>오른쪽 위에 <b>아시아 태평양(서울)</b>이 보이고, 주소창에 <code>region=ap-northeast-2</code>가 들어 있습니다.</p></div>
+<div class="warn"><b>⚠️ 리전이 다르면 만든 것이 안 보입니다</b><p>다른 리전에서 만든 환경·DB·버킷은 서울 리전 화면에 나타나지 않습니다. 화면에 아무것도 없으면 먼저 리전을 확인하세요.</p></div>
+<div class="do" data-id="m0"><b>🛠️ 미션</b><p>AWS 콘솔 리전을 아시아 태평양(서울)로 바꾸세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q0" data-ans="1"><b>🧠 퀴즈</b><p>스프링 부트 jar 파일이 실제로 실행되는 AWS 서비스는 무엇인가요?</p><div class="opts"><button type="button" data-i="0">S3</button><button type="button" data-i="1">EC2</button><button type="button" data-i="2">IAM</button><button type="button" data-i="3">RDS</button></div><p class="expl" hidden>jar 파일은 가상 서버인 EC2에서 java -jar 명령으로 실행됩니다. RDS는 데이터베이스, S3는 파일 저장소입니다.</p></div>
+</section><section id="l1"><h2><span class="n">레슨 1</span>IAM 역할 2개 만들기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>빈스톡이 EC2를 만들고 관리하려면 권한이 필요합니다. 권한 묶음인 <b>역할</b>을 미리 2개 만들어 둡니다.</p></div>
+<div class="tbl"><table><thead><tr><th>역할 이름</th><th>누가 쓰나요</th><th>사용 사례</th></tr></thead><tbody><tr><td>aws-elasticbeanstalk-instance-role</td><td>빈스톡이 만든 EC2 서버</td><td>Elastic Beanstalk - Compute</td></tr><tr><td>elasticbeanstalk-service-role</td><td>빈스톡 서비스 자신</td><td>Elastic Beanstalk - Environment</td></tr></tbody></table></div>
+<h3>① EC2용 역할</h3>
+<ol class="steps"><li>상단 검색창에 <b>IAM</b>을 입력해 들어갑니다.</li><li>왼쪽 메뉴 <b>역할</b> → <b>역할 생성</b>을 누릅니다.</li><li>신뢰할 수 있는 엔터티 유형: <b>AWS 서비스</b>를 선택합니다.</li><li>서비스 또는 사용 사례: <b>Elastic Beanstalk</b>를 선택합니다.</li><li>사용 사례: <b>Elastic Beanstalk - Compute</b>를 선택하고 <b>다음</b>을 누릅니다.</li><li>아래 정책 3개가 들어 있는지 확인하고 <b>다음</b>을 누릅니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>자동으로 들어가는 정책</th></tr></thead><tbody><tr><td>AWSElasticBeanstalkMulticontainerDocker</td></tr><tr><td>AWSElasticBeanstalkWebTier</td></tr><tr><td>AWSElasticBeanstalkWorkerTier</td></tr></tbody></table></div>
+<ol class="steps"><li>역할 이름에 아래 값을 붙여넣고 <b>역할 생성</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>역할 이름</span><button class="copy" type="button">복사</button></div><pre><code>aws-elasticbeanstalk-instance-role</code></pre></div>
+<h3>② 빈스톡 서비스용 역할</h3>
+<ol class="steps"><li>다시 <b>역할 생성</b>을 누릅니다.</li><li>AWS 서비스 → <b>Elastic Beanstalk</b>를 선택합니다.</li><li>사용 사례: <b>Elastic Beanstalk - Environment</b>를 선택하고 <b>다음</b>을 누릅니다.</li><li>정책 2개(AWSElasticBeanstalkEnhancedHealth, AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy)를 확인하고 <b>다음</b>을 누릅니다.</li><li>역할 이름에 아래 값을 붙여넣고 <b>역할 생성</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>역할 이름</span><button class="copy" type="button">복사</button></div><pre><code>elasticbeanstalk-service-role</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>IAM → 역할 목록에서 검색창에 <code>elasticbeanstalk</code>를 입력하면 두 역할이 모두 보입니다.</p></div>
+<div class="warn"><b>⚠️ “이미 존재하는 이름입니다” 오류</b><p>같은 이름의 역할이 이미 있다는 뜻입니다. 이름 끝에 2를 붙여 만드세요. 다음 레슨에서는 <b>내가 만든 이름</b>을 선택하면 됩니다.</p><div class="code"><div class="code-h"><span>예시 이름</span><button class="copy" type="button">복사</button></div><pre><code>aws-elasticbeanstalk-instance-role2</code></pre></div></div>
+<div class="do" data-id="m1"><b>🛠️ 미션</b><p>IAM 역할 2개를 만들고 역할 목록에서 이름을 확인하세요. 만든 이름은 메모장에 적어 두세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q1" data-ans="1"><b>🧠 퀴즈</b><p>빈스톡이 만든 EC2 서버가 사용할 역할의 사용 사례는 무엇인가요?</p><div class="opts"><button type="button" data-i="0">Elastic Beanstalk - Environment</button><button type="button" data-i="1">Elastic Beanstalk - Compute</button><button type="button" data-i="2">EC2 - Spot Fleet</button></div><p class="expl" hidden>EC2 서버용 역할은 Compute, 빈스톡 서비스용 역할은 Environment입니다.</p></div>
+</section><section id="l2"><h2><span class="n">레슨 2</span>빈스톡 환경 만들기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>빈스톡 <b>환경</b>을 만들면 EC2 서버와 보안 그룹이 자동으로 준비됩니다. 처음에는 AWS가 주는 샘플 애플리케이션으로 동작을 확인합니다.</p></div>
+<dl class="term"><dt>보안 그룹</dt><dd>서버에 들어오는 연결을 포트와 출발지 IP로 허용하거나 막는 규칙 목록입니다.</dd></dl>
+<ol class="steps"><li>검색창에 <b>Elastic Beanstalk</b>를 입력해 들어갑니다.</li><li><b>환경 생성</b>을 누릅니다.</li><li>환경 티어: <b>웹 서버 환경</b>을 선택합니다.</li><li>아래 표의 값을 입력·선택합니다.</li><li>사전 설정: <b>단일 인스턴스(프리 티어 사용 가능)</b>를 선택하고 <b>다음</b>을 누릅니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>항목</th><th>입력값</th></tr></thead><tbody><tr><td>애플리케이션 이름</td><td><span class="cp"><code>springboot-developer</code><button class="copy mini" type="button" data-text="springboot-developer">복사</button></span></td></tr><tr><td>플랫폼</td><td><span class="cp"><code>Java</code><button class="copy mini" type="button" data-text="Java">복사</button></span></td></tr><tr><td>플랫폼 브랜치</td><td><span class="cp"><code>Corretto 25 running on 64bit Amazon Linux 2023</code><button class="copy mini" type="button" data-text="Corretto 25 running on 64bit Amazon Linux 2023">복사</button></span></td></tr><tr><td>애플리케이션 코드</td><td><span class="cp"><code>샘플 애플리케이션</code><button class="copy mini" type="button" data-text="샘플 애플리케이션">복사</button></span></td></tr></tbody></table></div>
+<ol class="steps"><li><b>서비스 액세스 구성</b> 화면에서 아래처럼 선택합니다.</li><li><b>검토 단계로 건너뛰기</b>를 누릅니다.</li><li>검토 화면 맨 아래 <b>생성</b>을 누릅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>서비스 액세스 구성</span></div><div class="shot-body"><div class="f hl"><label>서비스 역할</label><div class="in">elasticbeanstalk-service-role ▾</div></div><div class="f hl"><label>EC2 인스턴스 프로파일</label><div class="in">aws-elasticbeanstalk-instance-role ▾</div></div><div class="f"><label>EC2 키 페어 - 선택 사항</label><div class="in">키 페어 선택 ▾</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>약 5분 뒤 환경 개요의 상태가 <b>OK(초록)</b>로 바뀝니다. <b>도메인</b> 주소를 누르면 <i>Welcome to Your Elastic Beanstalk Application</i> 화면이 열립니다.</p></div>
+<div class="warn"><b>⚠️ EC2 인스턴스 프로파일 목록이 비어 있어요</b><p>레슨 1의 Compute 역할이 없거나 다른 리전에서 만든 경우입니다. 오른쪽 새로고침 버튼(⟳)을 누르고, 그래도 없으면 레슨 1을 다시 확인하세요.</p></div>
+<div class="do" data-id="m2"><b>🛠️ 미션</b><p>환경을 만들고 도메인 주소로 접속해 샘플 Welcome 화면을 확인하세요. 도메인 주소는 메모장에 적어 두세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q2" data-ans="2"><b>🧠 퀴즈</b><p>이번 실습에서 고르는 플랫폼 브랜치의 자바 버전은 무엇인가요?</p><div class="opts"><button type="button" data-i="0">Corretto 17</button><button type="button" data-i="1">Corretto 21</button><button type="button" data-i="2">Corretto 25</button></div><p class="expl" hidden>프로젝트 build.gradle의 toolchain이 25입니다. 서버의 자바 버전이 이보다 낮으면 jar가 실행되지 않습니다.</p></div>
+</section><section id="l3"><h2><span class="n">레슨 3</span>이전 콘솔로 전환하고 RDS 추가하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>빈스톡 화면에서 RDS를 추가하면 EC2가 DB에 접속할 수 있도록 보안 그룹 규칙까지 자동으로 만들어집니다.</p></div>
+<div class="warn"><b>⚠️ 구성 화면에 “네트워킹 및 데이터베이스”가 없어요</b><p>AWS가 바꾼 <b>새 콘솔</b> 구성 화면에는 데이터베이스 항목이 없습니다. 맨 위 파란 안내 상자의 <b>이전 콘솔을 사용</b> 링크를 눌러 기존 화면으로 바꾸세요.</p></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>새 콘솔 구성 화면 맨 위</span></div><div class="shot-body"><div class="banner">ⓘ <b>새 콘솔 경험 소개</b><br>사용 편의성을 높이기 위해 환경 구성 워크플로가 새롭게 개편되었습니다. … <u class="hl-t">이전 콘솔을 사용</u>할 수도 있습니다.</div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<ol class="steps"><li>빈스톡 왼쪽 메뉴 <b>환경</b> → 내 환경 이름을 누릅니다.</li><li>왼쪽 아래 <b>구성</b>을 누릅니다.</li><li>새 콘솔 화면이면 <b>이전 콘솔을 사용</b> 링크를 누릅니다.</li><li><b>네트워킹 및 데이터베이스</b> 카드의 <b>편집</b>을 누릅니다.</li><li>아래로 내려 <b>데이터베이스 활성화</b> 토글을 켭니다.</li><li>아래 표의 값을 입력하고 맨 아래 <b>적용</b>을 누릅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>이전 콘솔 구성 화면</span></div><div class="shot-body"><div class="banner">ⓘ <b>기존 워크플로를 사용하고 있습니다.</b> <span class="btn-o">새 버전으로 전환</span></div><div class="card"><b>서비스 액세스</b><span class="btn-o">편집</span></div><div class="card hl"><b>네트워킹 및 데이터베이스</b><span class="btn-o">편집</span></div><div class="card"><b>인스턴스 트래픽 및 크기 조정</b><span class="btn-o">편집</span></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="tbl"><table><thead><tr><th>항목</th><th>입력값</th><th>설명</th></tr></thead><tbody><tr><td>엔진</td><td>mysql</td><td></td></tr><tr><td>엔진 버전</td><td>8.0 버전 중 최신</td><td>목록 맨 위 8.0.x를 고릅니다</td></tr><tr><td>인스턴스 클래스</td><td>db.t3.micro</td><td>가장 작은 사양입니다</td></tr><tr><td>스토리지</td><td>5</td><td>GB 단위입니다</td></tr><tr><td>사용자 이름</td><td>ebroot</td><td>원하는 이름을 써도 됩니다</td></tr><tr><td>암호</td><td>8자 이상</td><td>다시 볼 수 없으니 꼭 메모하세요</td></tr><tr><td>데이터베이스 삭제 정책</td><td>Delete</td><td>환경을 지우면 DB도 함께 지워집니다</td></tr></tbody></table></div>
+<div class="code"><div class="code-h"><span>사용자 이름 예시</span><button class="copy" type="button">복사</button></div><pre><code>ebroot</code></pre></div>
+<div class="warn"><b>⚠️ “새 버전으로 전환” 버튼은 누르지 마세요</b><p>누르면 데이터베이스 항목이 없는 새 콘솔 화면으로 돌아갑니다.</p></div>
+<ol class="steps"><li>환경 상태가 <b>업데이트 중</b>으로 바뀝니다. 약 10분 기다립니다.</li><li>검색창에 <b>RDS</b>를 입력해 들어갑니다.</li><li>왼쪽 <b>데이터베이스</b> → <code>awseb-e-</code>로 시작하는 DB 식별자를 누릅니다.</li><li><b>연결 및 보안</b> 탭의 <b>엔드포인트</b>를 복사해 메모장에 붙여 둡니다.</li></ol>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>RDS 데이터베이스 목록에서 상태가 <b>사용 가능</b>입니다. 엔드포인트가 <code>awseb-e-…ap-northeast-2.rds.amazonaws.com</code> 형태입니다.</p></div>
+<div class="do" data-id="m3"><b>🛠️ 미션</b><p>RDS를 추가하고, 엔드포인트·사용자 이름·암호 3가지를 메모장에 적으세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q3" data-ans="1"><b>🧠 퀴즈</b><p>새 콘솔 구성 화면에 데이터베이스 항목이 없을 때 해결 방법은?</p><div class="opts"><button type="button" data-i="0">환경을 지우고 다시 만든다</button><button type="button" data-i="1">파란 안내 상자의 ‘이전 콘솔을 사용’을 누른다</button><button type="button" data-i="2">리전을 도쿄로 바꾼다</button></div><p class="expl" hidden>이전 콘솔(기존 워크플로)의 구성 화면에는 ‘네트워킹 및 데이터베이스’ 카드가 있습니다.</p></div>
+</section><section id="l4"><h2><span class="n">레슨 4</span>내 PC에서 RDS 접속해 테이블 만들기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>RDS의 MySQL은 비어 있습니다. 블로그가 쓰는 <b>blog</b> 데이터베이스와 테이블 3개를 직접 만들어야 합니다.</p></div>
+<h3>① 보안 그룹에 내 IP 허용</h3>
+<ol class="steps"><li>RDS → 데이터베이스 → DB 식별자 → <b>연결 및 보안</b> 탭으로 갑니다.</li><li><b>VPC 보안 그룹</b> 링크를 누릅니다.</li><li>보안 그룹 ID를 누르고 <b>인바운드 규칙</b> 탭 → <b>인바운드 규칙 편집</b>을 누릅니다.</li><li><b>규칙 추가</b>를 누르고 유형 <b>MYSQL/Aurora</b>, 소스 <b>내 IP</b>를 고릅니다.</li><li><b>규칙 저장</b>을 누릅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>인바운드 규칙 편집</span></div><div class="shot-body"><div class="row hd"><span>유형</span><span>포트</span><span>소스</span></div><div class="row"><span>모든 TCP</span><span>0 - 65535</span><span>sg-0cb05…</span></div><div class="row hl"><span>MYSQL/Aurora</span><span>3306</span><span>내 IP · 58.122.170.3/32</span></div></div><figcaption>화면 예시 · IP 주소는 접속한 장소마다 다릅니다.</figcaption></figure>
+<div class="warn"><b>⚠️ 장소를 옮기면 다시 접속이 안 돼요</b><p>집·학원처럼 인터넷이 바뀌면 내 IP도 바뀝니다. 인바운드 규칙의 소스를 다시 <b>내 IP</b>로 고르고 저장하세요.</p></div>
+<h3>② 인텔리제이에서 접속</h3>
+<ol class="steps"><li>인텔리제이 <b>설정 → 플러그인</b>에서 <b>Database Navigator</b>(Oracle)를 설치하고 IDE를 다시 시작합니다.</li><li>왼쪽 도구 메뉴의 <b>DB Browser</b> → <b>+</b> → <b>MySQL</b>을 누릅니다.</li><li>아래 표대로 입력하고 <b>Test Connection</b>을 누릅니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>항목</th><th>입력값</th></tr></thead><tbody><tr><td>Host</td><td>레슨 3에서 복사한 엔드포인트</td></tr><tr><td>Port</td><td>3306</td></tr><tr><td>Database</td><td>mysql</td></tr><tr><td>User / Password</td><td>레슨 3에서 정한 사용자 이름 / 암호</td></tr></tbody></table></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><b>Connection Successful</b> 안내창이 나타납니다.</p></div>
+<div class="warn"><b>⚠️ Test Connection이 오래 걸리다 실패해요 (timeout)</b><p>① 인바운드 규칙의 소스가 지금 내 IP인지 확인하세요. ② RDS <b>연결 및 보안</b> 탭의 <b>퍼블릭 액세스 가능</b>이 <b>아니요</b>라면 RDS <b>수정</b> → 연결 → 추가 구성 → <b>퍼블릭 액세스 가능</b>을 선택하고 <b>즉시 적용</b>하세요.</p></div>
+<h3>③ SQL 실행</h3>
+<ol class="steps"><li>DB Browser의 Connection을 우클릭 → <b>Open SQL Console</b>을 누릅니다.</li><li>아래 SQL 전체를 붙여넣고 <b>▶</b> 버튼으로 실행합니다.</li></ol>
+<div class="code"><div class="code-h"><span>rds-schema.sql</span><button class="copy" type="button">복사</button></div><pre><code>create database blog;
+
+use blog;
+
+create table article (
+    id bigint not null AUTO_INCREMENT,
+    author varchar(255) not null,
+    content varchar(255) not null,
+    created_at timestamp,
+    title varchar(255) not null,
+    image_url varchar(255),
+    updated_at timestamp,
+    primary key (id)
+);
+
+create table refresh_token (
+    id bigint not null AUTO_INCREMENT,
+    refresh_token varchar(255) not null,
+    user_id bigint not null,
+    primary key (id)
+);
+
+create table users (
+    id bigint not null AUTO_INCREMENT,
+    created_at timestamp,
+    email varchar(255) not null,
+    nickname varchar(255),
+    password varchar(255),
+    updated_at timestamp,
+    primary key (id)
+);
+
+show tables;</code></pre></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>SQL 콘솔 실행 결과</span></div><div class="shot-body"><pre class="term-o">Tables_in_blog
+--------------
+article
+refresh_token
+users</pre></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>마지막 <code>show tables;</code> 결과에 <b>article, refresh_token, users</b> 3개가 나옵니다.</p></div>
+<div class="warn"><b>⚠️ “Can't create database 'blog'; database exists” 오류</b><p>blog 데이터베이스가 이미 있다는 뜻입니다. 첫 줄 <code>create database blog;</code>만 지우고 다시 실행하세요.</p></div>
+<div class="do" data-id="m4"><b>🛠️ 미션</b><p>RDS에 blog 데이터베이스와 테이블 3개를 만들고 show tables 결과를 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q4" data-ans="1"><b>🧠 퀴즈</b><p>내 PC에서 RDS에 접속하려면 보안 그룹에 어떤 규칙을 추가하나요?</p><div class="opts"><button type="button" data-i="0">HTTP · 80 · 0.0.0.0/0</button><button type="button" data-i="1">MYSQL/Aurora · 3306 · 내 IP</button><button type="button" data-i="2">SSH · 22 · 내 IP</button></div><p class="expl" hidden>MySQL은 3306 포트를 씁니다. 소스를 내 IP로 제한해야 다른 사람은 접속할 수 없습니다.</p></div>
+</section><section id="l5"><h2><span class="n">레슨 5</span>jar 빌드하고 빈스톡에 업로드하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>내 PC에서 만든 jar 파일을 빈스톡에 올리면 EC2가 그 파일을 실행합니다.</p></div>
+<dl class="term"><dt>jar 파일</dt><dd>자바 클래스와 필요한 라이브러리를 하나로 묶은 실행 파일입니다. <code>java -jar 파일명.jar</code>로 실행합니다.</dd></dl>
+<ol class="steps"><li>인텔리제이 오른쪽 <b>Gradle</b> 탭을 엽니다.</li><li><b>Tasks → build → build</b>를 더블클릭합니다.</li><li>빌드가 끝나면 <b>build/libs</b> 폴더를 엽니다.</li><li><b>-plain이 없는</b> jar 파일을 바탕화면 등 찾기 쉬운 곳에 복사합니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>build/libs 폴더</span></div><div class="shot-body"><div class="tree"><div>📁 build</div><div class="i1">📁 libs</div><div class="i2 hl">☕ springboot-developer-0.0.1-SNAPSHOT.jar ← 이 파일</div><div class="i2 dim">☕ springboot-developer-0.0.1-SNAPSHOT-plain.jar ✕</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+
+<ol class="steps"><li>빈스톡 환경 개요 화면에서 <b>업로드 및 배포</b>를 누릅니다.</li><li><b>파일 선택</b>으로 복사해 둔 jar를 고릅니다.</li><li>버전 레이블은 매번 다르게 적고 <b>배포</b>를 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>버전 레이블 예시</span><button class="copy" type="button">복사</button></div><pre><code>springboot-developer-v1</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>업로드 후 환경 상태가 <b>업데이트 중</b>을 거쳐 바뀝니다. DB 연결 정보는 다음 레슨에서 넣으므로 지금은 상태가 <b>성능 저하</b>여도 괜찮습니다.</p></div>
+<div class="warn"><b>⚠️ -plain.jar를 올렸어요</b><p>plain.jar에는 라이브러리가 없어 실행되지 않습니다. -plain이 없는 jar로 다시 업로드하세요.</p></div>
+<div class="warn"><b>⚠️ 빌드가 테스트에서 실패해요</b><p>Gradle 창의 빨간 테스트 이름을 확인하세요. 로컬에서 먼저 <b>Run</b>으로 실행해 오류를 고친 뒤 다시 build 하세요.</p></div>
+<div class="do" data-id="m5"><b>🛠️ 미션</b><p>-plain이 없는 jar를 빈스톡에 업로드해 배포하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q5" data-ans="0"><b>🧠 퀴즈</b><p>빈스톡에 올려야 하는 jar 파일은?</p><div class="opts"><button type="button" data-i="0">…-SNAPSHOT.jar</button><button type="button" data-i="1">…-SNAPSHOT-plain.jar</button><button type="button" data-i="2">둘 다</button></div><p class="expl" hidden>-plain.jar는 내 클래스만 들어 있어 단독으로 실행되지 않습니다.</p></div>
+</section><section id="l6"><h2><span class="n">레슨 6</span>환경 속성 입력하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>DB 주소·암호·API 키는 코드에 적으면 안 됩니다. 빈스톡 <b>환경 속성</b>에 넣으면 서버가 시작될 때 이 값이 <code>application.yml</code>의 같은 설정을 덮어씁니다.</p></div>
+<dl class="term"><dt>환경 속성</dt><dd>서버 운영체제의 환경 변수입니다. 스프링 부트는 <code>SPRING_DATASOURCE_URL</code>을 <code>spring.datasource.url</code>로 바꿔 읽습니다.</dd></dl>
+<ol class="steps"><li>빈스톡 환경 → <b>구성</b> → <b>업데이트, 모니터링 및 로깅</b> 카드의 <b>편집</b>을 누릅니다.</li><li>맨 아래 <b>환경 속성</b>까지 내립니다.</li><li><b>환경 속성 추가</b>를 눌러 아래 9개를 하나씩 입력합니다.</li><li><b>적용</b>을 누릅니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>이름 (복사)</th><th>값</th><th>설명</th></tr></thead><tbody><tr><td><span class="cp"><code>SERVER_PORT</code><button class="copy mini" type="button" data-text="SERVER_PORT">복사</button></span></td><td>5000</td><td>빈스톡 nginx가 요청을 넘기는 포트</td></tr><tr><td><span class="cp"><code>SPRING_DATASOURCE_URL</code><button class="copy mini" type="button" data-text="SPRING_DATASOURCE_URL">복사</button></span></td><td>jdbc:mysql://<엔드포인트>:3306/blog</td><td><엔드포인트>를 레슨 3 값으로 바꿉니다</td></tr><tr><td><span class="cp"><code>SPRING_DATASOURCE_USERNAME</code><button class="copy mini" type="button" data-text="SPRING_DATASOURCE_USERNAME">복사</button></span></td><td>ebroot</td><td>RDS 사용자 이름</td></tr><tr><td><span class="cp"><code>SPRING_DATASOURCE_PASSWORD</code><button class="copy mini" type="button" data-text="SPRING_DATASOURCE_PASSWORD">복사</button></span></td><td><RDS 암호></td><td>레슨 3에서 정한 암호</td></tr><tr><td><span class="cp"><code>JWT_SECRET_KEY</code><button class="copy mini" type="button" data-text="JWT_SECRET_KEY">복사</button></span></td><td>study-springboot</td><td></td></tr><tr><td><span class="cp"><code>SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID</code><button class="copy mini" type="button" data-text="SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID">복사</button></span></td><td><구글 클라이언트 ID></td><td>구글 클라우드 콘솔에서 복사</td></tr><tr><td><span class="cp"><code>SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET</code><button class="copy mini" type="button" data-text="SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET">복사</button></span></td><td><구글 클라이언트 보안 비밀></td><td>구글 클라우드 콘솔에서 복사</td></tr><tr><td><span class="cp"><code>SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE</code><button class="copy mini" type="button" data-text="SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_SCOPE">복사</button></span></td><td>email, profile</td><td></td></tr><tr><td><span class="cp"><code>SPRING_AI_OPENAI_API_KEY</code><button class="copy mini" type="button" data-text="SPRING_AI_OPENAI_API_KEY">복사</button></span></td><td><OpenAI API 키></td><td>OpenAI에서 발급</td></tr></tbody></table></div>
+<p class="ex">실제 입력 예시: <code>jdbc:mysql://awseb-e-ab12cd.c9xyz.ap-northeast-2.rds.amazonaws.com:3306/blog</code></p>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>환경 속성</span></div><div class="shot-body"><div class="row hd"><span>이름</span><span>값</span></div><div class="row"><span>PORT</span><span>5000</span></div><div class="row hl"><span>SERVER_PORT</span><span>5000</span></div><div class="row hl"><span>SPRING_DATASOURCE_URL</span><span>jdbc:mysql://awseb-e-…/blog</span></div><div class="row hl"><span>SPRING_DATASOURCE_USERNAME</span><span>ebroot</span></div></div><figcaption>화면 예시 · 기본으로 들어 있는 PORT, GRADLE_HOME 등은 지우지 않습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>환경 상태가 <b>OK(초록)</b>가 됩니다. 도메인 주소 뒤에 <code>/login</code>을 붙여 열면 로그인 화면이 나옵니다.</p></div>
+<div class="code"><div class="code-h"><span>주소 형식</span><button class="copy" type="button">복사</button></div><pre><code>http://&lt;도메인&gt;/login</code></pre></div>
+<div class="warn"><b>⚠️ 상태가 Severe(빨강)이고 접속하면 502 Bad Gateway</b><p>대부분 환경 속성 오타입니다. 레슨 9의 방법으로 <code>web.stdout.log</code>를 열어 원인을 확인하세요. <code>Access denied for user</code>가 보이면 사용자 이름·암호를 다시 입력하세요.</p></div>
+<div class="do" data-id="m6"><b>🛠️ 미션</b><p>환경 속성 9개를 입력하고 /login 화면이 열리는지 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q6" data-ans="1"><b>🧠 퀴즈</b><p>SPRING_DATASOURCE_URL 맨 끝의 blog는 무엇인가요?</p><div class="opts"><button type="button" data-i="0">RDS 사용자 이름</button><button type="button" data-i="1">레슨 4에서 만든 데이터베이스 이름</button><button type="button" data-i="2">빈스톡 환경 이름</button></div><p class="expl" hidden>create database blog; 로 만든 데이터베이스 이름입니다.</p></div>
+</section><section id="l7"><h2><span class="n">레슨 7</span>구글 로그인 리디렉션 URI 추가하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>구글은 미리 등록된 주소로만 로그인 결과를 보내 줍니다. 빈스톡 주소를 등록하지 않으면 <b>400 오류: redirect_uri_mismatch</b>가 나옵니다.</p></div>
+<ol class="steps"><li><a href='https://console.cloud.google.com' target='_blank' rel='noopener'>구글 클라우드 콘솔</a>에 접속합니다.</li><li><b>API 및 서비스 → 사용자 인증 정보</b>로 갑니다.</li><li>OAuth 2.0 클라이언트 ID 이름을 누릅니다.</li><li><b>승인된 리디렉션 URI</b>에서 <b>URI 추가</b>를 누릅니다.</li><li>아래 형식으로 입력하고 <b>저장</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>입력 형식</span><button class="copy" type="button">복사</button></div><pre><code>http://&lt;도메인&gt;/login/oauth2/code/google</code></pre></div>
+<p class="ex">실제 입력 예시: <code>http://springboot-developer-env.eba-mrugwd2n.ap-northeast-2.elasticbeanstalk.com/login/oauth2/code/google</code></p>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>승인된 리디렉션 URI</span></div><div class="shot-body"><div class="f"><label>URI 1</label><div class="in">http://localhost:8080/login/oauth2/code/google</div></div><div class="f hl"><label>URI 2</label><div class="in">http://springboot-developer-env.eba-….elasticbeanstalk.com/login/oauth2/code/google</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>약 3~5분 뒤 <code>/login</code>에서 구글 로그인을 누르면 계정 선택 화면이 나오고, 로그인 후 블로그 글 목록으로 이동합니다.</p></div>
+<div class="warn"><b>⚠️ 여전히 redirect_uri_mismatch</b><p>① 주소가 <b>http</b>로 시작하는지 ② 끝에 <b>/</b>가 붙지 않았는지 ③ 도메인 철자가 맞는지 확인하세요. 저장 후 몇 분 기다려야 적용됩니다.</p></div>
+<div class="do" data-id="m7"><b>🛠️ 미션</b><p>리디렉션 URI를 추가하고 배포된 사이트에서 구글 로그인에 성공하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q7" data-ans="2"><b>🧠 퀴즈</b><p>승인된 리디렉션 URI 끝에 붙는 경로는?</p><div class="opts"><button type="button" data-i="0">/login</button><button type="button" data-i="1">/oauth2/google</button><button type="button" data-i="2">/login/oauth2/code/google</button></div><p class="expl" hidden>스프링 시큐리티가 구글 로그인 결과를 받는 기본 경로입니다.</p></div>
+</section><section id="l8"><h2><span class="n">레슨 8</span>S3에 이미지 저장하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>EC2 디스크는 재배포하거나 서버가 바뀌면 지워집니다. 이미지는 S3에 저장해야 사라지지 않습니다.</p></div>
+<h3>① 버킷 만들기</h3>
+<ol class="steps"><li>검색창에 <b>S3</b> → <b>버킷 만들기</b>를 누릅니다.</li><li>아래 표대로 설정하고 <b>버킷 만들기</b>를 누릅니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>항목</th><th>설정</th></tr></thead><tbody><tr><td>AWS 리전</td><td>아시아 태평양(서울) ap-northeast-2</td></tr><tr><td>버킷 이름</td><td>springboot-developer-본인아이디</td></tr><tr><td>객체 소유권</td><td>ACL 활성화됨</td></tr><tr><td>이 버킷의 퍼블릭 액세스 차단 설정</td><td><b>모든 퍼블릭 액세스 차단</b> 체크 해제 + 경고 확인 체크</td></tr></tbody></table></div>
+<p class="ex">실제 입력 예시: <code>springboot-developer-hong1234</code></p>
+<h3>② 버킷 정책 넣기</h3>
+<ol class="steps"><li>만든 버킷 → <b>권한</b> 탭 → <b>버킷 정책</b>의 <b>편집</b>을 누릅니다.</li><li>아래 JSON을 붙여넣고 <b>본인아이디</b> 부분만 내 버킷 이름에 맞게 바꿉니다.</li><li><b>변경 사항 저장</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>버킷 정책 JSON</span><button class="copy" type="button">복사</button></div><pre><code>{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Sid&quot;: &quot;PublicReadUploads&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Principal&quot;: &quot;*&quot;,
+      &quot;Action&quot;: &quot;s3:GetObject&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:s3:::springboot-developer-본인아이디/uploads/*&quot;
+    }
+  ]
+}</code></pre></div>
+<div class="warn"><b>⚠️ “정책에 잘못된 리소스가 있습니다” 오류</b><p>Resource의 버킷 이름이 실제 버킷 이름과 다를 때 납니다. 버킷 이름을 그대로 복사해 바꾸세요.</p></div>
+<h3>③ EC2 역할에 S3 업로드 권한 주기</h3>
+<ol class="steps"><li>빈스톡 환경 → <b>구성</b> → <b>서비스 액세스</b> 카드의 <b>EC2 인스턴스 프로파일</b> 이름을 확인합니다.</li><li>IAM → <b>역할</b> → 그 이름을 누릅니다.</li><li><b>권한 추가 → 정책 연결</b>을 누릅니다.</li><li>검색창에 아래 이름을 넣고 체크한 뒤 <b>권한 추가</b>를 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>정책 이름</span><button class="copy" type="button">복사</button></div><pre><code>AmazonS3FullAccess</code></pre></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>구성 → 서비스 액세스</span></div><div class="shot-body"><div class="f"><label>서비스 역할</label><div class="in">arn:aws:iam::…:role/elasticbeanstalk-service-role</div></div><div class="f hl"><label>EC2 인스턴스 프로파일</label><div class="in">aws-elasticbeanstalk-instance-role2</div></div></div><figcaption>화면 예시 · 이 이름이 권한을 연결할 역할입니다. 계정마다 다를 수 있습니다.</figcaption></figure>
+<h3>④ 버킷 이름 바꾸고 다시 배포</h3>
+<ol class="steps"><li>프로젝트 <code>src/main/resources/application.yml</code>의 bucket 값을 내 버킷 이름으로 바꿉니다.</li><li>레슨 5처럼 build → 업로드 및 배포를 다시 합니다. 버전 레이블은 v2처럼 바꿉니다.</li></ol>
+<div class="code"><div class="code-h"><span>application.yml</span><button class="copy" type="button">복사</button></div><pre><code>cloud:
+  aws:
+    region: ap-northeast-2
+    s3:
+      bucket: springboot-developer-본인아이디</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>배포된 사이트에서 글을 쓰며 이미지를 올리면 미리보기가 보입니다. S3 버킷의 <b>uploads/</b> 폴더에 <code>UUID.png</code> 파일이 생깁니다.</p></div>
+<div class="warn"><b>⚠️ 이미지 업로드 시 500 오류</b><p>로그에 <code>AccessDenied … s3:PutObject</code>가 보이면 ③에서 권한을 <b>다른 역할</b>에 연결한 것입니다. 구성 → 서비스 액세스의 EC2 인스턴스 프로파일 이름을 다시 확인하세요.</p></div>
+<div class="do" data-id="m8"><b>🛠️ 미션</b><p>배포된 사이트에서 이미지를 올리고 S3 uploads/ 폴더에 파일이 생긴 것을 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q8" data-ans="1"><b>🧠 퀴즈</b><p>S3 업로드(PutObject) 권한은 어디에 연결하나요?</p><div class="opts"><button type="button" data-i="0">버킷 정책</button><button type="button" data-i="1">EC2 인스턴스 프로파일 역할</button><button type="button" data-i="2">구글 OAuth 클라이언트</button></div><p class="expl" hidden>버킷 정책은 누구나 읽기(GetObject)만 허용합니다. 업로드 권한은 EC2가 쓰는 IAM 역할에 줍니다.</p></div>
+</section><section id="l9"><h2><span class="n">레슨 9</span>오류가 나면 로그 보기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>배포 후 오류는 대부분 작은 입력 실수입니다. 로그 파일을 열면 어디가 틀렸는지 정확히 나옵니다.</p></div>
+<ol class="steps"><li>빈스톡 환경 → 왼쪽 <b>로그</b>를 누릅니다.</li><li><b>로그 요청 → 전체</b>를 누릅니다.</li><li>생성된 로그 파일의 <b>다운로드</b>를 누릅니다.</li><li>zip 압축을 풀고 <b>var/log/web.stdout.log</b>를 메모장으로 엽니다.</li><li><code>ERROR</code> 또는 <code>Exception</code>을 Ctrl+F로 찾습니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>web.stdout.log</span></div><div class="shot-body"><pre class="term-o">web[37450]: HikariPool-1 - Starting...
+web[37450]: <span class="err">java.sql.SQLException: Access denied for user 'ebroot'@'172.31.15.204'</span></pre></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="tbl"><table><thead><tr><th>로그에 보이는 문구</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td>Access denied for user</td><td>DB 사용자 이름·암호가 틀림</td><td>환경 속성 USERNAME/PASSWORD 다시 입력</td></tr><tr><td>Communications link failure</td><td>DB 주소가 틀렸거나 연결이 막힘</td><td>SPRING_DATASOURCE_URL의 엔드포인트·/blog 확인</td></tr><tr><td>Unknown database 'blog'</td><td>blog 데이터베이스가 없음</td><td>레슨 4 SQL 다시 실행</td></tr><tr><td>AccessDenied … s3:PutObject</td><td>EC2 역할에 S3 권한 없음</td><td>레슨 8 ③ 다시 확인</td></tr><tr><td>UnsupportedClassVersionError</td><td>서버 자바 버전이 낮음</td><td>플랫폼 브랜치 Corretto 25 확인</td></tr><tr><td>(브라우저) 502 Bad Gateway</td><td>스프링이 5000번 포트에서 실행되지 않음</td><td>SERVER_PORT=5000 확인 후 로그 확인</td></tr></tbody></table></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>원인 문구를 찾아 고친 뒤 환경 상태가 <b>OK(초록)</b>로 돌아옵니다.</p></div>
+<div class="warn"><b>⚠️ 환경 속성을 고쳤는데 그대로예요</b><p>환경 개요의 <b>작업 → 앱 서버 다시 시작</b>을 누르고 1~2분 기다리세요.</p></div>
+<div class="do" data-id="m9"><b>🛠️ 미션</b><p>로그 전체를 내려받아 web.stdout.log를 열어 보세요. 마지막 줄에 Started SpringBootDeveloperApplication이 있는지 찾아보세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q9" data-ans="1"><b>🧠 퀴즈</b><p>로그에 Access denied for user가 보입니다. 먼저 확인할 것은?</p><div class="opts"><button type="button" data-i="0">S3 버킷 정책</button><button type="button" data-i="1">환경 속성의 DB 사용자 이름과 암호</button><button type="button" data-i="2">구글 리디렉션 URI</button></div><p class="expl" hidden>MySQL 로그인 실패 메시지입니다. USERNAME/PASSWORD 오타가 가장 흔한 원인입니다.</p></div>
+</section><section id="l10"><h2><span class="n">레슨 10</span>실습 끝나면 정리하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>EC2와 RDS는 켜 두는 시간만큼 요금이 계산됩니다. 실습을 마치면 아래 순서로 지워야 요금이 나가지 않습니다.</p></div>
+<ol class="steps"><li>빈스톡 → 환경 → 내 환경 선택 → <b>작업 → 환경 종료</b>를 누르고 환경 이름을 입력해 확인합니다. EC2와 RDS(삭제 정책 Delete)가 함께 지워집니다.</li><li>S3 → 내 버킷 선택 → <b>비어 있음</b>으로 파일을 모두 지운 뒤 <b>삭제</b>를 누릅니다.</li><li>RDS → 데이터베이스 목록이 비어 있는지 확인합니다. 남아 있으면 선택 → <b>작업 → 삭제</b>를 누릅니다.</li><li><b>결제 및 비용 관리</b> 화면에서 비용이 늘지 않는지 다음 날 한 번 더 확인합니다.</li></ol>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>빈스톡 환경 목록, RDS 데이터베이스 목록, 내 S3 버킷이 모두 비어 있습니다.</p></div>
+<div class="warn"><b>⚠️ 버킷 삭제 버튼이 눌리지 않아요</b><p>버킷 안에 파일이 남아 있으면 삭제할 수 없습니다. 먼저 <b>비어 있음</b>을 실행하세요.</p></div>
+<div class="do" data-id="m10"><b>🛠️ 미션</b><p>실습이 끝난 뒤 환경 종료 → 버킷 비우기·삭제 → RDS 목록 확인까지 마치세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="q10" data-ans="0"><b>🧠 퀴즈</b><p>빈스톡 환경을 종료하면 함께 지워지는 것은? (삭제 정책 Delete 기준)</p><div class="opts"><button type="button" data-i="0">EC2와 RDS</button><button type="button" data-i="1">S3 버킷</button><button type="button" data-i="2">IAM 역할</button></div><p class="expl" hidden>환경에 묶인 EC2와 RDS는 함께 지워집니다. 직접 만든 S3 버킷과 IAM 역할은 남습니다.</p></div>
+</section>
+  <p style="color:var(--sub);font-size:13px;margin-top:30px">AWS 콘솔 화면은 수시로 바뀝니다. 버튼 이름이 조금 달라도 같은 위치의 메뉴를 찾으면 됩니다.</p>
+</main>
+</div>
+<div id="dash" role="status" aria-live="polite">
+  <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15.5" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 18 18)" pathLength="100"/><text x="18" y="21.5" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink)" id="pct">0%</text></svg>
+  <div class="t">미션 <b id="dm">0</b>/11<br>퀴즈 <b id="dq">0</b>/11<br><button id="reset" type="button">기록 초기화</button></div>
+</div>
+<script>
+(function(){
+  var KEY='ebTutorial.v1', st={m:{},q:{}};
+  try{var raw=localStorage.getItem(KEY); if(raw) st=JSON.parse(raw)||st;}catch(e){}
+  st.m=st.m||{}; st.q=st.q||{};
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+  var NM=11, NQ=11;
+  var secs=[].slice.call(document.querySelectorAll('main section'));
+  var rail=document.getElementById('rail'); rail.innerHTML='';
+  secs.forEach(function(){rail.appendChild(document.createElement('i'));});
+  function refresh(){
+    var m=Object.keys(st.m).filter(function(k){return st.m[k]}).length;
+    var q=Object.keys(st.q).filter(function(k){return st.q[k]}).length;
+    document.getElementById('dm').textContent=m;
+    document.getElementById('dq').textContent=q;
+    var p=Math.round((m+q)/(NM+NQ)*100);
+    document.getElementById('pct').textContent=p+'%';
+    document.getElementById('ring').setAttribute('stroke-dasharray',p+' 100');
+    var links=document.querySelectorAll('nav.side li');
+    secs.forEach(function(s,i){
+      var d=s.querySelector('.do'), done=d && st.m[d.dataset.id];
+      rail.children[i].classList.toggle('on',!!done);
+      if(links[i]) links[i].classList.toggle('fin',!!done);
+    });
+  }
+  document.querySelectorAll('.do').forEach(function(d){
+    var b=d.querySelector('.done'), id=d.dataset.id;
+    function paint(){b.setAttribute('aria-pressed',st.m[id]?'true':'false'); b.textContent=st.m[id]?'완료함':'완료했어요';}
+    paint();
+    b.addEventListener('click',function(){st.m[id]=!st.m[id]; save(); paint(); refresh();});
+  });
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var id=q.dataset.id, ans=+q.dataset.ans, ex=q.querySelector('.expl'), bs=q.querySelectorAll('.opts button');
+    function mark(i){
+      bs.forEach(function(b,j){b.classList.remove('right','wrong'); if(j===ans&&i===ans)b.classList.add('right');});
+      if(i!==ans){bs[i].classList.add('wrong'); ex.hidden=false; ex.textContent='❌ 다시 골라 보세요. '+ex.dataset.e;}
+      else{ex.hidden=false; ex.textContent='⭕ 정답입니다. '+ex.dataset.e;}
+    }
+    if(!ex.dataset.e) ex.dataset.e=ex.textContent;
+    if(st.q[id]) mark(ans);
+    bs.forEach(function(b,i){b.addEventListener('click',function(){mark(i); if(i===ans)st.q[id]=true; save(); refresh();});});
+  });
+  function copyText(t,btn){
+    var okMsg=function(){var o=btn.textContent; btn.textContent='복사됨'; btn.classList.add('done-c'); setTimeout(function(){btn.textContent=o; btn.classList.remove('done-c');},1400);};
+    var fail=function(){btn.textContent='길게 눌러 직접 복사'; };
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(okMsg,function(){fallback()});}else fallback();
+    function fallback(){try{var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); var r=document.execCommand('copy'); document.body.removeChild(ta); r?okMsg():fail();}catch(e){fail();}}
+  }
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=b.dataset.text; if(t==null){t=b.closest('.code').querySelector('code').textContent;}
+      copyText(t,b);
+    });
+  });
+  document.getElementById('dl').addEventListener('click',function(){
+    try{
+      var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+      var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='AwsBeanstalkDeployTutorial.html';
+      document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},500);
+    }catch(e){alert('다운로드가 막혀 있습니다. 브라우저 메뉴의 "다른 이름으로 저장"을 사용하세요.');}
+  });
+  var side=document.getElementById('side');
+  document.getElementById('menuBtn').addEventListener('click',function(){side.classList.toggle('open');});
+  side.addEventListener('click',function(e){if(e.target.closest('a'))side.classList.remove('open');});
+  document.getElementById('reset').addEventListener('click',function(){if(confirm('미션·퀴즈 기록을 모두 지울까요?')){st={m:{},q:{}}; save(); location.reload();}});
+  refresh();
+})();
+</script>
+</body>
+</html>

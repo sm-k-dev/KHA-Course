@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!-- GithubActionsCiCdTutorial v1 · 2026-11-03 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>13장 깃허브 액션 CI/CD 100% 따라하기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#F2F5F8; --paper:#FFFFFF; --ink:#17212B; --sub:#55626F; --line:#D6DEE6;
+  --acc:#1F6F5C; --acc-soft:#E3F1EC; --warn:#9A5B0B; --warn-soft:#FCF1DF;
+  --err:#B4443A; --code-bg:#1C2631; --code-ink:#E6EDF3; --hl:#FFF3B0; --focus:#2563EB;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0F161D; --paper:#17212B; --ink:#E6EDF3; --sub:#9AA8B5; --line:#2C3A47;
+  --acc:#4FC1A0; --acc-soft:#143A31; --warn:#F0B35A; --warn-soft:#3A2A12;
+  --err:#F08A80; --code-bg:#0B1117; --code-ink:#E6EDF3; --hl:#4A4212; --focus:#7AA7FF; color-scheme:dark;}
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:16.5px;line-height:1.75;padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--acc)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+header.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 18px 10px;display:flex;align-items:center;gap:12px}
+header.top h1{font-size:16px;margin:0;font-weight:700;flex:1;line-height:1.3}
+.btn{font:inherit;font-size:14px;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--acc)}
+#menuBtn{display:none}
+.wrap{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1180px;margin:0 auto}
+nav.side{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow:auto;padding:22px 14px;border-right:1px solid var(--line)}
+nav.side ol{list-style:none;margin:0;padding:0}
+nav.side a{display:flex;gap:10px;padding:7px 10px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.45}
+nav.side a:hover{background:var(--acc-soft)}
+nav.side .n{flex:0 0 26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--sub)}
+nav.side li.fin .n{background:var(--acc);border-color:var(--acc);color:#fff}
+main{padding:28px 28px 120px;max-width:820px;word-break:keep-all;overflow-wrap:anywhere}
+.hero{padding:8px 0 26px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.hero p.kicker{margin:0;color:var(--sub);font-size:14px}
+.hero h2{font-size:clamp(26px,4.4vw,38px);line-height:1.25;margin:6px 0 14px;letter-spacing:-.02em}
+.rail{display:flex;gap:4px;margin:18px 0 8px}
+.rail i{flex:1;height:10px;border-radius:3px;background:var(--line);transition:background .3s}
+.rail i.on{background:var(--acc)}
+.rail-l{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub)}
+section{padding:34px 0 10px;border-bottom:1px solid var(--line)}
+section h2{font-size:25px;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+section h2 .n{display:block;font-size:13px;color:var(--acc);font-weight:700;letter-spacing:0}
+section h3{font-size:18px;margin:28px 0 8px}
+.why,.ok,.warn,.do,.quiz{border-radius:10px;padding:14px 16px;margin:16px 0}
+.why{background:var(--paper);border:1px solid var(--line)}
+.why p{margin:.3em 0 0}
+.ok{background:var(--acc-soft);border-left:4px solid var(--acc)}
+.ok p,.warn p{margin:.3em 0 0}
+.warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
+.warn b{color:var(--warn)}
+dl.term{margin:8px 0;padding:10px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+dl.term dt{font-weight:700}
+dl.term dd{margin:2px 0 0;color:var(--sub)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 40px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:27px;height:27px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:13px;font-weight:700}
+code{font-family:"D2Coding","JetBrains Mono",Consolas,ui-monospace,monospace;font-size:.92em;background:var(--acc-soft);padding:1px 5px;border-radius:4px;word-break:break-all}
+.code{margin:12px 0;border-radius:10px;overflow:hidden;background:var(--code-bg)}
+.code-h{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 6px 14px;font-size:12.5px;color:#9FB0C0;border-bottom:1px solid #2C3A47}
+.code pre{margin:0;padding:14px;overflow-x:auto}
+.code pre code{background:none;color:var(--code-ink);padding:0;font-size:14px;word-break:normal;white-space:pre}
+.copy{font:inherit;font-size:12.5px;background:#2E4052;color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer}
+.copy.mini{background:var(--acc);margin-left:6px;padding:2px 8px;font-size:11.5px}
+.copy.done-c{background:var(--acc)}
+.cp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px}
+p.ex{font-size:14px;color:var(--sub);margin:-4px 0 12px}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.do{background:var(--paper);border:2px dashed var(--acc)}
+.do p{margin:.3em 0 .7em}
+.done{font:inherit;font-size:14px;border:1.5px solid var(--acc);background:transparent;color:var(--acc);border-radius:8px;padding:6px 14px;cursor:pointer}
+.done[aria-pressed=true]{background:var(--acc);color:#fff}
+.done[aria-pressed=true]::before{content:"✓ "}
+.quiz{background:var(--paper);border:1px solid var(--line)}
+.quiz p{margin:.3em 0 .6em}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{font:inherit;font-size:15px;text-align:left;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+.opts button.right{border-color:var(--acc);background:var(--acc-soft)}
+.opts button.wrong{border-color:var(--err);color:var(--err)}
+.expl{margin-top:10px!important;font-size:14.5px;color:var(--sub)}
+figure.shot{margin:16px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.shot-bar{display:flex;align-items:center;gap:6px;padding:7px 12px;background:#232F3E;color:#fff;font-size:12.5px}
+.shot-bar i{width:9px;height:9px;border-radius:50%;background:#56657A}
+.shot-bar span{margin-left:6px}
+.shot-body{padding:14px;font-size:14px;overflow-x:auto}
+figure.shot figcaption{font-size:12px;color:var(--sub);padding:6px 12px;border-top:1px solid var(--line)}
+.f{margin:6px 0}.f label{display:block;font-size:12.5px;font-weight:700}
+.f .in{border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--bg);word-break:break-all}
+.hl .in,.row.hl,.card.hl,.tree .hl{outline:2.5px solid #E8A33C;outline-offset:1px;border-radius:6px}
+.hl-t{background:var(--hl);text-decoration-color:var(--focus)}
+.banner{border:1.5px solid #3B82F6;border-radius:8px;padding:9px 12px;margin-bottom:10px;line-height:1.6}
+.btn-o{float:right;border:1.5px solid #3B82F6;border-radius:14px;padding:0 10px;font-size:12px;color:#3B82F6}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;overflow:hidden}
+.row{display:grid;grid-template-columns:1.2fr 1fr 1.6fr;gap:8px;padding:6px 8px;margin:4px 0;min-width:420px}
+.row.hd{font-weight:700;border-bottom:1px solid var(--line)}
+.tree div{padding:2px 0}.tree .i1{padding-left:18px}.tree .i2{padding-left:36px}.tree .dim{opacity:.5;text-decoration:line-through}
+pre.term-o{margin:0;background:var(--code-bg);color:var(--code-ink);padding:12px;border-radius:8px;overflow-x:auto;font-size:13px}
+.err{color:#FF8A80}
+.arch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.arch .box{border:1.5px solid var(--ink);border-radius:8px;padding:8px 12px;text-align:center;font-weight:700;background:var(--bg)}
+.arch .box small{font-weight:400;color:var(--sub)}
+.arch .grp{border:2px dashed var(--acc);border-radius:10px;padding:8px;display:flex;gap:8px;flex-wrap:wrap;position:relative;padding-top:24px}
+.arch .gt{position:absolute;top:4px;left:10px;font-size:12px;color:var(--acc);font-weight:700}
+.arch .arr{color:var(--sub);font-size:13px}
+#dash{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+#dash svg{width:54px;height:54px}
+#dash .t{font-size:12.5px;line-height:1.5}
+#dash .t b{font-size:15px}
+#reset{font:inherit;font-size:11.5px;border:0;background:none;color:var(--sub);text-decoration:underline;cursor:pointer;padding:0}
+@media (max-width:1000px){
+  #menuBtn{display:inline-block}
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  nav.side{position:fixed;top:0;left:0;bottom:0;width:min(300px,85vw);height:auto;background:var(--paper);z-index:40;transform:translateX(-105%);transition:transform .25s;padding-top:calc(22px + env(safe-area-inset-top,0px));box-shadow:4px 0 24px rgba(0,0,0,.2)}
+  nav.side.open{transform:none}
+  main{padding:20px 16px 130px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{header.top,#dash,nav.side{display:none}.wrap{display:block}}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="btn ghost" id="menuBtn" type="button" aria-label="목차 열기">☰ 목차</button>
+  <h1>13장 · 깃허브 액션 CI/CD 따라하기</h1>
+  <button class="btn" id="dl" type="button">⬇️ 문서 다운로드</button>
+</header>
+<div class="wrap">
+<nav class="side" id="side" aria-label="레슨 목차"><ol><li><a href="#c0"><span class="n">0</span>CI/CD가 무엇인지 알기</a></li><li><a href="#c1"><span class="n">1</span>깃 설치하고 사용자 정보 설정하기</a></li><li><a href="#c2"><span class="n">2</span>SSH 키 만들고 깃허브에 등록하기</a></li><li><a href="#c3"><span class="n">3</span>리포지토리 만들고 첫 푸시하기</a></li><li><a href="#c4"><span class="n">4</span>CI 워크플로 만들기 (ci.yml)</a></li><li><a href="#c5"><span class="n">5</span>jar 파일 1개만 만들게 설정하기</a></li><li><a href="#c6"><span class="n">6</span>깃허브 액션용 IAM 사용자와 액세스 키 만들기</a></li><li><a href="#c7"><span class="n">7</span>깃허브 Secrets에 액세스 키 등록하기</a></li><li><a href="#c8"><span class="n">8</span>CD 워크플로로 바꾸고 자동 배포하기 (cicd.yml)</a></li><li><a href="#c9"><span class="n">9</span>워크플로 오류 해결하기</a></li><li><a href="#c10"><span class="n">10</span>실습 끝나면 정리하기</a></li></ol></nav>
+<main>
+  <div class="hero">
+    <p class="kicker">스프링 부트 블로그 프로젝트 · 빌드 + 테스트 + jar 생성(CI) → 빈스톡 자동 배포(CD)</p>
+    <h2>푸시 한 번으로 빌드부터 배포까지</h2>
+    <p>각 레슨은 <b>왜 하나요 → 단계 → 성공 확인 → 미션 → 퀴즈</b> 순서입니다. 코드와 값은 <b>복사</b> 버튼으로 붙여넣으세요. 진행 상황은 이 브라우저에 저장됩니다.</p>
+    <div class="rail" id="rail" aria-hidden="true"></div>
+    <div class="rail-l"><span>준비</span><span>자동 배포 완료</span></div>
+  </div>
+  <section id="c0"><h2><span class="n">레슨 0</span>CI/CD가 무엇인지 알기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>12장에서는 코드를 고칠 때마다 jar를 직접 빌드하고 빈스톡에 손으로 올렸습니다. 이번 장에서는 <b>깃허브에 코드를 올리기만 하면</b> 빌드·테스트·배포가 자동으로 실행되게 만듭니다.</p></div>
+<dl class="term"><dt>CI (지속적 통합)</dt><dd>코드가 저장소에 올라올 때마다 빌드와 테스트를 자동으로 실행하는 과정입니다. 테스트가 실패하면 그 자리에서 멈추고 알려 줍니다.</dd></dl>
+<dl class="term"><dt>CD (지속적 제공·배포)</dt><dd>CI를 통과한 코드를 서버에 자동으로 배포하는 과정입니다. 이번 실습에서는 일래스틱 빈스톡에 jar를 올립니다.</dd></dl>
+<dl class="term"><dt>깃(Git)</dt><dd>내 PC에서 파일의 변경 이력을 저장하는 프로그램입니다.</dd></dl>
+<dl class="term"><dt>깃허브(GitHub)</dt><dd>깃 저장소를 인터넷에 올려 두는 서비스입니다. 저장소 1개를 <b>리포지토리</b>라고 부릅니다.</dd></dl>
+<dl class="term"><dt>커밋 / 푸시</dt><dd><b>커밋</b>은 변경 내용을 내 PC 저장소에 기록하는 것, <b>푸시</b>는 그 기록을 깃허브로 올리는 것입니다.</dd></dl>
+<dl class="term"><dt>깃허브 액션 / 워크플로</dt><dd>깃허브 액션은 푸시 같은 일이 생기면 깃허브의 리눅스 가상머신에서 명령을 실행해 주는 기능입니다. 실행할 명령을 적은 yml 파일을 <b>워크플로</b>라고 부릅니다.</dd></dl>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>이번 장의 자동화 흐름</span></div><div class="shot-body"><div class="arch"><div class="box me">내 PC<br><small>git push</small></div><div class="arr">➜</div><div class="grp"><div class="gt">깃허브 액션 (CI)</div><div class="box">빌드<br><small>gradlew build</small></div><div class="box">테스트<br><small>JUnit</small></div><div class="box">jar 생성</div></div><div class="arr">➜ CD ➜</div><div class="box">일래스틱 빈스톡<br><small>EC2에 자동 배포</small></div></div></div><figcaption>화면 예시 · 구조를 단순하게 그린 그림입니다.</figcaption></figure>
+<h3>준비물 체크</h3>
+<div class="tbl"><table><thead><tr><th>준비물</th><th>확인 방법</th></tr></thead><tbody><tr><td>12장에서 만든 빈스톡 환경</td><td>환경 상태가 <b>OK(초록)</b>입니다</td></tr><tr><td>chapter12 프로젝트</td><td>인텔리제이에서 build가 성공합니다</td></tr><tr><td>깃허브 계정</td><td><a href='https://github.com' target='_blank' rel='noopener'>github.com</a>에 로그인됩니다</td></tr></tbody></table></div>
+<div class="do" data-id="n0"><b>🛠️ 미션</b><p>빈스톡 환경 상태가 OK인지 확인하고, 애플리케이션 이름과 환경 이름을 메모장에 적어 두세요. 레슨 8에서 그대로 씁니다.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p0" data-ans="0"><b>🧠 퀴즈</b><p>테스트가 실패하면 서버에 배포되지 않게 막아 주는 과정은?</p><div class="opts"><button type="button" data-i="0">CI</button><button type="button" data-i="1">S3</button><button type="button" data-i="2">RDS</button></div><p class="expl" hidden>CI 단계에서 빌드·테스트가 실패하면 워크플로가 멈추므로 배포 단계까지 가지 않습니다.</p></div>
+</section><section id="c1"><h2><span class="n">레슨 1</span>깃 설치하고 사용자 정보 설정하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>깃이 있어야 내 PC의 프로젝트를 깃허브로 올릴 수 있습니다. 커밋할 때마다 기록되는 이름과 이메일도 미리 정해 둡니다.</p></div>
+<ol class="steps"><li><a href='https://git-scm.com/download/win' target='_blank' rel='noopener'>git-scm.com/download/win</a>에 접속해 <b>Click here to download</b>를 누릅니다.</li><li>설치 화면은 모두 기본값으로 두고 <b>Next</b>와 <b>Install</b>을 누릅니다.</li><li>설치가 끝나면 인텔리제이를 다시 시작하고 아래쪽 <b>Terminal</b>을 엽니다.</li><li>아래 명령을 입력합니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git --version</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>git version 2.xx.x.windows.1</code>처럼 버전 숫자가 출력됩니다.</p></div>
+<ol class="steps"><li>깃허브 가입에 쓴 아이디와 이메일로 바꿔 아래 2줄을 실행합니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git config --global user.name &quot;깃허브아이디&quot;
+git config --global user.email &quot;깃허브이메일주소&quot;</code></pre></div>
+<p class="ex">실제 입력 예시: <code>git config --global user.name &quot;hong1234&quot;</code></p>
+<div class="code"><div class="code-h"><span>설정 확인</span><button class="copy" type="button">복사</button></div><pre><code>git config --global --list</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>user.name=…</code>, <code>user.email=…</code> 두 줄이 내가 입력한 값으로 보입니다.</p></div>
+<div class="warn"><b>⚠️ “git은(는) 내부 또는 외부 명령… 아닙니다” 오류</b><p>설치 직후 열려 있던 터미널은 새 경로를 모릅니다. 인텔리제이를 완전히 껐다가 다시 켜고 터미널을 새로 여세요.</p></div>
+<div class="do" data-id="n1"><b>🛠️ 미션</b><p>git --version으로 설치를 확인하고, 사용자 이름과 이메일을 설정하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p1" data-ans="1"><b>🧠 퀴즈</b><p>git config의 user.email은 언제 쓰이나요?</p><div class="opts"><button type="button" data-i="0">깃허브 로그인 암호로 쓰인다</button><button type="button" data-i="1">커밋할 때마다 작성자 정보로 기록된다</button><button type="button" data-i="2">AWS 로그인에 쓰인다</button></div><p class="expl" hidden>커밋 기록에 작성자 이름과 이메일이 함께 저장됩니다.</p></div>
+</section><section id="c2"><h2><span class="n">레슨 2</span>SSH 키 만들고 깃허브에 등록하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>푸시할 때마다 깃허브 암호를 입력하지 않도록, 내 PC를 증명하는 <b>SSH 키</b>를 깃허브에 등록합니다.</p></div>
+<dl class="term"><dt>SSH 키</dt><dd>한 쌍으로 만들어지는 파일 2개입니다. <code>id_rsa</code>(개인 키)는 내 PC에만 두고, <code>id_rsa.pub</code>(공개 키)는 깃허브에 등록합니다.</dd></dl>
+<ol class="steps"><li>터미널에 아래 명령을 입력합니다.</li><li>질문이 3번 나오면 아무것도 입력하지 않고 <b>Enter</b>만 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>ssh-keygen -t rsa -C &quot;깃허브이메일주소&quot;</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>Your public key has been saved in C:\Users\내계정/.ssh/id_rsa.pub</code> 문장과 네모난 그림(randomart)이 출력됩니다.</p></div>
+<div class="warn"><b>⚠️ “Overwrite (y/n)?”가 나와요</b><p>이미 SSH 키가 있다는 뜻입니다. <b>n</b>을 입력해 취소하고, 기존 키를 그대로 다음 단계에 쓰면 됩니다.</p></div>
+<ol class="steps"><li>아래 명령으로 공개 키 내용을 출력하고, <code>ssh-rsa</code>부터 이메일까지 한 줄 전체를 복사합니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널 (PowerShell)</span><button class="copy" type="button">복사</button></div><pre><code>cat ~/.ssh/id_rsa.pub</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>ssh-rsa AAAAB3Nza…긴 문자열… 깃허브이메일주소</code> 한 줄이 출력됩니다.</p></div>
+<ol class="steps"><li>깃허브 오른쪽 위 프로필 사진 → <b>Settings</b>를 누릅니다.</li><li>왼쪽 <b>SSH and GPG keys</b> → <b>New SSH key</b>를 누릅니다.</li><li>Title에 이름을 적고, Key에 복사한 공개 키를 붙여넣습니다.</li><li><b>Add SSH key</b>를 누릅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>GitHub · SSH keys / Add new</span></div><div class="shot-body"><div class="f"><label>Title</label><div class="in">springboot-developer</div></div><div class="f"><label>Key type</label><div class="in">Authentication Key</div></div><div class="f hl"><label>Key</label><div class="in">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAB… hong1234@gmail.com</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<ol class="steps"><li>연결을 확인합니다. 처음 접속하면 질문이 나오는데 <b>yes</b>를 입력합니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>ssh -T git@github.com</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>Hi 깃허브아이디! You've successfully authenticated, but GitHub does not provide shell access.</code>가 출력됩니다.</p></div>
+<div class="warn"><b>⚠️ “Permission denied (publickey)” 오류</b><p>깃허브에 붙여넣은 값이 <code>id_rsa.pub</code>가 아니거나 일부만 복사된 경우입니다. <code>cat ~/.ssh/id_rsa.pub</code> 결과 한 줄 전체를 다시 등록하세요.</p></div>
+<div class="do" data-id="n2"><b>🛠️ 미션</b><p>SSH 키를 깃허브에 등록하고 ssh -T git@github.com에서 Hi 아이디! 문장을 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p2" data-ans="1"><b>🧠 퀴즈</b><p>깃허브에 등록하는 파일은?</p><div class="opts"><button type="button" data-i="0">id_rsa</button><button type="button" data-i="1">id_rsa.pub</button><button type="button" data-i="2">known_hosts</button></div><p class="expl" hidden>.pub이 붙은 공개 키만 등록합니다. id_rsa(개인 키)는 절대 다른 곳에 올리지 않습니다.</p></div>
+</section><section id="c3"><h2><span class="n">레슨 3</span>리포지토리 만들고 첫 푸시하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>깃허브 액션은 깃허브 리포지토리에 있는 코드로 실행됩니다. 먼저 프로젝트 전체를 깃허브에 올립니다.</p></div>
+<h3>① 민감한 값부터 바꾸기</h3>
+<div class="warn"><b>⚠️ 푸시 전에 꼭 확인하세요</b><p>깃허브에 올린 파일은 누구나 볼 수 있습니다. <code>application.yml</code>의 구글 OAuth 값, JWT 키, OpenAI 키를 <b>가짜 값</b>으로 바꾸세요. 실제 값은 12장에서 빈스톡 환경 속성에 넣었으므로 서버에서는 그 값이 쓰입니다.</p></div>
+<div class="code"><div class="code-h"><span>application.yml (바꿀 부분)</span><button class="copy" type="button">복사</button></div><pre><code>  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test_id
+            client-secret: test_secret
+            scope:
+              - email
+              - profile
+jwt:
+  issuer: ajufresh@gmail.com
+  secret_key: test_key</code></pre></div>
+<div class="code"><div class="code-h"><span>application.yml (OpenAI 키)</span><button class="copy" type="button">복사</button></div><pre><code>  ai:
+    openai:
+      api-key: test_api_key</code></pre></div>
+<h3>② 리포지토리 만들기</h3>
+<ol class="steps"><li>깃허브 오른쪽 위 <b>+</b> → <b>New repository</b>를 누릅니다.</li><li>Repository name에 아래 이름을 넣습니다.</li><li>공개 범위를 고르고, <b>Add a README file은 체크하지 않은 채</b> <b>Create repository</b>를 누릅니다.</li><li>생성된 화면의 Quick setup에서 <b>SSH</b> 탭을 누르고 주소를 복사합니다.</li></ol>
+<div class="code"><div class="code-h"><span>Repository name</span><button class="copy" type="button">복사</button></div><pre><code>springboot-developer</code></pre></div>
+<p class="ex">실제 입력 예시: <code>git@github.com:hong1234/springboot-developer.git</code></p>
+<h3>③ 내 프로젝트를 깃 저장소로 만들고 연결하기</h3>
+<ol class="steps"><li>인텔리제이 터미널이 프로젝트 폴더인지 확인하고 아래 명령을 실행합니다.</li></ol>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git init</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>Initialized empty Git repository in …/springboot-developer/.git/</code>가 출력됩니다.</p></div>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git remote add origin git@github.com:깃허브아이디/springboot-developer.git
+git remote -v</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>origin  git@github.com:깃허브아이디/springboot-developer.git (fetch)</code>와 <code>(push)</code> 두 줄이 보입니다.</p></div>
+<h3>④ 커밋하고 푸시하기</h3>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git add .
+git commit -m &quot;project init&quot;
+git branch -M main
+git push origin main</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>마지막에 <code>* [new branch]      main -> main</code>이 출력됩니다. 깃허브 리포지토리 화면을 새로고침하면 src, build.gradle 등 파일이 보입니다.</p></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>GitHub 리포지토리</span></div><div class="shot-body"><div class="row hd"><span>이름</span><span>커밋 메시지</span><span>시간</span></div><div class="row"><span>📁 gradle/wrapper</span><span>project init</span><span>now</span></div><div class="row"><span>📁 src</span><span>project init</span><span>now</span></div><div class="row"><span>📄 build.gradle</span><span>project init</span><span>now</span></div><div class="row"><span>📄 gradlew</span><span>project init</span><span>now</span></div></div><figcaption>화면 예시 · build 폴더는 .gitignore에 들어 있어 올라가지 않습니다.</figcaption></figure>
+<div class="warn"><b>⚠️ “failed to push some refs” 오류</b><p>리포지토리를 만들 때 README를 추가했으면 납니다. 아래 명령을 실행한 뒤 다시 push 하세요.</p><div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git pull origin main --rebase</code></pre></div></div>
+<div class="warn"><b>⚠️ 주소를 https로 연결했어요</b><p>push 할 때 브라우저 로그인 창이 뜹니다. SSH로 바꾸려면 아래 명령을 실행하세요.</p><div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git remote set-url origin git@github.com:깃허브아이디/springboot-developer.git</code></pre></div></div>
+<div class="do" data-id="n3"><b>🛠️ 미션</b><p>민감한 값을 가짜 값으로 바꾼 뒤, 프로젝트를 깃허브 main 브랜치에 푸시하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p3" data-ans="2"><b>🧠 퀴즈</b><p>git add . → git commit → git push 중 깃허브로 파일을 올리는 명령은?</p><div class="opts"><button type="button" data-i="0">git add .</button><button type="button" data-i="1">git commit</button><button type="button" data-i="2">git push</button></div><p class="expl" hidden>add는 올릴 파일을 고르고, commit은 내 PC에 기록하고, push가 깃허브로 전송합니다.</p></div>
+</section><section id="c4"><h2><span class="n">레슨 4</span>CI 워크플로 만들기 (ci.yml)</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>main 브랜치에 푸시할 때마다 깃허브가 자동으로 빌드와 테스트를 실행하게 만듭니다.</p></div>
+<ol class="steps"><li>프로젝트 최상단 폴더를 우클릭 → <b>새로 만들기 → 디렉터리</b>로 <code>.github</code> 폴더를 만듭니다.</li><li><code>.github</code> 안에 <code>workflows</code> 폴더를 만듭니다. 이름 끝에 <b>s</b>가 있어야 합니다.</li><li><code>workflows</code> 안에 <code>ci.yml</code> 파일을 만들고 아래 내용을 붙여넣습니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>프로젝트 폴더 구조</span></div><div class="shot-body"><div class="tree"><div>📁 springboot-developer</div><div class="i1 hl">📁 .github</div><div class="i2 hl">📁 workflows</div><div class="i2" style="padding-left:54px">📄 ci.yml</div><div class="i1">📁 gradle</div><div class="i1">📁 src</div><div class="i1">📄 build.gradle</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="code"><div class="code-h"><span>.github/workflows/ci.yml</span><button class="copy" type="button">복사</button></div><pre><code>name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: &#x27;corretto&#x27;
+          java-version: &#x27;25&#x27;
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build</code></pre></div>
+<div class="tbl"><table><thead><tr><th>줄</th><th>뜻</th></tr></thead><tbody><tr><td>name: CI</td><td>깃허브 Actions 탭에 보이는 워크플로 이름입니다</td></tr><tr><td>on: push: branches: [ main ]</td><td>main 브랜치에 푸시될 때 실행합니다</td></tr><tr><td>runs-on: ubuntu-latest</td><td>깃허브가 빌려주는 우분투 리눅스 가상머신에서 실행합니다</td></tr><tr><td>actions/checkout@v6</td><td>리포지토리 코드를 가상머신으로 내려받습니다</td></tr><tr><td>actions/setup-java@v5</td><td>아마존 Corretto JDK 25를 설치합니다</td></tr><tr><td>chmod +x gradlew</td><td>윈도우에서 올린 gradlew에 리눅스 실행 권한을 줍니다</td></tr><tr><td>./gradlew clean build</td><td>컴파일 → 테스트 → jar 생성을 실행합니다. 테스트가 실패하면 여기서 멈춥니다</td></tr></tbody></table></div>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git add .
+git commit -m &quot;CI 추가&quot;
+git push origin main</code></pre></div>
+<ol class="steps"><li>깃허브 리포지토리의 <b>Actions</b> 탭을 엽니다.</li><li><b>CI 추가</b> 실행 항목을 눌러 진행 상황을 봅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>GitHub · Actions</span></div><div class="shot-body"><div class="row hd"><span>워크플로 실행</span><span>브랜치</span><span>상태</span></div><div class="row"><span>🟡 CI 추가</span><span>main</span><span>In progress</span></div><div class="row hl"><span>✅ CI 추가</span><span>main</span><span>1m 32s</span></div></div><figcaption>화면 예시 · 처음에는 노란 점, 끝나면 초록 체크로 바뀝니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>1~3분 뒤 실행 항목 앞이 <b>초록 체크(✅)</b>로 바뀝니다. build를 눌러 보면 모든 단계에 초록 체크가 있습니다.</p></div>
+<div class="warn"><b>⚠️ Actions 탭에 아무것도 안 보여요</b><p>폴더 이름이 <code>.github/workflows</code>가 맞는지 확인하세요. <code>workflow</code>(s 없음)나 <code>github</code>(점 없음)이면 실행되지 않습니다.</p></div>
+<div class="warn"><b>⚠️ Build with Gradle 단계가 빨간 X</b><p>실패한 단계를 눌러 로그 끝부분을 보세요. <code>FAILED</code> 앞에 실패한 테스트 이름이 나옵니다. 내 PC에서 같은 테스트를 고친 뒤 다시 푸시하세요.</p></div>
+<div class="do" data-id="n4"><b>🛠️ 미션</b><p>ci.yml을 푸시하고 Actions 탭에서 초록 체크를 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p4" data-ans="0"><b>🧠 퀴즈</b><p>워크플로 파일을 넣어야 하는 폴더는?</p><div class="opts"><button type="button" data-i="0">.github/workflows</button><button type="button" data-i="1">github/workflow</button><button type="button" data-i="2">.github/workflow</button></div><p class="expl" hidden>깃허브는 리포지토리의 .github/workflows 폴더 안 yml 파일만 워크플로로 인식합니다.</p></div>
+</section><section id="c5"><h2><span class="n">레슨 5</span>jar 파일 1개만 만들게 설정하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>build를 하면 jar가 2개 생깁니다. 자동 배포 스크립트는 <code>build/libs</code>에 있는 파일 이름을 그대로 읽으므로, 실행 가능한 jar <b>1개만</b> 남겨야 합니다.</p></div>
+<div class="tbl"><table><thead><tr><th>파일</th><th>설명</th></tr></thead><tbody><tr><td>springboot-developer-0.0.1-SNAPSHOT.jar</td><td>라이브러리까지 들어 있어 java -jar로 실행됩니다</td></tr><tr><td>springboot-developer-0.0.1-SNAPSHOT-plain.jar</td><td>내 클래스만 들어 있어 단독 실행이 안 됩니다 (플레인 아카이브)</td></tr></tbody></table></div>
+<ol class="steps"><li><code>build.gradle</code> 맨 아래에 아래 코드를 추가합니다.</li><li>오른쪽 Gradle 탭의 새로고침(⟳)을 누릅니다.</li><li>Gradle → Tasks → build → <b>build</b>를 더블클릭합니다.</li></ol>
+<div class="code"><div class="code-h"><span>build.gradle</span><button class="copy" type="button">복사</button></div><pre><code>jar {
+    enabled = false
+}</code></pre></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p><code>build/libs</code> 폴더에 <b>-plain이 없는 jar 1개만</b> 보입니다.</p></div>
+<div class="warn"><b>⚠️ 예전 plain.jar가 아직 보여요</b><p>이전 빌드 결과가 남은 것입니다. Gradle → Tasks → build → <b>clean</b>을 먼저 실행한 뒤 build를 다시 하세요.</p></div>
+<div class="do" data-id="n5"><b>🛠️ 미션</b><p>build.gradle에 jar { enabled = false }를 추가하고 build/libs에 jar가 1개만 생기는지 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p5" data-ans="1"><b>🧠 퀴즈</b><p>jar { enabled = false }를 넣는 이유는?</p><div class="opts"><button type="button" data-i="0">빌드 속도를 높이려고</button><button type="button" data-i="1">실행되지 않는 plain.jar가 만들어지지 않게 하려고</button><button type="button" data-i="2">테스트를 건너뛰려고</button></div><p class="expl" hidden>자동 배포 스크립트가 jar 1개만 찾아 올릴 수 있도록 plain.jar 생성을 끕니다.</p></div>
+</section><section id="c6"><h2><span class="n">레슨 6</span>깃허브 액션용 IAM 사용자와 액세스 키 만들기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>깃허브 액션이 내 AWS 계정의 빈스톡에 배포하려면 AWS 로그인 정보가 필요합니다. 배포 권한만 가진 전용 사용자를 만들고 <b>액세스 키</b>를 발급합니다.</p></div>
+<dl class="term"><dt>액세스 키</dt><dd>프로그램이 AWS에 로그인할 때 쓰는 아이디(액세스 키)와 암호(비밀 액세스 키) 한 쌍입니다.</dd></dl>
+<ol class="steps"><li>AWS 콘솔 검색창에 <b>IAM</b> → 왼쪽 <b>사용자</b> → <b>사용자 생성</b>을 누릅니다.</li><li>사용자 이름에 아래 값을 넣고 <b>다음</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>사용자 이름</span><button class="copy" type="button">복사</button></div><pre><code>github-action</code></pre></div>
+<ol class="steps"><li>권한 옵션: <b>직접 정책 연결</b>을 선택합니다.</li><li>검색창에 아래 정책 이름을 넣고 체크한 뒤 <b>다음</b>을 누릅니다.</li><li>검토 화면에서 <b>사용자 생성</b>을 누릅니다.</li></ol>
+<div class="code"><div class="code-h"><span>정책 이름</span><button class="copy" type="button">복사</button></div><pre><code>AdministratorAccess-AWSElasticBeanstalk</code></pre></div>
+<ol class="steps"><li>사용자 목록에서 <b>github-action</b>을 누릅니다.</li><li><b>보안 자격 증명</b> 탭 → 액세스 키 항목의 <b>액세스 키 만들기</b>를 누릅니다.</li><li>사용 사례: <b>서드 파티 서비스</b>를 선택하고 아래 확인 체크 후 <b>다음</b>을 누릅니다.</li><li>설명 태그 값에 <code>github-action</code>을 넣고 <b>액세스 키 만들기</b>를 누릅니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>액세스 키 검색</span></div><div class="shot-body"><div class="f hl"><label>액세스 키</label><div class="in">AKIA4XXXXXXXXXXXXXXX</div></div><div class="f hl"><label>비밀 액세스 키</label><div class="in">**************** 표시</div></div><p style="margin:8px 0 0"><span class="btn-o" style="float:none">.csv 파일 다운로드</span></p></div><figcaption>화면 예시 · 실제 키 값은 계정마다 다릅니다.</figcaption></figure>
+<div class="warn"><b>⚠️ 이 화면을 닫지 마세요</b><p>비밀 액세스 키는 <b>이 화면에서 단 한 번만</b> 볼 수 있습니다. <b>.csv 파일 다운로드</b>를 눌러 보관하세요. 이 값은 깃허브 리포지토리나 카페·메신저에 절대 올리지 않습니다.</p></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>IAM → 사용자 → github-action → 보안 자격 증명 탭에 액세스 키 1개가 <b>활성</b> 상태로 보입니다.</p></div>
+<div class="do" data-id="n6"><b>🛠️ 미션</b><p>github-action 사용자를 만들고 액세스 키 .csv 파일을 내려받아 보관하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p6" data-ans="1"><b>🧠 퀴즈</b><p>비밀 액세스 키를 다시 확인하려면?</p><div class="opts"><button type="button" data-i="0">IAM에서 언제든 다시 볼 수 있다</button><button type="button" data-i="1">다시 볼 수 없으므로 새 키를 만들어야 한다</button><button type="button" data-i="2">깃허브에서 볼 수 있다</button></div><p class="expl" hidden>비밀 액세스 키는 만들 때 한 번만 보여 줍니다. 잃어버리면 기존 키를 삭제하고 새로 만듭니다.</p></div>
+</section><section id="c7"><h2><span class="n">레슨 7</span>깃허브 Secrets에 액세스 키 등록하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>액세스 키를 yml 파일에 직접 적으면 깃허브에 공개됩니다. 깃허브 <b>Secrets</b>에 넣으면 워크플로에서만 꺼내 쓸 수 있고, 실행 로그에는 <code>***</code>로 가려집니다.</p></div>
+<ol class="steps"><li>깃허브 리포지토리 → <b>Settings</b> 탭을 엽니다.</li><li>왼쪽 <b>Secrets and variables → Actions</b>를 누릅니다.</li><li><b>New repository secret</b>을 누르고 아래 2개를 하나씩 등록합니다.</li></ol>
+<div class="tbl"><table><thead><tr><th>Name (복사)</th><th>Secret 값</th></tr></thead><tbody><tr><td><span class="cp"><code>AWS_ACCESS_KEY_ID</code><button class="copy mini" type="button" data-text="AWS_ACCESS_KEY_ID">복사</button></span></td><td>레슨 6의 액세스 키 (AKIA로 시작)</td></tr><tr><td><span class="cp"><code>AWS_SECRET_ACCESS_KEY</code><button class="copy mini" type="button" data-text="AWS_SECRET_ACCESS_KEY">복사</button></span></td><td>레슨 6의 비밀 액세스 키</td></tr></tbody></table></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>Settings · Actions secrets</span></div><div class="shot-body"><div class="row hd"><span>Repository secrets</span><span></span><span>Updated</span></div><div class="row hl"><span>🔒 AWS_ACCESS_KEY_ID</span><span></span><span>now</span></div><div class="row hl"><span>🔒 AWS_SECRET_ACCESS_KEY</span><span></span><span>now</span></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>Repository secrets 목록에 두 이름이 보입니다. 등록한 값은 다시 볼 수 없는 것이 정상입니다.</p></div>
+<div class="warn"><b>⚠️ 이름 철자가 다르면 배포가 실패합니다</b><p>cicd.yml은 <code>secrets.AWS_ACCESS_KEY_ID</code> 이름으로 값을 찾습니다. 밑줄·대문자까지 똑같이 복사해 넣으세요.</p></div>
+<div class="do" data-id="n7"><b>🛠️ 미션</b><p>AWS_ACCESS_KEY_ID와 AWS_SECRET_ACCESS_KEY 두 시크릿을 등록하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p7" data-ans="0"><b>🧠 퀴즈</b><p>워크플로에서 시크릿 값을 꺼내 쓰는 문법은?</p><div class="opts"><button type="button" data-i="0">${{ secrets.AWS_ACCESS_KEY_ID }}</button><button type="button" data-i="1">${AWS_ACCESS_KEY_ID}</button><button type="button" data-i="2">{{ env.AWS_ACCESS_KEY_ID }}</button></div><p class="expl" hidden>깃허브 액션은 ${{ secrets.이름 }} 형식으로 리포지토리 시크릿을 읽습니다.</p></div>
+</section><section id="c8"><h2><span class="n">레슨 8</span>CD 워크플로로 바꾸고 자동 배포하기 (cicd.yml)</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>CI 단계 뒤에 <b>빈스톡 배포 단계</b>를 붙이면, 푸시 한 번으로 빌드·테스트·배포가 모두 끝납니다.</p></div>
+<ol class="steps"><li><code>ci.yml</code>을 우클릭 → <b>Refactor → Rename</b>으로 이름을 <code>cicd.yml</code>로 바꿉니다.</li><li>파일 내용을 모두 지우고 아래 코드를 붙여넣습니다.</li><li><b>application_name</b>과 <b>environment_name</b>을 내 빈스톡 이름으로 바꿉니다.</li></ol>
+<div class="code"><div class="code-h"><span>.github/workflows/cicd.yml</span><button class="copy" type="button">복사</button></div><pre><code>name: CI/CD
+
+on:
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: &#x27;corretto&#x27;
+          java-version: &#x27;25&#x27;
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: &quot;+09:00&quot;
+
+      - name: Set artifact
+        run: echo &quot;artifact=$(ls ./build/libs)&quot; &gt;&gt; $GITHUB_ENV
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: springboot-developer
+          environment_name: Springboot-developer-env
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: ./build/libs/${{env.artifact}}</code></pre></div>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>빈스톡 환경 개요에서 이름 찾기</span></div><div class="shot-body"><div class="f hl"><label>환경 이름 → environment_name</label><div class="in">Springboot-developer-env</div></div><div class="f hl"><label>애플리케이션 이름 → application_name</label><div class="in">springboot-developer</div></div></div><figcaption>화면 예시 · 레슨 0에서 메모한 값과 대소문자까지 같아야 합니다.</figcaption></figure>
+<div class="tbl"><table><thead><tr><th>추가된 단계</th><th>하는 일</th></tr></thead><tbody><tr><td>Get current time</td><td>현재 한국 시간을 구해 배포 버전 이름에 붙입니다. 빈스톡은 같은 버전 이름을 두 번 쓸 수 없습니다</td></tr><tr><td>Set artifact</td><td>build/libs 안의 jar 파일 이름을 artifact 변수에 저장합니다</td></tr><tr><td>Beanstalk Deploy</td><td>jar를 빈스톡에 업로드하고 새 버전으로 환경을 교체합니다</td></tr></tbody></table></div>
+<div class="code"><div class="code-h"><span>터미널</span><button class="copy" type="button">복사</button></div><pre><code>git add .
+git commit -m &quot;ci.yml &gt; cicd.yml&quot;
+git push origin main</code></pre></div>
+<ol class="steps"><li>깃허브 <b>Actions</b> 탭 → 맨 위 실행 항목 → <b>build</b>를 눌러 단계별 진행을 봅니다.</li><li>모두 초록 체크가 되면 빈스톡 환경 개요의 <b>실행 버전</b>을 확인합니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>Actions · build 단계</span></div><div class="shot-body"><div class="tree"><div>✅ Set up job</div><div>✅ Run actions/checkout@v6</div><div>✅ Run actions/setup-java@v5</div><div>✅ Grant execute permission for gradlew</div><div>✅ Build with Gradle</div><div>✅ Get current time</div><div>✅ Set artifact</div><div class="hl">✅ Beanstalk Deploy</div></div></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>빈스톡 환경 개요의 실행 버전이 <code>github-action-2026-11-03T16-00-00</code> 형식으로 바뀌고, 상태가 <b>OK</b>입니다. 사이트에 접속하면 방금 푸시한 코드가 반영되어 있습니다.</p></div>
+<div class="warn"><b>⚠️ “Error: Environment still has health Yellow 30 seconds after update finished!”</b><p>배포는 끝났지만 서버가 아직 시작 중이라는 뜻입니다. 1~2분 뒤 빈스톡 상태가 OK가 되면 정상입니다.</p></div>
+<div class="warn"><b>⚠️ “Environment not found” 또는 “No Application named …”</b><p>application_name·environment_name이 빈스톡 화면과 다릅니다. 빈스톡 환경 개요에서 그대로 복사해 다시 푸시하세요.</p></div>
+<div class="do" data-id="n8"><b>🛠️ 미션</b><p>cicd.yml을 푸시해 Actions가 초록 체크로 끝나고, 빈스톡 실행 버전이 github-action-…으로 바뀐 것을 확인하세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p8" data-ans="1"><b>🧠 퀴즈</b><p>cicd.yml의 on: push는 언제 실행되나요?</p><div class="opts"><button type="button" data-i="0">main 브랜치에 푸시할 때만</button><button type="button" data-i="1">모든 브랜치에 푸시할 때마다</button><button type="button" data-i="2">하루에 한 번</button></div><p class="expl" hidden>브랜치를 지정하지 않았으므로 어느 브랜치에 푸시해도 실행됩니다. main에서만 배포하려면 branches: [ main ]을 추가합니다.</p></div>
+</section><section id="c9"><h2><span class="n">레슨 9</span>워크플로 오류 해결하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>깃허브 액션이 실패하면 어느 단계에서 왜 멈췄는지 로그에 정확히 나옵니다.</p></div>
+<ol class="steps"><li>Actions 탭에서 빨간 X 실행 항목을 누릅니다.</li><li><b>build</b>를 누르고 빨간 X가 붙은 단계를 펼칩니다.</li><li>맨 아래 <code>Error</code> 문장을 읽고 아래 표에서 찾습니다.</li></ol>
+<figure class="shot"><div class="shot-bar"><i></i><i></i><i></i><span>실패한 단계 로그</span></div><div class="shot-body"><pre class="term-o">Run einaregilsson/beanstalk-deploy@v20
+<span class="err">Error: No Environment named Springboot-developer-env found.</span></pre></div><figcaption>화면 예시 · 숫자·문구·이름은 계정과 환경마다 다를 수 있습니다.</figcaption></figure>
+<div class="tbl"><table><thead><tr><th>로그 문구</th><th>실패 단계</th><th>해결</th></tr></thead><tbody><tr><td>Permission denied (./gradlew)</td><td>Build with Gradle</td><td>Grant execute permission 단계(chmod +x gradlew)가 있는지 확인</td></tr><tr><td>Tests FAILED / BUILD FAILED</td><td>Build with Gradle</td><td>실패한 테스트를 내 PC에서 고친 뒤 다시 푸시</td></tr><tr><td>Invalid format … GITHUB_ENV</td><td>Set artifact</td><td>jar가 2개 생긴 경우입니다. 레슨 5 jar { enabled = false } 확인</td></tr><tr><td>The security token included in the request is invalid</td><td>Beanstalk Deploy</td><td>시크릿 값이 틀림. 레슨 7 다시 등록</td></tr><tr><td>not authorized to perform</td><td>Beanstalk Deploy</td><td>github-action 사용자에 AdministratorAccess-AWSElasticBeanstalk 정책 확인</td></tr><tr><td>No Environment named … / No Application named …</td><td>Beanstalk Deploy</td><td>application_name·environment_name 철자 확인</td></tr></tbody></table></div>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>원인을 고쳐 다시 푸시하면 새 실행 항목이 초록 체크로 끝납니다.</p></div>
+<div class="warn"><b>⚠️ 코드를 안 바꾸고 다시 실행만 하고 싶어요</b><p>실패한 실행 항목 오른쪽 위의 <b>Re-run jobs</b>를 누르면 같은 커밋으로 다시 실행됩니다. 시크릿만 고친 경우에 씁니다.</p></div>
+<div class="do" data-id="n9"><b>🛠️ 미션</b><p>Actions 탭에서 지난 실행 항목의 build 로그를 열어 Build with Gradle 단계의 BUILD SUCCESSFUL 문장을 찾아보세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p9" data-ans="1"><b>🧠 퀴즈</b><p>로그에 “The security token included in the request is invalid”가 보입니다. 먼저 고칠 곳은?</p><div class="opts"><button type="button" data-i="0">build.gradle</button><button type="button" data-i="1">깃허브 Secrets의 액세스 키 값</button><button type="button" data-i="2">application.yml</button></div><p class="expl" hidden>AWS가 액세스 키를 인정하지 않는다는 뜻입니다. 시크릿 값을 다시 등록하세요.</p></div>
+</section><section id="c10"><h2><span class="n">레슨 10</span>실습 끝나면 정리하기</h2>
+<div class="why"><b>💡 왜 하나요?</b><p>EC2와 RDS는 켜 둔 시간만큼 요금이 계산됩니다. 액세스 키도 남겨 두면 유출되었을 때 위험합니다.</p></div>
+<ol class="steps"><li>빈스톡 → 환경 → 내 환경 선택 → <b>작업 → 환경 종료</b>를 누릅니다. EC2와 데이터베이스가 함께 삭제됩니다.</li><li>S3 → 내 버킷 선택 → <b>비어 있음</b> → <b>삭제</b>를 누릅니다.</li><li>IAM → 사용자 → <b>github-action</b> → 보안 자격 증명 → 액세스 키 <b>작업 → 비활성화</b> 후 <b>삭제</b>를 누릅니다.</li><li>깃허브 리포지토리의 Secrets 2개도 삭제합니다.</li><li>환경을 지운 뒤 푸시하면 Beanstalk Deploy 단계가 실패하므로, <code>cicd.yml</code>을 <code>ci.yml</code>로 되돌려 CI만 남깁니다.</li></ol>
+<div class="ok"><b>✅ 이렇게 나오면 성공</b><p>빈스톡 환경 목록·RDS 목록·내 S3 버킷이 비어 있고, github-action 사용자의 액세스 키가 0개입니다.</p></div>
+<div class="warn"><b>⚠️ 버킷이 삭제되지 않아요</b><p>안에 파일이 남아 있으면 삭제할 수 없습니다. 먼저 <b>비어 있음</b>을 실행하세요.</p></div>
+<div class="do" data-id="n10"><b>🛠️ 미션</b><p>실습을 마친 뒤 환경 종료 → 버킷 삭제 → 액세스 키 삭제까지 마치세요.</p><button class="done" type="button" aria-pressed="false">완료했어요</button></div>
+<div class="quiz" data-id="p10" data-ans="1"><b>🧠 퀴즈</b><p>실습 후 액세스 키를 삭제하는 가장 큰 이유는?</p><div class="opts"><button type="button" data-i="0">요금이 나가서</button><button type="button" data-i="1">유출되면 다른 사람이 내 AWS에 배포할 수 있어서</button><button type="button" data-i="2">깃허브 용량을 줄이려고</button></div><p class="expl" hidden>액세스 키는 AWS 로그인 정보입니다. 쓰지 않으면 삭제하는 것이 안전합니다.</p></div>
+</section>
+  <p style="color:var(--sub);font-size:13px;margin-top:30px">깃허브와 AWS 화면은 수시로 바뀝니다. 버튼 이름이 조금 달라도 같은 위치의 메뉴를 찾으면 됩니다.</p>
+</main>
+</div>
+<div id="dash" role="status" aria-live="polite">
+  <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15.5" fill="none" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 18 18)" pathLength="100"/><text x="18" y="21.5" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink)" id="pct">0%</text></svg>
+  <div class="t">미션 <b id="dm">0</b>/11<br>퀴즈 <b id="dq">0</b>/11<br><button id="reset" type="button">기록 초기화</button></div>
+</div>
+<script>
+(function(){
+  var KEY='cicdTutorial.v1', st={m:{},q:{}};
+  try{var raw=localStorage.getItem(KEY); if(raw) st=JSON.parse(raw)||st;}catch(e){}
+  st.m=st.m||{}; st.q=st.q||{};
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+  var NM=11, NQ=11;
+  var secs=[].slice.call(document.querySelectorAll('main section'));
+  var rail=document.getElementById('rail'); rail.innerHTML='';
+  secs.forEach(function(){rail.appendChild(document.createElement('i'));});
+  function refresh(){
+    var m=Object.keys(st.m).filter(function(k){return st.m[k]}).length;
+    var q=Object.keys(st.q).filter(function(k){return st.q[k]}).length;
+    document.getElementById('dm').textContent=m;
+    document.getElementById('dq').textContent=q;
+    var p=Math.round((m+q)/(NM+NQ)*100);
+    document.getElementById('pct').textContent=p+'%';
+    document.getElementById('ring').setAttribute('stroke-dasharray',p+' 100');
+    var links=document.querySelectorAll('nav.side li');
+    secs.forEach(function(s,i){
+      var d=s.querySelector('.do'), done=d && st.m[d.dataset.id];
+      rail.children[i].classList.toggle('on',!!done);
+      if(links[i]) links[i].classList.toggle('fin',!!done);
+    });
+  }
+  document.querySelectorAll('.do').forEach(function(d){
+    var b=d.querySelector('.done'), id=d.dataset.id;
+    function paint(){b.setAttribute('aria-pressed',st.m[id]?'true':'false'); b.textContent=st.m[id]?'완료함':'완료했어요';}
+    paint();
+    b.addEventListener('click',function(){st.m[id]=!st.m[id]; save(); paint(); refresh();});
+  });
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var id=q.dataset.id, ans=+q.dataset.ans, ex=q.querySelector('.expl'), bs=q.querySelectorAll('.opts button');
+    function mark(i){
+      bs.forEach(function(b,j){b.classList.remove('right','wrong'); if(j===ans&&i===ans)b.classList.add('right');});
+      if(i!==ans){bs[i].classList.add('wrong'); ex.hidden=false; ex.textContent='❌ 다시 골라 보세요. '+ex.dataset.e;}
+      else{ex.hidden=false; ex.textContent='⭕ 정답입니다. '+ex.dataset.e;}
+    }
+    if(!ex.dataset.e) ex.dataset.e=ex.textContent;
+    if(st.q[id]) mark(ans);
+    bs.forEach(function(b,i){b.addEventListener('click',function(){mark(i); if(i===ans)st.q[id]=true; save(); refresh();});});
+  });
+  function copyText(t,btn){
+    var okMsg=function(){var o=btn.textContent; btn.textContent='복사됨'; btn.classList.add('done-c'); setTimeout(function(){btn.textContent=o; btn.classList.remove('done-c');},1400);};
+    var fail=function(){btn.textContent='길게 눌러 직접 복사'; };
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(okMsg,function(){fallback()});}else fallback();
+    function fallback(){try{var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); var r=document.execCommand('copy'); document.body.removeChild(ta); r?okMsg():fail();}catch(e){fail();}}
+  }
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=b.dataset.text; if(t==null){t=b.closest('.code').querySelector('code').textContent;}
+      copyText(t,b);
+    });
+  });
+  document.getElementById('dl').addEventListener('click',function(){
+    try{
+      var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+      var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='GithubActionsCiCdTutorial.html';
+      document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},500);
+    }catch(e){alert('다운로드가 막혀 있습니다. 브라우저 메뉴의 "다른 이름으로 저장"을 사용하세요.');}
+  });
+  var side=document.getElementById('side');
+  document.getElementById('menuBtn').addEventListener('click',function(){side.classList.toggle('open');});
+  side.addEventListener('click',function(e){if(e.target.closest('a'))side.classList.remove('open');});
+  document.getElementById('reset').addEventListener('click',function(){if(confirm('미션·퀴즈 기록을 모두 지울까요?')){st={m:{},q:{}}; save(); location.reload();}});
+  refresh();
+})();
+</script>
+</body>
+</html>

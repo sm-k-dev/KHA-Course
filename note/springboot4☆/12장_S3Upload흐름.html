@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<!-- v1 · 2026-11-04 · S3 업로드 코드 흐름 애니메이션 자습서 (C:\Blog 프로젝트 실제 코드 기준) -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>새 글 등록 → S3 버킷 업로드 · 코드 흐름 애니메이션 자습서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f6f7fb; --card:#fff; --ink:#1d2433; --sub:#5b6478; --line:#e3e6ef;
+  --pri:#2f6bff; --pri2:#e8efff; --ok:#16a34a; --okbg:#e9f9ef; --warn:#d97706; --warnbg:#fff6e5;
+  --bad:#dc2626; --badbg:#fdeeee; --aws:#ff9900; --code:#0f1626; --codeln:#58627a;
+  --mono: "JetBrains Mono","D2Coding","Consolas",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Pretendard,"Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px}
+code,pre{font-family:var(--mono)}
+:not(pre)>code{background:#eef1f8;border-radius:5px;padding:1px 6px;font-size:.88em;color:#b4235a}
+a{color:var(--pri)}
+
+/* ── 사이드바 ── */
+#side{position:fixed;left:0;top:0;bottom:0;width:260px;background:#121a2c;color:#cdd5e6;padding:22px 16px;overflow-y:auto;z-index:50;transition:transform .25s}
+#side h2{font-size:15px;color:#fff;margin:0 0 4px}
+#side .ver{font-size:12px;color:#7d89a3;margin-bottom:18px}
+#side a{display:block;color:#cdd5e6;text-decoration:none;padding:7px 10px;border-radius:8px;font-size:14px}
+#side a:hover,#side a.on{background:#24304a;color:#fff}
+#side .grp{font-size:11px;color:#7d89a3;margin:14px 10px 4px;letter-spacing:.05em}
+#burger{display:none;position:fixed;left:12px;top:12px;z-index:60;background:#121a2c;color:#fff;border:0;border-radius:10px;width:44px;height:44px;font-size:22px;cursor:pointer}
+main{margin-left:260px;padding:28px 36px 120px;max-width:1500px}
+
+/* ── 히어로 ── */
+.hero{background:linear-gradient(135deg,#1b2a4e,#2f6bff 70%,#ff9900);color:#fff;border-radius:20px;padding:34px 34px 30px;position:relative;overflow:hidden}
+.hero h1{margin:0 0 8px;font-size:30px;line-height:1.3}
+.hero p{margin:4px 0;opacity:.93}
+.hero .btns{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+.btn.w{background:#fff;color:#1b2a4e}
+.btn.g{background:rgba(255,255,255,.18);color:#fff}
+.btn.p{background:var(--pri);color:#fff}
+.btn.s{background:#eef1f8;color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+
+section{background:var(--card);border-radius:18px;padding:28px 30px;margin-top:26px;box-shadow:0 1px 3px rgba(20,30,60,.06)}
+section>h2{margin:0 0 14px;font-size:24px}
+h3{font-size:19px;margin:26px 0 10px}
+.why{background:var(--pri2);border-left:5px solid var(--pri);border-radius:12px;padding:14px 18px;margin:12px 0}
+.why b:first-child{display:block;margin-bottom:4px}
+.warn{background:var(--warnbg);border-left:5px solid var(--warn);border-radius:12px;padding:14px 18px;margin:14px 0}
+.okp{background:var(--okbg);border-left:5px solid var(--ok);border-radius:12px;padding:12px 18px;margin:10px 0 16px;font-size:14.5px}
+.okp pre{background:#fff;border:1px solid #cfe9d8;color:#1d2433;padding:10px 12px;border-radius:8px;overflow-x:auto;font-size:13px;margin:6px 0 0}
+table.t{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px}
+table.t th,table.t td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.t th{background:#f1f3f9}
+ol.steps{padding-left:0;list-style:none;counter-reset:s}
+ol.steps>li{counter-increment:s;position:relative;padding-left:44px;margin:14px 0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--pri);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
+
+/* 복붙 블록 */
+.cmd{position:relative;margin:8px 0}
+.cmd pre{background:var(--code);color:#e6ebf5;border-radius:10px;padding:14px 16px;padding-right:84px;overflow-x:auto;margin:0;font-size:13.5px;line-height:1.6}
+.copy{position:absolute;top:8px;right:8px;background:#2a3550;color:#fff;border:0;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit}
+.copy.done{background:var(--ok)}
+.ph{font-size:13px;color:var(--sub);margin:2px 0 8px}
+
+/* 미션·퀴즈 */
+.do{border:2px dashed #9db8ff;border-radius:14px;padding:16px 20px;margin:22px 0 12px;background:#fbfcff}
+.do h4,.quiz h4{margin:0 0 8px;font-size:16px}
+.do.fin{border-color:var(--ok);background:var(--okbg)}
+.done-btn{margin-top:8px}
+.quiz{border:2px solid #ffd59a;border-radius:14px;padding:16px 20px;margin:12px 0;background:#fffcf5}
+.quiz .opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-family:inherit;font-size:14.5px}
+.quiz .opt:hover{border-color:var(--pri)}
+.quiz .opt.right{border-color:var(--ok);background:var(--okbg)}
+.quiz .opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.quiz .exp{display:none;margin-top:8px;font-size:14px;background:#fff;border-radius:10px;padding:10px 14px;border:1px solid var(--line)}
+.quiz.answered .exp{display:block}
+
+/* 용어 비유 */
+.terms{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:12px 0}
+.term{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fafbff;font-size:14.5px}
+.term b{display:block;font-size:15px}
+
+/* ── 플레이어 ── */
+#player{padding:20px}
+.phases{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.phase{font-size:12.5px;padding:4px 10px;border-radius:20px;background:#eef1f8;color:var(--sub);cursor:pointer;border:0;font-family:inherit}
+.phase.on{background:var(--pri);color:#fff}
+.phase.past{background:#dfe8ff;color:#2a4fb8}
+.pgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+.codebox{background:var(--code);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:78vh;min-height:520px;position:sticky;top:12px}
+.codehead{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#18213a;color:#c9d3ea;font-size:12.5px}
+.codehead .dot{width:10px;height:10px;border-radius:50%}
+.codehead .path{font-family:var(--mono);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.codehead .rng{background:#2f6bff;color:#fff;border-radius:6px;padding:1px 7px;font-family:var(--mono)}
+.codescroll{overflow:auto;flex:1;padding:8px 0 40px}
+.ln{display:flex;font-family:var(--mono);font-size:12.6px;line-height:1.62;white-space:pre;color:#d7deee;transition:background .3s,opacity .3s}
+.ln .no{flex:0 0 46px;text-align:right;padding-right:12px;color:var(--codeln);user-select:none}
+.ln .tx{flex:1;padding-right:16px}
+.codescroll.focus .ln{opacity:.42}
+.codescroll.focus .ln.hi{opacity:1;background:rgba(47,107,255,.22);box-shadow:inset 3px 0 0 #ffb020}
+.ln.hi .no{color:#ffb020}
+.k{color:#ff7ab2}.s{color:#9be28a}.c{color:#7f8aa3;font-style:italic}.a{color:#ffcc66}.n{color:#f6a35b}.tg{color:#7cc7ff}.at{color:#c5a5ff}.ty{color:#6ee7d8}
+
+.right{display:flex;flex-direction:column;gap:12px}
+.stepbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stepbar .num{font-weight:800;color:var(--pri);font-size:14px}
+.stepbar h3{margin:0;font-size:18px;flex:1;min-width:200px}
+.prog{height:6px;background:#e9edf6;border-radius:6px;overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--aws));width:0;transition:width .35s}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+
+.diagram{position:relative;height:250px;background:radial-gradient(circle at 20% 10%,#f2f6ff,#fff 60%);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.diagram svg{position:absolute;inset:0;width:100%;height:100%}
+.node{position:absolute;transform:translate(-50%,-50%);width:21%;min-width:96px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 6px;text-align:center;font-size:13px;font-weight:700;transition:all .35s;z-index:2}
+.node small{display:block;font-weight:500;font-size:10.5px;color:var(--sub);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.node.on{border-color:var(--pri);box-shadow:0 0 0 5px rgba(47,107,255,.15);transform:translate(-50%,-50%) scale(1.06)}
+.node.s3.on{border-color:var(--aws);box-shadow:0 0 0 5px rgba(255,153,0,.2)}
+.packet{position:absolute;z-index:5;transform:translate(-50%,-50%);background:#1b2a4e;color:#fff;border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;opacity:0;transition:left .8s cubic-bezier(.6,0,.3,1),top .8s cubic-bezier(.6,0,.3,1),opacity .25s;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.packet.show{opacity:1}
+.packet.aws{background:var(--aws);color:#1b1b1b}
+.diagram .now{position:absolute;left:10px;bottom:6px;font-size:11.5px;color:var(--sub)}
+
+.screen{min-height:250px}
+.explain{background:#fbfcff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:14.8px}
+.explain .core{font-weight:800;color:#1b2a4e;margin-bottom:6px}
+.explain ul{margin:6px 0 0;padding-left:20px}
+.explain li{margin:4px 0}
+.explain .meta{font-size:12.5px;color:var(--sub);margin-top:8px}
+
+/* 화면 예시(.shot) */
+.shot{border:1px solid #d5dae6;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(20,30,60,.08)}
+.shot .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:#eef1f7;border-bottom:1px solid #dde2ec;font-size:12px;color:var(--sub)}
+.shot .bar i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.shot .bar .addr{flex:1;background:#fff;border-radius:6px;padding:2px 10px;font-family:var(--mono);font-size:11.5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.shot .body{padding:12px 14px;font-size:13.5px}
+.shot .cap{font-size:11.5px;color:var(--sub);padding:6px 12px;border-top:1px dashed #e1e5ee;background:#fafbfd}
+.term-bg{background:#0f1626;color:#d7deee;font-family:var(--mono);font-size:12.3px;line-height:1.6;padding:12px 14px;white-space:pre-wrap;word-break:break-all}
+.term-bg .g{color:#7ee59a}.term-bg .y{color:#ffcc66}.term-bg .b{color:#7cc7ff}.term-bg .r{color:#ff8a8a}.term-bg .m{color:#7f8aa3}
+.fx{opacity:0;animation:fx .5s forwards;animation-delay:var(--d,0s)}
+@keyframes fx{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pop{animation:pop .6s both;animation-delay:var(--d,0s)}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.blink{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:13px}
+.kv b{color:var(--sub);font-weight:600}
+.kv span{font-family:var(--mono);word-break:break-all}
+.chip{display:inline-block;border-radius:8px;padding:3px 9px;font-family:var(--mono);font-size:12px;margin:2px;background:#eef1f8}
+.chip.blue{background:#dfe8ff;color:#1f4fd6}.chip.org{background:#fff0d6;color:#9a5a00}.chip.grn{background:#dcf7e5;color:#11743a}.chip.red{background:#fde2e2;color:#a61b1b;text-decoration:line-through}
+.mini{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.mini .in{border:1px solid #ced4e0;border-radius:6px;padding:5px 9px;margin:5px 0;font-size:12.5px;color:#8a93a6;background:#fff}
+.mini .lbl{font-size:12px;font-weight:700}
+.hl-ring{outline:3px solid #ffb020;outline-offset:2px;border-radius:6px;animation:ring 1.2s infinite}
+@keyframes ring{50%{outline-color:rgba(255,176,32,.3)}}
+.s3c{font-size:12.5px}
+.s3c .crumb{color:#0972d3;font-size:12px;margin-bottom:6px}
+.s3c .tabs{display:flex;gap:14px;border-bottom:1px solid #e3e6ef;margin-bottom:6px;font-size:12.5px}
+.s3c .tabs span{padding:4px 0}.s3c .tabs .on{border-bottom:3px solid #0972d3;font-weight:700}
+.s3c table{width:100%;border-collapse:collapse}
+.s3c th,.s3c td{text-align:left;padding:5px 6px;border-bottom:1px solid #eef0f5;white-space:nowrap;font-size:12px}
+.s3c th{color:#5b6478;font-weight:600}
+.s3c tr.new td{background:#fff4dc;animation:newrow 1.6s ease}
+@keyframes newrow{0%{background:#ffd27a}100%{background:#fff4dc}}
+.s3c .lk{color:#0972d3}
+.catimg{width:120px;height:90px;border-radius:8px;background:linear-gradient(135deg,#ffd9a8,#ff9f6b);display:grid;place-items:center;font-size:52px}
+.arrow{color:var(--pri);font-weight:800;padding:0 6px}
+.assemble span{display:inline-block}
+
+/* 전체 코드 */
+details.file{border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden}
+details.file summary{cursor:pointer;padding:11px 16px;background:#f5f7fc;font-weight:700;font-size:14.5px;list-style:none;display:flex;gap:10px;align-items:center}
+details.file summary::-webkit-details-marker{display:none}
+details.file summary .p{font-family:var(--mono);font-weight:500;color:var(--sub);font-size:12.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.file .wrap{position:relative;background:var(--code)}
+details.file .codescroll{max-height:70vh;padding:10px 0}
+
+/* 대시보드 */
+#dash{position:fixed;right:18px;bottom:18px;z-index:70;background:#121a2c;color:#fff;border-radius:16px;padding:12px 16px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer;font-size:13px}
+#dash svg{width:54px;height:54px}
+#dash .pct{font-size:13px;font-weight:800}
+#dash .rows div{white-space:nowrap}
+#dash.mini .rows{display:none}
+
+@media (max-width:1180px){ .pgrid{grid-template-columns:minmax(0,1fr)} .codebox{position:relative;height:56vh;min-height:360px;top:0} }
+@media (max-width:1000px){
+  #burger{display:block}
+  #side{transform:translateX(-100%)}
+  #side.open{transform:none}
+  main{margin-left:0;padding:70px 12px 120px}
+  section{padding:20px 14px} #player{padding:16px 10px} .stepbar h3{min-width:0}
+  .hero{padding:24px 20px}.hero h1{font-size:23px}
+  .node{font-size:11.5px;min-width:72px;width:23%}
+  .node small{font-size:9px}
+  #dash{right:10px;bottom:10px;padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<button id="burger" aria-label="목차 열기">☰</button>
+<nav id="side">
+  <h2>🪣 S3 업로드 코드 흐름</h2>
+  <div class="ver">v1 · 2026-11-04 · C:\Blog 실제 코드</div>
+  <div class="grp">시작</div>
+  <a href="#sec-map">0. 전체 지도와 용어</a>
+  <div class="grp">핵심</div>
+  <a href="#player">1. 단계별 애니메이션 (30단계)</a>
+  <a href="#sec-code">2. 관련 코드 전체 보기</a>
+  <div class="grp">실습</div>
+  <a href="#sec-verify">3. 버킷에 올라갔는지 직접 확인</a>
+  <a href="#sec-errors">4. 자주 나는 오류와 해결</a>
+  <a href="#sec-final">5. 최종 점검</a>
+</nav>
+
+<main>
+<div class="hero">
+  <h1>📝 새 글 등록 → 🪣 S3 버킷 업로드<br>코드가 움직이는 순서, 30단계 애니메이션</h1>
+  <p>글쓰기 화면에서 이미지를 고르는 순간부터, S3 버킷 콘솔에 파일이 보일 때까지 따라갑니다.</p>
+  <p>왼쪽에는 <b>실제 프로젝트 코드</b>가, 오른쪽에는 그 코드가 하는 일이 움직이는 그림으로 나옵니다.</p>
+  <div class="btns">
+    <button class="btn w" onclick="location.hash='#player'">▶ 애니메이션 바로 시작</button>
+    <button class="btn g" id="dl">⬇️ 이 문서 다운로드</button>
+    <button class="btn g" id="reset">↺ 진행 기록 초기화</button>
+  </div>
+</div>
+
+<!-- ───────────── 0. 전체 지도 ───────────── -->
+<section id="sec-map">
+  <h2>0. 전체 지도와 용어</h2>
+  <div class="why"><b>💡 왜 이 흐름을 알아야 하나요?</b>
+    배포 서버(일래스틱 빈스톡)는 다시 배포하면 디스크 파일이 사라집니다.<br>
+    그래서 이미지는 모든 서버가 함께 쓰는 <b>S3</b>에 올립니다.<br>
+    오류가 나면 "몇 번째 단계에서 멈췄는지"를 알아야 고칠 수 있습니다.</div>
+
+  <h3>큰 그림: 요청은 2번 갑니다</h3>
+  <div class="shot"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="addr">전체 흐름 요약</span></div>
+    <div class="body">
+      <p style="margin:0 0 6px"><b>① 이미지 고를 때</b> — <span class="chip blue">POST /api/upload</span></p>
+      <div style="font-size:13.5px">article.js <span class="arrow">→</span> 토큰 검사 필터 <span class="arrow">→</span> UploadController <span class="arrow">→</span> AwsS3Service <span class="arrow">→</span> <b style="color:#c46e00">S3 버킷에 파일 저장</b> <span class="arrow">→</span> 주소(URL) 돌려받음</div>
+      <p style="margin:12px 0 6px"><b>② [등록] 누를 때</b> — <span class="chip blue">POST /api/articles</span></p>
+      <div style="font-size:13.5px">article.js <span class="arrow">→</span> 토큰 검사 필터 <span class="arrow">→</span> BlogApiController <span class="arrow">→</span> BlogService <span class="arrow">→</span> <b>DB에 글 + 이미지 주소 저장</b></div>
+      <p style="margin:12px 0 0;font-size:13px;color:var(--sub)">핵심: 이미지 파일은 ①에서 이미 S3에 올라갑니다. ②에서는 <b>주소 글자만</b> DB에 저장합니다.</p>
+    </div>
+    <div class="cap">그림은 흐름을 요약한 예시입니다.</div>
+  </div>
+
+  <h3>용어를 생활 비유로</h3>
+  <div class="terms">
+    <div class="term"><b>🪣 S3 버킷</b>인터넷에 있는 대형 창고입니다. 이 프로젝트의 창고 이름은 <code>blog-tlstkdrnr4671</code>입니다.</div>
+    <div class="term"><b>🏷️ 키(key)</b>창고 안 물건의 위치표입니다. 예: <code>uploads/3f2a….png</code></div>
+    <div class="term"><b>🧰 빈(Bean)</b>스프링이 미리 만들어 공구함에 넣어 둔 객체입니다. 필요한 곳에 꺼내 줍니다.</div>
+    <div class="term"><b>🎭 프로파일(Profile)</b>"오늘의 근무 모드"입니다. <code>local</code>이면 내 PC 저장, 없으면 S3 저장입니다.</div>
+    <div class="term"><b>🎫 액세스 토큰</b>놀이공원 손목 팔찌입니다. <code>/api/**</code> 문을 지날 때마다 검사합니다.</div>
+    <div class="term"><b>🔑 IAM 역할</b>EC2 서버에 걸어 둔 "창고 출입증"입니다. 이게 있어야 S3에 넣을 수 있습니다.</div>
+    <div class="term"><b>📜 버킷 정책</b>창고 정문 안내문입니다. "uploads/ 물건은 누구나 구경 가능"이라고 적혀 있습니다.</div>
+    <div class="term"><b>📦 multipart</b>택배 상자 여러 칸에 파일과 값을 나눠 담아 보내는 방식입니다.</div>
+  </div>
+
+  <div class="do" data-id="m-map"><h4>🛠️ 미션 0</h4>
+    <ol><li>위 큰 그림에서 요청 ①과 ②의 주소를 소리 내어 읽어 보세요.</li>
+      <li>"이미지 파일은 언제 S3에 올라가나요?"에 스스로 답해 보세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-map" data-ans="1"><h4>🧠 퀴즈 0</h4>
+    <p>[등록] 버튼을 누를 때 서버로 보내는 이미지 관련 값은 무엇일까요?</p>
+    <button class="opt">이미지 파일 자체(byte 배열)</button>
+    <button class="opt">이미 S3에 올라간 이미지의 주소(문자열)</button>
+    <button class="opt">이미지를 보내지 않는다</button>
+    <div class="exp">정답은 2번입니다. 파일은 고르는 순간 <code>/api/upload</code>로 이미 S3에 올라갑니다. 등록 때는 숨은 칸 <code>image-url</code>의 주소 글자만 JSON으로 보냅니다.</div></div>
+</section>
+
+<!-- ───────────── 1. 플레이어 ───────────── -->
+<section id="player">
+  <h2>1. 단계별 애니메이션</h2>
+  <div class="why"><b>💡 보는 방법</b>
+    [다음 ▶] 또는 키보드 → 키로 한 단계씩 넘깁니다. 왼쪽 코드의 <b style="color:#c47a00">노란 줄</b>이 지금 실행되는 부분입니다.<br>
+    오른쪽 위 그림에서 <b>파란 알약</b>이 데이터가 이동하는 모습입니다. 아래 화면 예시는 그 순간 실제로 보이는 모습입니다.</div>
+  <div class="phases" id="phases"></div>
+  <div class="pgrid">
+    <div class="codebox">
+      <div class="codehead"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
+        <span class="path" id="cpath"></span><span class="rng" id="crng"></span>
+        <button class="copy" id="ccopy" style="position:static">파일 복사</button></div>
+      <div class="codescroll focus" id="cview"></div>
+    </div>
+    <div class="right">
+      <div class="stepbar"><span class="num" id="snum"></span><h3 id="stitle"></h3></div>
+      <div class="prog"><i id="sprog"></i></div>
+      <div class="ctrl">
+        <button class="btn s" id="bprev">◀ 이전</button>
+        <button class="btn p" id="bnext">다음 ▶</button>
+        <button class="btn s" id="bplay">⏯ 자동 재생</button>
+        <button class="btn s" id="breplay">↻ 이 단계 다시</button>
+      </div>
+      <div class="diagram" id="diagram">
+        <svg aria-hidden="true">
+          <g stroke="#cfd6e6" stroke-width="2" stroke-dasharray="5 5" fill="none">
+            <line x1="12%" y1="60" x2="37%" y2="60"/><line x1="37%" y1="60" x2="62%" y2="60"/><line x1="62%" y1="60" x2="87%" y2="60"/>
+            <line x1="87%" y1="60" x2="87%" y2="185"/><line x1="87%" y1="60" x2="62%" y2="185"/><line x1="87%" y1="60" x2="37%" y2="185"/>
+            <line x1="12%" y1="185" x2="87%" y2="60" stroke="#e6e9f2"/>
+          </g>
+        </svg>
+        <div class="node" data-n="browser" style="left:12%;top:60px">🌐 브라우저<small>article.js</small></div>
+        <div class="node" data-n="security" style="left:37%;top:60px">🛡️ 보안 필터<small>TokenAuthenticationFilter</small></div>
+        <div class="node" data-n="controller" style="left:62%;top:60px">🎮 컨트롤러<small>UploadController</small></div>
+        <div class="node" data-n="service" style="left:87%;top:60px">⚙️ 서비스<small>AwsS3Service</small></div>
+        <div class="node" data-n="container" style="left:12%;top:185px">🧰 스프링 컨테이너<small>빈 보관함</small></div>
+        <div class="node" data-n="db" style="left:37%;top:185px">🗄️ DB<small>article 표</small></div>
+        <div class="node" data-n="iam" style="left:62%;top:185px">🔑 EC2 메타데이터<small>IAM 임시 키</small></div>
+        <div class="node s3" data-n="s3" style="left:87%;top:185px">🪣 S3 버킷<small>blog-tlstkdrnr4671</small></div>
+        <div class="packet" id="packet"></div>
+        <div class="now" id="now"></div>
+      </div>
+      <div class="screen" id="screen"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+  </div>
+  <div class="do" data-id="m-player"><h4>🛠️ 미션 1</h4>
+    <ol><li>1단계부터 30단계까지 끝까지 넘겨 보세요. (마지막 단계에 도착하면 자동 체크됩니다)</li>
+      <li>⑤ S3 업로드 구간에서 왼쪽 노란 줄과 오른쪽 주황 알약이 함께 움직이는 것을 확인하세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-player" data-ans="2"><h4>🧠 퀴즈 1</h4>
+    <p>AwsS3Service가 키를 <code>"uploads/" + UUID + "." + ext</code>로 만드는 가장 중요한 이유 두 가지는?</p>
+    <button class="opt">파일을 작게 압축하려고</button>
+    <button class="opt">S3가 폴더를 꼭 요구해서</button>
+    <button class="opt">이름 충돌 방지(UUID) + 버킷 정책이 uploads/* 만 공개하기 때문</button>
+    <div class="exp">정답은 3번입니다. UUID는 매번 다른 이름이라 덮어쓰기를 막습니다. 버킷 정책의 Resource가 <code>…/uploads/*</code>라서 이 경로 아래 파일만 브라우저가 읽을 수 있습니다.</div></div>
+</section>
+
+<!-- ───────────── 2. 전체 코드 ───────────── -->
+<section id="sec-code">
+  <h2>2. 관련 코드 전체 보기</h2>
+  <div class="why"><b>💡 왜 전체 코드를 따로 보나요?</b>
+    애니메이션은 "실행되는 줄"만 강조합니다. 여기서는 각 파일을 처음부터 끝까지 읽을 수 있습니다.<br>
+    모두 <code>C:\Blog</code> 프로젝트의 실제 파일 내용 그대로입니다. 일부 큰 파일은 관련 부분만 원래 줄 번호와 함께 보여줍니다.</div>
+  <div class="ph">흐름 순서대로 정렬했습니다. 제목을 누르면 펼쳐집니다. 각 파일의 [복사] 버튼으로 내용을 복사할 수 있습니다.</div>
+  <div id="allcode"></div>
+  <div class="do" data-id="m-code"><h4>🛠️ 미션 2</h4>
+    <ol><li><b>AwsS3Service.java</b>를 펼쳐 <code>store()</code> 안의 4가지 일(확장자 → 키 → 업로드 → URL)을 찾으세요.</li>
+      <li><b>LocalFileStorageService.java</b>와 비교해 <code>@Profile</code> 값이 서로 반대인지 확인하세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-code" data-ans="0"><h4>🧠 퀴즈 2</h4>
+    <p>인텔리제이에서 활성화된 프로파일을 <code>local</code>로 실행하면 이미지는 어디에 저장될까요?</p>
+    <button class="opt">내 PC의 프로젝트루트/uploads 폴더 (LocalFileStorageService)</button>
+    <button class="opt">S3 버킷 (AwsS3Service)</button>
+    <button class="opt">두 곳 모두</button>
+    <div class="exp">정답은 1번입니다. <code>@Profile("local")</code>인 LocalFileStorageService만 빈으로 등록됩니다. AwsS3Service는 <code>@Profile("!local")</code>이라 빠집니다. 그래서 S3 흐름은 배포 서버(프로파일 없음)에서 동작합니다.</div></div>
+</section>
+
+<!-- ───────────── 3. 직접 확인 ───────────── -->
+<section id="sec-verify">
+  <h2>3. 버킷에 올라갔는지 직접 확인</h2>
+  <div class="why"><b>💡 왜 확인하나요?</b>
+    화면에 미리보기가 떴다면 업로드는 성공입니다. 하지만 "어디에, 어떤 이름으로" 들어갔는지 직접 보면 흐름이 머리에 남습니다.</div>
+  <ol class="steps">
+    <li><b>배포된 블로그에서 글쓰기 화면을 엽니다.</b> 로그인 후 <code>/new-article</code>로 이동합니다.
+      <div class="ph">예: <code>http://(빈스톡 환경 주소)/new-article</code></div></li>
+    <li><b>F12 → [Network(네트워크)] 탭을 열고 이미지를 고릅니다.</b> 목록에 <code>upload</code>가 생깁니다. 눌러서 [Response(응답)]를 봅니다.
+      <div class="okp">✅ 이렇게 나오면 성공 — 상태 <b>201</b>, 응답에 <code>https://…amazonaws.com/uploads/</code> 주소가 있음
+        <pre>{"imageUrl":"https://blog-tlstkdrnr4671.s3.ap-northeast-2.amazonaws.com/uploads/3f2a9c1e-7b4d-4e2a-9f1c-0d8e5b6a2c41.png"}</pre></div></li>
+    <li><b>AWS 콘솔에서 확인합니다.</b> S3 → 버킷 <code>blog-tlstkdrnr4671</code> → <code>uploads/</code> 폴더를 엽니다.
+      <div class="okp">✅ 이렇게 나오면 성공 — 방금 시간으로 된 <code>.png</code>(또는 .jpg) 파일이 목록 맨 위(정렬 시)에 있음</div></li>
+    <li><b>(선택) AWS CLI가 설치된 PC라면 터미널에서 확인합니다.</b> 버킷의 uploads 목록을 봅니다.
+      <div class="cmd"><pre>aws s3 ls s3://blog-tlstkdrnr4671/uploads/</pre><button class="copy">복사</button></div>
+      <div class="okp">✅ 이렇게 나오면 성공 — 날짜·크기·UUID 파일 이름 한 줄씩 (아래는 예시)
+        <pre>2026-11-04 14:15:07     245812 3f2a9c1e-7b4d-4e2a-9f1c-0d8e5b6a2c41.png</pre></div></li>
+    <li><b>(선택) 저장된 콘텐츠 유형을 확인합니다.</b> <code>&lt;파일이름&gt;</code> 자리에 위 목록의 이름을 넣습니다.
+      <div class="cmd"><pre>aws s3api head-object --bucket blog-tlstkdrnr4671 --key uploads/&lt;파일이름&gt;</pre><button class="copy">복사</button></div>
+      <div class="ph">실제 예시: <code>aws s3api head-object --bucket blog-tlstkdrnr4671 --key uploads/3f2a9c1e-7b4d-4e2a-9f1c-0d8e5b6a2c41.png</code></div>
+      <div class="okp">✅ 이렇게 나오면 성공 — <code>"ContentType": "image/png"</code> 가 보임 (예시)
+        <pre>{
+    "LastModified": "2026-11-04T05:15:07+00:00",
+    "ContentLength": 245812,
+    "ETag": "\"9b2cf535f27731c974343645a3985328\"",
+    "ContentType": "image/png",
+    ...
+}</pre></div></li>
+    <li><b>(선택) 누구나 읽을 수 있는지 확인합니다.</b> 윈도우 PowerShell에서는 <code>curl</code>이 다른 명령이라 <code>curl.exe</code>로 씁니다.
+      <div class="cmd"><pre>curl.exe -I https://blog-tlstkdrnr4671.s3.ap-northeast-2.amazonaws.com/uploads/&lt;파일이름&gt;</pre><button class="copy">복사</button></div>
+      <div class="okp">✅ 이렇게 나오면 성공 — 첫 줄 <b>200 OK</b>, <code>Content-Type: image/png</code> (예시)
+        <pre>HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Length: 245812
+Server: AmazonS3</pre></div></li>
+  </ol>
+  <div class="warn">⚠️ <b>CLI에서 <code>Unable to locate credentials</code>가 나오면</b> 내 PC에 AWS 키가 설정되지 않은 것입니다. CLI 확인은 선택 사항이니 콘솔(3번)로 확인하면 됩니다. 키 설정이 필요하면 아래를 실행해 안내에 따라 입력합니다.
+    <div class="cmd"><pre>aws configure</pre><button class="copy">복사</button></div></div>
+  <p class="ph">※ CLI 출력은 AWS 공식 형식을 따른 예시입니다. 날짜·크기·ETag 값은 환경마다 다릅니다.</p>
+  <div class="do" data-id="m-verify"><h4>🛠️ 미션 3</h4>
+    <ol><li>배포된 블로그에서 이미지를 하나 올리고 Network 탭의 <code>imageUrl</code>을 확인하세요.</li>
+      <li>S3 콘솔 <code>uploads/</code>에서 같은 파일 이름을 찾으세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-verify" data-ans="1"><h4>🧠 퀴즈 3</h4>
+    <p><code>curl.exe -I</code>로 이미지 주소를 열었더니 <b>403 Forbidden</b>이 나왔습니다. 가장 먼저 볼 곳은?</p>
+    <button class="opt">EC2 IAM 역할의 s3:PutObject 권한</button>
+    <button class="opt">버킷 정책(s3:GetObject, uploads/*)과 퍼블릭 액세스 차단 설정</button>
+    <button class="opt">article.js 의 FormData 키 이름</button>
+    <div class="exp">정답은 2번입니다. "읽기"가 막힌 것입니다. 읽기는 버킷 정책이 허용합니다. IAM 역할은 "업로드" 권한이라 이 상황과 다릅니다.</div></div>
+</section>
+
+<!-- ───────────── 4. 오류 ───────────── -->
+<section id="sec-errors">
+  <h2>4. 자주 나는 오류와 해결</h2>
+  <div class="why"><b>💡 왜 미리 알아두나요?</b> 아래 오류는 위 30단계 중 특정 단계에서 납니다. 단계 번호를 함께 적었습니다. 플레이어에서 그 단계를 다시 보면 원인이 보입니다.</div>
+
+  <div class="warn">⚠️ <b>1) 업로드 시 500 오류, 로그에 <code>403 AccessDenied … not authorized to perform: s3:PutObject</code></b> — 18단계<br>
+    EC2 출입증(IAM 역할)에 S3 권한이 없습니다. 콘솔: IAM → 역할 → <code>aws-elasticbeanstalk-ec2-role</code> → 권한 추가 → 정책 연결 → <code>AmazonS3FullAccess</code>.<br>
+    CLI로 하려면 (관리자 권한 키가 설정된 PC에서):
+    <div class="cmd"><pre>aws iam attach-role-policy --role-name aws-elasticbeanstalk-ec2-role --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess</pre><button class="copy">복사</button></div>
+    <div class="okp">✅ 성공 시 출력 없이 끝납니다. 다시 업로드하면 201이 옵니다.</div></div>
+
+  <div class="warn">⚠️ <b>2) 업로드는 됐는데 미리보기 이미지가 깨짐 (이미지 주소가 403)</b> — 22단계<br>
+    버킷 정책이 없거나, "모든 퍼블릭 액세스 차단"이 켜져 있습니다. 버킷 → 권한 → 버킷 정책에 아래를 저장합니다.
+    <div class="cmd"><pre>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadUploads",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::blog-tlstkdrnr4671/uploads/*"
+    }
+  ]
+}</pre><button class="copy">복사</button></div>
+    <div class="okp">✅ 저장 후 이미지 주소를 새 탭에서 열면 그림이 보입니다.</div></div>
+
+  <div class="warn">⚠️ <b>3) 1MB가 넘는 사진만 업로드 실패 (<code>MaxUploadSizeExceededException</code>)</b> — 12단계<br>
+    스프링 부트는 기본으로 파일 1개당 1MB까지만 받습니다. 현재 <code>application.yaml</code>에 크기 설정이 없습니다.
+    이미 있는 <code>spring:</code> 바로 아래에 두 칸 들여 붙입니다. (<code>spring:</code>을 하나 더 만들면 안 됩니다)
+    <div class="cmd"><pre>  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB</pre><button class="copy">복사</button></div>
+    <div class="okp">✅ 다시 배포 후 2~5MB 사진이 201로 올라가면 성공입니다.</div></div>
+
+  <div class="warn">⚠️ <b>4) 업로드 시 "이미지 업로드에 실패했습니다." 알림 + Network에 401</b> — 9~11단계<br>
+    액세스 토큰이 만료됐습니다. 글 등록은 <code>httpRequest()</code>가 토큰을 다시 받아 오지만, 이미지 업로드는 <code>fetch</code>를 직접 써서 재발급을 하지 않습니다.
+    다시 로그인하면 해결됩니다. 근본적으로는 업로드도 재발급 흐름을 타도록 고치는 것이 좋습니다.</div>
+
+  <div class="warn">⚠️ <b>5) 서버가 안 뜨고 <code>NoUniqueBeanDefinitionException</code> 또는 <code>NoSuchBeanDefinitionException</code></b> — 4단계<br>
+    FileStorageService 구현이 2개 등록됐거나 0개입니다. <code>@Profile("local")</code>과 <code>@Profile("!local")</code>이 정확히 반대인지 확인합니다.</div>
+
+  <div class="warn">⚠️ <b>6) (참고) .jpg 파일의 콘텐츠 유형이 <code>image/jpg</code>로 저장됨</b> — 16단계<br>
+    코드가 <code>"image/" + ext</code>로 만들기 때문입니다. 표준 이름은 <code>image/jpeg</code>입니다. 대부분 브라우저는 그대로 보여주지만, 정확히 하려면 jpg를 jpeg로 바꿔 주면 됩니다.</div>
+
+  <div class="do" data-id="m-err"><h4>🛠️ 미션 4</h4>
+    <ol><li>위 오류 1~5가 각각 몇 단계에서 나는지 플레이어의 단계 버튼으로 찾아가 보세요.</li>
+      <li>3번 설정을 넣는다면 <code>application.yaml</code>의 어느 줄 아래에 넣을지 정해 보세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-err" data-ans="0"><h4>🧠 퀴즈 4</h4>
+    <p>내 PC에서 <code>./gradlew build</code>를 하면 AWS 키가 없는데도 S3Client 빈 생성이 실패하지 않는 이유는?</p>
+    <button class="opt">build() 때는 자격 증명을 찾지 않고, 실제 요청(putObject) 때 찾기 때문</button>
+    <button class="opt">테스트에서는 S3Config가 실행되지 않기 때문</button>
+    <button class="opt">yml에 키가 적혀 있기 때문</button>
+    <div class="exp">정답은 1번입니다. DefaultCredentialsProvider는 요청을 보낼 때 ①~⑥ 순서로 키를 찾습니다. 그래서 빈 생성 시점에는 오류가 나지 않습니다.</div></div>
+</section>
+
+<!-- ───────────── 5. 최종 점검 ───────────── -->
+<section id="sec-final">
+  <h2>5. 최종 점검</h2>
+  <div class="why"><b>💡 아래 순서를 보지 않고 말할 수 있으면 완주입니다.</b></div>
+  <table class="t">
+    <tr><th>#</th><th>누가</th><th>무엇을</th></tr>
+    <tr><td>1</td><td>S3Config</td><td>서버 시작 때 S3Client 빈을 1개 만든다 (리전 ap-northeast-2)</td></tr>
+    <tr><td>2</td><td>article.js</td><td>파일 선택 → FormData('file') → POST /api/upload + Bearer 토큰</td></tr>
+    <tr><td>3</td><td>TokenAuthenticationFilter</td><td>토큰 검사 → SecurityContext에 사용자 저장 → /api/** 통과</td></tr>
+    <tr><td>4</td><td>UploadController</td><td>MultipartFile에서 bytes·원래 이름을 꺼내 store() 호출</td></tr>
+    <tr><td>5</td><td>AwsS3Service</td><td>확장자 → 키(uploads/UUID.ext) → PutObjectRequest → putObject → getUrl</td></tr>
+    <tr><td>6</td><td>S3</td><td>IAM 역할 임시 키로 서명된 PUT을 받아 파일 저장</td></tr>
+    <tr><td>7</td><td>article.js</td><td>201 응답의 imageUrl을 숨은 칸에 넣고 미리보기(S3에서 직접 GET)</td></tr>
+    <tr><td>8</td><td>article.js → BlogService</td><td>[등록] → POST /api/articles → Article.imageUrl에 주소 저장 → INSERT</td></tr>
+  </table>
+  <div class="do" data-id="m-final"><h4>🛠️ 미션 5</h4>
+    <ol><li>표를 가리고 1~8번을 종이에 써 보세요.</li><li>틀린 번호가 있으면 해당 단계 애니메이션을 다시 보세요.</li></ol>
+    <button class="btn p done-btn">완료 체크</button></div>
+  <div class="quiz" data-id="q-final" data-ans="2"><h4>🧠 퀴즈 5</h4>
+    <p><code>s3Client.utilities().getUrl(...)</code>은 무엇을 할까요?</p>
+    <button class="opt">S3에 파일이 있는지 네트워크로 확인한다</button>
+    <button class="opt">파일을 한 번 더 업로드한다</button>
+    <button class="opt">버킷·리전·키로 주소 글자만 조합한다 (네트워크 요청 없음)</button>
+    <div class="exp">정답은 3번입니다. 문자열 조합만 하므로 파일 존재 여부는 확인하지 않습니다.</div></div>
+</section>
+</main>
+
+<div id="dash" title="눌러서 접기/펼치기">
+  <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#2a3550" stroke-width="3.5"/>
+    <circle id="ring" cx="18" cy="18" r="15.9" fill="none" stroke="#ffb020" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 18 18)"/>
+    <text x="18" y="21" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="800" id="pcttxt">0%</text></svg>
+  <div class="rows"><div class="pct">나의 진행률</div><div id="dm">미션 0/6</div><div id="dq">퀴즈 0/6</div><div id="ds">애니메이션 0/30</div></div>
+</div>
+
+<script>
+const ORIGINAL_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+const FILES = {"gradle":{"title":"build.gradle (S3 의존성)","path":"build.gradle","lang":"java","start":22,"note":"(관련 부분 L22-L30, 원래 줄 번호 유지)","text":"dependencies {\n\n    // [AWS S3 업로드용] AWS SDK for Java v2 의 S3 모듈 (버전 2.41.31)\n    //   - S3Config.java 의 S3Client, AwsS3Service.java 의 PutObjectRequest·RequestBody 클래스가\n    //     이 라이브러리에 들어 있다.\n    //   - 함께 딸려 오는 라이브러리: regions(Region 클래스), auth(자격 증명 조회),\n    //     apache-client(실제 HTTPS 요청을 보내는 ApacheHttpClient) 등\n    implementation \u0027software.amazon.awssdk:s3:2.41.31\u0027\n"},"yaml":{"title":"application.yaml (cloud.aws 설정)","path":"src/main/resources/application.yaml","lang":"yaml","start":99,"note":"(관련 부분 L99-L114, 원래 줄 번호 유지)","text":"# ----------------------------------------------------------------------------\n# cloud.aws.* : 스프링이 미리 정해 둔 설정 이름이 아니라 이 프로젝트가 직접 만든 설정 이름이다.\n#   스프링 부트가 이 값을 자동으로 쓰지 않으며, 아래 두 곳에서 @Value 로 직접 꺼내 쓴다.\n#     cloud.aws.region     → S3Config.java  의 s3Client(@Value(\"${cloud.aws.region}\") String region)\n#     cloud.aws.s3.bucket  → AwsS3Service.java 의 @Value(\"${cloud.aws.s3.bucket}\") private String bucket\n# ----------------------------------------------------------------------------\ncloud:\n  aws:\n    # S3 버킷을 만든 리전. ap-northeast-2 = 아시아 태평양(서울)\n    # S3Client 객체가 요청을 보낼 주소 https://s3.ap-northeast-2.amazonaws.com 을 정할 때 쓴다.\n    region: ap-northeast-2\n    s3:\n      # S3 콘솔에서 만든 버킷 이름. 반드시 본인이 만든 버킷 이름(blog-본인아이디)으로 바꾼다.\n      # 버킷 이름은 전 세계 AWS 에서 하나뿐이어야 하므로 다른 사람의 이름을 그대로 쓰면\n      # 403(AccessDenied) 오류가 난다.\n      bucket: blog-tlstkdrnr4671"},"S3Config":{"title":"S3Config.java","path":"src/main/java/com/shinsunyoung/blog/config/S3Config.java","lang":"java","start":1,"note":"","text":"package com.shinsunyoung.blog.config;\n\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport software.amazon.awssdk.regions.Region;\nimport software.amazon.awssdk.services.s3.S3Client;\n\n/*\n * S3Config : AWS S3 와 통신하는 S3Client 객체를 딱 1개 만들어 스프링 컨테이너에 빈(객체)으로 등록하는 설정 클래스\n *\n * [호출 흐름]\n *   SpringBootDeveloperApplication.main() 실행\n *     → 스프링 컨테이너(AnnotationConfigServletWebServerApplicationContext 객체) 생성\n *     → ConfigurationClassPostProcessor 객체가 @Configuration 클래스를 찾아 이 클래스의 @Bean 메서드를 등록\n *     → DefaultListableBeanFactory 객체가 s3Client() 메서드를 1번 호출하고\n *       return 된 S3Client 객체를 \"s3Client\" 라는 이름으로 보관\n *     → AwsS3Service 생성자가 S3Client 를 요구하면 보관해 둔 이 객체를 넣어 준다.\n *\n * [이 코드가 동작하기 전에 S3 콘솔에서 해 둘 설정]\n *   ① S3 → [버킷 만들기]\n *      - AWS 리전          : 아시아 태평양(서울) ap-northeast-2  → application.yml cloud.aws.region 과 같아야 함\n *      - 버킷 이름         :  blog-본인아이디       → application.yml cloud.aws.s3.bucket 과 같아야 함\n *                            (버킷 이름은 전 세계 AWS 에서 하나뿐이어야 하므로 본인 아이디를 붙인다)\n *      - 객체 소유권       : ACL 활성화됨\n *      - 퍼블릭 액세스 차단 : \"모든 퍼블릭 액세스 차단\" 체크 해제 + 경고 확인 체크\n *                            (차단된 상태에서는 아래 버킷 정책을 저장할 수 없다)\n *   ② 버킷 → [권한] → [버킷 정책] → [편집] 에 아래 JSON 을 저장\n *      {\n *        \"Version\": \"2012-10-17\",                         ← 정책 문법 버전(고정값)\n *        \"Statement\": [\n *          {\n *            \"Sid\": \"PublicReadUploads\",                  ← 이 규칙의 이름(아무 이름 가능)\n *            \"Effect\": \"Allow\",                           ← 허용\n *            \"Principal\": \"*\",                            ← 누구에게나 (로그인하지 않은 브라우저 포함)\n *            \"Action\": \"s3:GetObject\",                    ← 파일 읽기(다운로드)만 허용. 업로드·삭제는 허용 안 함\n *            \"Resource\": \"arn:aws:s3:::blog-본인아이디/uploads/*\"\n *                                                         ← 이 버킷의 uploads/ 아래 파일에만 적용\n *          }\n *        ]\n *      }\n *      → AwsS3Service 가 만든 https://…amazonaws.com/uploads/xxx.png 주소를\n *        블로그 화면의 \u003cimg\u003e 태그가 바로 불러올 수 있게 된다.\n *   ③ 업로드(s3:PutObject) 권한은 버킷 정책이 아니라 EC2 의 IAM 역할에 준다 (build() 아래 주석 참고).\n */\n// @Configuration : 이 클래스가 빈 설정 클래스임을 표시.\n//   ConfigurationClassPostProcessor 객체가 이 클래스를 CGLIB 로 상속한 프록시 클래스로 바꿔\n//   s3Client() 를 여러 번 불러도 같은 객체 1개만 돌려주도록 만든다.\n@Configuration\npublic class S3Config {\n\n    // @Bean : 이 메서드의 return 값(S3Client 객체)을 스프링 빈으로 등록.\n    //   빈 이름은 메서드 이름인 \"s3Client\".\n    // @Value(\"${cloud.aws.region}\") : application.yml 의 cloud.aws.region 값(\"ap-northeast-2\")을\n    //   매개변수 region 에 넣는다. 값을 찾아 넣는 일은 PropertySourcesPlaceholderConfigurer 객체가\n    //   StandardEnvironment 객체에서 값을 조회해 수행한다.\n    @Bean\n    public S3Client s3Client(@Value(\"${cloud.aws.region}\") String region) {\n\n        // S3Client.builder() : DefaultS3ClientBuilder 객체를 돌려준다. 이 객체에 설정을 하나씩 넣은 뒤 build() 한다.\n        return S3Client.builder()\n                // Region.of(\"ap-northeast-2\") : 문자열을 Region 객체로 변환.\n                //   이 리전 값으로 요청 주소 https://s3.ap-northeast-2.amazonaws.com 이 정해진다.\n                .region(Region.of(region))\n                // build() : 설정을 바탕으로 DefaultS3Client 객체를 생성하여 return.\n                //\n                // [액세스 키를 넣지 않았는데 S3 에 접근할 수 있는 이유]\n                //   credentialsProvider(...) 를 지정하지 않으면 SDK 가 DefaultCredentialsProvider 객체를 사용한다.\n                //   이 객체는 실제 요청을 보낼 때 아래 순서로 자격 증명을 찾아 처음 발견한 것을 쓴다.\n                //     ① 자바 시스템 속성 aws.accessKeyId / aws.secretAccessKey\n                //     ② 운영체제 환경 변수 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY\n                //     ③ 웹 아이덴티티 토큰\n                //     ④ 내 PC 의 ~/.aws/credentials 파일\n                //     ⑤ 컨테이너(ECS) 자격 증명\n                //     ⑥ EC2 인스턴스 메타데이터(IMDS, http://169.254.169.254)\n                //   일래스틱 빈스톡의 EC2 에는 ①~⑤가 없으므로 ⑥에서\n                //   EC2 인스턴스 프로파일(IAM 역할 aws-elasticbeanstalk-ec2-role)의 임시 키를 받아 쓴다.\n                //   → 처음 배포 후 업로드하면 403 AccessDenied(…is not authorized to perform: s3:PutObject…)가\n                //     나는 이유가 이 IAM 역할에 S3 권한이 없기 때문이다.\n                //     IAM → [역할] → aws-elasticbeanstalk-ec2-role → [권한 추가] → [정책 연결] →\n                //     AmazonS3FullAccess 를 연결하면 해결된다.\n                //   → 키를 코드나 yml 에 적지 않으므로 jar 파일이나 Git 저장소에 키가 노출될 일이 없다.\n                //   build() 시점에는 자격 증명을 조회하지 않으므로, 키가 없는 내 PC 의\n                //   테스트(./gradlew build)에서도 이 빈 생성은 실패하지 않는다.\n                .build();\n    }\n}"},"AwsS3Service":{"title":"AwsS3Service.java","path":"src/main/java/com/shinsunyoung/blog/service/AwsS3Service.java","lang":"java","start":1,"note":"","text":"package com.shinsunyoung.blog.service;\n\nimport lombok.RequiredArgsConstructor;\nimport com.shinsunyoung.blog.dto.UploadResponse;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Profile;\nimport org.springframework.stereotype.Service;\nimport software.amazon.awssdk.core.sync.RequestBody;\nimport software.amazon.awssdk.services.s3.S3Client;\nimport software.amazon.awssdk.services.s3.model.PutObjectRequest;\n\nimport java.util.UUID;\n\n/*\n * AwsS3Service : 업로드된 이미지를 AWS S3 버킷의 uploads/ 폴더에 저장하고, 접근 URL 을 돌려주는 서비스\n *\n * [호출 흐름]\n *   article.js 의 fetch(\u0027/api/upload\u0027, { method: \u0027POST\u0027, body: FormData })\n *     → DispatcherServlet 객체가 요청을 받음\n *     → RequestMappingHandlerMapping 객체가 UploadController.uploadFile() 을 찾음\n *     → uploadFile() 이 fileStorageService.store(bytes, filename) 호출  ← 이 클래스의 store() 실행\n *     → store() 가 S3 에 업로드 후 UploadResponse(url) 을 return\n *     → UploadController 가 201 Created + {\"imageUrl\":\"https://…\"} JSON 으로 응답\n *     → article.js 가 imageUrl 을 받아 글의 이미지 주소로 사용\n */\n// @Profile(\"!local\") : 활성화된 프로파일에 \"local\" 이 없을 때만 이 클래스를 빈으로 등록한다.\n//   ConditionEvaluator 객체가 ProfileCondition 클래스로 이 조건을 검사하고,\n//   조건이 맞지 않으면 ClassPathBeanDefinitionScanner 객체가 이 클래스를 빈 등록 대상에서 뺀다.\n//   - 일래스틱 빈스톡 : java -jar 로 프로파일 지정 없이 실행 → \"local\" 없음 → 이 클래스가 빈으로 등록됨\n//   - 인텔리제이      : [구성 편집]에서 활성화된 프로파일 = local → 이 클래스는 등록되지 않음\n//   - ./gradlew build : 테스트도 프로파일 없이 실행 → 이 클래스가 등록됨\n// @Service : ClassPathBeanDefinitionScanner 객체가 컴포넌트 스캔으로 찾아 빈으로 등록하게 하는 표시\n// @RequiredArgsConstructor : 롬복(Lombok) 애너테이션 프로세서가 컴파일할 때\n//   final 필드(s3Client)를 매개변수로 받는 생성자 AwsS3Service(S3Client s3Client) 를 만들어 넣는다.\n//   생성자가 1개뿐이므로 DefaultListableBeanFactory 객체가 이 생성자를 호출하면서\n//   S3Config.s3Client() 로 등록된 S3Client 빈을 인자로 넣어 준다(생성자 주입).\n@Profile(\"!local\")\n@Service\n@RequiredArgsConstructor\npublic class AwsS3Service implements FileStorageService {\n\n    // S3Config.java 에서 만든 S3Client 빈이 생성자를 통해 들어온다.\n    private final S3Client s3Client;\n\n    // @Value(\"${cloud.aws.s3.bucket}\") : application.yml 의 cloud.aws.s3.bucket 값을 필드에 넣는다.\n    //   빈 생성 직후 AutowiredAnnotationBeanPostProcessor 객체가 이 필드에 값을 대입한다.\n    //   → bucket = \"blog-ajufresh\"\n    @Value(\"${cloud.aws.s3.bucket}\")\n    private String bucket;\n\n    // UploadController.uploadFile() 에서 호출됨 → UploadResponse 를 UploadController 로 return\n    @Override\n    public UploadResponse store(byte[] bytes, String filename) {\n        // 확장자 추출 : \"cat.PNG\" → \"png\" (점 뒤 문자열을 소문자로). 점이 없으면 \"png\" 로 간주\n        String ext = filename.contains(\".\")\n                ? filename.substring(filename.lastIndexOf(\u0027.\u0027) + 1).toLowerCase()\n                : \"png\";\n\n        // key : S3 버킷 안에서 파일을 구분하는 이름(경로 포함). 예) uploads/3f2a…-….png\n        //   UUID.randomUUID() 로 매번 다른 이름을 만들어 같은 이름의 파일을 덮어쓰지 않게 한다.\n        //   \"uploads/\" 로 시작해야 하는 이유: S3 버킷 정책의 Resource 가\n        //   arn:aws:s3:::버킷이름/uploads/* 이므로 이 경로 아래 파일만 누구나 읽을 수 있다(s3:GetObject 허용).\n        String key = \"uploads/\" + UUID.randomUUID() + \".\" + ext;\n\n        // PutObjectRequest : S3 의 PutObject API(파일 업로드)에 보낼 요청 정보를 담는 객체.\n        //   builder() 로 PutObjectRequest.Builder 객체를 얻어 값을 채운 뒤 build() 로 완성한다.\n        PutObjectRequest request = PutObjectRequest.builder()\n                                                    // 업로드할 버킷 이름\n                                                    .bucket(bucket)\n                                                    // Content-Type 헤더 값. \"image/png\" 로 저장해야 브라우저가 이 URL 을 열었을 때\n                                                    // 파일을 다운로드하지 않고 이미지로 화면에 표시한다.\n                                                    .contentType(\"image/\" + ext)\n                                                    // 버킷 안에 저장될 이름(경로)\n                                                    .key(key)\n                                                    .build();\n\n        // putObject() : 실제로 S3 에 HTTPS PUT 요청을 보내 파일을 업로드한다.\n        //   - RequestBody.fromBytes(bytes) : byte[] 를 요청 본문으로 쓰는 RequestBody 객체로 변환(배열을 복사해 보관)\n        //   - 요청 전송 : DefaultS3Client 객체 → ApacheHttpClient 객체가 https://버킷이름.s3.ap-northeast-2.amazonaws.com/uploads/… 로 전송\n        //   - 이때 DefaultCredentialsProvider 객체가 EC2 인스턴스 메타데이터에서 IAM 역할의 임시 키를 꺼내\n        //     요청에 서명(AWS Signature V4)한다.\n        //   - IAM 역할 aws-elasticbeanstalk-ec2-role 에 s3:PutObject 권한이 없으면\n        //     여기서 S3Exception(403 AccessDenied)이 발생 → 브라우저에는 500 에러로 보인다.\n        s3Client.putObject(request, RequestBody.fromBytes(bytes));\n\n        // 업로드한 파일의 접근 URL 만들기\n        //   s3Client.utilities() : S3Utilities 객체를 돌려준다.\n        //   getUrl(builder -\u003e builder.bucket(bucket).key(key)) : 버킷·키·리전으로 URL 객체를 계산한다.\n        //     (네트워크 요청 없이 문자열 조합만 한다. 파일이 실제로 있는지 확인하지 않는다.)\n        //   toExternalForm() : java.net.URL 객체를 문자열로 변환\n        //   결과 예) https://springboot-developer-ajufresh.s3.ap-northeast-2.amazonaws.com/uploads/3f2a….png\n        String url = s3Client.utilities()\n                                .getUrl(builder -\u003e builder.bucket(bucket).key(key))\n                                .toExternalForm();\n\n        // UploadController.uploadFile() 로 return → JSON {\"imageUrl\": url} 로 변환되어 브라우저에 응답\n        return new UploadResponse(url);\n    }\n}"},"LocalFS":{"title":"LocalFileStorageService.java (local 프로파일용 비교)","path":"src/main/java/com/shinsunyoung/blog/service/LocalFileStorageService.java","lang":"java","start":1,"note":"","text":"package com.shinsunyoung.blog.service;\n\nimport com.shinsunyoung.blog.dto.UploadResponse;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Profile;\nimport org.springframework.stereotype.Service;\n\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.nio.file.Paths;\nimport java.util.UUID;\n\n/*\n * LocalFileStorageService : 이미지를 내 PC(프로젝트루트/uploads 폴더)에 저장하는 서비스\n *   - 인텔리제이에서 개발·테스트할 때만 사용한다.\n *   - 일래스틱 빈스톡에서는 AwsS3Service 가 대신 사용된다.\n *\n * [배포 서버에서 로컬 저장을 쓰지 않는 이유]\n *   빈스톡이 새 버전을 배포하거나 오토 스케일링으로 EC2 를 바꾸면 EC2 의 디스크 내용이 사라지고,\n *   EC2 가 2대 이상이면 1번 서버에 저장한 파일을 2번 서버는 갖고 있지 않다.\n *   그래서 배포 서버에서는 모든 서버가 함께 쓰는 S3 에 저장한다.\n */\n// @Profile(\"local\") : 활성화된 프로파일에 \"local\" 이 있을 때만 이 클래스를 빈으로 등록한다.\n//   ConditionEvaluator 객체가 ProfileCondition 클래스로 검사한다.\n//   인텔리제이 [구성 편집] → [활성화된 프로파일]에 local 을 입력하면\n//   StandardEnvironment 객체의 activeProfiles 에 \"local\" 이 들어가 조건이 참이 된다.\n//   AwsS3Service 의 @Profile(\"!local\") 과 정확히 반대 조건이라 둘 중 하나만 등록된다.\n//   (둘 다 등록되면 UploadController 주입 시 NoUniqueBeanDefinitionException,\n//    둘 다 없으면 NoSuchBeanDefinitionException 이 발생한다.)\n// @Service : 컴포넌트 스캔 대상 표시\n@Profile(\"local\")\n@Service\npublic class LocalFileStorageService implements FileStorageService {\n\n    private final Path uploadDir;\n\n    // @Value(\"${app.upload-dir:uploads}\") : application.yml 의 app.upload-dir 값을 넣는다.\n    //   콜론(:) 뒤 uploads 는 기본값. 현재 yml 에 app.upload-dir 이 없으므로 \"uploads\" 가 들어간다.\n    //   생성자가 1개이므로 DefaultListableBeanFactory 객체가 이 생성자를 호출하며,\n    //   매개변수 값은 AutowiredAnnotationBeanPostProcessor 의 값 해석 과정에서 StandardEnvironment 객체로부터 꺼낸다.\n    public LocalFileStorageService(@Value(\"${app.upload-dir:uploads}\") String uploadDir) {\n        // \"uploads\" → 실행 폴더 기준 절대 경로. 인텔리제이 실행 시 보통 프로젝트루트/uploads\n        this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize();\n    }\n\n    // UploadController.uploadFile() 에서 호출됨 → UploadResponse 를 UploadController 로 return\n    @Override\n    public UploadResponse store(byte[] bytes, String filename) {\n        try {\n            // uploads 폴더가 없으면 만든다\n            Files.createDirectories(uploadDir);\n\n            // 확장자 추출 : \"cat.PNG\" → \".PNG\" (AwsS3Service 와 달리 점 포함, 대소문자 그대로)\n            String ext = filename.contains(\".\")\n                    ? filename.substring(filename.lastIndexOf(\u0027.\u0027))\n                    : \".png\";\n\n            // 겹치지 않는 저장 파일 이름\n            String saved = UUID.randomUUID() + ext;\n\n            // 프로젝트루트/uploads/\u003cUUID\u003e.PNG 로 파일 쓰기\n            Files.write(uploadDir.resolve(saved), bytes);\n\n            // 브라우저가 접근할 주소 \"/uploads/\u003cUUID\u003e.PNG\" 를 return\n            //   → 이 주소 요청은 WebMvcConfig 에 등록한 ResourceHttpRequestHandler 객체가\n            //     프로젝트루트/uploads 폴더에서 파일을 찾아 응답한다.\n            return new UploadResponse(\"/uploads/\" + saved);\n\n        } catch (IOException e) {\n            throw new RuntimeException();\n        }\n    }\n}"},"FileStorageService":{"title":"FileStorageService.java","path":"src/main/java/com/shinsunyoung/blog/service/FileStorageService.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 업로드된 파일을 저장하는 기능의 \"약속(규격)\"을 정한 인터페이스입니다.\n// 인터페이스는 \"이런 메소드를 반드시 만들어라\"는 목록입니다. 실제 저장 방법은 구현 클래스가 정합니다.\n// 현재 구현 클래스는 LocalFileStorageService(내 컴퓨터 폴더에 저장)입니다.\n//\n// [이렇게 나눈 이유]\n//   나중에 AWS S3 같은 다른 저장소로 바꾸고 싶을 때, 이 인터페이스를 쓰는 코드는 고치지 않고\n//   새 구현 클래스만 만들면 됩니다.\n// ============================================================\npackage com.shinsunyoung.blog.service;\n\n// UploadResponse : 저장 결과(저장된 파일 주소)를 담는 상자입니다.\nimport com.shinsunyoung.blog.dto.UploadResponse;\n\n// public interface : 다른 클래스가 이 규격을 구현(implements)하도록 만든 설계도입니다.\npublic interface FileStorageService {\n\n    // store : 파일 내용(bytes)과 원래 파일 이름(filename)을 받아서 저장하고, 저장된 주소를 돌려주는 메소드 약속입니다.\n    //   호출하는 곳 : UploadController.uploadFile(), ThumbnailGeneratorService.generateThumbnail()\n    UploadResponse store(byte[] bytes, String filename);\n}"},"UploadResponse":{"title":"UploadResponse.java","path":"src/main/java/com/shinsunyoung/blog/dto/UploadResponse.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 이미지 파일 업로드가 끝났을 때 돌려주는 응답 상자입니다.\n// 저장된 파일의 주소(예: /uploads/uuid.png) 하나를 담습니다.\n//\n// [데이터 흐름]\n//   LocalFileStorageService.store() 가 new UploadResponse(\"/uploads/\" + 저장파일명) 으로 생성\n//   → UploadController.uploadFile() 이 JSON 으로 돌려줌\n//   → article.js 가 data.imageUrl 을 꺼내 image-url 입력칸에 넣음\n// ============================================================\npackage com.shinsunyoung.blog.dto;\n\n// record UploadResponse(String imageUrl)\n//   JSON 으로 바뀌면 {\"imageUrl\":\"/uploads/...\"} 형태가 됩니다.\npublic record UploadResponse(\n        String imageUrl     // 저장된 이미지의 주소\n) {}"},"ViewCtrl":{"title":"BlogViewController.java (newArticle)","path":"src/main/java/com/shinsunyoung/blog/controller/BlogViewController.java","lang":"java","start":94,"note":"(관련 부분 L94-L115, 원래 줄 번호 유지)","text":"    // 글 작성·수정 화면 : GET /new-article\n    //   /new-article        → 새 글 작성 (id 없음)\n    //   /new-article?id=3   → 3번 글 수정 (id 있음)\n    // ---------------------------------------------------------------\n    // @RequestParam(required = false) Long id :\n    //   주소 뒤의 ?id=3 값을 꺼냅니다. required = false 는 \"없어도 된다\"는 뜻이고, 없으면 null 이 됩니다.\n    @GetMapping(\"/new-article\")\n    public String newArticle(@RequestParam(required = false) Long id, Model model) {\n\n        if (id == null) {\n            // id 가 없으면 빈 상자를 넣습니다. newArticle.html 에서 제목·본문이 비어 있는 작성 화면이 됩니다.\n            model.addAttribute(\"article\", new ArticleViewResponse());\n        } else {\n            // id 가 있으면 그 글을 찾아서 넣습니다. 제목·본문이 채워진 수정 화면이 됩니다.\n            Article article = blogService.findById(id);\n            model.addAttribute(\"article\", new ArticleViewResponse(article));\n        }\n\n        // templates/newArticle.html 화면을 보여 줍니다.\n        return \"newArticle\";\n    }\n}"},"newArticle":{"title":"newArticle.html","path":"src/main/resources/templates/newArticle.html","lang":"html","start":1,"note":"","text":"\u003c!DOCTYPE html\u003e\n\u003chtml xmlns:th=\"http://www.thymeleaf.org\"\u003e\n\u003chead\u003e\n    \u003cmeta charset=\"UTF-8\"\u003e\n    \u003ctitle\u003e블로그 글 수정 요청 또는 글 추가 요청 화면\u003c/title\u003e\n    \u003clink rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css\"\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n        \u003cdiv class=\"p-5 mb-5 text-center bg-light\"\u003e\n            \u003ch1 class=\"mb-3\"\u003eMy Blog\u003c/h1\u003e\n            \u003ch4 class=\"mb-3\"\u003e블로그에 오신 것을 환영합니다.\u003c/h4\u003e\n        \u003c/div\u003e\n        \u003cdiv class=\"container mt-5\"\u003e\n            \u003cdiv class=\"row\"\u003e\n                \u003cdiv class=\"col-lg-8\"\u003e\n                    \u003carticle\u003e\n                        \u003c!--/*\n                        [타임리프 속성] th:value=\"${article.id}\"   (숨은 input 태그 안)\n                          ${article.id} : 새 글일 때는 값이 null(없음)이라서 입력칸 값이 비어 있습니다.\n                                          수정일 때는 기존 글 번호가 들어갑니다.\n                          article.js 는 이 값을 읽지 않습니다. 수정 기능은 주소의 ?id 값을 읽습니다. (article.js 의 modify 부분 참고)\n                        */--\u003e\n                        \u003cinput type=\"hidden\" id=\"article-id\" th:value=\"${article.id}\"\u003e\n\n                        \u003cheader class=\"mb-4\"\u003e\n                            \u003c!--/*\n                            [타임리프 속성] th:value=\"${article.title}\"   (제목 input 태그 안)\n                              th:value : input 의 value 속성(칸 안에 보이는 글자)을 서버 값으로 채웁니다.\n                              수정 화면 : 기존 제목이 칸에 채워져 보입니다.\n                              새 글 화면 : article.title 이 null 이라서 칸이 빈칸으로 보입니다.\n                              id=\"title\" : article.js 가 document.getElementById(\u0027title\u0027).value 로 이 칸의 글자를 읽어서 서버로 보냅니다.\n                            */--\u003e\n                            \u003cinput type=\"text\" class=\"form-control\" placeholder=\"제목\" id=\"title\" th:value=\"${article.title}\"\u003e\n                        \u003c/header\u003e\n\n                        \u003c!-- ===== [11.4 수정] 이미지 업로드 / AI 썸네일 영역 추가 =====\n                          변경 이유 : article.js 의 등록(create-btn)·수정(modify-btn) 코드가\n                                      document.getElementById(\u0027image-url\u0027).value 를 읽습니다.\n                                      이 화면에 id=\"image-url\" 칸이 없어서 null.value 오류(TypeError)가 나고,\n                                      [등록]/[수정] 버튼을 눌러도 아무 요청이 가지 않았습니다. (11.4 03단계 실패 원인)\n                          책 385쪽 화면처럼 \"이미지 업로드 + 파일 선택 + AI 썸네일 생성\" 영역을 넣고,\n                          article.js 가 찾는 id(image-upload, image-url, image-preview, preview-img,\n                          remove-image-btn, ai-thumbnail-btn, ai-thumbnail-loading)를 모두 맞췄습니다. --\u003e\n                        \u003csection class=\"mb-3\"\u003e\n                            \u003clabel for=\"image-upload\" class=\"d-block\"\u003e이미지 업로드\u003c/label\u003e\n                            \u003cdiv class=\"d-flex justify-content-between align-items-center\"\u003e\n                                \u003cinput type=\"file\" id=\"image-upload\" accept=\"image/*\"\u003e\n                                \u003cbutton type=\"button\" id=\"ai-thumbnail-btn\" class=\"btn btn-outline-secondary btn-sm\"\u003eAI 썸네일 생성\u003c/button\u003e\n                            \u003c/div\u003e\n                            \u003c!-- 업로드(또는 AI 생성)된 이미지 주소. 수정 화면이면 기존 주소가 채워집니다. --\u003e\n                            \u003cinput type=\"hidden\" id=\"image-url\" th:value=\"${article.imageUrl}\"\u003e\n                            \u003cdiv id=\"ai-thumbnail-loading\" class=\"mt-2\" style=\"display: none;\"\u003e\n                                \u003cdiv class=\"spinner-border spinner-border-sm text-primary\" role=\"status\"\u003e\u003c/div\u003e\n                                \u003cspan class=\"ml-2\"\u003eAI가 썸네일을 만들고 있습니다...\u003c/span\u003e\n                            \u003c/div\u003e\n                            \u003cdiv id=\"image-preview\" class=\"mt-2\" style=\"display: none;\"\u003e\n                                \u003cimg id=\"preview-img\" src=\"\" alt=\"미리보기\" style=\"max-width: 300px;\" class=\"img-thumbnail d-block mb-1\"\u003e\n                                \u003cbutton type=\"button\" id=\"remove-image-btn\" class=\"btn btn-outline-danger btn-sm\"\u003e이미지 제거\u003c/button\u003e\n                            \u003c/div\u003e\n                        \u003c/section\u003e\n                        \u003csection class=\"mb-5\"\u003e\n                            \u003c!--/*\n                            [타임리프 속성] th:text=\"${article.content}\"   (textarea 태그 안)\n                              textarea(여러 줄 입력칸)는 value 속성이 없고, 태그 사이의 글자가 칸의 내용이 됩니다.\n                              그래서 th:value 가 아니라 th:text 를 씁니다.\n                              수정 화면 : 기존 내용이 채워집니다. 새 글 화면 : 빈칸입니다.\n                              id=\"content\" : article.js 가 document.getElementById(\u0027content\u0027).value 로 이 칸의 글자를 읽습니다.\n                            */--\u003e\n                            \u003ctextarea class=\"form-control h-25\" rows=\"10\" placeholder=\"내용\" id=\"content\" th:text=\"${article.content}\"\u003e\u003c/textarea\u003e\n                        \u003c/section\u003e\n\n                        \u003c!-- [8장 · 글쓰기 도우미] 누르면 모달 창(아래 aiAssistModal)이 열립니다. --\u003e\n                        \u003cbutton type=\"button\" id=\"ai-assist-btn\" class=\"btn btn-info btn-sm\"\u003eAI 도움받기\u003c/button\u003e\n\n                        \u003c!--/*\n                        [타임리프 조건] th:if=\"${article.id} != null\"   (수정 버튼)\n                          th:if : 조건이 참(true)이면 이 태그를 화면에 남기고, 거짓이면 태그를 통째로 지웁니다.\n                          ${article.id} != null : 글 번호가 있으면(수정 화면) 참입니다.\n                          결과 : 수정 화면에서는 \"수정\" 버튼만 남고, 아래의 \"등록\" 버튼은 지워집니다.\n                          id=\"modify-btn\" : article.js 의 modifyButton 에 연결됩니다.\n                            클릭하면 주소의 ?id 값으로 PUT /api/articles/{id} 요청을 보내고, 성공하면 /articles/{id} 로 이동합니다.\n                        */--\u003e\n                        \u003cbutton th:if=\"${article.id} != null\" type=\"button\" id=\"modify-btn\" class=\"btn btn-primary btn-sm\"\u003e수정\u003c/button\u003e\n                        \u003c!--/*\n                        [타임리프 조건] th:if=\"${article.id} == null\"   (등록 버튼)\n                          글 번호가 없으면(새 글 화면) 참입니다. 그러면 \"등록\" 버튼이 남고, 위의 \"수정\" 버튼은 지워집니다.\n                          id=\"create-btn\" : article.js 의 createButton 에 연결됩니다.\n                            클릭하면 제목과 내용을 담아 POST /api/articles 요청을 보내고, 성공하면 /articles 목록으로 이동합니다.\n                        */--\u003e\n                        \u003cbutton th:if=\"${article.id} == null\" type=\"button\" id=\"create-btn\" class=\"btn btn-primary btn-sm\"\u003e등록\u003c/button\u003e\n                    \u003c/article\u003e\n                \u003c/div\u003e\n            \u003c/div\u003e\n        \u003c/div\u003e\n\n        \u003c!-- [8장 · 글쓰기 도우미 모달] 부트스트랩 모달 창입니다. 평소에는 숨겨져 있다가 \"AI 도움받기\"를 누르면 뜹니다. --\u003e\n        \u003cdiv class=\"modal fade\" id=\"aiAssistModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"aiAssistModalLabel\" aria-hidden=\"true\"\u003e\n            \u003cdiv class=\"modal-dialog modal-lg\" role=\"document\"\u003e\n                \u003cdiv class=\"modal-content\"\u003e\n                    \u003cdiv class=\"modal-header\"\u003e\n                        \u003ch5 class=\"modal-title\" id=\"aiAssistModalLabel\"\u003eAI 글쓰기 도우미\u003c/h5\u003e\n                        \u003cbutton type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"\u003e\n                            \u003cspan aria-hidden=\"true\"\u003e\u0026times;\u003c/span\u003e\n                        \u003c/button\u003e\n                    \u003c/div\u003e\n                    \u003cdiv class=\"modal-body\"\u003e\n                        \u003c!-- 사용자가 고민을 적는 칸입니다. 이 내용이 AI의 question 자리(프롬프트)로 들어갑니다. --\u003e\n                        \u003cdiv class=\"form-group\"\u003e\n                            \u003clabel for=\"ai-question\"\u003e어떤 부분이 고민되시나요?\u003c/label\u003e\n                            \u003ctextarea class=\"form-control\" id=\"ai-question\" rows=\"3\" placeholder=\"예: 이 다음에 어떤 내용을 써야 할까요?\"\u003e\u003c/textarea\u003e\n                        \u003c/div\u003e\n                        \u003c!-- 누르면 article.js가 /api/ai-suggestions를 호출합니다. --\u003e\n                        \u003cbutton type=\"button\" id=\"get-suggestion-btn\" class=\"btn btn-primary\"\u003e제안 받기\u003c/button\u003e\n                        \u003c!-- AI가 답을 만드는 동안 보이는 로딩 문구입니다(보통 몇 초~20초). --\u003e\n                        \u003cdiv id=\"ai-loading\" class=\"mt-3\" style=\"display: none;\"\u003e\n                            \u003cdiv class=\"spinner-border text-primary\" role=\"status\"\u003e\n                                \u003cspan class=\"sr-only\"\u003eLoading...\u003c/span\u003e\n                            \u003c/div\u003e\n                            \u003cspan class=\"ml-2\"\u003eAI가 생각하고 있습니다...\u003c/span\u003e\n                        \u003c/div\u003e\n                        \u003c!-- 제안 목록이 들어가는 영역입니다. 클릭한 제안은 본문 끝에 추가됩니다. --\u003e\n                        \u003cdiv id=\"ai-suggestion\" class=\"mt-3\" style=\"display: none;\"\u003e\n                            \u003ch6\u003eAI 제안:\u003c/h6\u003e\n                            \u003cdiv id=\"ai-suggestion-content\"\u003e\u003c/div\u003e\n                        \u003c/div\u003e\n                    \u003c/div\u003e\n                    \u003cdiv class=\"modal-footer\"\u003e\n                        \u003cbutton type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\"\u003e닫기\u003c/button\u003e\n                    \u003c/div\u003e\n                \u003c/div\u003e\n            \u003c/div\u003e\n        \u003c/div\u003e\n\n        \u003c!-- 스크립트는 body 맨 아래에 둡니다. 화면이 먼저 그려진 뒤 버튼에 기능을 붙이기 위해서입니다. --\u003e\n        \u003cscript src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\"\u003e\u003c/script\u003e\n        \u003cscript src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js\"\u003e\u003c/script\u003e\n        \u003cscript src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js\"\u003e\u003c/script\u003e\n\n        \u003c!-- 버튼 동작(업로드, AI 도움받기, 저장)을 담은 자바스크립트 파일입니다. --\u003e\n        \u003cscript src=\"/js/article.js\"\u003e\u003c/script\u003e\n\n\u003c/body\u003e\n\u003c/html\u003e"},"jsUpload":{"title":"article.js (이미지 업로드·미리보기)","path":"src/main/resources/static/js/article.js","lang":"js","start":59,"note":"(관련 부분 L59-L131, 원래 줄 번호 유지)","text":"// ------------------------------------------------------------\n// 화면이 다 읽히면: 이미 이미지 주소가 있는 글(수정 화면)은 미리보기를 보여 줍니다.\n// ?. (옵셔널 체이닝) : image-url 칸이 없는 화면이면 오류 없이 undefined 가 됩니다.\n// ------------------------------------------------------------\nwindow.addEventListener(\u0027DOMContentLoaded\u0027, () =\u003e {\n    const imageUrl = document.getElementById(\u0027image-url\u0027)?.value;\n    if (imageUrl) {\n        displayImagePreview(imageUrl);\n    }\n});\n\n// 이미지 업로드 버튼\n// 파일을 고르면(change) → POST /api/upload (multipart) → 응답의 imageUrl 을 숨은 칸에 넣고 미리보기\nconst imageUpload = document.getElementById(\u0027image-upload\u0027);\nif (imageUpload) {\n    imageUpload.addEventListener(\u0027change\u0027, async (event) =\u003e {\n        const file = event.target.files[0]; // 고른 첫 번째 파일\n        if (!file) return;\n\n        // 그림 파일(image/png, image/jpeg …)이 아니면 멈춥니다.\n        if (!file.type.startsWith(\u0027image/\u0027)) {\n            alert(\u0027이미지 파일만 업로드 가능합니다.\u0027);\n            return;\n        }\n\n        // 파일을 보내는 양식(FormData)을 만듭니다. \u0027file\u0027 이름은 UploadController 의 @RequestParam(\"file\") 과 같아야 합니다.\n        const formData = new FormData();\n        formData.append(\u0027file\u0027, file);\n\n        // [11장] /api/upload 도 /api/** 이므로 Authorization 헤더를 붙입니다.\n        // ※ Content-Type 은 일부러 적지 않습니다. FormData 를 보내면 브라우저가 multipart/form-data 와 경계 문자열을 알아서 넣습니다.\n        fetch(\u0027/api/upload\u0027, {\n            method: \u0027POST\u0027,\n            body: formData,\n            headers: {\n                Authorization: \u0027Bearer \u0027 + localStorage.getItem(\u0027access_token\u0027),\n            },\n        }).then((response) =\u003e {\n            if (!response.ok) {\n                alert(\u0027이미지 업로드에 실패했습니다.\u0027);\n                throw new Error();\n            }\n            return response.json();\n        })\n            .then((data) =\u003e {\n                document.getElementById(\u0027image-url\u0027).value = data.imageUrl; // 예) /uploads/3f2a….png\n                displayImagePreview(data.imageUrl);\n            })\n            .catch((e) =\u003e console.error(e));\n    });\n}\n\n// 이미지 미리보기를 보여 주는 함수입니다. 미리보기 칸이 없는 화면에서는 아무것도 하지 않습니다.\nfunction displayImagePreview(imageUrl) {\n    const preview = document.getElementById(\u0027image-preview\u0027);\n    const previewImg = document.getElementById(\u0027preview-img\u0027);\n\n    if (preview \u0026\u0026 previewImg \u0026\u0026 imageUrl) {\n        previewImg.src = imageUrl;\n        preview.style.display = \u0027block\u0027;\n    }\n}\n\n// 이미지 제거 버튼: 이미지 주소·선택한 파일·미리보기를 모두 비웁니다. (서버의 파일은 지우지 않음)\nconst removeImageButton = document.getElementById(\u0027remove-image-btn\u0027);\nif (removeImageButton) {\n    removeImageButton.addEventListener(\u0027click\u0027, () =\u003e {\n        document.getElementById(\u0027image-url\u0027).value = \u0027\u0027;\n        document.getElementById(\u0027image-upload\u0027).value = \u0027\u0027;\n        document.getElementById(\u0027image-preview\u0027).style.display = \u0027none\u0027;\n    });\n}\n"},"TokenFilter":{"title":"TokenAuthenticationFilter.java","path":"src/main/java/com/shinsunyoung/blog/config/TokenAuthenticationFilter.java","lang":"java","start":1,"note":"","text":"package com.shinsunyoung.blog.config;\n\nimport com.shinsunyoung.blog.config.jwt.TokenProvider;\nimport jakarta.servlet.FilterChain;\nimport jakarta.servlet.ServletException;\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.security.core.Authentication;\nimport org.springframework.security.core.context.SecurityContextHolder;\nimport org.springframework.web.filter.OncePerRequestFilter;\n\nimport java.io.IOException;\n\n// 파일 위치: src/main/java/me/shinsunyoung/springbootdeveloper/config/TokenAuthenticationFilter.java\n//\n// ============================================================\n// 이 파일이 하는 일\n// ============================================================\n// 사용자가 요청을 보낼 때마다 \"토큰이 들어 있는지, 진짜인지\" 확인하는 검문소 역할을 합니다.\n// 토큰이 진짜이면, \"이 요청은 이 사용자가 보낸 것\"이라는 정보를 스프링 시큐리티에 저장합니다.\n// 토큰이 없거나 가짜이면 아무것도 저장하지 않고, 요청을 다음 단계로 그냥 넘깁니다.\n//\n// ============================================================\n// 요청 한 번이 지나가는 순서\n// ============================================================\n// 1. 요청이 들어오면 doFilterInternal() 이 실행됩니다.\n// 2. 요청 머리글(헤더)에서 Authorization 항목을 찾습니다.\n// 3. 그 값에서 \"Bearer \" 글자를 떼어 내고, JWT 토큰 문자열만 꺼냅니다.\n// 4. JWT 토큰이 진짜인지 확인합니다. (tokenProvider.validToken())\n// 5. 진짜이면 사용자 정보를 만들어 스프링 시큐리티 저장소에 넣습니다.\n// 6. JWT 토큰 여부와 상관없이 다음 단계로 요청을 넘깁니다. (filterChain.doFilter())\n//\n// ============================================================\n// 꼭 조심할 점\n// ============================================================\n// 1. 토큰이 없어도 필터는 요청을 막지 않고 다음 단계로 넘깁니다.\n//    실제로 막는 일은 시큐리티 설정 파일의 authorizeHttpRequests(...) 규칙이 합니다.\n//    예) 인증이 필요한 주소에 인증 정보 없이 들어오면 시큐리티가 거부합니다.\n// 2. 이 클래스에는 @Component 표시가 없습니다.\n//    그래서 스프링이 자동으로 객체를 등록하지 않습니다. 시큐리티 설정 파일에서 직접 등록해야 동작합니다.\n//    ⚠️ 10장 현재 상태: 필터는 \"만들기만\" 했고, WebSecurityConfig 에는 아직 등록하지 않았습니다.\n//       (교안: \"필터 등록은 다음 단계에서\" — 11장 WebOAuthSecurityConfig 에서 아래처럼 등록합니다.)\n//         http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider),\n//                              UsernamePasswordAuthenticationFilter.class);\n//       addFilterBefore = \"아이디/비밀번호 로그인 필터보다 먼저 이 토큰 필터를 실행하라\"는 뜻입니다.\n// 3. 토큰 검사 결과가 false 이면 인증 정보를 저장하지 않으므로, 그 요청은 로그인하지 않은 것으로 처리됩니다.\n// ============================================================\n\n// @RequiredArgsConstructor\n//   뜻: 아래 final 변수(tokenProvider)를 받는 생성자를 자동으로 만들어 줍니다.\n//   이유: 스프링이 TokenProvider 객체를 이 생성자를 통해 넣어 주기 위해서입니다.\n@RequiredArgsConstructor\npublic class TokenAuthenticationFilter extends OncePerRequestFilter {\n\n    //TokenProvider 객체 : JWT 토큰을 확인하고 사용자 정보를 꺼내는 일을 맡은 객체입니다.\n    // 스프링이 생성자를 통해 넣어 줍니다. 직접 new 로 만들지 않습니다.\n    // final 이므로 한 번 넣으면 다른 객체로 바꾸지 않습니다.\n    private final TokenProvider tokenProvider;\n\n    //HTTP 요청 메세지의 헤더영역에 JWT토큰문자열이 저장되는 속성이름 \"Authorization\" 저장\n    private final static String HEADER_AUTHORIZATION = \"Authorization\";\n\n    // JWT 토큰 앞에 붙는 글자입니다. \"Bearer \" 는 뒤에 빈칸(공백) 한 칸까지 포함합니다.\n    // 헤더 값이 \"Bearer abc123\" 이면, 이 글자를 떼어 내고 \"abc123\" 만 JWT 토큰 문자열로 씁니다.\n    private final static String TOKEN_PREFIX = \"Bearer \";\n\n    // @Override\n    //   뜻: 부모 클래스(OncePerRequestFilter)의 doFilterInternal 메서드를 우리 방식으로 다시 만든다는 표시입니다.\n    //   부모가 요청이 올 때마다 이 메서드를 자동으로 불러 줍니다.\n    @Override                      //클라이언트가 요청을 보낸 정보, 클라이언트의 브라우저로 보낼 응답 정보, 다음 단계로 요청을 넘길 때 쓰는 연결 고리 객체\n    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {\n\n        //요청 메세지의 헤더 영역에서 \"Authorization\" 항목의 값을 꺼냅니다.\n        // 예) \"Authorization\": \"Bearer abc123\" 같은 글자입니다. 헤더가 없으면 null 이 됩니다.\n        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);\n        //\"Bearer abc123\"\n\n        //요청 메세지의 헤더 영역의 \"Bearer abc123\" 에서 \"Bearer \" 을 떼어 내고 JWT토큰 문자열 \"eyJhbGci...\"을 꺼냅니다.\n        String token = getAccessToken(authorizationHeader);\n        //\"abc123\" \u003c= JWT 토큰 문자열\n\n        //JWT 토큰 문자열(\"abc123\") 진짜 유효 기간이 남았는지 확인 해서 남았으면?\n        if(tokenProvider.validToken(token)){\n\n            //JWT 토큰문자열이 유효기간이 남았으면? 이 토큰으로 인증정보(요청한 사용자 정보)를 만듭니다.\n            //인증정보 객체 반환 받아 옴  =\u003e new UsernamePasswordAuthenticationToken(principal, token, authorities);\n            Authentication authentication = tokenProvider.getAuthentication(token);\n\n            //만든 사용자 인증정보 객체를 스프링시큐리티의 저장소(SecurityContex객체 메모리)에 넣습니다.\n            SecurityContextHolder.getContext().setAuthentication(authentication);\n        }\n\n        //JWT 토큰 문자열(\"abc123\") 유효기간이 남든 안남든 상관없이 요청을 그다음 단계로 넘깁니다.\n        filterChain.doFilter(request,response);\n\n\n    }//---------------doFilterInternal () 메소드 끝\n\n    // ---- \"Bearer eyJhbGci...\" 에서 \"Bearer \" 을 떼어 내고 JWT토큰 문자열 \"eyJhbGci...\"을 꺼내 반환하는 메소드.\n    // 매개변수로 받는 값: authorizationHeader (헤더 전체 값, 예: \"Bearer abc123\")\n    // 돌려주는 값: 토큰 문자열(예: \"abc123\"), 또는 조건에 맞지 않으면 null\n    private String  getAccessToken(String authorizationHeader){\n\n        //두가지 조건을 모두 확인합니다.\n        //      조건1)  \"Bearer abc123\" 이 실제로  요청한 클라이언트의 브라우저가 생성하는 HttpRequest요청메세지의 헤더영역에 존재하면?\n        //              JWT \"abc123\" 반환\n        //      조건2)   startsWith(TOKEN_PREFIX)    : 값이 \"Bearer \" 로 시작해야 합니다.\n        //              JWT \"abc123\" 반환\n        if(authorizationHeader != null  \u0026\u0026  authorizationHeader.startsWith(TOKEN_PREFIX)){\n\n            // substring(TOKEN_PREFIX.length()) 는 앞의 \"Bearer \" 글자 수만큼 잘라 내고 나머지를 가져옵니다.\n            // 예) \"Bearer abc123\" 에서 앞 7글자(\"Bearer \")를 잘라 내면 \"abc123\" 이 남습니다.\n            return  authorizationHeader.substring(TOKEN_PREFIX.length());\n          //return  \"abc123\";\n        }\n\n        //조건1) 조건2)에 만족하지 않으면 토큰이 없다는 뜻으로 null 반환\n        return null;\n    }\n\n\n}\n\n\n\n\n\n\n\n"},"SecConfig":{"title":"WebOAuthSecurityConfig.java (filterChain)","path":"src/main/java/com/shinsunyoung/blog/config/WebOAuthSecurityConfig.java","lang":"java","start":293,"note":"(관련 부분 L293-L320, 원래 줄 번호 유지)","text":"    @Bean\n    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        return http\n                .csrf(AbstractHttpConfigurer::disable)      // 1) CSRF 보호 끔 (헤더 토큰 방식이라 필요 없음)\n                .httpBasic(AbstractHttpConfigurer::disable) // 1) HTTP Basic 로그인 끔\n                .formLogin(AbstractHttpConfigurer::disable) // 1) 이메일·비밀번호 폼 로그인 끔 (POST /login 처리 안 함)\n                .logout(AbstractHttpConfigurer::disable)    // 1) 시큐리티 로그아웃 필터 끔 (GET /logout 이 컨트롤러로 감)\n                .sessionManagement(management -\u003e management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 2) 로그인 상태를 세션에 저장하지 않음\n                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)        // 3) 우리 토큰 검사 필터를 로그인 필터 자리 앞에 끼움\n                .authorizeHttpRequests(auth -\u003e auth                                                              // 4) 주소별 허용 규칙\n                        .requestMatchers(\"/api/token\").permitAll()  //    토큰 재발급 API 는 누구나 (반드시 /api/** 보다 먼저!)\n                        .requestMatchers(\"/api/**\").authenticated() //    나머지 API 는 인증된 사용자만 (없으면 401)\n                        .anyRequest().permitAll())                  //    그 밖의 주소(화면 등)는 누구나\n                .oauth2Login(oauth2 -\u003e oauth2                                                                    // 5) 구글 로그인 켜기\n                        .loginPage(\"/login\") // 로그인 화면 = 우리 oauthLogin.html\n                        .authorizationEndpoint(authorizationEndpoint -\u003e authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())) // [2] 인가 요청을 쿠키에 보관\n                        .userInfoEndpoint(userInfoEndpoint -\u003e userInfoEndpoint.userService(oAuth2UserCustomService)) // [4] 사용자 정보 → users 표 저장\n                        .successHandler(oAuth2SuccessHandler()) // [5] 로그인 성공 → JWT 발급\n                )\n                .exceptionHandling(ex -\u003e ex                                                                      // 6) 인증 없음 처리\n                        .defaultAuthenticationEntryPointFor(\n                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),        // 돌려줄 응답: 본문 없이 401 숫자만\n                                request -\u003e request.getRequestURI().startsWith(\"/api/\")    // 적용 조건: 주소가 /api/ 로 시작할 때\n                        )\n                )\n                .build(); // 지금까지 이어 붙인 규칙으로 필터 묶음을 완성합니다.\n    }\n"},"UploadController":{"title":"UploadController.java","path":"src/main/java/com/shinsunyoung/blog/controller/UploadController.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 이미지 파일을 업로드받는 REST API 컨트롤러입니다.\n// 글쓰기 화면에서 파일을 고르면 article.js 가 이 주소로 파일을 보냅니다.\n//\n// [전체 주소]\n//   POST /api/upload → uploadFile() → FileStorageService.store() → JSON 응답 {\"imageUrl\":\"/uploads/...\"}\n// ============================================================\npackage com.shinsunyoung.blog.controller;\n\n// UploadResponse : 응답 상자 (저장된 이미지 주소)\nimport com.shinsunyoung.blog.dto.UploadResponse;\nimport com.shinsunyoung.blog.service.FileStorageService;\nimport com.shinsunyoung.blog.dto.UploadResponse;\n\n// FileStorageService : 파일 저장 규격입니다. 실제 구현은 LocalFileStorageService 입니다.\nimport com.shinsunyoung.blog.service.FileStorageService;\n\n// HttpStatus, ResponseEntity : 응답 상태 코드와 본문을 담는 도구입니다.\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\n\n// @PostMapping : POST 요청 주소 표시\n// @RequestParam : 요청에 담긴 값 1개를 꺼내는 표시\n// @RestController : 결과를 JSON 으로 돌려주는 컨트롤러 표시\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\n// MultipartFile : 브라우저가 보낸 업로드 파일 1개를 담는 객체입니다.\nimport org.springframework.web.multipart.MultipartFile;\n\n// IOException : 파일을 읽을 때 생길 수 있는 오류입니다. 메소드 뒤의 throws 로 넘깁니다.\nimport java.io.IOException;\n\n// @RestController : JSON 응답 컨트롤러라는 표시입니다.\n@RestController\npublic class UploadController {\n\n    // 파일 저장 기능을 가진 객체입니다.\n    private final FileStorageService fileStorageService;\n\n    // 생성자 : 스프링이 FileStorageService 구현 객체(LocalFileStorageService)를 넣어 줍니다.\n    public UploadController(FileStorageService fileStorageService) {\n        this.fileStorageService = fileStorageService;\n    }\n\n    // ---------------------------------------------------------------\n    // 파일 업로드 : POST /api/upload\n    // ---------------------------------------------------------------\n    // @RequestParam(\"file\") MultipartFile file :\n    //   요청에 \"file\"이라는 이름으로 실린 업로드 파일을 꺼내 file 변수에 담습니다.\n    //   (article.js 에서 FormData 의 키 이름이 \"file\" 이어야 합니다)\n    @PostMapping(\"/api/upload\")\n    public ResponseEntity\u003cUploadResponse\u003e uploadFile(@RequestParam(\"file\") MultipartFile file) throws IOException {\n\n        // 1) file.getBytes() : 업로드된 파일 내용을 byte 배열로 꺼냅니다.\n        // 2) file.getOriginalFilename() : 사용자가 올린 원래 파일 이름입니다. (확장자 추출에 쓰입니다)\n        // 3) fileStorageService.store(...) : 파일을 uploads 폴더에 저장하고 주소(UploadResponse)를 받습니다.\n        // 4) 상태 코드 201(Created)과 함께 그 주소를 JSON 으로 돌려줍니다.\n        return ResponseEntity.status(HttpStatus.CREATED)\n                .body(fileStorageService.store(\n                        file.getBytes(),\n                        file.getOriginalFilename()\n                ));\n    }\n}"},"jsCreate":{"title":"article.js (등록 버튼)","path":"src/main/resources/static/js/article.js","lang":"js","start":346,"note":"(관련 부분 L346-L373, 원래 줄 번호 유지)","text":"\n// ------------------------------------------------------------\n// 생성 기능 (newArticle.html 의 \"등록\" 버튼)\n// POST /api/articles + JSON 본문 → 서버가 토큰 주인(이메일)을 글쓴이로 저장\n// ------------------------------------------------------------\nconst createButton = document.getElementById(\u0027create-btn\u0027);\n\nif (createButton) {\n    createButton.addEventListener(\u0027click\u0027, event =\u003e {\n        // ※ 글쓴이(author)는 보내지 않습니다. 서버가 토큰에서 꺼내 정합니다.\n        // [수정] body = … → const body = … (전역 변수가 생기지 않도록)\n        const body = JSON.stringify({\n            title: document.getElementById(\u0027title\u0027).value,\n            imageUrl: document.getElementById(\u0027image-url\u0027).value,\n            content: document.getElementById(\u0027content\u0027).value\n        });\n        function success() {\n            alert(\u0027등록 완료되었습니다.\u0027);\n            location.replace(\u0027/articles\u0027);\n        };\n        function fail() {\n            alert(\u0027등록 실패했습니다.\u0027);\n            location.replace(\u0027/articles\u0027);\n        };\n\n        httpRequest(\u0027POST\u0027,\u0027/api/articles\u0027, body, success, fail)\n    });\n}"},"jsHttp":{"title":"article.js (httpRequest 공통 함수)","path":"src/main/resources/static/js/article.js","lang":"js","start":474,"note":"(관련 부분 L474-L535, 원래 줄 번호 유지)","text":"// ------------------------------------------------------------\n// [11장 추가] HTTP 요청을 보내는 공통 함수 (토큰 첨부 + 401 이면 재발급 후 재시도)\n// ------------------------------------------------------------\n// 받는 값:\n//   method  : \u0027GET\u0027, \u0027POST\u0027, \u0027PUT\u0027, \u0027DELETE\u0027\n//   url     : 요청 주소. 예) \u0027/api/articles/3\u0027\n//   body    : 보낼 JSON 문자열. 없으면 null\n//   success : 성공(200, 201)했을 때 부를 함수\n//   fail    : 실패했을 때 부를 함수\n// 흐름은 파일 맨 위 \"토큰 재발급 흐름\" 그림을 보세요.\nfunction httpRequest(method, url, body, success, fail) {\n    // ① 원래 요청 보내기 (Bearer 액세스 토큰 첨부)\n    fetch(url, {\n        method: method,\n        headers: { // 로컬 스토리지에서 액세스 토큰 값을 가져와 헤더에 추가\n            Authorization: \u0027Bearer \u0027 + localStorage.getItem(\u0027access_token\u0027),\n            \u0027Content-Type\u0027: \u0027application/json\u0027,\n        },\n        body: body,\n    }).then(response =\u003e {\n        // 200(OK) 또는 201(Created) 이면 성공\n        if (response.status === 200 || response.status === 201) {\n            return success();\n        }\n        // 실패했으면 리프레시 토큰 쿠키가 있는지 봅니다.\n        const refresh_token = getCookie(\u0027refresh_token\u0027);\n        // 401(인증 없음 = 액세스 토큰 없음·만료·가짜) 이고 리프레시 토큰이 있으면 재발급을 시도합니다.\n        if (response.status === 401 \u0026\u0026 refresh_token) {\n            // ② 새 액세스 토큰 요청. /api/token 은 permitAll 이라 토큰 없이도 통과합니다.\n            //    (헤더의 만료된 액세스 토큰은 서버에서 무시됩니다)\n            fetch(\u0027/api/token\u0027, {\n                method: \u0027POST\u0027,\n                headers: {\n                    Authorization: \u0027Bearer \u0027 + localStorage.getItem(\u0027access_token\u0027),\n                    \u0027Content-Type\u0027: \u0027application/json\u0027,\n                },\n                body: JSON.stringify({ // 본문 예) {\"refreshToken\":\"eyJ…\"} → CreateAccessTokenRequest 로 들어감\n                    refreshToken: getCookie(\u0027refresh_token\u0027),\n                }),\n            })\n                .then(res =\u003e {\n                    // 성공(201)이면 JSON 을 꺼냅니다. 실패면 아무것도 돌려주지 않아 다음 단계의 result 가 undefined 가 됩니다.\n                    if (res.ok) {\n                        return res.json();\n                    }\n                })\n                .then(result =\u003e { // 재발급이 성공하면 로컬 스토리지값을 새로운 액세스 토큰으로 교체\n                    // ③ 새 토큰 저장 (result 가 undefined 면 여기서 오류 → 아래 catch → fail)\n                    localStorage.setItem(\u0027access_token\u0027, result.accessToken);\n                    // ④ 같은 요청을 새 토큰으로 다시 보냅니다.\n                    httpRequest(method, url, body, success, fail);\n                })\n                .catch(error =\u003e fail());\n        } else {\n            // 401 이 아닌 실패(403, 500 등)이거나 리프레시 토큰이 없으면 바로 실패 처리\n            // [수정·삭제 완성 - 변경] fail() → fail(response)\n            //   실패한 응답 객체를 넘겨서, 부르는 쪽(수정·삭제)이 response.status 로 실패 이유를 나눌 수 있게 했습니다.\n            //   예) 403 이면 \"본인이 작성한 글만 수정할 수 있습니다.\" / 그 밖이면 \"수정 실패했습니다.\"\n            //   등록·로그아웃의 fail() 처럼 매개변수를 받지 않는 함수에 넘겨도 그냥 무시되므로 문제없습니다.\n            return fail(response);\n        }\n    });"},"ApiCtrl":{"title":"BlogApiController.java","path":"src/main/java/com/shinsunyoung/blog/controller/BlogApiController.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 블로그 글과 AI 기능을 JSON 으로 주고받는 REST API 컨트롤러입니다.\n// 화면(article.js)의 fetch() 요청이 이 파일의 메소드로 들어옵니다.\n//\n// [@RestController 의 뜻]\n//   메소드가 돌려주는 객체를 HTML 화면이 아니라 JSON 데이터로 바꿔서 브라우저에 보냅니다.\n//\n// [전체 주소 목록]\n//   POST   /api/articles         : 글 등록       → addArticle\n//   GET    /api/articles         : 글 목록 조회  → findAllArticles\n//   GET    /api/articles/{id}    : 글 1개 조회   → findArticle\n//   DELETE /api/articles/{id}    : 글 삭제       → deleteArticle\n//   PUT    /api/articles/{id}    : 글 수정       → updateArticle\n//   POST   /api/ai-suggestions   : AI 글쓰기 도우미 → writingAssist\n//   POST   /api/ai-thumbnails    : AI 썸네일 생성    → thumbnailGenerator\n// ============================================================\npackage com.shinsunyoung.blog.controller;\n\n// Lombok : final 필드를 받는 생성자를 자동으로 만듭니다.\nimport com.shinsunyoung.blog.domain.Article;\nimport com.shinsunyoung.blog.dto.AddArticleRequest;\nimport com.shinsunyoung.blog.dto.ArticleResponse;\nimport com.shinsunyoung.blog.dto.UpdateArticleRequest;\nimport com.shinsunyoung.blog.service.BlogService;\nimport com.shinsunyoung.blog.service.ThumbnailGeneratorService;\nimport com.shinsunyoung.blog.service.WritingAssistantService;\nimport lombok.RequiredArgsConstructor;\n\n// Article : 글 엔티티입니다. 등록·수정 응답에서 그대로 JSON 으로 나갑니다.\nimport com.shinsunyoung.blog.domain.Article;\n\n// dto 패키지의 모든 클래스(*)를 한꺼번에 가져옵니다.\n//   AddArticleRequest, ArticleResponse, UpdateArticleRequest, WritingSuggestionRequest 등이 여기에 해당합니다.\nimport com.shinsunyoung.blog.dto.*;\n\n// 서비스 클래스들 : 실제 업무를 맡는 객체입니다. 컨트롤러는 요청을 받아 이 객체들에게 넘깁니다.\nimport com.shinsunyoung.blog.service.BlogService;\nimport com.shinsunyoung.blog.service.ThumbnailGeneratorService;\nimport com.shinsunyoung.blog.service.WritingAssistantService;\n\n// HttpStatus : HTTP 상태 번호를 이름으로 쓸 수 있게 한 값입니다. (CREATED = 201, OK = 200)\nimport org.springframework.http.HttpStatus;\n\n// ResponseEntity : 응답의 상태 코드, 헤더, 본문을 한꺼번에 담는 응답 상자입니다.\nimport org.springframework.http.ResponseEntity;\n\n// web.bind.annotation.* : @RestController, @PostMapping, @GetMapping, @PathVariable, @RequestBody 등 웹 요청 표시들입니다.\nimport org.springframework.web.bind.annotation.*;\n\n// List : 글 목록을 담는 자료형입니다.\nimport java.security.Principal;\nimport java.util.List;\n\n// [@RequiredArgsConstructor]\n//   아래 final 필드 3개를 받는 생성자를 자동으로 만듭니다.\n//   스프링이 이 생성자를 보고 BlogService, WritingAssistantService, ThumbnailGeneratorService 객체를 넣어 줍니다.\n@RequiredArgsConstructor\n\n// [@RestController] 이 클래스의 메소드들이 돌려주는 값을 JSON 으로 바꿔서 응답한다는 표시입니다.\n@RestController\npublic class BlogApiController {\n\n    // 글 업무를 맡는 서비스입니다.\n    private final BlogService blogService;\n\n    // AI 글쓰기 도우미 서비스입니다.\n    private final WritingAssistantService writingAssistantService;\n\n    // AI 썸네일 생성 서비스입니다.\n    private final ThumbnailGeneratorService thumbnailGeneratorService;\n\n    // ---------------------------------------------------------------\n    // 글 등록 : POST /api/articles\n    // ---------------------------------------------------------------\n    // ------------------------------------------------------------\n    // POST /api/articles : 글 등록\n    // 받는 값   : request(JSON 본문 → AddArticleRequest), principal(지금 요청한 사람, 스프링이 넣어 줌)\n    // 돌려주는 값: 201 Created + 저장된 글\n    // [11장] principal.getName()(이메일)을 글쓴이로 넘깁니다.\n    //   ⚠️ 시큐리티를 거치지 않고 부르면 principal 이 null 이라 오류가 납니다.\n    //      그래서 BlogApiControllerTest 는 Mockito 로 가짜 Principal 을 만들어 넣습니다.\n    // ------------------------------------------------------------\n    @PostMapping(\"/api/articles\")\n    public ResponseEntity\u003cArticle\u003e addArticle(@RequestBody AddArticleRequest request, Principal printPrincipal) {\n\n        // blogService.save(request) : 글을 DB 에 저장하고, 저장된 Article(id 포함)을 받습니다.\n        Article savedArticle = blogService.save(request, printPrincipal.getName());\n\n        // ResponseEntity.status(HttpStatus.CREATED) : 상태 코드 201(Created, 생성됨)을 설정합니다.\n        //   .body(savedArticle) : 응답 본문에 저장된 글을 넣습니다. 이 글은 JSON 으로 바뀌어 나갑니다.\n        return ResponseEntity.status(HttpStatus.CREATED)\n                .body(savedArticle);\n    }\n\n    // ---------------------------------------------------------------\n    // 글 목록 조회 : GET /api/articles\n    // ---------------------------------------------------------------\n    @GetMapping(\"/api/articles\")\n    public ResponseEntity\u003cList\u003cArticleResponse\u003e\u003e findAllArticles() {\n\n        // 1) blogService.findAll() : 모든 Article 목록을 가져옵니다.\n        // 2) .stream() : 목록을 하나씩 꺼내며 처리할 수 있는 흐름(스트림)으로 바꿉니다.\n        // 3) .map(ArticleResponse::new) : 각 Article 을 ArticleResponse 로 바꿉니다.\n        //      ArticleResponse::new 는 new ArticleResponse(article) 과 같은 뜻입니다.\n        // 4) .toList() : 바뀐 결과를 다시 목록으로 모읍니다.\n        List\u003cArticleResponse\u003e articles = blogService.findAll()\n                .stream()\n                .map(ArticleResponse::new)\n                .toList();\n\n        // 상태 코드 200(OK)과 함께 목록을 돌려줍니다.\n        return ResponseEntity.ok()\n                .body(articles);\n    }\n\n    // ---------------------------------------------------------------\n    // 글 1개 조회 : GET /api/articles/{id}\n    // ---------------------------------------------------------------\n    // {id} : 주소 중 바뀌는 부분입니다. 예: /api/articles/3 이면 id 는 3 입니다.\n    // @PathVariable long id : 주소의 {id} 값을 꺼내서 long 타입 변수 id 에 넣습니다.\n    @GetMapping(\"/api/articles/{id}\")\n    public ResponseEntity\u003cArticleResponse\u003e findArticle(@PathVariable long id) {\n\n        // 번호로 글 1개를 찾습니다. 없으면 BlogService 에서 예외가 발생합니다.\n        Article article = blogService.findById(id);\n\n        // ArticleResponse 로 바꿔서 200 응답으로 돌려줍니다.\n        return ResponseEntity.ok()\n                .body(new ArticleResponse(article));\n    }\n\n    // ---------------------------------------------------------------\n    // 글 삭제 : DELETE /api/articles/{id}\n    // ---------------------------------------------------------------\n    @DeleteMapping(\"/api/articles/{id}\")\n    public ResponseEntity\u003cVoid\u003e deleteArticle(@PathVariable long id) {\n\n        // 번호에 해당하는 글을 삭제합니다.\n        blogService.delete(id);\n\n        // Void : 돌려줄 본문이 없다는 뜻입니다. build() 는 본문 없이 200 응답을 만듭니다.\n        return ResponseEntity.ok()\n                .build();\n    }\n\n    // ---------------------------------------------------------------\n    // 글 수정 : PUT /api/articles/{id}\n    // ---------------------------------------------------------------\n    // @PathVariable long id : 수정할 글 번호\n    // @RequestBody UpdateArticleRequest request : 새 제목·본문·이미지 주소가 담긴 JSON\n    @PutMapping(\"/api/articles/{id}\")\n    public ResponseEntity\u003cArticle\u003e updateArticle(@PathVariable long id,\n                                                 @RequestBody UpdateArticleRequest request) {\n\n        // 수정 업무를 BlogService 에 맡기고, 수정된 Article 을 받습니다.\n        Article updatedArticle = blogService.update(id, request);\n\n        // 200 응답 본문에 수정된 글을 담아 돌려줍니다.\n        return ResponseEntity.ok()\n                .body(updatedArticle);\n    }\n\n    // ---------------------------------------------------------------\n    // AI 글쓰기 도우미 : POST /api/ai-suggestions\n    // ---------------------------------------------------------------\n    // 요청 JSON {\"title\", \"content\", \"question\"} → WritingSuggestionRequest 로 변환\n    // 응답 JSON {\"suggestions\":[...]} ← WritingSuggestionsResponse 를 JSON 으로 변환\n    @PostMapping(\"/api/ai-suggestions\")\n    public ResponseEntity\u003cWritingSuggestionsResponse\u003e writingAssist(@RequestBody WritingSuggestionRequest request) {\n\n        // AI 에게 질문하고 제안 목록을 받는 일은 WritingAssistantService 가 합니다.\n        WritingSuggestionsResponse response = writingAssistantService.getWritingAssist(request);\n\n        // 200 응답 본문에 제안 목록을 담아 돌려줍니다.\n        return ResponseEntity.ok()\n                .body(response);\n    }\n\n    // ---------------------------------------------------------------\n    // AI 썸네일 생성 : POST /api/ai-thumbnails\n    // ---------------------------------------------------------------\n    // 요청 JSON {\"title\", \"content\"} → GeneratorThumbnailRequest 로 변환\n    // 응답 JSON {\"imageUrl\": \"/uploads/...\"} ← GeneratorThumbnailResponse 를 JSON 으로 변환\n    @PostMapping(\"/api/ai-thumbnails\")\n    public ResponseEntity\u003cGeneratorThumbnailResponse\u003e thumbnailGenerator(@RequestBody GeneratorThumbnailRequest request) {\n\n        // 썸네일 생성·저장은 ThumbnailGeneratorService 가 맡고, 저장된 이미지 주소를 받습니다.\n        GeneratorThumbnailResponse response = thumbnailGeneratorService.generateThumbnail(request);\n\n        // 200 응답 본문에 이미지 주소를 담아 돌려줍니다.\n        return ResponseEntity.ok()\n                .body(response);\n    }\n}"},"BlogService":{"title":"BlogService.java","path":"src/main/java/com/shinsunyoung/blog/service/BlogService.java","lang":"java","start":1,"note":"","text":"// 파일 위치: src/main/java/me/shinsunyoung/springbootdeveloper/service/BlogService.java\n//\n// ============================================================\n// 이 파일이 하는 일\n// ============================================================\n// 블로그 글의 저장·조회·삭제·수정 \"업무 처리\"를 맡은 서비스입니다.\n//\n// ============================================================\n// 10장 → 11장, 무엇이 바뀌었나  (\"내 글만 고칠 수 있게\")\n// ============================================================\n//   메서드     10장                          11장\n//   ────────   ───────────────────────────   ───────────────────────────────────────────────────────\n//   save       save(request)                 save(request, userName) → 글쓴이(userName)를 함께 저장\n//   delete     deleteById(id) 바로 삭제       글을 찾아서 → 글쓴이 확인 → delete(article)\n//   update     찾아서 바로 수정               글을 찾아서 → 글쓴이 확인 → 수정\n//   (새 메서드)  -                            authorizeArticleAuthor(): 글쓴이와 요청한 사람 비교\n//\n// ============================================================\n// \"지금 요청한 사람\"은 어디서 알까요?\n// ============================================================\n//   1. 브라우저가 Authorization: Bearer 액세스토큰 헤더를 붙여 요청\n//   2. TokenAuthenticationFilter 가 토큰 검사 → TokenProvider.getAuthentication(token)\n//        → 이름(name) = 토큰의 sub = 이메일 인 인증 정보를 SecurityContextHolder 에 넣음\n//   3. 이 서비스에서 SecurityContextHolder.getContext().getAuthentication().getName() 으로 꺼냄\n//        → \"gildong@gmail.com\"\n//   SecurityContextHolder 는 \"지금 이 요청을 처리하는 스레드\"마다 따로 있는 보관함이라서,\n//   컨트롤러에서 값을 넘겨받지 않아도 서비스에서 바로 꺼낼 수 있습니다.\n//\n// ============================================================\n// 수정·삭제 흐름 예 (남의 글을 지우려 할 때)\n// ============================================================\n//   DELETE /api/articles/1  (요청자: gildong@gmail.com, 1번 글 author: user1)\n//     → delete(1) → 글 찾음 → authorizeArticleAuthor(): \"user1\" ≠ \"gildong@gmail.com\"\n//     → ResponseStatusException(403, \"not authorized\") 발생 → 삭제 안 됨   ([수정·삭제 완성] 예전: IllegalArgumentException, 500)\n//     → 예외를 처리하는 코드가 없으므로 응답은 500 오류 → article.js 가 \"삭제 실패했습니다.\" 알림\n//\n// ============================================================\n// 꼭 조심할 점\n// ============================================================\n// 1. ✅ [해결] 권한이 없을 때 예전에는 IllegalArgumentException 이라 응답이 500 이었습니다.\n//    지금은 ResponseStatusException(HttpStatus.FORBIDDEN) 을 던져 403(권한 없음)으로 응답합니다. (authorizeArticleAuthor 참고)\n// 2. findAll(), findById() 는 글쓴이를 확인하지 않습니다. 글 읽기는 누구나 할 수 있습니다.\n// 3. @Transactional 을 jakarta.transaction 패키지에서 가져왔습니다. (10장은 org.springframework.transaction.annotation)\n//    스프링은 두 종류 모두 알아보므로 이 프로젝트에서는 동작이 같습니다.\n// ============================================================\n\n\n// 이 파일이 속한 폴더 이름입니다. 업무 처리 클래스들을 모아 두는 폴더입니다.\npackage com.shinsunyoung.blog.service;\n\nimport com.shinsunyoung.blog.repository.BlogRepository;\nimport jakarta.transaction.Transactional;                                // 메서드 전체를 하나의 작업 단위(트랜잭션)로 묶는 표시입니다. [11장] jakarta 쪽으로 바뀜\nimport lombok.RequiredArgsConstructor;                                   // final 변수를 받는 생성자를 만듭니다.\nimport com.shinsunyoung.blog.domain.Article;                // 글 클래스입니다.\nimport com.shinsunyoung.blog.dto.AddArticleRequest;        // 글 등록 요청 그릇입니다.\nimport com.shinsunyoung.blog.dto.UpdateArticleRequest;     // 글 수정 요청 그릇입니다.\nimport com.shinsunyoung.blog.repository.BlogRepository;    // article 표를 다루는 도구입니다.\nimport org.springframework.security.core.context.SecurityContextHolder;  // [11장] 지금 요청한 사용자의 인증 정보가 들어 있는 보관함입니다.\nimport org.springframework.stereotype.Service;                           // 스프링 빈(서비스)으로 등록하는 표시입니다.\nimport org.springframework.http.HttpStatus;                              // [수정·삭제 완성 추가] 403(FORBIDDEN) 같은 상태 코드 상수\nimport org.springframework.web.server.ResponseStatusException;           // [수정·삭제 완성 추가] 던지면 지정한 상태 코드로 응답되는 예외\n\nimport java.util.List; // 여러 글을 담는 목록 자료형입니다.\n\n@RequiredArgsConstructor\n@Service\npublic class BlogService {\n\n    private final BlogRepository blogRepository; // article 표를 다루는 도구. 스프링이 넣어 줍니다.\n\n    // ------------------------------------------------------------\n    // save: 글 저장\n    // 누가 부르나요: BlogApiController.addArticle() — principal.getName()(이메일)을 userName 으로 넘김\n    // 받는 값   : request(제목·본문·이미지), userName(글쓴이 = 토큰 주인 이메일)\n    // 돌려주는 값: 저장된 Article (id, createdAt 이 채워진 상태)\n    // ------------------------------------------------------------\n    public Article save(AddArticleRequest request, String userName) {\n        return blogRepository.save(request.toEntity(userName));\n    }\n\n    // findAll: 모든 글 조회. 글쓴이 확인 없음 (누구나 읽기 가능)\n    public List\u003cArticle\u003e findAll() {\n        return blogRepository.findAll();\n    }\n\n    // findById: 글 한 개 조회. 없으면 IllegalArgumentException(\"not found: 번호\")\n    public Article findById(long id) {\n        return blogRepository.findById(id)\n                .orElseThrow(() -\u003e new IllegalArgumentException(\"not found: \" + id));\n    }\n\n    // ------------------------------------------------------------\n    // delete: 글 삭제 (글쓴이만 가능)\n    // 순서: ① 글 찾기 → ② 글쓴이 확인 → ③ 삭제\n    // 10장은 deleteById(id) 로 바로 지웠지만, 글쓴이를 확인하려면 먼저 글을 꺼내야 해서 순서가 바뀌었습니다.\n    // ------------------------------------------------------------\n    public void delete(long id) {\n        // ① 글 찾기. 없으면 \"not found : 번호\" 오류\n        Article article = blogRepository.findById(id)\n                .orElseThrow(() -\u003e new IllegalArgumentException(\"not found : \" + id));\n\n        // ② 지금 요청한 사람이 글쓴이인지 확인. 아니면 여기서 오류가 나고 아래 줄은 실행되지 않습니다.\n        authorizeArticleAuthor(article);\n        // ③ 삭제. 실행 SQL 예) DELETE FROM article WHERE id = 1\n        blogRepository.delete(article);\n    }\n\n    // ------------------------------------------------------------\n    // update: 글 수정 (글쓴이만 가능)\n    // @Transactional: 메서드가 끝날 때 바뀐 값을 데이터베이스에 반영(UPDATE)합니다. (변경 감지)\n    // ------------------------------------------------------------\n    @Transactional\n    public Article update(long id, UpdateArticleRequest request) {\n        // ① 글 찾기\n        Article article = blogRepository.findById(id)\n                .orElseThrow(() -\u003e new IllegalArgumentException(\"not found : \" + id));\n\n        // ② 글쓴이 확인\n        authorizeArticleAuthor(article);\n        // ③ 값 바꾸기 (save 를 부르지 않아도 트랜잭션이 끝날 때 UPDATE 됨)\n        article.update(request.getTitle(), request.getContent(), request.getImageUrl());\n\n        return article;\n    }\n\n\n    // ------------------------------------------------------------\n    // [11장 추가] authorizeArticleAuthor: 글쓴이 확인\n    // ------------------------------------------------------------\n    // private static : 이 클래스 안에서만, 객체 없이 쓰는 도우미 메서드입니다.\n    // 1. SecurityContextHolder.getContext()  : 지금 요청의 보안 상자를 꺼냅니다.\n    // 2. .getAuthentication()                : 그 안의 인증 정보 (TokenAuthenticationFilter 가 넣은 것)\n    // 3. .getName()                          : 사용자 이름 = 토큰의 sub = 이메일\n    // 4. 글의 author 와 다르면 \"not authorized\" 오류를 던집니다.\n    // ⚠️ 인증 정보가 없으면 getAuthentication() 이 null 이라 오류가 날 수 있지만,\n    //    /api/** 는 WebOAuthSecurityConfig 에서 authenticated 라서 인증 없이 여기까지 오지 못합니다.\n    //\n    // [수정·삭제 완성 - 변경] 예외 종류를 IllegalArgumentException → ResponseStatusException(403 FORBIDDEN) 으로 바꿨습니다.\n    //   예전 : 남의 글을 수정·삭제하면 처리되지 않은 예외라서 응답이 500(서버 오류)이었습니다.\n    //          화면에서는 \"실패했습니다\" 만 보여서, 서버 고장인지 권한 문제인지 알 수 없었습니다.\n    //   지금 : ResponseStatusException 은 스프링 MVC 가 알아보는 예외라서, 던지면 지정한 상태 코드(403)로 응답합니다.\n    //          403 = \"누구인지는 알지만(로그인은 됨) 이 일을 할 권한이 없다\" 는 뜻의 표준 상태 코드입니다.\n    //          article.js 의 fail(response) 가 403 을 보고 \"본인이 작성한 글만 …\" 안내를 띄웁니다.\n    //   ※ 글쓴이 본인이면 예외가 나지 않으므로 수정·삭제는 그대로 성공(200)합니다.\n    private static void authorizeArticleAuthor(Article article) {\n        String userName = SecurityContextHolder.getContext().getAuthentication().getName();\n        if (!article.getAuthor().equals(userName)) {\n            throw new ResponseStatusException(HttpStatus.FORBIDDEN, \"not authorized\"); // [변경] 500 → 403\n        }\n    }\n}"},"AddReq":{"title":"AddArticleRequest.java","path":"src/main/java/com/shinsunyoung/blog/dto/AddArticleRequest.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 새 글을 등록할 때 브라우저가 보낸 JSON 데이터를 담는 상자(DTO)입니다.\n// DTO = 화면과 서버 사이에서 데이터를 옮기기 위해 만든 객체입니다. DB 테이블과 연결되지 않습니다.\n//\n// [데이터 흐름]\n//   article.js 의 fetch(\u0027/api/articles\u0027, POST) → JSON 본문\n//   → Spring 이 JSON 을 이 객체로 변환 → BlogApiController.addArticle(@RequestBody AddArticleRequest request)\n//   → BlogService.save(request) → request.toEntity() 로 Article 엔티티 생성 → DB 저장\n// ============================================================\npackage com.shinsunyoung.blog.dto;\n\n// @NoArgsConstructor : 값 없이 만드는 기본 생성자를 자동으로 만듭니다. JSON 을 객체로 바꿀 때 필요합니다.\n// @AllArgsConstructor : 모든 필드를 받는 생성자를 자동으로 만듭니다.\n// @Getter : getTitle(), getContent(), getImageUrl() 등을 자동으로 만듭니다.\nimport lombok.AllArgsConstructor;\nimport lombok.Getter;\nimport lombok.NoArgsConstructor;\n\n// Article : 엔티티 클래스입니다. toEntity() 에서 이 타입을 만들어 돌려줍니다.\nimport com.shinsunyoung.blog.domain.Article;\n\n@NoArgsConstructor\n@AllArgsConstructor\n@Getter\npublic class AddArticleRequest {\n\n    // 제목, 본문, 이미지 주소를 담는 필드입니다. JSON 의 같은 이름 키 값이 여기에 들어옵니다.\n    private String title;\n    private String content;\n    private String imageUrl;\n\n    // 제목과 본문만 받는 생성자입니다. 테스트 코드(BlogApiControllerTest)에서 사용합니다.\n    //   이 경우 imageUrl 은 null 로 남습니다.\n    public AddArticleRequest(String title, String content) {\n        this.title = title;\n        this.content = content;\n    }\n\n    // toEntity : 이 DTO 의 값을 DB 에 저장할 Article 엔티티로 바꿔서 돌려줍니다.\n    //   호출하는 곳 : BlogService.save() 메소드\n    public Article toEntity(String author) {\n        return Article.builder()        // Article 의 빌더(값을 하나씩 채우는 도구)를 시작합니다.\n                .title(title)           // 이 DTO 의 제목을 넣습니다.\n                .content(content)       // 본문을 넣습니다.\n                .author(author)\n                .imageUrl(imageUrl)     // 이미지 주소를 넣습니다.\n                .build();               // 지금까지 넣은 값으로 Article 객체를 완성해서 돌려줍니다.\n    }\n}"},"Article":{"title":"Article.java","path":"src/main/java/com/shinsunyoung/blog/domain/Article.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] 블로그 \"글 1개\"를 나타내는 엔티티(Entity)입니다.\n// 엔티티 = 데이터베이스 테이블의 한 줄(row)을 자바 객체로 옮겨 놓은 것입니다.\n// 이 클래스는 article 테이블과 1:1로 연결됩니다.\n//\n// [호출 흐름]\n//   BlogService.save()  : new Article(...) 대신 AddArticleRequest.toEntity() 가 Article.builder() 로 만들고,\n//                         BlogRepository.save() 가 article 테이블에 INSERT 합니다.\n//   BlogService.update(): 조회한 Article 객체의 update() 메소드로 값을 바꾸면,\n//                         @Transactional 덕분에 트랜잭션이 끝날 때 UPDATE 가 자동 실행됩니다.\n// ============================================================\npackage com.shinsunyoung.blog.domain;\n\n// jakarta.persistence.* : JPA(자바 데이터 저장 규격)의 어노테이션들을 한꺼번에 가져옵니다.\n//   @Entity, @Id, @GeneratedValue, @Column, @EntityListeners 등이 여기에 들어 있습니다.\nimport jakarta.persistence.*;\n\n// Lombok 어노테이션들: 반복되는 코드를 자동으로 만들어 줍니다.\nimport lombok.AccessLevel;\nimport lombok.Builder;\nimport lombok.Getter;\nimport lombok.NoArgsConstructor;\n\n// 생성 시간, 수정 시간을 표시하는 어노테이션입니다.\nimport org.springframework.data.annotation.CreatedDate;\nimport org.springframework.data.annotation.LastModifiedDate;\n\n// AuditingEntityListener : @CreatedDate, @LastModifiedDate 값을 저장 시점에 자동으로 채워 주는 감시 도구입니다.\nimport org.springframework.data.jpa.domain.support.AuditingEntityListener;\n\n// LocalDateTime : 날짜와 시간(예: 2026-10-30T14:05:00)을 담는 자바 자료형입니다.\nimport java.time.LocalDateTime;\n\n// [@EntityListeners(AuditingEntityListener.class)]\n//   이 엔티티가 저장·수정될 때 AuditingEntityListener 가 실행되도록 연결합니다.\n//   그래서 createdAt, updatedAt 값이 자동으로 채워집니다. (SpringBootDeveloperApplication 의 @EnableJpaAuditing 과 함께 동작)\n@EntityListeners(AuditingEntityListener.class)\n\n// [@Entity] 이 클래스가 DB 테이블과 연결되는 JPA 엔티티라는 표시입니다.\n//   테이블 이름을 따로 적지 않았으므로 클래스 이름 Article 과 같은 article 테이블을 사용합니다.\n@Entity\n\n// [@Getter] 모든 필드의 값을 읽는 getXxx() 메소드를 자동으로 만들어 줍니다. (예: getTitle())\n@Getter\n\n// [@NoArgsConstructor(access = PROTECTED)]\n//   값을 받지 않는 기본 생성자를 만듭니다.\n//   JPA 는 DB에서 꺼낸 값을 객체에 담을 때 이 생성자를 사용합니다.\n//   access = PROTECTED : 같은 패키지나 자식 클래스에서만 쓸 수 있고, 밖에서 new Article() 로 빈 객체를 만드는 것은 막습니다.\n@NoArgsConstructor(access = AccessLevel.PROTECTED)\npublic class Article {\n\n    // [@Id] 이 필드가 기본키(Primary Key)라는 표시입니다. 같은 글을 찾을 때 쓰는 고유 번호입니다.\n    @Id\n\n    // [@GeneratedValue(strategy = IDENTITY)] id 값을 개발자가 넣지 않고 DB가 1, 2, 3... 으로 자동 증가시키라는 뜻입니다.\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n\n    // [@Column(name = \"id\", updatable = false)]\n    //   DB 컬럼 이름을 id 로 지정하고, 한 번 저장된 뒤에는 수정하지 못하게 막습니다.\n    @Column(name = \"id\", updatable = false)\n    private Long id;\n\n    // [@Column(name = \"title\", nullable = false)] 제목 컬럼입니다. nullable = false 는 \"비어 있으면 저장 불가\"라는 뜻입니다.\n    @Column(name = \"title\", nullable = false)\n    private String title;\n\n    // 본문 컬럼입니다. 역시 비어 있으면 저장할 수 없습니다.\n    @Column(name = \"content\", nullable = false)\n    private String content;\n\n    // 썸네일 이미지 주소 컬럼입니다. nullable 옵션이 없으므로 비어 있어도 됩니다. (예: /uploads/abc.png)\n    @Column(name = \"image_url\")\n    private String imageUrl;\n\n    // [@CreatedDate] 이 글이 처음 저장될 때 현재 시간이 자동으로 들어갑니다.\n    @CreatedDate\n    @Column(name = \"created_at\")\n    private LocalDateTime createdAt;\n\n    // [@LastModifiedDate] 글이 저장되거나 수정될 때마다 현재 시간이 자동으로 갱신됩니다.\n    @LastModifiedDate\n    @Column(name = \"updated_at\")\n    private LocalDateTime updatedAt;\n\n    // [11장 추가] 글쓴이\n    // 값: 토큰의 sub(이메일). 예) \"gildong@gmail.com\"\n    // nullable = false : 글쓴이 없이 글을 저장할 수 없습니다.\n    // ※ update() 메서드는 author 를 바꾸지 않습니다. 글쓴이는 처음 저장할 때 한 번만 정해집니다.\n    @Column(name = \"author\", nullable = false)\n    private String author;\n\n\n    // 빌더로 글을 만들 때 쓰는 생성자입니다.\n    // 예) Article.builder().author(\"gildong@gmail.com\").title(\"안녕\").content(\"첫 글\").build()\n    // [11장] 첫 번째 값으로 author 가 추가되었습니다.\n    @Builder\n    public Article(String author,  String title, String content, String imageUrl) {\n        this.author = author;        //글쓴이 \n        this.title = title;         // 매개변수로 받은 제목을 이 객체의 title 필드에 넣습니다.\n        this.content = content;     // 본문을 content 필드에 넣습니다.\n        this.imageUrl = imageUrl;   // 이미지 주소를 imageUrl 필드에 넣습니다.\n    }\n\n    // update : 수정 요청이 왔을 때 기존 글의 제목, 본문, 이미지 주소를 새 값으로 바꾸는 메소드입니다.\n    //   호출하는 곳 : BlogService.update() 메소드\n    //   이 메소드로 바꾼 값은 @Transactional 이 끝나는 시점에 DB 에 UPDATE 로 저장됩니다.\n    public void update(String title, String content, String imageUrl) {\n        this.title = title;         // 새 제목으로 바꿉니다.\n        this.content = content;     // 새 본문으로 바꿉니다.\n        this.imageUrl = imageUrl;   // 새 이미지 주소로 바꿉니다.\n    }\n}"},"Repo":{"title":"BlogRepository.java","path":"src/main/java/com/shinsunyoung/blog/repository/BlogRepository.java","lang":"java","start":1,"note":"","text":"// ============================================================\n// [파일 설명] Article(글) 테이블에 접근하는 리포지토리(저장소) 인터페이스입니다.\n// 직접 SQL 을 쓰지 않아도 저장, 조회, 수정, 삭제 기능을 사용할 수 있습니다.\n//\n// [호출하는 곳]\n//   BlogService : save(), findAll(), findById(), deleteById(), update() 등에서 사용\n// ============================================================\npackage com.shinsunyoung.blog.repository;\n\n// Article : 리포지토리가 다루는 엔티티(글 1개) 클래스입니다.\nimport com.shinsunyoung.blog.domain.Article;\n\n// JpaRepository : 저장·조회·삭제 기능이 이미 만들어져 있는 스프링 데이터 JPA 의 부모 인터페이스입니다.\nimport org.springframework.data.jpa.repository.JpaRepository;\n\n// [interface] 인터페이스라서 메소드의 몸체(실행 코드)를 직접 쓰지 않습니다.\n//   스프링 데이터 JPA 가 실행 시점에 이 인터페이스를 구현한 객체를 자동으로 만들어 줍니다.\n// extends JpaRepository\u003cArticle, Long\u003e\n//   Article : 다룰 엔티티 타입\n//   Long    : 엔티티의 기본키(id) 타입\n//   이 한 줄만으로 save(), findAll(), findById(), deleteById(), deleteAll() 등을 쓸 수 있습니다.\npublic interface BlogRepository extends JpaRepository\u003cArticle, Long\u003e {\n    // 추가로 만든 메소드가 없으므로 본문이 비어 있습니다.\n}"}};
+
+/* ───────── 저장 ───────── */
+const KEY='s3flow-tutorial-v1';
+let S={m:{},q:{},step:0,seen:0};
+try{const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v) S=Object.assign(S,v);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} dash();}
+
+/* ───────── 구문 강조 ───────── */
+const KW={
+ java:'package import public private protected class interface record extends implements return new final static void if else try catch throw throws this null true false byte int long boolean var super default',
+ js:'const let var function async await return if else new throw true false null undefined this typeof catch try',
+ yaml:'',html:''};
+const TYPES=/^(String|Long|List|Article|AddArticleRequest|UploadResponse|S3Client|Region|PutObjectRequest|RequestBody|UUID|MultipartFile|ResponseEntity|HttpStatus|FileStorageService|Principal|Path|Paths|Files|IOException|Authentication|SecurityContextHolder|HttpServletRequest|HttpServletResponse|FilterChain|LocalDateTime|BlogService|BlogRepository|TokenProvider|Model|HttpSecurity|SecurityFilterChain)$/;
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function hlLine(line,lang,st){
+  const kw=new Set((KW[lang]||'').split(' '));
+  let out='',i=0;const n=line.length;
+  const span=(c,t)=>'<span class="'+c+'">'+esc(t)+'</span>';
+  while(i<n){
+    if(st.block){const e=line.indexOf(st.block,i); if(e<0){out+=span('c',line.slice(i));return out;} out+=span('c',line.slice(i,e+st.block.length)); i=e+st.block.length; st.block=null; continue;}
+    const rest=line.slice(i);
+    if(lang==='html'){
+      if(rest.startsWith('<!--')){st.block='-->';continue;}
+      let m=rest.match(/^<\/?[\w:-]+/); if(m){out+=span('tg',m[0]);i+=m[0].length;continue;}
+      m=rest.match(/^[\w:-]+(?==)/); if(m){out+=span('at',m[0]);i+=m[0].length;continue;}
+      m=rest.match(/^"[^"]*"/); if(m){out+=span('s',m[0]);i+=m[0].length;continue;}
+      out+=esc(line[i]);i++;continue;
+    }
+    if(lang==='yaml'){
+      if(line[i]==='#'){out+=span('c',rest);return out;}
+      let m=rest.match(/^[\w.-]+(?=:)/); if(m&&line.slice(0,i).trim()===''){out+=span('tg',m[0]);i+=m[0].length;continue;}
+      out+=esc(line[i]);i++;continue;
+    }
+    if(rest.startsWith('//')){out+=span('c',rest);return out;}
+    if(rest.startsWith('/*')){st.block='*/';out+=span('c','/*');i+=2;continue;}
+    const ch=line[i];
+    if(ch==='"'||ch==="'"||ch==='`'){let j=i+1;while(j<n&&line[j]!==ch){if(line[j]==='\\')j++;j++;} out+=span('s',line.slice(i,j+1));i=j+1;continue;}
+    if(ch==='@'&&lang==='java'){const m=rest.match(/^@\w+/); if(m){out+=span('a',m[0]);i+=m[0].length;continue;}}
+    let m=rest.match(/^[A-Za-z_$][\w$]*/);
+    if(m){const w=m[0]; out+= kw.has(w)?span('k',w):(TYPES.test(w)?span('ty',w):esc(w)); i+=w.length;continue;}
+    m=rest.match(/^\d+/); if(m){out+=span('n',m[0]);i+=m[0].length;continue;}
+    out+=esc(ch);i++;
+  }
+  return out;
+}
+function renderCode(f){
+  const st={block:null};
+  return f.text.replace(/\r/g,'').split('\n').map((l,idx)=>'<div class="ln" data-i="'+idx+'"><span class="no">'+(f.start+idx)+'</span><span class="tx">'+(hlLine(l,f.lang,st)||' ')+'</span></div>').join('');
+}
+function findRange(f,a,b,plus){
+  const L=f.text.replace(/\r/g,'').split('\n');
+  let i=L.findIndex(x=>x.includes(a)); if(i<0) i=0;
+  let j=i; if(b){for(let k=i;k<L.length;k++){if(L[k].includes(b)){j=k;break;}}}
+  return [i,j+(plus||0)];
+}
+
+/* ───────── 예시 값 ───────── */
+const BUCKET='blog-tlstkdrnr4671', UUIDV='3f2a9c1e-7b4d-4e2a-9f1c-0d8e5b6a2c41';
+const KEYV='uploads/'+UUIDV+'.png';
+const URLV='https://'+BUCKET+'.s3.ap-northeast-2.amazonaws.com/'+KEYV;
+const CAP='<div class="cap">화면은 이해를 돕는 예시입니다. 숫자·문구·UUID는 환경마다 다를 수 있습니다.</div>';
+function win(addr,body,cap){return '<div class="shot"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="addr">'+addr+'</span></div>'+body+(cap===false?'':CAP)+'</div>';}
+function term(title,lines){return win(title,'<div class="term-bg">'+lines.map((l,i)=>'<div class="fx" style="--d:'+(i*0.25)+'s">'+l+'</div>').join('')+'</div>');}
+function page(opt){opt=opt||{};
+  return '<div class="mini"><div style="text-align:center;background:#f5f6f8;border-radius:8px;padding:6px;font-weight:800">My Blog</div>'+
+  '<div class="in">'+(opt.title||'제목')+'</div>'+
+  '<div class="lbl">이미지 업로드</div><div style="display:flex;justify-content:space-between;align-items:center"><span class="in '+(opt.ring==='file'?'hl-ring':'')+'" style="color:#333">[파일 선택] '+(opt.file||'선택된 파일 없음')+'</span><span class="chip">AI 썸네일 생성</span></div>'+
+  '<div style="font-family:var(--mono);font-size:11px;border:1px dashed #b9c2d6;border-radius:6px;padding:3px 7px;color:#5b6478" class="'+(opt.ring==='hidden'?'hl-ring':'')+'">&lt;input type="hidden" id="image-url" value="'+(opt.url?'<b style=color:#c46e00>'+opt.url+'</b>':'')+'"&gt;</div>'+
+  (opt.preview?'<div class="fx" style="margin:6px 0"><div class="catimg pop">🐱</div><span class="chip" style="margin-top:4px">이미지 제거</span></div>':'')+
+  '<div class="in" style="height:44px">'+(opt.content||'내용')+'</div>'+
+  '<span class="chip">AI 도움받기</span> <span class="chip blue '+(opt.ring==='create'?'hl-ring':'')+'">등록</span></div>';}
+
+/* ───────── 화면 예시 ───────── */
+const SCR={
+ gradle:()=>term('IntelliJ · Gradle 새로고침',[
+  '<span class="m">&gt; Task :compileJava</span>',
+  'Download <span class="b">software.amazon.awssdk:s3:2.41.31</span>',
+  'Download software.amazon.awssdk:regions  <span class="m">(Region 클래스)</span>',
+  'Download software.amazon.awssdk:auth     <span class="m">(자격 증명 조회)</span>',
+  'Download software.amazon.awssdk:apache-client <span class="m">(HTTPS 전송)</span>',
+  '<span class="g">BUILD SUCCESSFUL</span>']),
+ yaml:()=>win('application.yaml → 자바 코드',
+  '<div class="body"><div class="fx"><span class="chip org">cloud.aws.region: ap-northeast-2</span><span class="arrow">→</span><span class="chip blue">S3Config.s3Client(String region)</span></div>'+
+  '<div class="fx" style="--d:.5s;margin-top:8px"><span class="chip org">cloud.aws.s3.bucket: '+BUCKET+'</span><span class="arrow">→</span><span class="chip blue">AwsS3Service.bucket</span></div>'+
+  '<p class="fx" style="--d:1s;margin:10px 0 0;font-size:12.5px;color:#5b6478">@Value("${…}") 가 이 값을 꺼내 넣습니다. 키 이름이 한 글자라도 다르면 서버가 시작되지 않습니다.</p></div>'),
+ boot:()=>term('서버 시작 로그 (빈스톡 EC2)',[
+  '<span class="m">java -jar app.jar   (활성 프로파일 없음)</span>',
+  'ConfigurationClassPostProcessor : @Configuration <span class="y">S3Config</span> 발견',
+  'S3Client.builder().region(<span class="b">Region.of("ap-northeast-2")</span>)',
+  '.build() → <span class="g">DefaultS3Client</span> 생성',
+  '빈 등록: <span class="g">"s3Client"</span> ✔  <span class="m">(키는 아직 조회 안 함)</span>',
+  '<span class="g">Started BlogApplication in 7.4 seconds</span>']),
+ bean:()=>win('스프링 컨테이너 · FileStorageService 후보',
+  '<div class="body"><div class="kv"><b>활성 프로파일</b><span>(없음) → "local" 아님</span></div>'+
+  '<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap"><div class="mini fx" style="flex:1;opacity:.55"><b>LocalFileStorageService</b><br><span class="chip red">@Profile("local")</span><div style="font-size:12px">조건 거짓 → 빈 등록 ✗</div></div>'+
+  '<div class="mini fx pop" style="--d:.5s;flex:1;border-color:#2f6bff"><b>AwsS3Service</b><br><span class="chip grn">@Profile("!local")</span><div style="font-size:12px">조건 참 → 빈 등록 ✔<br>생성자 주입: s3Client<br>@Value: bucket</div></div></div></div>'),
+ page:()=>win('http://(빈스톡 주소)/new-article','<div class="body">'+page()+'</div>'),
+ page2:()=>win('newArticle.html 의 이미지 영역','<div class="body">'+page({ring:'file'})+'<p style="font-size:12px;color:#5b6478;margin:6px 0 0">노란 테두리: <code>id="image-upload"</code> 파일 선택 칸. 점선: 숨은 칸 <code>id="image-url"</code>(지금은 빈 값)</p></div>'),
+ filepick:()=>win('파일 선택 → change 이벤트',
+  '<div class="body"><div class="mini fx"><b>📁 열기</b><div style="font-family:var(--mono);font-size:12px;margin-top:4px">🖼️ <b style="background:#dfe8ff">cat.PNG</b> &nbsp; 🖼️ dog.jpg &nbsp; 📄 memo.txt</div></div>'+
+  '<div class="fx" style="--d:.6s;margin-top:10px"><b>event.target.files[0]</b> = File 객체</div><div class="kv fx" style="--d:.9s"><b>name</b><span>"cat.PNG"</span><b>type</b><span>"image/png"</span><b>size</b><span>245812 (약 240KB)</span></div>'+
+  '<div class="fx" style="--d:1.3s;margin-top:8px"><span class="chip grn">file.type.startsWith(\'image/\') → true ✔ 계속 진행</span></div></div>'),
+ formdata:()=>win('FormData (택배 상자)',
+  '<div class="body"><table class="t" style="margin:0"><tr><th>칸 이름(키)</th><th>내용</th></tr><tr class="fx"><td><code>file</code></td><td>📦 cat.PNG (image/png, 245812 bytes)</td></tr></table>'+
+  '<div class="fx" style="--d:.6s;margin-top:10px"><span class="chip org">formData.append(\'file\', …)</span><span class="arrow">⇄</span><span class="chip blue">@RequestParam("file")</span></div>'+
+  '<p class="fx" style="--d:1s;font-size:12.5px;color:#5b6478;margin:8px 0 0">두 이름이 같아야 서버가 파일을 찾습니다. 다르면 400 Bad Request.</p></div>'),
+ httpreq:()=>term('브라우저가 보내는 실제 HTTP 요청',[
+  '<span class="y">POST /api/upload HTTP/1.1</span>',
+  'Authorization: <span class="b">Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnaWxkb25n…</span>',
+  'Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk',
+  '<span class="m">(Content-Type 은 코드에 없지만 브라우저가 자동으로 붙임)</span>',
+  '',
+  '------WebKitFormBoundary7MA4YWxk',
+  'Content-Disposition: form-data; name="<span class="g">file</span>"; filename="<span class="g">cat.PNG</span>"',
+  'Content-Type: image/png',
+  '<span class="m">‰PNG␍␊… (245812 bytes 이진 데이터)</span>',
+  '------WebKitFormBoundary7MA4YWxk--']),
+ filter:()=>win('TokenAuthenticationFilter 안에서',
+  '<div class="body"><div class="fx">① 헤더: <code>Bearer eyJhbGci…</code></div>'+
+  '<div class="fx" style="--d:.4s">② getAccessToken(): "Bearer " 7글자 잘라냄 → <code>eyJhbGci…</code></div>'+
+  '<div class="fx" style="--d:.8s">③ tokenProvider.validToken(token) → <span class="chip grn">true</span> (서명·만료 OK)</div>'+
+  '<div class="fx" style="--d:1.2s">④ getAuthentication(token) → 이름 = <code>gildong@gmail.com</code></div>'+
+  '<div class="fx pop" style="--d:1.6s;margin-top:8px"><div class="mini" style="border-color:#2f6bff">🗄️ <b>SecurityContextHolder</b><div class="kv"><b>authentication</b><span>gildong@gmail.com (ROLE_USER)</span></div></div></div></div>'),
+ rules:()=>win('WebOAuthSecurityConfig · 주소별 규칙 검사',
+  '<div class="body"><table class="t" style="margin:0;font-size:13px"><tr><th>순서</th><th>규칙</th><th>/api/upload ?</th></tr>'+
+  '<tr class="fx"><td>1</td><td><code>/api/token</code> permitAll</td><td>해당 없음</td></tr>'+
+  '<tr class="fx" style="--d:.5s;background:#e9f9ef"><td>2</td><td><code>/api/**</code> authenticated</td><td><b style="color:#16a34a">일치 → 인증 있음 → 통과 ✔</b></td></tr>'+
+  '<tr class="fx" style="--d:.8s;opacity:.5"><td>3</td><td>anyRequest permitAll</td><td>(검사 안 함)</td></tr></table>'+
+  '<p class="fx" style="--d:1.2s;font-size:12.5px;color:#5b6478;margin:8px 0 0">토큰이 없거나 만료면 여기서 <b>401</b> 응답으로 끝납니다.</p></div>'),
+ multipart:()=>win('DispatcherServlet → UploadController.uploadFile()',
+  '<div class="body"><div class="fx">RequestMappingHandlerMapping: <code>POST /api/upload</code> → <b>uploadFile()</b></div>'+
+  '<div class="fx" style="--d:.5s;margin-top:6px"><b>MultipartFile file</b></div><div class="kv fx" style="--d:.8s"><b>getOriginalFilename()</b><span>"cat.PNG"</span><b>getContentType()</b><span>"image/png"</span><b>getSize()</b><span>245812</span><b>getBytes()</b><span>[-119, 80, 78, 71, 13, 10, 26, 10, …] (byte[])</span></div></div>'),
+ iface:()=>win('인터페이스 → 실제 객체',
+  '<div class="body"><div class="fx"><code>fileStorageService.store(bytes, "cat.PNG")</code></div>'+
+  '<div class="fx" style="--d:.5s;margin:8px 0">변수 타입: <span class="chip">FileStorageService</span> (규격만 앎)</div>'+
+  '<div class="fx pop" style="--d:1s">실제로 들어 있는 객체: <span class="chip grn">AwsS3Service</span> → 그래서 <b>AwsS3Service.store()</b> 실행</div>'+
+  '<p class="fx" style="--d:1.4s;font-size:12.5px;color:#5b6478;margin:8px 0 0">비유: 콘센트(인터페이스)는 그대로, 꽂힌 기계(구현)만 바뀝니다. 컨트롤러 코드는 고칠 필요가 없습니다.</p></div>'),
+ ext:()=>win('확장자 추출',
+  '<div class="body" style="font-family:var(--mono);font-size:13.5px"><div class="fx">filename = "cat.PNG"</div>'+
+  '<div class="fx" style="--d:.4s">contains(".") → <span class="chip grn">true</span></div>'+
+  '<div class="fx" style="--d:.8s">lastIndexOf(\'.\') → <b>3</b> &nbsp;<span style="color:#5b6478">c(0) a(1) t(2) <b style="color:#c46e00">.(3)</b> P(4)…</span></div>'+
+  '<div class="fx" style="--d:1.2s">substring(3 + 1) → <b>"PNG"</b></div>'+
+  '<div class="fx pop" style="--d:1.6s">toLowerCase() → <span class="chip org">ext = "png"</span></div></div>'),
+ key:()=>win('키(창고 위치표) 조립',
+  '<div class="body"><div class="assemble" style="font-family:var(--mono);font-size:13px;word-break:break-all">'+
+  '<span class="chip blue pop">"uploads/"</span> + <span class="chip org pop" style="--d:.5s">'+UUIDV+'</span> + <span class="chip pop" style="--d:1s">"."</span> + <span class="chip grn pop" style="--d:1.3s">png</span></div>'+
+  '<div class="fx" style="--d:1.8s;margin-top:10px">key = <b style="font-family:var(--mono);font-size:12.5px">'+KEYV+'</b></div>'+
+  '<p class="fx" style="--d:2.1s;font-size:12.5px;color:#5b6478;margin:8px 0 0">UUID.randomUUID()는 매번 새 값입니다. 같은 cat.PNG를 두 번 올려도 다른 이름이 됩니다.</p></div>'),
+ putreq:()=>win('PutObjectRequest 객체 (업로드 주문서)',
+  '<div class="body"><div class="mini pop"><b>PutObjectRequest</b><div class="kv" style="margin-top:4px">'+
+  '<b class="fx" style="--d:.3s">bucket</b><span class="fx" style="--d:.3s">"'+BUCKET+'"</span>'+
+  '<b class="fx" style="--d:.7s">contentType</b><span class="fx" style="--d:.7s">"image/png"</span>'+
+  '<b class="fx" style="--d:1.1s">key</b><span class="fx" style="--d:1.1s">"'+KEYV+'"</span></div></div>'+
+  '<p class="fx" style="--d:1.5s;font-size:12.5px;color:#5b6478;margin:8px 0 0">아직 아무것도 보내지 않았습니다. 주문서만 작성한 상태입니다.</p></div>'),
+ creds:()=>win('DefaultCredentialsProvider · 출입증 찾기',
+  '<div class="body"><table class="t" style="margin:0;font-size:12.5px">'+
+  ['① 시스템 속성 aws.accessKeyId','② 환경 변수 AWS_ACCESS_KEY_ID','③ 웹 아이덴티티 토큰','④ ~/.aws/credentials 파일','⑤ 컨테이너(ECS) 자격 증명'].map((t,i)=>'<tr class="fx" style="--d:'+(i*.3)+'s"><td>'+t+'</td><td style="color:#a61b1b">없음 ✗</td></tr>').join('')+
+  '<tr class="fx" style="--d:1.6s;background:#e9f9ef"><td><b>⑥ EC2 메타데이터 http://169.254.169.254</b></td><td style="color:#16a34a"><b>발견 ✔</b></td></tr></table>'+
+  '<div class="fx" style="--d:2s;margin-top:8px;font-size:12.5px">IAM 역할 <code>aws-elasticbeanstalk-ec2-role</code> 의 <b>임시 키</b>(AccessKeyId·SecretKey·SessionToken)를 받음</div></div>'),
+ put:()=>term('SDK 가 S3 로 보내는 실제 요청',[
+  '<span class="y">PUT /'+KEYV+' HTTP/1.1</span>',
+  'Host: <span class="b">'+BUCKET+'.s3.ap-northeast-2.amazonaws.com</span>',
+  'Content-Type: image/png',
+  'Content-Length: 245812',
+  'X-Amz-Security-Token: IQoJb3JpZ2luX2Vj… <span class="m">(임시 키 토큰)</span>',
+  'Authorization: <span class="b">AWS4-HMAC-SHA256</span> Credential=ASIA…/20261104/ap-northeast-2/s3/aws4_request, SignedHeaders=…, Signature=7f3c…',
+  '<span class="m">‰PNG… (byte[] 본문)</span>',
+  '',
+  '<span class="g">HTTP/1.1 200 OK</span>',
+  'ETag: "9b2cf535f27731c974343645a3985328"',
+  'Server: AmazonS3']),
+ s3console:()=>win('AWS 콘솔 · S3 › 버킷 › '+BUCKET+' › uploads/',
+  '<div class="body s3c"><div class="crumb">Amazon S3 &gt; 버킷 &gt; '+BUCKET+' &gt; uploads/</div><div class="tabs"><span class="on">객체</span><span>속성</span><span>권한</span></div>'+
+  '<div style="font-size:12px;margin-bottom:4px"><b>객체 (3)</b></div><table><tr><th>이름</th><th>유형</th><th>마지막 수정</th><th>크기</th><th>스토리지 클래스</th></tr>'+
+  '<tr class="new"><td class="lk">🖼️ '+UUIDV+'.png</td><td>png</td><td>2026. 11. 4. 오후 2:15:07 KST</td><td>240.1KB</td><td>Standard</td></tr>'+
+  '<tr><td class="lk">🖼️ b81e0c55-2d9a-4f71-a3c0-6e5f9d2b7a10.jpg</td><td>jpg</td><td>2026. 11. 3. 오후 4:02:41 KST</td><td>812.5KB</td><td>Standard</td></tr>'+
+  '<tr><td class="lk">🖼️ 0c7d2e4f-91aa-4b3e-8f60-1d2c3b4a5e6f.png</td><td>png</td><td>2026. 11. 2. 오전 10:47:13 KST</td><td>98.3KB</td><td>Standard</td></tr></table></div>'),
+ url:()=>win('getUrl() · 주소 글자 조합 (네트워크 요청 없음)',
+  '<div class="body" style="font-family:var(--mono);font-size:12.5px;word-break:break-all"><span class="chip pop">https://</span><span class="chip blue pop" style="--d:.3s">'+BUCKET+'</span><span class="chip pop" style="--d:.6s">.s3.</span><span class="chip org pop" style="--d:.9s">ap-northeast-2</span><span class="chip pop" style="--d:1.2s">.amazonaws.com/</span><span class="chip grn pop" style="--d:1.5s">'+KEYV+'</span>'+
+  '<div class="fx" style="--d:2s;margin-top:10px;font-family:Pretendard,sans-serif">버킷 + 리전(S3Client 설정) + 키 → <b>url</b></div></div>'),
+ response:()=>term('서버 → 브라우저 응답',[
+  '<span class="g">HTTP/1.1 201 Created</span>',
+  'Content-Type: application/json',
+  '',
+  '{"imageUrl":"<span class="b">'+URLV+'</span>"}',
+  '<span class="m">← record UploadResponse(String imageUrl) 를 Jackson 이 JSON 으로 변환</span>']),
+ preview:()=>win('http://(빈스톡 주소)/new-article','<div class="body">'+page({file:'cat.PNG',url:URLV.slice(0,48)+'…',preview:true,ring:'hidden'})+
+  '<div class="fx" style="--d:.8s;font-size:12px;margin-top:6px">&lt;img src="https://'+BUCKET+'.s3…/uploads/3f2a….png"&gt; → 브라우저가 <b>S3에서 직접</b> GET → 버킷 정책이 허용 → <span class="chip grn">200</span></div></div>'),
+ createbody:()=>win('[등록] 클릭 → 보낼 JSON 만들기','<div class="body">'+page({title:'고양이 사진 일기',content:'오늘 찍은 고양이입니다.',file:'cat.PNG',url:'https://…/uploads/3f2a….png',preview:false,ring:'create'})+
+  '<div class="term-bg fx" style="--d:.6s;margin-top:8px;border-radius:8px">body = {"title":"고양이 사진 일기",\n  "imageUrl":"<span class="b">'+URLV+'</span>",\n  "content":"오늘 찍은 고양이입니다."}</div></div>'),
+ createreq:()=>term('httpRequest() 가 보내는 요청',[
+  '<span class="y">POST /api/articles HTTP/1.1</span>',
+  'Authorization: <span class="b">Bearer eyJhbGciOiJIUzI1NiJ9…</span>',
+  'Content-Type: application/json',
+  '',
+  '{"title":"고양이 사진 일기","imageUrl":"'+URLV+'","content":"오늘 찍은 고양이입니다."}',
+  '<span class="m">→ 보안 필터 통과(10~11단계와 같은 과정) → BlogApiController</span>']),
+ dto:()=>win('JSON → AddArticleRequest 객체',
+  '<div class="body"><div class="mini pop"><b>AddArticleRequest</b><div class="kv"><b>title</b><span>"고양이 사진 일기"</span><b>content</b><span>"오늘 찍은 고양이입니다."</span><b>imageUrl</b><span style="color:#c46e00">"'+URLV+'"</span></div></div>'+
+  '<div class="fx" style="--d:.8s;margin-top:8px">Principal.getName() → <code>"gildong@gmail.com"</code> <span style="font-size:12px;color:#5b6478">(10단계에서 필터가 넣은 값)</span></div></div>'),
+ save:()=>win('blogService.save(request, "gildong@gmail.com")',
+  '<div class="body"><div class="fx">① <code>request.toEntity(userName)</code> 호출</div><div class="fx" style="--d:.5s">② Article.builder() 로 Article 객체 생성</div><div class="fx" style="--d:1s">③ <code>blogRepository.save(article)</code> → INSERT</div></div>'),
+ entity:()=>win('Article 엔티티 (아직 DB 저장 전)',
+  '<div class="body"><div class="mini pop"><b>Article</b><div class="kv"><b>id</b><span>null (DB가 정함)</span><b>author</b><span>"gildong@gmail.com"</span><b>title</b><span>"고양이 사진 일기"</span><b>content</b><span>"오늘 찍은 고양이입니다."</span><b>imageUrl</b><span style="color:#c46e00">"'+URLV+'"</span></div></div></div>'),
+ sql:()=>term('콘솔 (show-sql: true)',[
+  'Hibernate:',
+  '    <span class="y">insert</span>',
+  '    into',
+  '        article',
+  '        (author, content, created_at, image_url, title, updated_at, id)',
+  '    values',
+  '        (?, ?, ?, ?, ?, ?, default)',
+  '<span class="m">-- image_url = '+URLV+'</span>',
+  '<span class="g">→ id = 7 로 저장됨 (예시)</span>']),
+ done:()=>win('http://(빈스톡 주소)/articles',
+  '<div class="body"><div class="mini pop" style="max-width:260px;margin:0 auto 10px;text-align:center;border-color:#2f6bff">💬 <b>등록 완료되었습니다.</b><div><span class="chip blue">확인</span></div></div>'+
+  '<div class="fx" style="--d:1s;display:flex;gap:10px;align-items:center" ><div class="catimg" style="width:80px;height:60px;font-size:34px">🐱</div><div><b>고양이 사진 일기</b><div style="font-size:12px;color:#5b6478">오늘 찍은 고양이입니다.</div><span class="chip">보러 가기</span></div></div></div>'),
+ final:()=>win('AWS 콘솔 · S3 › '+BUCKET+' › uploads/ › '+UUIDV+'.png',
+  '<div class="body s3c"><div class="crumb">Amazon S3 &gt; 버킷 &gt; '+BUCKET+' &gt; uploads/ &gt; '+UUIDV+'.png</div><div class="tabs"><span class="on">속성</span><span>권한</span><span>버전</span></div>'+
+  '<div style="display:flex;gap:12px;flex-wrap:wrap"><div class="kv" style="flex:1;font-size:12px"><b>AWS 리전</b><span>아시아 태평양(서울) ap-northeast-2</span><b>마지막 수정</b><span>2026. 11. 4. 오후 2:15:07 KST</span><b>크기</b><span>240.1KB</span><b>유형</b><span>png</span><b>키</b><span>'+KEYV+'</span><b>S3 URI</b><span>s3://'+BUCKET+'/'+KEYV+'</span><b>객체 URL</b><span class="lk">'+URLV+'</span><b>콘텐츠 유형</b><span>image/png</span></div>'+
+  '<div class="catimg pop" style="--d:.5s">🐱</div></div></div>')
+};
+
+/* ───────── 30단계 ───────── */
+const PH=['⓪ 서버 시작','① 글쓰기 화면','② 파일 선택·전송','③ 보안 검사','④ 컨트롤러','⑤ S3 업로드','⑥ 응답·미리보기','⑦ 글 등록','⑧ 버킷 확인'];
+const UP={controller:'UploadController',service:'AwsS3Service'};
+const ART={controller:'BlogApiController',service:'BlogService'};
+const STEPS=[
+{p:0,t:'S3 라이브러리 준비 (build.gradle)',f:'gradle',a:'[AWS S3 업로드용]',b:"awssdk:s3",on:['container'],scr:'gradle',
+ core:'AWS SDK v2의 S3 모듈을 프로젝트에 추가합니다. 이게 있어야 S3와 대화할 수 있습니다.',
+ ex:['<code>S3Client</code>, <code>PutObjectRequest</code>, <code>RequestBody</code> 클래스가 이 라이브러리 안에 있습니다.','비유: S3와 통화할 "전화기 부품 상자"를 들여오는 단계입니다.','함께 딸려 오는 regions·auth·apache-client가 리전 계산, 출입증 조회, 실제 전송을 맡습니다.']},
+{p:0,t:'리전·버킷 이름 설정 (application.yaml)',f:'yaml',a:'cloud:',b:'bucket:',on:['container'],scr:'yaml',
+ core:'어느 지역(서울)의 어느 창고(버킷)에 넣을지 설정 파일에 적어 둡니다.',
+ ex:['<code>cloud.aws.region</code> → S3Config가 읽습니다.','<code>cloud.aws.s3.bucket</code> → AwsS3Service가 읽습니다.','스프링이 자동으로 쓰는 이름이 아니라, 코드가 <code>@Value</code>로 직접 꺼내 쓰는 이름입니다.']},
+{p:0,t:'S3Client 빈 1개 만들기 (S3Config)',f:'S3Config',a:'    @Bean',b:'.build();',on:['container'],scr:'boot',
+ core:'서버가 켜질 때 s3Client() 메서드가 딱 한 번 실행되어 S3Client 객체가 공구함(컨테이너)에 들어갑니다.',
+ ex:['<code>@Bean</code>: 메서드가 돌려준 객체를 "s3Client"라는 이름의 빈으로 등록합니다.','<code>Region.of(region)</code>: "ap-northeast-2" 글자를 Region 객체로 바꿉니다. 요청 주소가 서울로 정해집니다.','<code>credentialsProvider</code>를 안 적었으므로 키는 나중에(업로드 순간) 자동으로 찾습니다.']},
+{p:0,t:'AwsS3Service 빈 등록 (@Profile("!local"))',f:'AwsS3Service',a:'@Profile("!local")',b:'private String bucket;',on:['container','service'],sub:UP,scr:'bean',
+ core:'배포 서버는 프로파일이 없으므로 "local이 아님" 조건이 참 → AwsS3Service가 FileStorageService 구현으로 등록됩니다.',
+ ex:['<code>@RequiredArgsConstructor</code>가 <code>AwsS3Service(S3Client s3Client)</code> 생성자를 만들고, 3단계에서 만든 빈이 주입됩니다.','<code>@Value("${cloud.aws.s3.bucket}")</code> → <code>bucket = "blog-tlstkdrnr4671"</code>','LocalFileStorageService는 <code>@Profile("local")</code>이라 이번에는 빠집니다.']},
+{p:1,t:'글쓰기 화면 요청 GET /new-article',f:'ViewCtrl',a:'@GetMapping("/new-article")',b:'return "newArticle";',route:['browser','controller','browser'],pk:'GET /new-article',on:['browser','controller'],sub:{controller:'BlogViewController'},scr:'page',
+ core:'[글 등록] 버튼으로 /new-article에 오면 BlogViewController가 빈 글 상자를 담아 newArticle.html을 보여줍니다.',
+ ex:['<code>id == null</code> → 새 글이므로 <code>new ArticleViewResponse()</code>(빈 상자)를 모델에 넣습니다.','이 주소는 <code>/api/</code>가 아니라서 토큰 없이도 열립니다(permitAll).']},
+{p:1,t:'이미지 업로드 영역 (newArticle.html)',f:'newArticle',a:'<section class="mb-3">',b:'</section>',on:['browser'],scr:'page2',
+ core:'파일 선택 칸(image-upload)과 주소를 담을 숨은 칸(image-url)이 article.js와 연결되는 "손잡이"입니다.',
+ ex:['<code>&lt;input type="file" id="image-upload" accept="image/*"&gt;</code>: 그림 파일만 고르게 합니다.','<code>&lt;input type="hidden" id="image-url"&gt;</code>: 업로드가 끝나면 S3 주소가 여기 들어갑니다.','맨 아래 <code>&lt;script src="/js/article.js"&gt;</code>가 이 id들을 찾아 기능을 붙입니다.']},
+{p:2,t:'파일을 고르면 change 이벤트 실행',f:'jsUpload',a:'const imageUpload',b:"alert('이미지 파일만",plus:2,on:['browser'],scr:'filepick',
+ core:'사용자가 cat.PNG를 고르는 순간 change 이벤트가 발생하고, 이 함수가 실행됩니다.',
+ ex:['<code>event.target.files[0]</code>: 고른 첫 번째 파일(File 객체)입니다.','<code>file.type.startsWith(\'image/\')</code>: 그림이 아니면 알림 후 멈춥니다.']},
+{p:2,t:'FormData 상자에 파일 담기',f:'jsUpload',a:'const formData',b:'formData.append',on:['browser'],scr:'formdata',
+ core:'파일을 "file"이라는 이름표를 붙여 FormData 상자에 넣습니다.',
+ ex:['이 이름표 <code>\'file\'</code>은 서버의 <code>@RequestParam("file")</code>과 반드시 같아야 합니다.','FormData는 multipart 방식으로 전송됩니다. 이진 파일을 그대로 보낼 수 있습니다.']},
+{p:2,t:'fetch POST /api/upload (+ Bearer 토큰)',f:'jsUpload',a:"fetch('/api/upload'",b:"Authorization: 'Bearer '",plus:2,route:['browser','security'],pk:'📦 FormData + 🎫 토큰',on:['browser','security'],scr:'httpreq',
+ core:'브라우저가 파일 상자와 손목 팔찌(액세스 토큰)를 들고 서버로 출발합니다.',
+ ex:['<code>localStorage.getItem(\'access_token\')</code>: 로그인 때 저장한 토큰입니다.','<code>Content-Type</code>을 일부러 안 적습니다. 브라우저가 <code>multipart/form-data; boundary=…</code>를 자동으로 붙입니다.','<code>/api/upload</code>도 <code>/api/**</code>라서 토큰이 없으면 401입니다.']},
+{p:3,t:'토큰 검사 (TokenAuthenticationFilter)',f:'TokenFilter',a:'protected void doFilterInternal',b:'filterChain.doFilter',on:['security'],scr:'filter',
+ core:'모든 요청이 컨트롤러에 가기 전에 이 필터를 지납니다. 토큰이 맞으면 "누가 보냈는지"를 보관함에 넣습니다.',
+ ex:['<code>request.getHeader("Authorization")</code> → <code>getAccessToken()</code>이 "Bearer "를 떼어 냅니다.','<code>validToken()</code>이 참이면 <code>SecurityContextHolder</code>에 인증 정보를 넣습니다.','<code>filterChain.doFilter()</code>: 다음 필터로 넘깁니다.']},
+{p:3,t:'주소 규칙 검사 → 통과',f:'SecConfig',a:'.addFilterBefore(tokenAuthenticationFilter()',b:'.anyRequest().permitAll())',route:['security','controller'],pk:'✔ 인증됨',on:['security','controller'],sub:UP,scr:'rules',
+ core:'/api/upload는 "/api/**는 인증 필요" 규칙에 걸리고, 10단계에서 인증 정보가 들어갔으므로 통과합니다.',
+ ex:['<code>addFilterBefore</code>: 우리 토큰 필터를 로그인 필터 앞자리에 끼웁니다.','규칙은 위에서부터 검사합니다. <code>/api/token</code>을 <code>/api/**</code>보다 먼저 써야 하는 이유입니다.']},
+{p:4,t:'UploadController.uploadFile() 도착',f:'UploadController',a:'@PostMapping("/api/upload")',b:'file.getOriginalFilename()',on:['controller'],sub:UP,scr:'multipart',
+ core:'DispatcherServlet이 주소를 보고 uploadFile()을 고릅니다. 스프링이 multipart 본문을 MultipartFile 객체로 바꿔 줍니다.',
+ ex:['<code>@RequestParam("file") MultipartFile file</code>: 8단계의 "file" 이름표로 파일을 꺼냅니다.','<code>file.getBytes()</code>: 파일 내용(byte 배열). <code>file.getOriginalFilename()</code>: "cat.PNG"','※ 파일 위쪽 주석은 "LocalFileStorageService"라고 하지만, 배포 서버에서는 AwsS3Service가 들어옵니다.']},
+{p:4,t:'FileStorageService.store() 호출 → AwsS3Service',f:'FileStorageService',a:'public interface FileStorageService',b:'UploadResponse store(',route:['controller','service'],pk:'byte[] + "cat.PNG"',on:['controller','service'],sub:UP,scr:'iface',
+ core:'컨트롤러는 규격(인터페이스)의 store()만 부릅니다. 실제로는 4단계에서 등록된 AwsS3Service.store()가 실행됩니다.',
+ ex:['인터페이스 덕분에 저장소를 바꿔도 컨트롤러 코드는 그대로입니다.','<code>store(byte[] bytes, String filename)</code>: 넘기는 값은 파일 내용과 원래 이름 2개입니다.']},
+{p:5,t:'확장자 추출 "cat.PNG" → "png"',f:'AwsS3Service',a:'public UploadResponse store',b:': "png";',on:['service'],sub:UP,scr:'ext',
+ core:'마지막 점(.) 뒤의 글자를 잘라 소문자로 바꿉니다. 점이 없으면 "png"로 간주합니다.',
+ ex:['<code>lastIndexOf(\'.\')</code>: "my.cat.PNG"처럼 점이 여러 개여도 마지막 점을 찾습니다.','<code>toLowerCase()</code>: PNG와 png를 같게 맞춥니다.']},
+{p:5,t:'키 만들기 uploads/UUID.png',f:'AwsS3Service',a:'String key =',b:'String key =',on:['service'],sub:UP,scr:'key',
+ core:'버킷 안 저장 위치(키)를 "uploads/" + 무작위 UUID + 확장자로 만듭니다.',
+ ex:['UUID: 매번 다른 이름이라 같은 이름 파일을 덮어쓰지 않습니다.','"uploads/"로 시작해야 버킷 정책(<code>…/uploads/*</code> 공개 읽기)이 적용됩니다.']},
+{p:5,t:'업로드 주문서 PutObjectRequest 작성',f:'AwsS3Service',a:'PutObjectRequest request',b:'.build();',on:['service'],sub:UP,scr:'putreq',
+ core:'어느 버킷의 어느 키에, 어떤 종류(image/png)로 넣을지 주문서를 만듭니다.',
+ ex:['<code>.contentType("image/" + ext)</code>: 이 값이 있어야 주소를 열었을 때 다운로드가 아니라 그림으로 보입니다.','<code>builder() … build()</code>: 값을 하나씩 채운 뒤 완성하는 빌더 패턴입니다.']},
+{p:5,t:'출입증(임시 키) 찾기 — 자격 증명 체인',f:'S3Config',a:'[액세스 키를 넣지 않았는데',b:'테스트(./gradlew build)',route:['service','iam','service'],pk:'🔑 임시 키',on:['service','iam'],sub:UP,scr:'creds',
+ core:'putObject를 보내기 직전, SDK가 ①~⑥ 순서로 키를 찾습니다. 빈스톡 EC2에서는 ⑥ 메타데이터에서 IAM 역할의 임시 키를 받습니다.',
+ ex:['코드·yml에 키를 적지 않으므로 Git이나 jar로 키가 새지 않습니다.','IAM 역할에 S3 권한이 없으면 다음 단계에서 403 AccessDenied가 납니다.']},
+{p:5,t:'s3Client.putObject() — S3로 실제 전송',f:'AwsS3Service',a:'// putObject() : 실제로',b:'s3Client.putObject',route:['service','s3'],pk:'PUT uploads/3f2a….png',aws:true,on:['service','s3'],sub:UP,scr:'put',
+ core:'이 한 줄에서 파일이 인터넷을 건너 S3 버킷에 올라갑니다.',
+ ex:['<code>RequestBody.fromBytes(bytes)</code>: byte 배열을 요청 본문으로 바꿉니다.','요청은 임시 키로 <b>AWS Signature V4</b> 서명이 붙어 <code>https://버킷.s3.ap-northeast-2.amazonaws.com/uploads/…</code>로 갑니다.','S3가 <b>200 OK</b>를 돌려주면 저장 완료입니다.']},
+{p:5,t:'🪣 S3 버킷에 저장 완료',f:'S3Config',a:'② 버킷 → [권한]',b:'③ 업로드(s3:PutObject)',on:['s3'],scr:'s3console',
+ core:'이제 S3 콘솔의 uploads/ 폴더에 새 파일이 보입니다. 버킷 정책 덕분에 누구나 이 파일을 읽을 수 있습니다.',
+ ex:['버킷 정책: <code>"Action": "s3:GetObject"</code>, <code>"Resource": "…/uploads/*"</code> — 읽기만 공개합니다.','업로드 권한(PutObject)은 정책이 아니라 EC2의 IAM 역할이 줍니다. 두 권한은 서로 다른 문입니다.']},
+{p:6,t:'접근 URL 만들기 getUrl()',f:'AwsS3Service',a:'String url = s3Client.utilities()',b:'.toExternalForm();',on:['service'],sub:UP,scr:'url',
+ core:'버킷·리전·키를 조합해 이미지 주소 글자를 만듭니다. 네트워크 요청은 하지 않습니다.',
+ ex:['<code>utilities()</code>: S3Utilities 도우미 객체입니다.','<code>toExternalForm()</code>: URL 객체를 문자열로 바꿉니다.']},
+{p:6,t:'201 Created + {"imageUrl": …} 응답',f:'UploadController',a:'return ResponseEntity.status(HttpStatus.CREATED)',b:'));',route:['service','controller','browser'],pk:'{"imageUrl": "https://…"}',on:['service','controller','browser'],sub:UP,scr:'response',
+ core:'AwsS3Service가 돌려준 UploadResponse(url)를 컨트롤러가 201 상태 코드와 함께 JSON으로 보냅니다.',
+ ex:['<code>return new UploadResponse(url);</code>(AwsS3Service 마지막 줄) → 여기 <code>.body(…)</code>로 들어옵니다.','<code>record UploadResponse(String imageUrl)</code>라서 JSON 키 이름이 <code>imageUrl</code>입니다.']},
+{p:6,t:'숨은 칸에 주소 저장 + 미리보기',f:'jsUpload',a:'.then((data)',b:"preview.style.display = 'block';",plus:1,route:['browser','s3','browser'],pk:'GET 이미지(공개 읽기)',aws:true,on:['browser','s3'],scr:'preview',
+ core:'응답의 imageUrl을 숨은 칸 image-url에 넣고, &lt;img src&gt;에 넣어 미리보기를 띄웁니다. 그림은 브라우저가 S3에서 직접 받아옵니다.',
+ ex:['<code>response.ok</code>가 아니면 "이미지 업로드에 실패했습니다." 알림이 뜹니다.','<code>displayImagePreview()</code>: <code>previewImg.src = imageUrl</code> → 이때 S3로 GET 요청이 갑니다.','주석의 예시 <code>/uploads/…</code>는 로컬 모드 기준입니다. 배포 서버에서는 <code>https://…amazonaws.com/…</code>입니다.']},
+{p:7,t:'[등록] 클릭 → JSON 본문 만들기',f:'jsCreate',a:'const createButton',b:"httpRequest('POST','/api/articles'",on:['browser'],scr:'createbody',
+ core:'제목·본문과 함께 숨은 칸의 S3 주소를 JSON으로 묶습니다. 파일 자체는 다시 보내지 않습니다.',
+ ex:['<code>document.getElementById(\'image-url\').value</code> = 22단계에서 넣은 S3 주소','글쓴이(author)는 보내지 않습니다. 서버가 토큰에서 꺼냅니다.']},
+{p:7,t:'httpRequest() 로 POST /api/articles',f:'jsHttp',a:'function httpRequest',b:'return success();',plus:1,route:['browser','security','controller'],pk:'POST /api/articles (JSON)',on:['browser','security','controller'],sub:ART,scr:'createreq',
+ core:'공통 함수 httpRequest()가 토큰을 붙여 보냅니다. 200/201이면 success(), 401이면 토큰을 재발급해 다시 보냅니다.',
+ ex:['이번에는 <code>Content-Type: application/json</code>을 직접 적습니다.','보안 필터·규칙 검사는 10~11단계와 똑같이 일어납니다.']},
+{p:7,t:'BlogApiController.addArticle()',f:'ApiCtrl',a:'@PostMapping("/api/articles")',b:'.body(savedArticle);',route:['controller','service'],pk:'AddArticleRequest + 이메일',on:['controller','service'],sub:ART,scr:'dto',
+ core:'JSON이 AddArticleRequest 객체로 바뀌어 들어오고, Principal에서 로그인한 사람의 이메일을 꺼내 서비스로 넘깁니다.',
+ ex:['<code>@RequestBody</code>: JSON 본문 → 객체 변환(Jackson).','<code>printPrincipal.getName()</code>: 토큰 주인 이메일.']},
+{p:7,t:'BlogService.save()',f:'BlogService',a:'public Article save',b:'return blogRepository.save',on:['service'],sub:ART,scr:'save',
+ core:'요청 상자를 엔티티로 바꾸고(toEntity) 저장소에 저장을 맡깁니다.',
+ ex:['<code>request.toEntity(userName)</code>: 다음 단계에서 봅니다.','<code>blogRepository.save()</code>: JpaRepository가 기본 제공하는 메서드입니다.']},
+{p:7,t:'toEntity() → Article 객체',f:'AddReq',a:'public Article toEntity',b:'.build();',on:['service'],sub:ART,scr:'entity',
+ core:'Article.builder()로 제목·본문·글쓴이·이미지 주소를 채운 Article 객체를 만듭니다.',
+ ex:['<code>.imageUrl(imageUrl)</code>: 여기서 S3 주소가 엔티티로 옮겨집니다.']},
+{p:7,t:'article 표에 INSERT (image_url 컬럼)',f:'Article',a:'@Column(name = "image_url")',b:'private String imageUrl;',route:['service','db'],pk:'INSERT article',on:['service','db'],sub:ART,scr:'sql',
+ core:'Article의 imageUrl 필드는 image_url 컬럼에 저장됩니다. DB에는 그림이 아니라 주소 글자만 들어갑니다.',
+ ex:['<code>@CreatedDate</code>, <code>@LastModifiedDate</code>로 시간도 자동으로 채워집니다.','빈스톡에서는 이 DB가 RDS(MySQL)입니다.']},
+{p:7,t:'201 → "등록 완료되었습니다."',f:'jsCreate',a:'function success()',b:"location.replace('/articles');",route:['service','controller','browser'],pk:'201 Created',on:['controller','browser'],sub:ART,scr:'done',
+ core:'서버가 201을 돌려주면 success()가 알림을 띄우고 목록 화면으로 이동합니다. 목록의 그림도 S3에서 직접 불러옵니다.',
+ ex:['<code>location.replace(\'/articles\')</code>: 뒤로 가기로 글쓰기 화면에 돌아오지 않게 이동합니다.']},
+{p:8,t:'🎉 S3 콘솔에서 업로드된 파일 확인',f:'AwsS3Service',a:'String key =',b:'String key =',on:['s3'],scr:'final',
+ core:'S3 콘솔 → 버킷 → uploads/ → 파일을 누르면 키, 객체 URL, 콘텐츠 유형(image/png)이 보입니다. 15단계의 키, 20단계의 URL과 똑같습니다.',
+ ex:['이 화면의 "객체 URL"이 DB의 image_url 값과 같습니다.','직접 확인하는 방법은 <a href="#sec-verify">3장</a>에 복붙 명령과 함께 있습니다.']}
+];
+
+/* ───────── 플레이어 ───────── */
+const $=s=>document.querySelector(s);
+const cview=$('#cview'), packet=$('#packet'), diag=$('#diagram');
+let curFile=null, cur=0, playing=null, runId=0;
+PH.forEach((p,i)=>{const b=document.createElement('button');b.className='phase';b.textContent=p;b.onclick=()=>go(STEPS.findIndex(s=>s.p===i));$('#phases').appendChild(b);});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function center(n){const el=diag.querySelector('[data-n="'+n+'"]');return [el.offsetLeft, el.offsetTop];}
+async function fly(route,label,aws){
+  const id=++runId; packet.className='packet'+(aws?' aws':''); packet.textContent=label||'';
+  if(!route||route.length<2){return;}
+  let [x,y]=center(route[0]); packet.style.transition='none'; packet.style.left=x+'px'; packet.style.top=(y-30)+'px';
+  await sleep(30); if(id!==runId)return; packet.style.transition=''; packet.classList.add('show');
+  for(let i=1;i<route.length;i++){
+    await sleep(450); if(id!==runId)return;
+    [x,y]=center(route[i]); packet.style.left=x+'px'; packet.style.top=(y-30)+'px';
+    diag.querySelectorAll('.node').forEach(n=>{if(n.dataset.n===route[i]) {n.classList.remove('on');void n.offsetWidth;n.classList.add('on');}});
+    await sleep(800);
+  }
+}
+function go(i){
+  i=Math.max(0,Math.min(STEPS.length-1,i)); cur=i; const s=STEPS[i];
+  const f=FILES[s.f];
+  if(curFile!==s.f){cview.innerHTML=renderCode(f);curFile=s.f;}
+  $('#cpath').textContent=f.path+(f.note?'  '+f.note:'');
+  const [a,b]=findRange(f,s.a,s.b,s.plus);
+  cview.querySelectorAll('.ln').forEach(l=>{const k=+l.dataset.i;l.classList.toggle('hi',k>=a&&k<=b);});
+  $('#crng').textContent='L'+(f.start+a)+(b>a?'–'+(f.start+b):'');
+  const first=cview.querySelector('.ln.hi');
+  if(first){cview.scrollTo({top:Math.max(0,first.offsetTop-cview.clientHeight*0.28),behavior:'smooth'});}
+  $('#snum').textContent=(i+1)+' / '+STEPS.length; $('#stitle').textContent=s.t;
+  $('#sprog').style.width=((i+1)/STEPS.length*100)+'%';
+  document.querySelectorAll('.phase').forEach((b,k)=>{b.classList.toggle('on',k===s.p);b.classList.toggle('past',k<s.p);});
+  const sub=Object.assign({controller:'UploadController',service:'AwsS3Service'},s.sub||{});
+  diag.querySelectorAll('.node').forEach(n=>{n.classList.toggle('on',(s.on||[]).includes(n.dataset.n)); if(sub[n.dataset.n]) n.querySelector('small').textContent=sub[n.dataset.n];});
+  $('#now').textContent=s.pk?'이동 중: '+s.pk:'';
+  packet.classList.remove('show'); runId++;
+  $('#screen').innerHTML=SCR[s.scr]();
+  $('#explain').innerHTML='<div class="core">👉 '+s.core+'</div><ul>'+s.ex.map(x=>'<li>'+x+'</li>').join('')+'</ul><div class="meta">📄 '+f.path+' · 강조 줄 '+$('#crng').textContent+'</div>';
+  $('#bprev').disabled=i===0; $('#bnext').textContent= i===STEPS.length-1?'처음으로 ↺':'다음 ▶';
+  if(s.route) fly(s.route,s.pk,s.aws);
+  S.step=i; if(i+1>S.seen) S.seen=i+1;
+  if(i===STEPS.length-1){S.m['m-player']=true; markMissions();}
+  save();
+}
+$('#bnext').onclick=()=>go(cur===STEPS.length-1?0:cur+1);
+$('#bprev').onclick=()=>go(cur-1);
+$('#breplay').onclick=()=>go(cur);
+$('#bplay').onclick=()=>{
+  if(playing){clearInterval(playing);playing=null;$('#bplay').textContent='⏯ 자동 재생';return;}
+  $('#bplay').textContent='⏸ 멈춤'; playing=setInterval(()=>{if(cur>=STEPS.length-1){clearInterval(playing);playing=null;$('#bplay').textContent='⏯ 자동 재생';return;} go(cur+1);},6500);
+};
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(document.activeElement.tagName))return; const r=$('#player').getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight)return; if(e.key==='ArrowRight')go(cur+1); if(e.key==='ArrowLeft')go(cur-1);});
+$('#ccopy').onclick=e=>copyText(FILES[curFile].text,e.target);
+
+/* ───────── 전체 코드 ───────── */
+const ORDER=['gradle','yaml','S3Config','AwsS3Service','LocalFS','FileStorageService','UploadResponse','ViewCtrl','newArticle','jsUpload','TokenFilter','SecConfig','UploadController','jsCreate','jsHttp','ApiCtrl','BlogService','AddReq','Article','Repo'];
+$('#allcode').innerHTML=ORDER.filter(k=>FILES[k]).map(k=>{const f=FILES[k];
+  return '<details class="file" data-k="'+k+'"><summary>📄 '+f.title+'<span class="p">'+f.path+(f.note?' · '+f.note:'')+'</span></summary><div class="wrap"><button class="copy" data-k="'+k+'">복사</button><div class="codescroll"></div></div></details>';}).join('');
+document.querySelectorAll('details.file').forEach(d=>d.addEventListener('toggle',()=>{const c=d.querySelector('.codescroll'); if(d.open&&!c.innerHTML) c.innerHTML=renderCode(FILES[d.dataset.k]);}));
+
+/* ───────── 복사 ───────── */
+function copyText(t,btn){
+  const ok=()=>{const o=btn.textContent;btn.textContent='복사됨 ✔';btn.classList.add('done');setTimeout(()=>{btn.textContent=o;btn.classList.remove('done');},1400);};
+  const fallback=()=>{try{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();const r=document.execCommand('copy');ta.remove();if(r)ok();else throw 0;}catch(e){btn.textContent='Ctrl+C 로 복사하세요';}};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,fallback);}else fallback();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.copy'); if(!b||b.id==='ccopy')return;
+  if(b.dataset.k){copyText(FILES[b.dataset.k].text,b);return;}
+  const pre=b.parentElement.querySelector('pre'); if(pre) copyText(pre.textContent,b);});
+
+/* ───────── 미션·퀴즈 ───────── */
+function markMissions(){document.querySelectorAll('.do').forEach(d=>{const on=!!S.m[d.dataset.id];d.classList.toggle('fin',on);d.querySelector('.done-btn').textContent=on?'✔ 완료됨 (다시 누르면 취소)':'완료 체크';});}
+document.querySelectorAll('.do .done-btn').forEach(b=>b.onclick=()=>{const id=b.closest('.do').dataset.id;S.m[id]=!S.m[id];markMissions();save();});
+function showQuiz(q,pick){const ans=+q.dataset.ans;q.querySelectorAll('.opt').forEach((o,k)=>{o.classList.remove('right','wrong');if(k===ans&&pick!=null)o.classList.add('right');if(k===pick&&k!==ans)o.classList.add('wrong');});q.classList.toggle('answered',pick!=null);}
+document.querySelectorAll('.quiz').forEach(q=>{q.querySelectorAll('.opt').forEach((o,k)=>o.onclick=()=>{showQuiz(q,k); if(k===+q.dataset.ans){S.q[q.dataset.id]=true;}else{delete S.q[q.dataset.id];} save();}); if(S.q[q.dataset.id]) showQuiz(q,+q.dataset.ans);});
+
+/* ───────── 대시보드 ───────── */
+function dash(){
+  const M=document.querySelectorAll('.do').length, Q=document.querySelectorAll('.quiz').length;
+  const m=[...document.querySelectorAll('.do')].filter(d=>S.m[d.dataset.id]).length, q=[...document.querySelectorAll('.quiz')].filter(d=>S.q[d.dataset.id]).length;
+  const pct=Math.round(((m+q)/(M+Q))*80 + (S.seen/STEPS.length)*20);
+  $('#ring').setAttribute('stroke-dasharray',pct+' 100'); $('#pcttxt').textContent=pct+'%';
+  $('#dm').textContent='미션 '+m+'/'+M; $('#dq').textContent='퀴즈 '+q+'/'+Q; $('#ds').textContent='애니메이션 '+S.seen+'/'+STEPS.length;
+}
+$('#dash').onclick=()=>$('#dash').classList.toggle('mini');
+
+/* ───────── 기타 ───────── */
+$('#dl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ORIGINAL_HTML],{type:'text/html'}));a.download='S3UploadFlowTutorial.html';a.click();};
+$('#reset').onclick=()=>{if(confirm('미션·퀴즈·단계 기록을 모두 지울까요?')){S={m:{},q:{},step:0,seen:0};save();location.reload();}};
+$('#burger').onclick=()=>$('#side').classList.toggle('open');
+document.querySelectorAll('#side a').forEach(a=>a.onclick=()=>$('#side').classList.remove('open'));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#side a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}}),{rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+window.addEventListener('resize',()=>{if(packet.classList.contains('show')) go(cur);});
+
+markMissions();
+go(S.step||0);
+</script>
+</body>
+</html>
