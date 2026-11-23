@@ -267,6 +267,49 @@ A글          2      0
 
 **면접 기준**: "답글형 게시판은 `pos`로 화면 순서를, `depth`로 들여쓰기를 저장합니다. 답글을 넣을 때는 부모보다 뒤의 글들을 밀어내고, 두 단계를 한 트랜잭션으로 묶습니다."
 
+## JNDI 커넥션 풀: Tomcat의 context.xml에 DB 연결 맡기기 (2026-11-24 보강, 미실행)
+
+**출처**: 선생님 자료 `Practice_project☆/CarProjectEdu-실습워크북.html`(CarProject 실습, `context.xml` 설정과 `lookup` 코드). 이 PC에서 Tomcat을 띄우지 않아 **미실행**이다. 설정과 흐름은 자료의 내용을 정리했다.
+
+**무엇인가**: JNDI(Java Naming and Directory Interface)는 이름으로 객체를 찾는 기능이다. Tomcat은 `context.xml`에 DB 연결 풀(`DataSource`)을 이름으로 등록하고, 웹 앱은 그 이름으로 가져다 쓴다. 연결을 코드에 직접 만들지 않으므로 DB 주소와 비밀번호를 코드 밖에 둘 수 있다(23장).
+
+**설정 (자료 기준, `META-INF/context.xml`)**
+
+```xml
+<Context>
+  <Resource
+    name="jdbc/jspbeginner"
+    auth="Container"
+    type="javax.sql.DataSource"
+    driverClassName="com.mysql.cj.jdbc.Driver"
+    username="root"
+    password="(본인 DB 비밀번호)"
+    maxTotal="50"
+    maxIdle="10"
+    maxWaitMillis="-1"
+    url="jdbc:mysql://localhost:3306/rentcar_edu?serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"/>
+</Context>
+```
+
+**JSP나 서블릿에서 가져오기 (자료 흐름)**
+
+```java
+InitialContext ic = new InitialContext();
+DataSource ds = (DataSource) ic.lookup("java:comp/env/jdbc/jspbeginner");
+try (Connection con = ds.getConnection();
+     PreparedStatement ps = con.prepareStatement("select * from car");
+     ResultSet rs = ps.executeQuery()) {
+    // 결과 처리
+}   // try가 끝나면 연결이 풀로 반납된다
+```
+
+**주의: 비밀번호를 저장소에 올리지 않는다**
+- 자료는 `context.xml.sample`을 저장소에 두고, 각자 `context.xml`을 만들어 자기 비밀번호를 적는다. 실제 `context.xml`은 `.gitignore`로 제외한다.
+- 자료의 점검표도 "GitHub 창고에 `context.xml`이 없는가"를 확인하게 한다. 이 원칙은 23장의 비밀 관리와 같다.
+- `lookup`의 이름(`java:comp/env/jdbc/jspbeginner`)이 `name` 값과 한 글자라도 다르면 `NamingException`이 난다.
+
+**면접 기준**: "Tomcat JNDI는 커넥션 풀을 서버 설정에 두고 이름으로 가져옵니다. 비밀번호는 `context.xml`에 두되 저장소에는 샘플 파일만 올리고, 실제 파일은 제외합니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
