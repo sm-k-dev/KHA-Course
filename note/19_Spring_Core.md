@@ -157,6 +157,38 @@ GET /api/health에서 JSON 응답을 확인하고 요청 흐름을 그린다.
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 스캔 범위 밖의 클래스는 빈이 되지 않는다 (2026-11-23 보강, 확인함)
+
+**출처**: 선생님 자료 `springboot4☆/2장_스프링 부트 4 시작하기_자습서.html`의 `@Component`·`@Service` 실습과 스캔 범위 설명을 바탕으로, 스캔 범위를 재현해 확인했다.
+
+**정의**: 스프링은 시작할 때 지정한 **패키지와 그 하위 패키지**에서만 `@Component` 계열을 찾는다. `@SpringBootApplication`이 붙은 클래스의 패키지가 기준이다. 그 밖에 있는 클래스는 `@Component`가 붙어 있어도 빈으로 등록되지 않는다.
+
+```java
+// com/example/demo/PaymentGateway.java, OrderService.java (스캔 범위 안)
+// com/example/other/OutsideBean.java (스캔 범위 밖)
+
+try (var ctx = new AnnotationConfigApplicationContext("com.example.demo")) {
+    OrderService order = ctx.getBean(OrderService.class);
+    System.out.println(order.order("coffee", 1000));   // 결제가 성공하는 경우
+    System.out.println(order.order("coffee", 0));      // 결제가 실패하는 경우
+    try {
+        ctx.getBean(OutsideBean.class);
+    } catch (NoSuchBeanDefinitionException e) {
+        System.out.println("outside bean not registered: NoSuchBeanDefinitionException");
+    }
+}
+```
+
+필요한 jar: `spring-context`, `spring-core`, `spring-beans`, `spring-aop`, `spring-expression`, `commons-logging`(Spring 7 기준으로 확인했다).
+
+**실행 결과 (확인함)**: 첫 두 줄은 `coffee 주문 완료`와 `coffee 결제 실패`(한글 출력은 콘솔 인코딩에 따라 깨질 수 있다). 세 번째 줄은 `outside bean not registered: NoSuchBeanDefinitionException`이다.
+
+**읽는 법**
+- `PaymentGateway`의 `pay`는 가격이 0보다 클 때만 `true`를 돌려준다. 그래서 두 번째 주문은 결제에 실패했다. 자료의 "결제 실패로 바꿔 보기" 연습과 같은 원리다.
+- Spring Boot 프로젝트에서 `OutsideBean`을 `com.example.other`에 두면 `NoSuchBeanDefinitionException`(빈을 찾을 수 없다)이 난다. 해결은 클래스를 `@SpringBootApplication`의 하위 패키지로 옮기거나, `@ComponentScan`으로 범위를 명시하는 것이다.
+
+**면접 기준**: "`@Component` 계열 클래스는 `@SpringBootApplication`이 있는 패키지와 하위 패키지에서만 빈이 됩니다. 범위 밖 클래스는 빈을 찾을 수 없다는 오류가 납니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

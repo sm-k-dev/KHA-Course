@@ -104,6 +104,150 @@ Network 탭에서 요청과 JSON 응답을 확인한다.
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## REST CRUD 한 번에 보기: 201·200·404·204 (2026-11-23 보강, MockMvc로 확인함)
+
+**출처**: 선생님 자료 `springboot4☆/6장 블로그 기획하고 API 만들기.html`의 글 작성·조회·수정·삭제 API 흐름을 정리했다. 원 자료는 Spring Boot와 JPA(`JpaRepository`)로 만든다. 여기서는 **REST 규칙(URL, 메서드, 상태 코드)만** 보려고 저장소를 메모리 `Map`으로 바꿨다. 실행은 MockMvc standalone 설정으로 했다(서버는 띄우지 않았다).
+
+**REST 규칙 표**
+
+| 동작 | 요청 | 성공 응답 | 없을 때 |
+|---|---|---|---|
+| 글 작성 | `POST /api/articles` | 201 Created | - |
+| 목록 조회 | `GET /api/articles` | 200 OK | - |
+| 한 건 조회 | `GET /api/articles/{id}` | 200 OK | 404 Not Found |
+| 수정 | `PUT /api/articles/{id}` | 200 OK | 404 Not Found |
+| 삭제 | `DELETE /api/articles/{id}` | 204 No Content | 404 Not Found |
+
+```java
+// 실행 시 -parameters 옵션이 필요하다 (아래 "주의" 참고)
+package com.example.blog;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+public class ArticleApi {
+
+    record Article(Long id, String title, String content) {}
+    record AddArticleRequest(String title, String content) {}
+    record UpdateArticleRequest(String title, String content) {}
+
+    @RestController
+    @RequestMapping("/api/articles")
+    static class ArticleController {
+        private final Map<Long, Article> store = new ConcurrentHashMap<>();
+        private final AtomicLong seq = new AtomicLong();
+
+        @PostMapping
+        ResponseEntity<Article> add(@RequestBody AddArticleRequest req) {
+            Article a = new Article(seq.incrementAndGet(), req.title(), req.content());
+            store.put(a.id(), a);
+            return ResponseEntity.status(HttpStatus.CREATED).body(a);      // 201 Created
+        }
+
+        @GetMapping
+        List<Article> findAll() {
+            return new ArrayList<>(store.values());                       // 200 OK
+        }
+
+        @GetMapping("/{id}")
+        ResponseEntity<Article> findOne(@PathVariable Long id) {
+            Article a = store.get(id);
+            return a == null ? ResponseEntity.notFound().build()           // 404 Not Found
+                             : ResponseEntity.ok(a);                       // 200 OK
+        }
+
+        @PutMapping("/{id}")
+        ResponseEntity<Article> update(@PathVariable Long id, @RequestBody UpdateArticleRequest req) {
+            Article old = store.get(id);
+            if (old == null) return ResponseEntity.notFound().build();
+            Article updated = new Article(id, req.title(), req.content());
+            store.put(id, updated);
+            return ResponseEntity.ok(updated);                            // 200 OK
+        }
+
+        @DeleteMapping("/{id}")
+        ResponseEntity<Void> delete(@PathVariable Long id) {
+            if (store.remove(id) == null) return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();                    // 204 No Content
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new ArticleController()).build();
+
+        MvcResult created = mvc.perform(post("/api/articles")
+                        .contentType("application/json")
+                        .content("{\"title\":\"hello\",\"content\":\"first post\"}"))
+                .andReturn();
+        System.out.println("POST    -> " + created.getResponse().getStatus() + " " + created.getResponse().getContentAsString());
+        System.out.println("GET     -> " + mvc.perform(get("/api/articles")).andReturn().getResponse().getStatus()
+                + " " + mvc.perform(get("/api/articles")).andReturn().getResponse().getContentAsString());
+        System.out.println("GET 1   -> " + mvc.perform(get("/api/articles/1")).andReturn().getResponse().getStatus());
+        System.out.println("GET 999 -> " + mvc.perform(get("/api/articles/999")).andReturn().getResponse().getStatus());
+
+        MvcResult updated = mvc.perform(put("/api/articles/1")
+                        .contentType("application/json")
+                        .content("{\"title\":\"hello v2\",\"content\":\"edited\"}"))
+                .andReturn();
+        System.out.println("PUT 1   -> " + updated.getResponse().getStatus() + " " + updated.getResponse().getContentAsString());
+        System.out.println("DELETE 1   -> " + mvc.perform(delete("/api/articles/1")).andReturn().getResponse().getStatus());
+        System.out.println("GET 1 after -> " + mvc.perform(get("/api/articles/1")).andReturn().getResponse().getStatus());
+    }
+}
+```
+
+필요한 jar: `spring-webmvc`, `spring-test`, `tomcat-embed-core`(서블릿 API), `jackson-databind` 등. 이 PC에서는 Jackson 3(`tools.jackson`)을 함께 썼다.
+
+**실행 결과 (확인함)**
+
+```
+POST    -> 201 {"id":1,"title":"hello","content":"first post"}
+GET     -> 200 [{"id":1,"title":"hello","content":"first post"}]
+GET 1   -> 200
+GET 999 -> 404
+PUT 1   -> 200 {"id":1,"title":"hello v2","content":"edited"}
+DELETE 1   -> 204
+GET 1 after -> 404
+```
+
+**주의: `-parameters` 옵션**
+처음 실행했을 때 다음 오류가 났다.
+
+```
+IllegalArgumentException: Name for argument of type [java.lang.Long] not specified, and parameter name information not available via reflection.
+Ensure that the compiler uses the '-parameters' flag.
+```
+
+`@PathVariable Long id`처럼 이름을 생략하면 Spring이 메서드 매개변수 이름을 읽는데, 자바 컴파일러는 기본으로 이름을 남기지 않는다. `javac -parameters`로 컴파일하거나 `@PathVariable("id")`처럼 이름을 적으면 된다. Spring Boot의 Gradle·Maven 플러그인은 이 옵션을 기본으로 켜 둔다. 직접 `javac`로 컴파일할 때만 이 오류가 난다.
+
+**읽는 법**
+- 상태 코드는 결과를 알리는 약속이다. 새 자원은 201, 없는 자원은 404, 본문 없이 끝나는 삭제는 204다.
+- 자료의 실제 블로그는 `JpaRepository`를 쓰므로 `findById`가 없으면 `Optional.empty()`가 돌아온다. 그 뒤 `orElse(404)`로 바꾸는 방식이 같은 원리다(25장).
+- 수정(PUT)은 자료에서 트랜잭션과 변경 감지로 처리한다(25장 6-3). 조회 후 필드만 바꾸면 UPDATE가 자동으로 나간다.
+
+**면접 기준**: "REST는 URL로 자원을 가리키고 HTTP 메서드로 동작을 나타냅니다. 생성은 201, 없는 자원은 404, 삭제는 204로 응답하고, 이 계약을 MockMvc 테스트로 확인합니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
