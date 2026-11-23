@@ -82,7 +82,7 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
 <ul>
   <li><b>중심:</b> Java, Spring Boot, REST, SQL, 테스트, 시스템 설계, React·TypeScript 화면 구현. CS는 기술을 배울 때 함께 실험</li>
   <li><b>확장:</b> Cloud/DevOps, Data (AI 파이프라인 범위), AI Application/Agent, Security</li>
-  <li><b>선택:</b> Python FastAPI/Django, Kubernetes 심화, Kafka, Spark, Elasticsearch. 사용 사례에 따라 깊이를 정함</li>
+  <li><b>선택:</b> Python FastAPI/Django, Node.js(Express·NestJS), Kubernetes 심화, Kafka, Spark, Elasticsearch. 사용 사례에 따라 깊이를 정함</li>
   <li><b>방식:</b> 설명 → 코드 → 테스트 → 측정 → 설계 근거. 기존 경험은 진단 후 압축하고 부족한 부분만 보강</li>
 </ul>
 
@@ -100,33 +100,33 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
   <span><span class="tag t-r">복습</span> 개념 정리와 간단한 확인</span>
   <span><span class="tag t-c">인지</span> 개념과 역할을 설명할 수 있으면 충분</span>
 </div>
-<p class="sub">호주 과목은 TAFE NSW 검색 결과 기준입니다. 실제 이수 과목과 다를 수 있으니 성적표로 확인하세요. <span class="plus">＋</span>는 기존 핵심 학습에 덧붙이는 보강입니다.</p>
+<p class="sub">호주 과목은 실제 이수 폴더(Cert III·IV, Diploma, Advanced Diploma, Bachelor) 기준으로 정리했습니다. <span class="plus">＋</span>는 기존 핵심 학습에 덧붙이는 보강입니다.</p>
 
 <div class="tablewrap"><table>
 <thead><tr><th style="width:8%">월</th><th style="width:37%">학습 내용</th><th style="width:25%">호주 과목 (깊이)</th><th style="width:13%">STEM (주)</th><th style="width:17%">완료 기준</th></tr></thead>
 <tbody>
 
 <tr class="stage sA"><td colspan="5"><b>Stage A · 기초 (M01–M06)</b><span>관문: API 요청 → DB 저장 → 응답 흐름을 코드와 그림으로 설명하고 테스트</span></td></tr>
-<tr><td>M01<br/><span class="sub">12/7 ~</span></td><td>Java 기초, 변수·참조·메모리<br/>JavaScript 비동기 복습<br/><span class="plus">＋</span> 정보처리기사, Git 기본, 웹 개발 환경 설치</td><td><span class="tag t-c">인지</span> Fundamentals of Cyber Security</td><td>0 (정처기 우선)</td><td>변수·참조를 그림으로 설명</td></tr>
-<tr><td>M02</td><td>OOP, Collections, 캡슐화·다형성<br/><span class="plus">＋</span> 해시 테이블 원리 (HashMap), 정보처리기사</td><td>—</td><td>0 (정처기 우선)</td><td>ArrayList·HashMap 선택 이유 설명</td></tr>
-<tr><td>M03</td><td>알고리즘, 정렬·검색, JVM<br/><span class="plus">＋</span> 트리·그래프·힙, 프로세스·스레드, 가상 메모리, 코딩테스트 주 1회</td><td><span class="tag t-c">인지</span> Virtual machines (가상화 개념)</td><td>0 (정처기 우선)</td><td>복잡도 설명, race condition 재현</td></tr>
-<tr><td>M04</td><td>DB 기초, SQL (JOIN), HTTP·HTML, JSON·JDBC, ERD<br/><span class="plus">＋</span> 소켓 TCP 에코 서버, 정보처리기사 (DB·네트워크), Git 협업 흐름</td><td><span class="tag t-p">실습</span> 라우터·스위치 기본 설정 (VLAN, 트렁크, 정적 라우팅)<br/><span class="tag t-r">복습</span> OSI·TCP/IP, 서브넷, DNS, NAT, DHCP, NTP<br/><span class="tag t-r">복습</span> Network Essentials, Internetworking</td><td>—</td><td>브라우저 → 서버 → DB 흐름을 패킷 근거로 설명</td></tr>
+<tr><td>M01<br/><span class="sub">12/7 ~</span></td><td>Java 기초, 변수·참조·메모리<br/>JavaScript 비동기 복습<br/><span class="plus">＋</span> 정보처리기사, Git 기본, 웹 개발 환경 설치</td><td><span class="tag t-c">인지</span> Fundamentals of Cyber Security<br/><span class="tag t-c">인지</span> Critical Thinking</td><td>0 (정처기 우선)</td><td>변수·참조를 그림으로 설명</td></tr>
+<tr><td>M02</td><td>OOP, Collections, 캡슐화·다형성<br/><span class="plus">＋</span> 해시 테이블 원리 (HashMap), 이산수학 기초 (논리·집합·그래프), 정보처리기사</td><td>—</td><td>0 (정처기 우선)</td><td>ArrayList·HashMap 선택 이유 설명</td></tr>
+<tr><td>M03</td><td>알고리즘, 정렬·검색, JVM<br/><span class="plus">＋</span> 트리·그래프·힙, 프로세스·스레드, 가상 메모리, 메모리 영역(Stack·Heap)과 GC, 코딩테스트 주 1회 (BFS·DFS·다익스트라 포함)</td><td><span class="tag t-c">인지</span> Virtual machines (가상화 개념)</td><td>0 (정처기 우선)</td><td>복잡도 설명, race condition 재현</td></tr>
+<tr><td>M04</td><td>DB 기초, SQL (JOIN), HTTP·HTML, JSON·JDBC, ERD<br/><span class="plus">＋</span> 소켓 TCP 에코 서버, 정보처리기사 (DB·네트워크), Git 협업 흐름</td><td><span class="tag t-r">복습</span> 라우터·스위치 기본 설정 (VLAN, 트렁크, 정적 라우팅)<br/><span class="tag t-r">복습</span> OSI·TCP/IP, 서브넷, DNS, NAT, DHCP, NTP<br/><span class="tag t-r">복습</span> CCNA1·CCNA2 (Introduction to Networks, Routing and Switching Essentials), Internetworking 1, Network Essentials</td><td>—</td><td>브라우저 → 서버 → DB 흐름을 패킷 근거로 설명</td></tr>
 <tr><td>M05</td><td>Spring MVC·DI, REST 계층 설계, Servlet·JSP 개념, AJAX·JSON<br/><span class="plus">＋</span> OpenAPI 명세, Jackson 직렬화, jQuery 유지보수, EL·JSTL</td><td><span class="tag t-r">복습</span> Small-scale network management, troubleshooting</td><td>—</td><td>Controller–Service–Repository API 구현</td></tr>
 <tr><td>M06</td><td>Spring Boot·검증·테스트, JPA 기초, CSS (Flex·Grid)<br/><span class="plus">＋</span> React·TypeScript 화면 1개, fetch 연결, Git PR 리뷰<br/><span class="plus">＋</span> SentinelOps 1차 전환, 블로그 시작, Thymeleaf·Mustache 비교</td><td><span class="tag t-c">인지</span> Cloud services 개념</td><td>—</td><td>Blog API 통합 테스트와 화면 연결</td></tr>
 
 <tr class="stage sB"><td colspan="5"><b>Stage B · 백엔드 심화 (M07–M12)</b><span>관문: 트랜잭션·동시성·보안·설계의 취약·장애 시나리오를 재현하고 개선</span></td></tr>
-<tr><td>M07</td><td>SQL 심화 (인덱스, 실행 계획, 정규화, 격리 수준), N+1, Page·Slice<br/><span class="plus">＋</span> MyBatis 실습, Oracle 차이, CS 기본기 점검, 데이터 분석 1단계</td><td><span class="tag t-r">복습</span> Data and Network Security</td><td>확률 기초, 기술 통계 (1–2h)</td><td>EXPLAIN 근거로 느린 쿼리 개선</td></tr>
-<tr><td>M08</td><td>인증·인가, Spring Security, JWT, RBAC, XSS·CSRF·SQL 인젝션<br/><span class="plus">＋</span> 암호화 실무 1단계 (해시, bcrypt, JWT 서명)<br/><span class="plus">＋</span> ACL·SSH, 암호 기초, 한국 보안 규정 입문, 직장 보안·개인정보</td><td><span class="tag t-r">복습</span> Identity management, Firewall·IDS/IPS·VPN 비교, Intro to Cryptography, Digital Security and Privacy in the Workplace</td><td>확률 분포 복습 (1–2h)</td><td>401/403 테스트, bcrypt·JWT 검증</td></tr>
+<tr><td>M07</td><td>SQL 심화 (인덱스, 실행 계획, 정규화, 격리 수준), N+1, Page·Slice<br/><span class="plus">＋</span> MyBatis 실습, Oracle 차이, Querydsl, 역정규화 개념, CS 기본기 점검, 데이터 분석 1단계</td><td><span class="tag t-r">복습</span> Data and Network Security</td><td>확률 기초, 기술 통계 (1–2h)</td><td>EXPLAIN 근거로 느린 쿼리 개선</td></tr>
+<tr><td>M08</td><td>인증·인가, Spring Security, JWT, RBAC, XSS·CSRF·SQL 인젝션<br/><span class="plus">＋</span> 암호화 실무 1단계 (해시, bcrypt, JWT 서명)<br/><span class="plus">＋</span> ACL·SSH, 암호 기초, 한국 보안 규정 입문, 직장 보안·개인정보</td><td><span class="tag t-r">복습</span> Identity management, Firewall·IDS/IPS·VPN 비교, Intro to Cryptography, Digital Security and Privacy in the Workplace<br/><span class="tag t-r">복습</span> CCNP Security (AAA, 방화벽 정책)</td><td>확률 분포 복습 (1–2h)</td><td>401/403 테스트, bcrypt·JWT 검증</td></tr>
 <tr><td>M09</td><td>동시성: 스레드 풀, 락, 경쟁 조건, DB 락<br/><span class="plus">＋</span> race condition 재현과 해결</td><td><span class="tag t-r">복습</span> Secure programming</td><td>—</td><td>재현 테스트와 해결 전후 비교</td></tr>
-<tr><td>M10</td><td>설계: SOLID, 패턴, API 계약, UML·ERD<br/><span class="plus">＋</span> TypeScript 타입으로 API 계약 공유, OpenAPI 계약 테스트, 관리 UI, 기술 부채 기록</td><td><span class="tag t-c">인지</span> Security architecture</td><td>—</td><td>설계 변경 이유와 대안 설명</td></tr>
-<tr><td>M11</td><td>테스트 전략, 단위·통합·계약 테스트, Testcontainers<br/><span class="plus">＋</span> SAST·비밀정보 검사, 정보처리기사 (구축관리)</td><td><span class="tag t-c">인지</span> Threat data analysis</td><td>—</td><td>정상·예외·경계 테스트 통과</td></tr>
-<tr><td>M12</td><td>캐시, 비동기 처리, 메시징, 분산 개념 (CAP, 일관성, 복제, 샤딩)<br/><span class="plus">＋</span> Redis, RabbitMQ 또는 Kafka, HSRP·VRRP·EtherChannel과 로드밸런서 비교<br/><span class="plus">＋</span> 코딩테스트 주 2회, SentinelOps 1차 완성</td><td><span class="tag t-r">복습</span> Incident response, Disaster recovery (백업, RTO·RPO)</td><td>—</td><td>설계 문서와 장애 시나리오 발표</td></tr>
+<tr><td>M10</td><td>설계: SOLID, 패턴, API 계약, UML·ERD<br/><span class="plus">＋</span> TypeScript 타입으로 API 계약 공유, OpenAPI 계약 테스트, 개념·논리·물리 데이터 모델 구분, 관리 UI, 기술 부채 기록</td><td><span class="tag t-c">인지</span> Security architecture<br/><span class="tag t-r">복습</span> Business communication (보고서·발표)</td><td>—</td><td>설계 변경 이유와 대안 설명</td></tr>
+<tr><td>M11</td><td>테스트 전략, 단위·통합·계약 테스트, Testcontainers<br/><span class="plus">＋</span> SAST·비밀정보 검사, JUnit5·Mockito, Scrum/Kanban과 Jira·Confluence, 정보처리기사 (구축관리)</td><td><span class="tag t-c">인지</span> Threat data analysis</td><td>—</td><td>정상·예외·경계 테스트 통과</td></tr>
+<tr><td>M12</td><td>캐시, 비동기 처리, 메시징, 분산 개념 (CAP, 일관성, 복제, 샤딩)<br/><span class="plus">＋</span> Redis, RabbitMQ 또는 Kafka, HSRP·VRRP·EtherChannel과 로드밸런서 비교<br/><span class="plus">＋</span> 코딩테스트 주 2회, SentinelOps 1차 완성, MSA·EIP(Spring Integration) 개념</td><td><span class="tag t-r">복습</span> Incident response, Disaster recovery (백업, RTO·RPO)</td><td>—</td><td>설계 문서와 장애 시나리오 발표</td></tr>
 
 <tr class="stage sC"><td colspan="5"><b>Stage C · 배포·운영 (M13–M16)</b><span>관문: 배포하고, 평가 가능한 서비스로 운영</span></td></tr>
-<tr><td>M13</td><td>Linux 운영, Docker 컨테이너<br/><span class="plus">＋</span> Linux 설치와 장애 해결, Dockerfile, VM과 컨테이너 비교</td><td><span class="tag t-r">복습</span> Kali Linux 기초, 가상 네트워크 (허가된 환경)</td><td>—</td><td>컨테이너 포트·환경 변수 문제 진단</td></tr>
-<tr><td>M14</td><td>AWS, VPC, IAM, 배포, 암호화 실무 2단계 (KMS, TLS 검증)<br/><span class="plus">＋</span> Terraform으로 VPC 구성, 한국 보안 규정 설계 적용</td><td><span class="tag t-p">실습</span> Cloud Computing<br/><span class="tag t-r">복습</span> Enterprise virtual computing, OSPF·EIGRP와 VPC 라우팅 비교</td><td>—</td><td>최소 권한 네트워크 구성 설명</td></tr>
-<tr><td>M15</td><td>CI/CD, 관측성, Kubernetes 기초<br/><span class="plus">＋</span> GitHub Actions 파이프라인, 로그·메트릭 대시보드, 로컬 K8s 배포, SNMP·Syslog</td><td><span class="tag t-r">복습</span> Managing network security, Complex ICT networks (운영 관점)</td><td>—</td><td>파이프라인 배포와 롤백 1회</td></tr>
-<tr><td>M16</td><td>Python, 데이터 파이프라인, ETL/ELT, 재처리<br/><span class="plus">＋</span> 공공데이터 API (JSON/XML) 수집, 데이터 분석 2단계 (pandas), IPv6·WLAN</td><td><span class="tag t-c">인지</span> Designing network servers, IPv6·WLAN</td><td>평균·분산·분포 해석 (1–2h)</td><td>공공 API → DB 저장, 재실행 시 중복 없음</td></tr>
+<tr><td>M13</td><td>Linux 운영, Docker 컨테이너<br/><span class="plus">＋</span> Linux 설치와 장애 해결 (Linux CLI, Ubuntu 설치, 디스크 복제·파티션), Dockerfile, VM과 컨테이너 비교, 쉘 스크립트, 시스템콜·fork·exec·IPC 개념, Nginx 리버스 프록시</td><td><span class="tag t-r">복습</span> Kali Linux 기초, 가상 네트워크 (허가된 환경)<br/><span class="tag t-r">복습</span> Server management (Windows Server·AD 기초)</td><td>—</td><td>컨테이너 포트·환경 변수 문제 진단</td></tr>
+<tr><td>M14</td><td>AWS, VPC, IAM, 배포, 암호화 실무 2단계 (KMS, TLS 검증)<br/><span class="plus">＋</span> Terraform으로 VPC 구성, 한국 보안 규정 설계 적용</td><td><span class="tag t-p">실습</span> Cloud Computing<br/><span class="tag t-r">복습</span> Enterprise virtual computing, OSPF·EIGRP와 VPC 라우팅 비교<br/><span class="tag t-c">인지</span> CCNP Routing (BGP 개념)</td><td>—</td><td>최소 권한 네트워크 구성 설명</td></tr>
+<tr><td>M15</td><td>CI/CD, 관측성, Kubernetes 기초<br/><span class="plus">＋</span> GitHub Actions 파이프라인, 로그·메트릭 대시보드, Prometheus·Grafana 또는 ELK 기초, 로컬 K8s 배포, SNMP·Syslog</td><td><span class="tag t-r">복습</span> Managing network security, Complex ICT networks (운영 관점)</td><td>—</td><td>파이프라인 배포와 롤백 1회</td></tr>
+<tr><td>M16</td><td>Python, 데이터 파이프라인, ETL/ELT, 재처리<br/><span class="plus">＋</span> 공공데이터 API (JSON/XML) 수집, 데이터 분석 2단계 (pandas), IPv6·WLAN</td><td><span class="tag t-c">인지</span> Designing network servers, IPv6·WLAN<br/><span class="tag t-c">인지</span> Enterprise VoIP (SIP, QoS)</td><td>평균·분산·분포 해석 (1–2h)</td><td>공공 API → DB 저장, 재실행 시 중복 없음</td></tr>
 
 <tr class="stage sD"><td colspan="5"><b>Stage D · AI 에이전트·제품화 (M17–M24)</b><span>관문: 에이전트의 권한·반복·승인·감사를 통제하고 측정</span></td></tr>
 <tr><td>M17</td><td>LLM API, 토큰, 구조화 출력, 평가<br/><span class="plus">＋</span> AI 거버넌스 점검표, 데이터 분석 3단계</td><td>—</td><td>신뢰구간, 샘플 크기 (1–2h)</td><td>정확도·지연·비용 측정</td></tr>
@@ -136,7 +136,7 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
 <tr><td>M21</td><td>Harness (샌드박스, 승인, 감사 로그)<br/><span class="plus">＋</span> 승인 기반 도구 실행</td><td><span class="tag t-c">인지</span> Digital forensics, Mobile computing security</td><td>—</td><td>금지 작업 거부 입증</td></tr>
 <tr><td>M22</td><td>Sub/Multi-Agent 오케스트레이션<br/><span class="plus">＋</span> 단일 Agent 대비 품질·비용 비교</td><td><span class="tag t-c">인지</span> Software defined programmable networks</td><td>—</td><td>비교 실험 결과 기록</td></tr>
 <tr><td>M23</td><td>AI 보안: Prompt Injection, 데이터 유출, SSRF<br/><span class="plus">＋</span> AI 거버넌스 위협 점검</td><td><span class="tag t-r">복습</span> Advanced Network Security<br/><span class="tag t-c">인지</span> Computer and network forensics</td><td>—</td><td>위협 모델과 방어 테스트</td></tr>
-<tr><td>M24</td><td>제품화, 통합 플랫폼, 운영<br/><span class="plus">＋</span> 포트폴리오 최종 정리, 면접 발표 연습, Advanced Diploma 과목 (목록 확인 후 추가)</td><td><span class="tag t-r">복습</span> Major projects (capstone)</td><td>—</td><td>요구사항 → 설계 → 검증 → 운영 발표</td></tr>
+<tr><td>M24</td><td>제품화, 통합 플랫폼, 운영<br/><span class="plus">＋</span> 포트폴리오 최종 정리, 면접 발표 연습</td><td><span class="tag t-r">복습</span> Major projects (capstone)<br/><span class="tag t-r">복습</span> Advanced Diploma 과목 요약 노트 (CCNP·VoIP)</td><td>—</td><td>요구사항 → 설계 → 검증 → 운영 발표</td></tr>
 
 </tbody></table></div>
 
@@ -205,6 +205,7 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
   <li>보안, 테스트, 운영은 후반에 몰아서 하지 않고 처음부터 필요한 최소 수준을 적용합니다.</li>
   <li>월마다 코드, 테스트, 실험 결과, 회고 4종을 보관합니다. 3개월마다 진도, 취업 우선순위, 학습 시간을 보고 재계획합니다.</li>
   <li>기술 이름이나 수료증보다 <b>스스로 설계하고 문제를 해결한 증거</b>를 남깁니다.</li>
+<li>AI에게 시키되, 생성된 코드는 한 줄씩 직접 읽습니다. 과정을 단계별로 설명하게 해서 이해를 확인하고, 정의와 개념의 경계를 말로 설명할 수 있을 때 넘어갑니다.</li>
 </ol>
 <ul>
   <li><b>학습 시간:</b> 주 15–22시간을 기준선으로 삼고, 학원·업무·면접 기간에는 줄입니다.</li>

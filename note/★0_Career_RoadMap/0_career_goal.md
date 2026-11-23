@@ -81,7 +81,7 @@
 - **2026-11-20:** Data는 AI 파이프라인 범위로 한정한다. Data Engineer는 목표에서 뺀다.
 - **2026-11-20:** 정보처리기사 필기는 2027년 1회에 응시한다. 학습은 M01–M03과 병행한다.
 - **2026-11-20:** 학습 기간은 2026-12-07부터 M01로 시작한다.
-- **미확정:** 호주 과목 목록은 검색 결과 기준이다. 성적표로 확인이 필요하다. Advanced Diploma 과목 목록도 받지 못했다.
+- **확인 완료:** 호주 과목은 실제 이수 폴더(Cert III·IV, Diploma, Advanced Diploma, Bachelor)로 확인했다. Advanced Diploma 과목(CCNP Routing·Switch·Security, Enterprise VoIP)도 로드맵에 반영했다.
 
 ## 10. 3층 구조 (직무 · 기술 · 역량)
 
