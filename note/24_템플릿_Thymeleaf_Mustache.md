@@ -38,7 +38,7 @@ engine.process("<p th:text=\"${title}\">x</p><p th:utext=\"${title}\">y</p>", ct
 
 - `th:text`는 **이스케이프**한다. 결과는 `&lt;b&gt;안녕&lt;/b&gt;`이라서 태그가 글자로 보인다.
 - `th:utext`는 이스케이프하지 않는다. 결과는 `<b>안녕</b>`이라서 태그가 해석된다.
-- **검증 완료.** 사용자 입력은 항상 `th:text`로 출력한다. `th:utext`에 사용자 입력을 넣으면 XSS가 된다(30장).
+- **검증 완료.** 사용자 입력은 항상 `th:text`로 출력한다. `th:utext`에 사용자 입력을 넣으면 XSS가 된다(31장).
 
 ### 2-2. 반복: `th:each`
 
