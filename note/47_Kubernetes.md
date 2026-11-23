@@ -10,7 +10,7 @@
 
 **정의** — 여러 컨테이너를 여러 서버에 나눠 띄우고, 죽으면 다시 띄우고, 트래픽을 나누고, 새 버전으로 천천히 바꾸는 **컨테이너 오케스트레이션 시스템**이다.
 
-Docker(40장 Linux·Docker 내용 참고)는 **컨테이너 하나**를 실행한다. Kubernetes는 **컨테이너를 많이 관리**한다.
+Docker(42장 Linux·Docker 내용 참고)는 **컨테이너 하나**를 실행한다. Kubernetes는 **컨테이너를 많이 관리**한다.
 
 ### 1.1 선언형 모델
 
@@ -116,10 +116,10 @@ Deployment는 이미지를 바꾸면 새 ReplicaSet을 만들고, `maxSurge`와 
 
 | 앞 장 | Kubernetes에서의 대응 |
 |---|---|
-| 43장 관측성 (헬스 체크, 메트릭) | readiness·liveness probe |
-| 43장 CI/CD (배포 자동화) | 이미지 태그를 바꾼 `apply`가 배포 단계 |
-| 41장 AWS 배포 | 관리형 클러스터(EKS)는 같은 오브젝트를 쓴다 |
-| 42장 Terraform | 클러스터 자체를 IaC로 만든다 |
+| 45장 관측성 (헬스 체크, 메트릭) | readiness·liveness probe |
+| 45장 CI/CD (배포 자동화) | 이미지 태그를 바꾼 `apply`가 배포 단계 |
+| 43장 AWS 배포 | 관리형 클러스터(EKS)는 같은 오브젝트를 쓴다 |
+| 44장 Terraform | 클러스터 자체를 IaC로 만든다 |
 
 ---
 
