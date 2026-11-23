@@ -146,6 +146,42 @@ other thread sees: null
 
 ---
 
+## 6-2. 가상 스레드와 HttpClient (2026-11-23 보강)
+
+**가상 스레드 (JDK 21 이상, 확인함)**: 블로킹 작업(sleep, I/O)을 하는 스레드를 아주 많이 만들어도 OS 스레드를 점유하지 않는다. 블로킹이 끝나기를 기다리는 동안 실행 주체가 다른 작업으로 넘어간다.
+
+```java
+import java.util.concurrent.Executors;
+
+public class VtOnly {
+    public static void main(String[] args) throws Exception {
+        long start = System.currentTimeMillis();
+        try (var ex = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (int i = 0; i < 10_000; i++) {
+                ex.submit(() -> { Thread.sleep(100); return null; });
+            }
+        }
+        long ms = System.currentTimeMillis() - start;
+        System.out.println("10000 blocking tasks finished under 5s: " + (ms < 5000));
+    }
+}
+```
+
+**실행 결과 (확인함)**: `10000 blocking tasks finished under 5s: true`. 각 작업이 100ms씩 막히지만 1만 개를 모두 기다리는 데 5초가 걸리지 않았다.
+
+**주의**: 가상 스레드는 블로킹 대기가 많은 작업에 효과가 크다. CPU를 계속 쓰는 계산에는 효과가 작다. JDK 21~23에서는 `synchronized` 블록 안에서 블로킹하면 가상 스레드가 carrier 스레드에 고정(pinning)될 수 있었다. JDK 24부터 이 제약이 크게 줄었지만, 락 안에서 오래 기다리는 설계는 피한다. 고정 여부는 JDK 버전에 따라 다르니 실무에서는 사용하는 JDK 릴리스 노트를 확인한다.
+
+**HttpClient (JDK 11 이상)**: 외부 HTTP 호출을 표준 라이브러리로 한다. 아래 코드는 **미실행**이다. 이 PC의 샌드박스에서는 Java의 루프백 소켓 생성이 막혀 `HttpClient` 객체를 만드는 단계에서 실패했다(`Unable to establish loopback connection`). 같은 환경에서 `HttpServer`도 같은 이유로 시작하지 못했다. 다른 환경에서 서버를 띄운 뒤 실행해 확인한다.
+
+```java
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest req = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8091/api/hello")).build();
+HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+System.out.println(res.statusCode() + " " + res.body());
+```
+
+**면접 기준**: "가상 스레드는 블로킹 I/O가 많은 요청 처리에 스레드 수를 크게 줄여 준다. 외부 호출은 JDK의 `HttpClient`로 하고, 타임아웃과 재시도를 명시한다."
+
 ## 7. 실습 과제
 
 1. `exceptionally` 대신 `handle((v, ex) -> …)`로 바꿔 성공과 실패를 같은 함수에서 처리한다.

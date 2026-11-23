@@ -228,6 +228,57 @@ java -jar app.jar --spring.profiles.active=prod
 - **Kubernetes:** 여러 컨테이너를 여러 서버에 나눠 배치하고, 죽으면 다시 띄운다. 기본 개념은 Pod(실행 단위), Deployment(원하는 개수 유지), Service(접근 주소)다.
 - **로드밸런서와 HSRP/VRRP 비교:** ALB나 Nginx는 헬스체크로 정상인 인스턴스에만 요청을 보낸다. HSRP/VRRP는 게이트웨이 주소를 두 장비가 나눠 갖는 이중화 방식이라 목적이 다르다.
 
+### 3-1. Docker 실습: Dockerfile → 이미지 → 컨테이너 (2026-11-23 보강)
+
+**정의**
+- **이미지**: 앱과 실행 환경을 담은 읽기 전용 묶음이다. 여러 층(layer)으로 쌓인다.
+- **컨테이너**: 이미지를 실행한 인스턴스다. 종료하면 그 안의 변경은 사라진다.
+
+**확인 범위**: 아래 `docker build`, `docker run`, `docker inspect`는 이 PC의 Docker Desktop(29.9.3)에서 실행해 확인했다. 베이스 이미지는 이미 로컬에 있던 `postgres:17`을 썼다. 새 이미지를 내려받지 않았다.
+
+```dockerfile
+FROM postgres:17
+LABEL course="khac-demo"
+COPY hello.txt /hello.txt
+```
+
+```powershell
+docker build -t khac-demo:1.0 .
+docker run --rm khac-demo:1.0 cat /hello.txt
+docker inspect khac-demo:1.0 --format '{{index .Config.Labels "course"}}'
+docker rmi khac-demo:1.0
+```
+
+**실행 결과 (확인함)**
+
+```
+hello from image layer
+khac-demo
+```
+
+- `docker build -t 이름:태그 .`: 현재 폴더의 `Dockerfile`로 이미지를 만든다.
+- `docker run --rm`: 실행이 끝나면 컨테이너를 지운다.
+- `docker rmi`: 이미지를 지운다.
+
+**Git Bash에서 주의**: Git Bash는 `/hello.txt`를 Windows 경로로 바꿔 버린다. Git Bash에서 컨테이너 안의 절대 경로를 쓸 때는 `MSYS_NO_PATHCONV=1`을 먼저 설정하거나 PowerShell을 쓴다.
+
+**Java 앱을 이미지로 만드는 형태 (미실행)**: 아래는 여러 단계(multi-stage) Dockerfile의 골격이다. 베이스 이미지(`eclipse-temurin`)를 새로 내려받아야 해서 이 PC에서는 실행하지 않았다.
+
+```dockerfile
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /app
+COPY . .
+RUN ./gradlew build -x test
+
+FROM eclipse-temurin:21-jre
+COPY --from=build /app/build/libs/app.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+```
+
+**읽는 법**: 빌드 단계에서 JDK로 jar를 만들고, 실행 단계에는 JRE만 복사한다. 최종 이미지가 작아지고 빌드 도구가 들어가지 않는다.
+
+**면접 기준**: "Dockerfile로 이미지를 만들고, 이미지를 실행한 것이 컨테이너입니다. 여러 단계로 빌드해 실행 이미지에는 jar와 JRE만 넣습니다."
+
 ## 4. IAM (권한 관리)
 
 - **정의:** 클라우드에서 누가(사용자, 서비스) 어떤 자원에 어떤 작업을 할 수 있는지 정하는 권한 체계다.

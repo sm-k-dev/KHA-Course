@@ -83,6 +83,95 @@ Map<Integer, List<String>> byLen = Stream.of("a", "bb", "cc", "ddd")
 
 ---
 
+## 2-1. 정렬 기준: Comparable과 Comparator, 그리고 와일드카드 (2026-11-23 보강, JDK 25에서 확인함)
+
+**정의**
+- `Comparable`: 객체 자체가 가진 **기본 순서**다. 클래스가 `compareTo`를 구현한다.
+- `Comparator`: 정렬 기준을 **밖에서 따로** 정한다. 같은 객체를 여러 기준으로 정렬할 때 쓴다.
+
+```java
+import java.util.*;
+
+public class SortDemo {
+    record Member(String name, int age) implements Comparable<Member> {
+        @Override public int compareTo(Member o) { return Integer.compare(age, o.age); } // 자연 순서: 나이
+    }
+
+    public static void main(String[] args) {
+        List<Member> list = new ArrayList<>(List.of(
+                new Member("kim", 30), new Member("lee", 25), new Member("park", 30)));
+        Collections.sort(list);                                                  // compareTo 사용
+        System.out.println(list);
+        list.sort(Comparator.comparing(Member::name).reversed());                // 이름 내림차순
+        System.out.println(list);
+        list.sort(Comparator.comparingInt(Member::age).thenComparing(Member::name)); // 나이, 같으면 이름
+        System.out.println(list);
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+[Member[name=lee, age=25], Member[name=kim, age=30], Member[name=park, age=30]]
+[Member[name=park, age=30], Member[name=lee, age=25], Member[name=kim, age=30]]
+[Member[name=lee, age=25], Member[name=kim, age=30], Member[name=park, age=30]]
+```
+
+**읽는 법**: 첫 줄은 `compareTo`의 나이 기준이다. `kim`과 `park`은 나이가 같아서 원래 순서를 유지했다(정렬은 안정적이다). 둘째 줄은 `Comparator`로 이름을 내림차순으로 바꾼 결과다. 셋째 줄은 나이 다음에 이름으로 정렬한 결과다.
+
+**주의**: `compareTo`와 `equals`는 일관되어야 한다. `compareTo`가 0을 돌려주는 두 객체는 `equals`도 같아야 한다고 보는 것이 안전하다. 그렇지 않으면 `TreeSet`이나 `TreeMap`에서 같은 원소로 취급되어 데이터가 사라진 것처럼 보인다.
+
+### 와일드카드 `? extends`와 `? super` (PECS)
+
+제네릭 타입은 상속 관계를 따라가지 않는다. `List<Integer>`는 `List<Number>`가 아니다.
+
+```java
+import java.util.*;
+
+public class PecsDemo {
+    // 읽기(생산자): ? extends → Number 하위 타입을 모두 읽을 수 있다
+    static double sum(List<? extends Number> nums) {
+        double s = 0;
+        for (Number n : nums) s += n.doubleValue();
+        return s;
+    }
+
+    // 쓰기(소비자): ? super → Integer를 넣을 수 있다
+    static void addInts(List<? super Integer> dst) {
+        dst.add(1);
+        dst.add(2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sum(List.of(1, 2, 3)) + " " + sum(List.of(0.5, 1.5)));
+        List<Number> nums = new ArrayList<>();
+        addInts(nums);
+        List<Object> objs = new ArrayList<>();
+        addInts(objs);
+        System.out.println(nums + " " + objs);
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+6.0 2.0
+[1, 2] [1, 2]
+```
+
+**컴파일 오류 확인 (확인함)**
+
+```java
+List<Integer> ints = new ArrayList<>();
+List<Number> nums = ints;   // error: incompatible types: List<Integer> cannot be converted to List<Number>
+```
+
+**외우는 규칙 (PECS)**: **P**roducer는 `extends`, **C**onsumer는 `super`. 컬렉션에서 값을 꺼내기만 하면 `? extends`, 값을 넣기만 하면 `? super`를 쓴다.
+
+**면접 기준**: "정렬 기준이 객체 고유의 순서면 `Comparable`, 여러 기준이면 `Comparator`를 씁니다. 제네릭 매개변수는 읽기만 하면 `? extends`, 쓰기만 하면 `? super`를 씁니다."
+
 ## 3. Optional
 
 **정의** — "값이 있을 수도 없을 수도 있다"를 타입으로 드러내는 컨테이너다.

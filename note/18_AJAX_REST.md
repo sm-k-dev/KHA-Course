@@ -248,6 +248,35 @@ User back = mapper.readValue(json, User.class);
 - **주의:** 응답 DTO에 비밀번호 같은 필드가 있으면 그대로 JSON으로 나간다. 응답 전용 DTO를 따로 만든다.
 - **면접 기준:** "직렬화는 객체를 JSON으로 바꾸는 것이고, Spring에서는 Jackson이 @RestController의 반환값을 자동으로 바꿔 응답합니다."
 
+### 4-1. Jackson 2와 3의 패키지 차이 (2026-11-23 보강, 확인함)
+
+Jackson은 버전 3에서 패키지 이름이 바뀌었다. 옛 자료의 import 문과 새 자료의 import 문이 다른 이유다.
+
+| 버전 | 패키지 | 확인 |
+|---|---|---|
+| Jackson 2 | `com.fasterxml.jackson.databind.ObjectMapper` | 위 4절에서 2.17.2로 확인함 |
+| Jackson 3 | `tools.jackson.databind.ObjectMapper` | jackson-databind 3.1.5로 확인함 |
+
+```java
+import tools.jackson.databind.ObjectMapper;
+
+public class Json3Demo {
+    public record Member(long id, String name) {}
+
+    public static void main(String[] args) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(new Member(1L, "Kim"));
+        System.out.println(json);                                   // {"id":1,"name":"Kim"}
+        Member back = mapper.readValue(json, Member.class);
+        System.out.println(back.equals(new Member(1L, "Kim")));    // true
+    }
+}
+```
+
+**실행 결과 (확인함)**: `{"id":1,"name":"Kim"}`, `true`. 필요한 jar는 `jackson-core`, `jackson-databind`, `jackson-annotations`다.
+
+**실무 포인트**: 프로젝트가 어느 Jackson을 쓰는지는 Spring Boot 버전에 따라 다르다. 확인하려면 `mvn dependency:tree`나 `gradle dependencies`에서 `jackson`을 찾는다. 옛 자료를 따라 할 때 `com.fasterxml` import 오류가 나면 이 표를 먼저 본다.
+
 ## 5. OpenAPI 명세 (계약 먼저 쓰기)
 
 - **정의:** REST API의 경로, 요청과 응답 모양, 상태 코드를 YAML이나 JSON 파일로 정리한 명세다. Swagger가 이 형식으로 문서를 만든다.
