@@ -188,6 +188,41 @@ SQL 로그에서 기본 조회와 fetch join의 쿼리 수를 비교한다.
 
 **3차: 면접 재현.** *“N+1은 왜 발생하고 어떻게 진단하는가?”*에 대해 **정의 → 왜 필요한가 → 무엇과 다른가 → 코드·상황 하나** 순서로 30~60초 말한다. 답을 읽지 않고 말한 뒤 원문과 대조한다.
 
+### N+1 해결 비교: 지연 로딩, batch size, EntityGraph (2026-11-23 보강, Hibernate 7.4.5에서 SQL 수 확인함)
+
+**출처**: 선생님 자료 `Additional_HandBook★/파이널 준비 점검 1~2교시 실습 노트.html`의 사건 1 해결 4가지(DTO 직접 조회, fetch join, `@EntityGraph`, batch size) 중 세 가지를 실제로 실행해 비교했다. DTO 조회는 위 "N+1 (SQL 수 세기)" 절과 같다.
+
+**실험 조건**: 맛집 5곳, 맛집마다 리뷰 2개(총 10개). 맛집 목록을 읽고 모든 맛집의 리뷰 수를 센다.
+
+| 방식 | 설정 | SQL 개수 (확인함) | 리뷰 수 |
+|---|---|---|---|
+| 기본 지연 로딩 | 아무것도 안 함 | **6** (목록 1 + 맛집마다 1) | 10 |
+| batch size | `hibernate.default_batch_fetch_size = 10` | **2** (목록 1 + 리뷰 묶음 1) | 10 |
+| EntityGraph | 목록을 읽을 때 `reviews`를 함께 지정 | **1** (조인으로 한 번에) | 10 |
+
+```java
+// EntityGraph: 목록 조회 때 리뷰까지 한 번에 가져온다
+EntityGraph<Store> graph = em.createEntityGraph(Store.class);
+graph.addAttributeNodes("reviews");
+List<Store> stores = em.createQuery("select s from Store s", Store.class)
+        .setHint("jakarta.persistence.fetchgraph", graph)
+        .getResultList();
+
+// batch size: 설정 한 줄 (로딩 시점에 여러 맛집의 리뷰를 IN 절로 묶는다)
+cfg.setProperty("hibernate.default_batch_fetch_size", "10");
+```
+
+**읽는 법**
+- **지연 로딩**: 리뷰를 실제로 쓰는 순간 맛집마다 SELECT가 나간다. 맛집 수가 늘면 SQL도 같이 늘어난다.
+- **batch size**: 코드는 그대로 두고 설정만 바꾼다. 여러 맛집의 리뷰를 한 번에 가져와 SQL 수를 줄인다. 기존 코드를 고치기 어려울 때 쓴다.
+- **EntityGraph**: 필요한 연관 데이터를 **목록 조회 시점에 명시**한다. SQL은 가장 적지만, 목록 쿼리마다 어떤 연관을 가져올지 정해야 한다.
+
+**주의**
+- 컬렉션(리뷰 목록)을 fetch join이나 EntityGraph로 가져오면서 **페이징**을 함께 쓰면 DB 페이징이 아니라 메모리에서 잘린다. 이때는 batch size나 2단계 조회를 쓴다.
+- 리뷰 **개수만** 필요하면 위 방법들보다 DTO 집계 조회가 더 가볍다(위 "N+1 (SQL 수 세기)" 절).
+
+**면접 기준**: "N+1은 목록 조회 뒤 연관 데이터를 항목마다 다시 조회하는 문제입니다. 해결은 필요한 값만 DTO로 집계하거나, 연관 데이터를 목록 조회 때 함께 가져오는 것(fetch join, EntityGraph)입니다. 설정으로는 batch size로 묶어 줄입니다."
+
 ## 4. Page·Slice·COUNT
 
 **정의** — Page는 전체 건수·페이지 정보를 포함하는 결과 모델이고 Slice는 다음 구간 존재 여부 중심의 결과 모델이다.

@@ -104,6 +104,54 @@ git commit -m "docs: 개념 정의 보강"
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 작업 보관, 복구, 되돌리기, 골라 옮기기 (2026-11-23 보강, Git 명령을 실제로 실행해 확인함)
+
+**출처**: 선생님 자료 `Practice_project☆/git.html`(stash·충돌·되돌리기)과 `git_king.html`(팀장의 병합과 되돌리기)을 바탕으로 정리했다. 아래 결과는 임시 저장소에서 Git 명령을 실행한 출력이다.
+
+**1. stash: 작업 중인 변경을 잠깐 치워 두기**
+
+```powershell
+git stash push -m "wip-change"   # 수정 중인 파일을 임시 보관하고 작업 폴더를 깨끗하게 만든다
+git stash list                   # stash@{0}: On main: wip-change
+git stash pop                    # 가장 최근 보관분을 되돌리고 목록에서 뺀다
+```
+
+확인 결과: stash 후 `git status`는 비어 있었고, `pop` 후 `a.txt`의 수정이 돌아왔다. 급한 수정(긴급 버그)을 먼저 하고 돌아올 때 쓴다.
+
+**2. reflog: 실수로 지운 커밋 되살리기**
+
+```powershell
+git reset --hard HEAD~1          # 마지막 커밋을 지웠다 (작업 내용도 사라진다)
+git reflog -n 3                  # HEAD가 가리킨 기록을 본다
+git reset --hard "HEAD@{1}"      # 직전 위치로 되돌린다
+```
+
+확인 결과: `reset --hard` 뒤 B 커밋이 로그에서 사라졌지만, reflog에 `commit: B: second`가 남아 있어 `HEAD@{1}`로 되살렸다. reflog는 **내 PC의 저장소 기록**이고, 원격에 올라간 적 없는 커밋도 여기서 찾을 수 있다. 저장소를 새로 받으면 reflog는 없다.
+
+**3. revert와 reset의 차이**
+- `git revert HEAD`: 이전 커밋을 **취소하는 새 커밋**을 만든다. 공유된 브랜치에서 안전하다.
+- `git reset --hard`: 기록 자체를 옮겨 버린다. 이미 공개한 커밋에는 쓰지 않는다.
+
+확인 결과: `C: third`를 revert하자 `Revert "C: third"` 커밋이 새로 생기고, 파일에서 `line3`이 빠졌다. 기록은 그대로 남았다.
+
+**4. cherry-pick: 특정 커밋 하나만 다른 브랜치로 옮기기**
+
+```powershell
+git cherry-pick <커밋 해시>     # 그 커밋의 변경만 현재 브랜치에 새 커밋으로 적용
+```
+
+확인 결과: `feature` 브랜치의 `F: feature` 커밋을 `main`에 골라 옮겼더니 같은 내용의 새 커밋이 생겼다. 해시는 달라진다.
+
+**5. blame과 tag**
+- `git blame -s 파일`: 각 줄을 마지막으로 바꾼 커밋을 보여 준다. 줄의 의도를 찾을 때 쓴다. 확인 결과 `line2`는 `da511097`, `line1`은 최초 커밋 `caf063e`였다.
+- `git tag -a v1.0 -m "..."`: 커밋에 버전 이름을 붙인다. 배포 기준점에 쓴다(41장의 형상 관리와 연결).
+
+**흔한 실수**
+- 이미 원격에 올린 커밋을 `reset --hard`로 지우고 강제 푸시한다. 팀원의 기록과 어긋난다. 공유 브랜치에서는 `revert`를 쓴다.
+- `stash`를 한 뒤 `pop`을 잊는다. `git stash list`로 남은 보관분을 확인한다.
+
+**면접 기준**: "작업을 잠시 치울 때는 stash, 공유된 커밋을 취소할 때는 revert, 로컬에서 잘못 지운 커밋은 reflog로 되살립니다. 특정 커밋만 옮길 때는 cherry-pick을 씁니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
