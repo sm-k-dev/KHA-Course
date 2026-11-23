@@ -231,6 +231,62 @@ public class FragDemo {
 
 **면접 기준**: "Thymeleaf는 `th:fragment`로 헤더·푸터 조각을 정의하고 `th:replace`로 가져와 중복을 줄입니다. 조건부 표시는 `th:if`, 여러 분기는 `th:switch`, 클래스 조건은 `th:classappend`로 씁니다."
 
+## 링크, 지역 변수, 객체 선택, 유틸리티 객체 (2026-11-24 보강, Thymeleaf 3.1.5로 확인함)
+
+**출처**: 선생님 자료 `Practice_project☆/ThymeleafBeginnerTutorial.html`과 `thymeleaf-guide-deep.html`(표현식과 속성 설명)의 내용을 정리했다. 아래 예제는 Thymeleaf 3.1.5를 서버 없이 실행해 결과를 확인했다.
+
+```html
+<ul>
+  <li th:each="car : ${cars}" th:object="${car}" th:attr="data-id=*{id}">
+    <a th:href="@{cars/{id}(id=*{id}, page=2)}" th:text="*{name}">name</a>
+    <span th:with="total=*{price * 2}" th:text="${total}">t</span>
+    <span th:text="${#temporals.format(date, 'yyyy-MM-dd')}">d</span>
+    <span th:text="${#strings.toUpperCase(car.name)}">u</span>
+  </li>
+</ul>
+<p th:text="'count=' + ${#lists.size(cars)}">c</p>
+<div th:remove="all">this whole block is removed</div>
+<script th:inline="javascript">
+  var user = [[${userName}]];
+</script>
+<th:block th:each="n : ${cars}">
+  <i th:text="${n.name}">n</i>
+</th:block>
+```
+
+**실행 결과 (확인함)**
+
+```
+<li data-id="7">
+  <a href="cars/7?page=2">sonata</a>
+  <span>3000</span>
+  <span>2026-11-24</span>
+  <span>SONATA</span>
+</li>
+<p>count=2</p>
+<script>
+  var user = "kim \"k\" <x>";
+</script>
+<i>sonata</i>
+<i>avante</i>
+```
+
+**읽는 법**
+- **링크 `@{...}`**: `{id}`처럼 중괄호에 값을 넣고 `(name=value)`로 쿼리를 붙인다. 위 결과의 `cars/7?page=2`가 그렇게 만들어졌다. 주소가 `/`로 시작하면 **웹 앱의 컨텍스트 경로**가 앞에 붙는다. 서버 없이 실행할 때는 웹 문맥이 없어서 `/`로 시작하는 링크를 만들 수 없었다(예외가 났다). 실제 Spring MVC에서는 정상이다.
+- **`th:with`**: 지역 변수를 만든다. `total`은 `*{price * 2}`로 계산됐다.
+- **`th:object` + `*{...}`**: `th:object`로 객체를 정하면 그 안에서 `*{필드}`로 짧게 쓴다. **`*{}`는 `${...}` 안에서는 쓸 수 없다**(처음 시도에서 오류가 났다). 그럴 때는 `car.name`처럼 `${}` 안에 객체 이름을 쓴다.
+- **유틸리티 객체**: `#temporals`(날짜 시간), `#strings`(문자열), `#lists`(목록 크기)처럼 `#`으로 시작하는 기능 모음을 쓴다. `#dates`는 예전 `java.util.Date`용이고, `java.time` 타입은 `#temporals`를 쓴다.
+- **`th:remove="all"`**: 태그와 내용을 모두 지운다. 실행 결과에 그 `div`가 없다.
+- **`th:inline="javascript"`**: 자바 값을 JavaScript 문자열로 안전하게 바꾼다. 결과의 `"kim \"k\" <x>"`처럼 따옴표가 이스케이프된다.
+- **`th:block`**: 눈에 보이지 않는 묶음 태그다. 반복문이나 조건을 여러 요소에 걸 때 쓰고, 결과에는 태그가 남지 않는다.
+
+**흔한 실수**
+- `th:href`에 `/`로 시작하는 주소를 쓰면서 웹 문맥 없이 테스트한다: 서버에서 실행해서 확인한다.
+- `th:object` 안에서 `${...}`로 같은 필드를 다시 찾는다: `*{}`를 쓰면 짧고 의미가 분명하다. 단 `${}` 안에서는 `*{}`를 쓸 수 없다.
+- `th:text` 대신 `th:utext`를 쓴다: 사용자 입력을 HTML로 그대로 넣게 되므로 스크립트가 실행될 수 있다(99장의 XSS).
+
+**면접 기준**: "Thymeleaf 링크는 `@{}`로 만들고 값은 중괄호와 쿼리로 넣습니다. `th:object`로 객체를 정하면 `*{}`로 짧게 쓰며, 날짜와 문자열은 `#temporals`, `#strings` 같은 유틸리티 객체로 처리합니다."
+
 ## 단원 통과 기준
 
 - [ ] 서버 렌더링과 React의 차이를 설명할 수 있다.
