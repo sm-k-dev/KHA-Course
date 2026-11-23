@@ -265,6 +265,60 @@ static class Item5 {
 
 **면접 기준**: "컬렉션 연관관계에서 부모의 생명주기를 자식이 따르면 `cascade`를, 컬렉션에서 뺀 자식도 지우려면 `orphanRemoval`을 씁니다. 외래키는 자식(다) 쪽에 있습니다."
 
+### QueryDSL: 자바 코드로 조건을 조립하기 (2026-11-24 보강, 미실행)
+
+**출처**: 선생님 자료 `FinalTeamProject☆/tutorial_project/shop-tutorial.html`(쇼핑몰 실습, 상품 검색 Repository)의 설정과 사용 방식을 정리했다. 이 PC에는 QueryDSL 라이브러리가 없어서 **실행하지 않았다(미실행)**. 아래 설정과 코드는 자료의 내용을 옮긴 것이고, 버전은 자료 기준이다. 실제 프로젝트에서는 사용하는 Spring Boot 버전에 맞는 QueryDSL 버전을 확인한다.
+
+**왜 쓰나**: JPQL이나 `@Query` 문자열은 오타가 나도 컴파일이 되고, 실행해야 오류를 본다. QueryDSL은 엔티티 필드를 자바 코드로 가리키므로, 철자가 틀리면 **컴파일 단계에서** 잡힌다. 검색 조건이 여러 개일 때 조건을 조립하기도 쉽다.
+
+**설정 (자료 기준, Gradle)**
+
+```groovy
+implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'   // 컴파일할 때 Q 클래스(QItem 등)를 자동 생성
+```
+
+**핵심 개념**
+- **Q 클래스**: 빌드할 때 엔티티마다 자동으로 만들어진다. `QItem.item.itemNm`처럼 엔티티 필드를 가리키는 객체다.
+- **JPAQueryFactory**: 쿼리를 만드는 시작점이다. `EntityManager`로 생성한다.
+- **BooleanExpression**: `where`에 넣는 조건 하나다. 메서드로 만들어 두면 여러 쿼리에서 재사용한다. 값이 `null`이면 조건을 무시하게 만들 수 있다(검색어가 비어 있을 때 전체 조회).
+
+**사용 예 (자료 흐름을 옮긴 것, 미실행)**
+
+```java
+public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {   // 클래스 이름 끝에 Impl이 있어야 인식된다
+    private final JPAQueryFactory queryFactory;
+
+    public ItemRepositoryCustomImpl(EntityManager em) {
+        this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    // 판매 상태가 없으면 null을 돌려주고, where는 null 조건을 무시한다
+    private BooleanExpression sellStatusEq(ItemSellStatus status) {
+        return status == null ? null : QItem.item.itemSellStatus.eq(status);
+    }
+
+    public List<Item> search(ItemSellStatus status) {
+        return queryFactory.selectFrom(QItem.item)
+                .where(sellStatusEq(status))
+                .orderBy(QItem.item.id.desc())
+                .offset(0).limit(10)
+                .fetch();
+    }
+}
+```
+
+**읽는 법**
+- `selectFrom(QItem.item)`은 `select … from item`이다. `where`, `orderBy`, `offset`, `limit`은 SQL의 같은 이름 절과 대응한다.
+- `fetch()`는 목록을, `fetchOne()`은 한 건을 돌려준다. 개수는 `select(Wildcard.count)`로 따로 센다.
+- `where` 안의 `null` 조건은 무시된다. 검색 화면에서 선택하지 않은 조건을 그대로 넘길 수 있다.
+
+**주의**
+- Q 클래스가 만들어지지 않으면 `QItem`을 찾을 수 없다는 컴파일 오류가 난다. IDE에서 빌드를 다시 하거나 annotation processing을 켠다(자료도 이 점을 강조한다).
+- 복잡한 조인과 통계는 JPQL보다 읽기 어려울 수 있다. 팀이 함께 쓰는 규칙(메서드 이름, 조건 분리)을 정한다.
+
+**면접 기준**: "QueryDSL은 엔티티 필드를 자바 코드로 쓰는 쿼리 도구입니다. Q 클래스가 컴파일 때 만들어져 오타를 컴파일 단계에서 잡고, 검색 조건은 BooleanExpression으로 나눠 조립합니다."
+
 ## 4. Page·Slice·COUNT
 
 **정의** — Page는 전체 건수·페이지 정보를 포함하는 결과 모델이고 Slice는 다음 구간 존재 여부 중심의 결과 모델이다.
