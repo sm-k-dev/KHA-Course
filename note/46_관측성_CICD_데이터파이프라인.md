@@ -126,6 +126,45 @@ Kubernetes의 롤링 업데이트는 48장에서 실행해 확인했다.
 
 ---
 
+### 2-1. GitHub Actions 워크플로 읽기 (2026-11-23 보강, 선생님 자료 기반, 미실행)
+
+**출처**: 선생님 자료 `springboot4☆/13장_GithubActionsCiCdTutorial.html`. 이 PC에서는 GitHub에 푸시하거나 Actions를 실행하지 않았다. 아래 YAML은 **문법 구조만 확인했다**(PyYAML로 파싱해 `on.push.branches`, `jobs.build.steps` 구조를 읽었다).
+
+**CI 워크플로 예 (`.github/workflows/ci.yml`)**
+
+```yaml
+name: CI
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'corretto'
+          java-version: '25'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean build
+```
+
+**읽는 법**
+- `on.push.branches`: `main`에 푸시될 때 실행한다.
+- `runs-on`: GitHub가 빌려주는 Linux 가상 머신에서 실행한다.
+- `steps`: 위에서부터 차례로 실행한다. 한 단계가 실패하면 뒤 단계는 실행되지 않는다. 그래서 테스트가 실패하면 배포까지 가지 않는다.
+- 워크플로 파일은 반드시 `.github/workflows/` 폴더에 있어야 인식된다.
+- 액션 버전(`@v6`, `@v5`)은 강의 자료 기준이다. 실제 사용 전 공식 저장소에서 최신 버전을 확인한다.
+
+**Secrets (비밀 값)**: AWS 액세스 키를 `yml`에 직접 적으면 저장소를 본 누구나 볼 수 있다. GitHub의 `Settings → Secrets and variables → Actions`에 등록하고, 워크플로에서는 `${{ secrets.AWS_ACCESS_KEY_ID }}`처럼 이름으로 꺼내 쓴다. 로그에는 `***`로 가려진다. 이름의 철자가 다르면 배포가 실패한다.
+
+**CD 확장**: CI 통과 후 배포 단계를 이어 붙인다(예: Beanstalk에 jar 업로드). 배포용 jar는 1개만 남긴다. `build/libs`에 파일이 여러 개면 배포 스크립트가 어느 것을 올릴지 헷갈린다.
+
+**면접 기준**: "CI는 푸시마다 빌드와 테스트를 자동으로 실행하고, CD는 통과한 결과를 서버에 배포합니다. 비밀 값은 저장소에 두지 않고 Secrets에 넣습니다."
+
 ## 3. 데이터 파이프라인과 ETL
 
 **정의** — 원본 데이터를 가져오고(Extract), 정리하고 변환하고(Transform), 대상 저장소에 적재하는(Load) 흐름이다. ELT는 적재한 뒤 변환하는 순서다.

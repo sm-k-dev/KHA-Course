@@ -208,6 +208,65 @@ POST 후 새로고침 중복 제출을 줄이는 PRG 패턴을 설명한다.
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 게시판의 답글 구조: pos와 depth (2026-11-23 보강, MySQL 8.0 로컬에서 확인함)
+
+**출처**: 선생님 자료 `9_JSP_Board/tblboard게시판.txt`(v0~v3 단계별 실습)와 `Practice_project☆/MvcBoardTutorial.html`(답변 기능). 두 자료 모두 답글을 같은 방식으로 저장한다.
+
+**정의**: 답글형 게시판은 글을 **시간순이 아니라 화면에 보일 순서**로 정렬해야 한다. 그래서 두 열을 둔다.
+- `pos`: 정렬 순서. 작을수록 위에 보인다. 답글은 부모 바로 아래에 끼어든다.
+- `depth`: 들여쓰기 깊이. 원글은 0, 답글은 1, 답글의 답글은 2.
+
+**규칙**
+1. **새 글**: 기존 글의 `pos`를 전부 +1 하고, 새 글을 `pos=0, depth=0`으로 넣는다. 새 글이 맨 위에 온다.
+2. **답글**(부모 글 `P`): `pos`가 `P.pos`보다 큰 글을 전부 +1 해서 자리를 만든다. 답글은 `pos = P.pos + 1`, `depth = P.depth + 1`로 넣는다.
+3. **목록**: `ORDER BY pos ASC`로 읽으면 답글이 부모 아래에 붙는다.
+
+```sql
+CREATE TABLE tblBoard (
+  num INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(20), subject VARCHAR(50), content VARCHAR(4000),
+  regdate DATETIME, count INT DEFAULT 0,
+  pos INT DEFAULT 0, depth INT DEFAULT 0
+);
+
+-- 새 글
+UPDATE tblBoard SET pos = pos + 1;
+INSERT INTO tblBoard (name, subject, content, regdate, count, pos, depth) VALUES ('kim', 'A글', 'a', NOW(), 0, 0, 0);
+UPDATE tblBoard SET pos = pos + 1;
+INSERT INTO tblBoard (name, subject, content, regdate, count, pos, depth) VALUES ('lee', 'B글', 'b', NOW(), 0, 0, 0);
+
+-- A글(num=1)에 답글
+SET @ppos = (SELECT pos FROM tblBoard WHERE num = 1), @pdep = (SELECT depth FROM tblBoard WHERE num = 1);
+UPDATE tblBoard SET pos = pos + 1 WHERE pos > @ppos;
+INSERT INTO tblBoard (name, subject, content, regdate, count, pos, depth) VALUES ('park', 'A의 답글', 'r1', NOW(), 0, @ppos + 1, @pdep + 1);
+
+-- B글(num=2)에 답글
+SET @ppos = (SELECT pos FROM tblBoard WHERE num = 2), @pdep = (SELECT depth FROM tblBoard WHERE num = 2);
+UPDATE tblBoard SET pos = pos + 1 WHERE pos > @ppos;
+INSERT INTO tblBoard (name, subject, content, regdate, count, pos, depth) VALUES ('choi', 'B의 답글', 'r2', NOW(), 0, @ppos + 1, @pdep + 1);
+
+SELECT CONCAT(REPEAT('  ', depth), subject) AS 목록, pos, depth FROM tblBoard ORDER BY pos ASC;
+```
+
+**실행 결과 (확인함)**
+
+```
+목록        pos   depth
+B글          0      0
+  B의 답글   1      1
+A글          2      0
+  A의 답글   3      1
+```
+
+**읽는 법**: 답글이 부모 바로 아래에 붙고, 들여쓰기 깊이로 계층을 보여 준다. 새 글은 맨 위에 온다. 실행 결과는 최신 글(B글)이 위에 있는 것을 보여 준다.
+
+**주의**
+- 답글을 달 때 `pos`를 올리는 두 문장은 **한 트랜잭션**에 묶는다. 중간에 다른 요청이 끼어들면 순서가 깨진다(33장의 갱신 유실과 같은 원리).
+- 이 설계는 글 수가 많아지면 `pos` 갱신이 많아진다. 대안으로 부모의 경로 문자열(`1/3/7`)이나 `parent_id`를 쓰는 방법이 있다.
+- 자료의 `tblBoard` 원본에는 `content VARCHAR(100)`도 있었지만, 긴 본문을 위해 `VARCHAR(4000)`으로 적었다.
+
+**면접 기준**: "답글형 게시판은 `pos`로 화면 순서를, `depth`로 들여쓰기를 저장합니다. 답글을 넣을 때는 부모보다 뒤의 글들을 밀어내고, 두 단계를 한 트랜잭션으로 묶습니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

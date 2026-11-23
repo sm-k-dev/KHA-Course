@@ -204,6 +204,74 @@ SQL 로그에서 기본 조회와 fetch join의 쿼리 수를 비교한다.
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 연관관계의 주인과 mappedBy, 벌크 UPDATE 함정 (2026-11-23 보강)
+
+**출처와 확인 범위**: 선생님 자료 `AI_Code_Defect★/JPA + AI 코드 검증 시험공부 자습서`의 주제 A·D 내용을 정리했다. 아래 측정값은 **자료에 적힌 결과**다. 이 PC에서 JPA 테스트를 다시 실행하지는 않았다(미실행).
+
+### 외래키는 "다(N)" 쪽에 생긴다
+
+```
+store 테이블                 review 테이블
+┌────┬─────────┐           ┌────┬────────┬──────────┐
+│ id │ name    │           │ id │ content│ store_id │ ← 외래키(FK)
+│ 1  │ 맛집 1  │◄──────────│ 1  │ 리뷰 1 │    1     │
+│    │         │◄──────────│ 2  │ 리뷰 2 │    1     │
+└────┴─────────┘           └────┴────────┴──────────┘
+Store (1) ──────< Review (N)
+```
+
+```java
+// Review.java: 주인 (외래키를 관리한다)
+@ManyToOne
+@JoinColumn(name = "store_id")
+private Store store;
+
+// Store.java: 거울 (읽기 전용, DB 컬럼을 만들지 않는다)
+@OneToMany(mappedBy = "store")
+private List<Review> reviews = new ArrayList<>();
+```
+
+- **주인**: `@JoinColumn`이 있는 쪽. 외래키 값을 바꿀 수 있다.
+- **거울**: `mappedBy`가 있는 쪽. `mappedBy`의 값은 **상대 클래스의 필드 이름**(`store`)이다. 컬럼 이름(`store_id`)이 아니다.
+
+**측정 결과 (자료 기록)**: 거울 쪽 `Store.reviews`에만 `add`하고 커밋하면 DB의 `review.store_id`는 `null`로 남는다. 저장하려면 **주인 쪽** `Review.store`에 값을 넣어야 한다.
+
+### 기본 로딩 방식
+
+| 필드 | JPA 기본 로딩 |
+|---|---|
+| `@ManyToOne` | EAGER |
+| `@OneToMany` | LAZY |
+
+`@ManyToOne`은 기본이 EAGER라서 여러 엔티티를 조회하면 연관 조회가 함께 늘 수 있다. N+1(3절)과 연결해서 기억한다.
+
+### 벌크 UPDATE 뒤 1차 캐시가 옛 값을 가진다
+
+`@Modifying` 쿼리(벌크 UPDATE)는 JPQL로 DB에 바로 실행된다. 영속성 컨텍스트(1차 캐시)에 이미 읽어 둔 엔티티는 갱신되지 않는다.
+
+```java
+@Modifying(clearAutomatically = true)   // 실행 후 1차 캐시를 비운다
+@Query("update Customer c set c.point = c.point - :amount where c.id = :id and c.point >= :amount")
+int usePoint(@Param("id") Long id, @Param("amount") int amount);
+```
+
+- 반환값 `int`는 바뀐 행 수다. 0이면 잔액 부족이다(33장의 조건부 UPDATE와 같은 원리).
+- `clearAutomatically = true`를 빼면, 같은 트랜잭션에서 다시 읽어도 옛 값이 나올 수 있다.
+
+**측정 결과 (자료 기록)**: 벌크 UPDATE 직후 이미 읽은 엔티티의 값은 옛 값(0)이고, DB는 1이었다. `clear` 후 다시 읽으면 새 값이 나왔다.
+
+### 자주 하는 오해
+
+| 오해 | 실제 |
+|---|---|
+| 거울(`mappedBy`) 쪽에 `add`하면 저장된다 | 주인 쪽에 넣어야 외래키가 바뀐다 |
+| `@ManyToOne`은 지연 로딩이다 | 기본은 EAGER다 |
+| `mappedBy`에 컬럼 이름을 쓴다 | 상대 클래스의 필드 이름을 쓴다 |
+| 외래키는 Store 테이블에 생긴다 | N 쪽(Review) 테이블에 생긴다 |
+| 벌크 UPDATE 하면 읽어 둔 객체도 새 값이다 | 옛 값이 남는다. `clearAutomatically`를 쓴다 |
+
+**면접 기준**: "외래키는 다(N) 쪽 테이블에 있고, 그 필드를 가진 쪽이 주인입니다. 반대쪽의 `mappedBy`는 읽기 전용 거울입니다. 벌크 UPDATE는 영속성 컨텍스트를 거치지 않으므로 `clearAutomatically`로 캐시를 비웁니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

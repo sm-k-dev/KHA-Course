@@ -162,6 +162,75 @@ Mustache.compiler().compile(tpl).execute(Map.of("items", List.of()));           
 
 ---
 
+## 조각 재사용과 분기 확장: fragment, th:switch, th:classappend (2026-11-23 보강, 확인함)
+
+**출처**: 선생님 자료 `Practice_project☆/ThymeleafBeginnerTutorial.html`(fragment, th:switch 등)과 `thymeleaf-guide-deep.html`의 내용을 기준으로 정리했다. 이 장의 예제는 Thymeleaf 3.1.5 독립 실행(서버 없이 템플릿 렌더링)으로 확인했다.
+
+**정의**
+- **fragment**: 헤더·푸터처럼 여러 페이지에서 쓰는 HTML 조각을 한 곳에 정의한다. `th:fragment`로 정의하고 `th:replace`로 가져온다.
+- **th:switch / th:case**: 값에 따라 여러 조각 중 하나만 보여 준다. `*`는 나머지 경우다.
+- **th:classappend**: 조건에 따라 클래스 이름을 덧붙인다.
+
+```java
+import java.util.List;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
+
+public class FragDemo {
+    public static void main(String[] args) {
+        TemplateEngine engine = new TemplateEngine();
+        engine.setTemplateResolver(new StringTemplateResolver());
+
+        String tpl = """
+            <html><body>
+              <header th:fragment="nav">[nav: <span th:text="${title}">t</span>]</header>
+              <div th:replace="~{::nav}">placeholder</div>
+              <p th:classappend="${admin} ? 'red' : 'blue'" th:text="${admin} ? 'admin' : 'user'">x</p>
+              <ul><li th:each="n : ${names}" th:text="${n}">n</li></ul>
+              <div th:switch="${status}">
+                <span th:case="'PAID'">paid-label</span>
+                <span th:case="*">other-label</span>
+              </div>
+            </body></html>
+            """;
+
+        Context ctx = new Context();
+        ctx.setVariable("title", "Home");
+        ctx.setVariable("admin", true);
+        ctx.setVariable("names", List.of("kim", "lee"));
+        ctx.setVariable("status", "PAID");
+        System.out.println(engine.process(tpl, ctx));
+    }
+}
+```
+
+필요한 jar: `thymeleaf`, `attoparser`, `unbescape`, `slf4j-api`, `ognl`, `javassist`(OGNL이 요구한다. 빠지면 `NoClassDefFoundError`가 난다).
+
+**실행 결과 (확인함)**
+
+```
+<html><body>
+  <header>[nav: <span>Home</span>]</header>
+  <header>[nav: <span>Home</span>]</header>
+  <p class="red">admin</p>
+  <ul><li>kim</li><li>lee</li></ul>
+  <div>
+    <span>paid-label</span>
+    
+  </div>
+</body></html>
+```
+
+**읽는 법**
+- `th:replace="~{::nav}"`는 `placeholder` div를 `nav` 조각으로 바꿨다. 그래서 `<header>`가 두 번 나온다. 하나는 `th:fragment`가 정의된 자리, 하나는 `th:replace`가 가져온 자리다. 실제 프로젝트에서는 정의 파일을 `fragments/header.html` 같은 별도 파일로 두고 `~{fragments/header :: nav}`로 가져온다.
+- `th:switch`는 `PAID`만 보여 주고 나머지는 지웠다.
+- `th:classappend`는 기존 `class`를 지우지 않고 뒤에 덧붙인다. `th:class`는 전체를 바꾼다.
+
+**흔한 실수**: 조각을 가져올 때 `th:replace`와 `th:insert`의 차이를 혼동한다. `th:replace`는 자리 전체를 바꾸고, `th:insert`는 자리 안에 넣는다. 레이아웃 조각에는 보통 `th:replace`를 쓴다.
+
+**면접 기준**: "Thymeleaf는 `th:fragment`로 헤더·푸터 조각을 정의하고 `th:replace`로 가져와 중복을 줄입니다. 조건부 표시는 `th:if`, 여러 분기는 `th:switch`, 클래스 조건은 `th:classappend`로 씁니다."
+
 ## 단원 통과 기준
 
 - [ ] 서버 렌더링과 React의 차이를 설명할 수 있다.

@@ -104,6 +104,100 @@ static boolean canDelete(User user, Post post) {
 
 ---
 
+### 3-1. JWT: 구조와 서명 검증을 직접 해 보기 (2026-11-23 보강, 확인함)
+
+**출처**: 선생님 자료 `springboot4☆/10장_JWT로_로그인_로그아웃 구현하기.html`의 개념을 정리하고, 서명 검증은 이 PC에서 직접 구현해 확인했다. 라이브러리(jjwt 등)는 쓰지 않았다.
+
+**정의**: JWT는 `헤더.페이로드.서명` 세 부분을 Base64URL로 이은 문자열이다. 서버가 비밀 키로 서명하므로, 클라이언트가 페이로드를 바꾸면 서명이 맞지 않는다.
+
+```java
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+public class JwtCheck {
+    static final byte[] SECRET = "demo-secret-key-at-least-32-bytes-long!!".getBytes(StandardCharsets.UTF_8);
+    static final Base64.Encoder B64 = Base64.getUrlEncoder().withoutPadding();
+    static final Base64.Decoder B64D = Base64.getUrlDecoder();
+
+    static String sign(String data) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(SECRET, "HmacSHA256"));
+        return B64.encodeToString(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    static String issue(String payloadJson) throws Exception {
+        String header = B64.encodeToString("{\"alg\":\"HS256\",\"typ\":\"JWT\"}".getBytes(StandardCharsets.UTF_8));
+        String payload = B64.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String data = header + "." + payload;
+        return data + "." + sign(data);
+    }
+
+    // 서명 검증: 헤더.페이로드를 다시 서명해서 같은지 비교한다
+    static boolean verify(String token) throws Exception {
+        String[] parts = token.split("\\.");
+        if (parts.length != 3) return false;
+        String expected = sign(parts[0] + "." + parts[1]);
+        return MessageDigest.isEqual(expected.getBytes(StandardCharsets.UTF_8), parts[2].getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static void main(String[] args) throws Exception {
+        String token = issue("{\"sub\":\"user1\",\"role\":\"USER\"}");
+        System.out.println("parts=" + token.split("\\.").length);
+        System.out.println("valid=" + verify(token));
+
+        String[] p = token.split("\\.");
+        String forgedPayload = B64.encodeToString("{\"sub\":\"user1\",\"role\":\"ADMIN\"}".getBytes(StandardCharsets.UTF_8));
+        String forged = p[0] + "." + forgedPayload + "." + p[2];
+        System.out.println("forged role valid=" + verify(forged));
+
+        System.out.println("payload=" + new String(B64D.decode(p[1]), StandardCharsets.UTF_8));
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+parts=3
+valid=true
+forged role valid=false
+payload={"sub":"user1","role":"USER"}
+```
+
+**읽는 법**
+- 서명이 맞으면 페이로드는 위조되지 않았다. 역할을 `ADMIN`으로 바꾸면 서명이 달라져 검증에 실패했다.
+- **페이로드는 암호화가 아니다.** Base64URL로 인코딩만 된 것이라 누구나 읽을 수 있다. 비밀번호나 주민번호 같은 값을 넣지 않는다.
+- 이 검증에는 **만료 시간(`exp`) 확인이 없다.** 실제 라이브러리는 `exp`와 `alg` 값도 검사한다. 직접 만들면 이 검사를 빼먹기 쉽다.
+- 로그아웃은 JWT를 서버에서 지우기 어렵다. 그래서 짧은 만료 시간과 재발급(refresh token) 방식을 함께 쓴다.
+
+**면접 기준**: "JWT는 헤더와 페이로드를 비밀 키로 서명한 토큰입니다. 서명이 맞으면 위조가 아니지만, 페이로드는 읽을 수 있으므로 민감 정보를 넣지 않고 만료 시간을 검사합니다."
+
+### 3-2. 로그인·로그아웃 요청의 흐름 (SBB 실습 기준, 2026-11-23 보강, 미실행)
+
+**출처**: 선생님 자료 `9_SpringBoot_practice/SbbLoginLogoutFlow.html`(점프 투 스프링부트 3-05~3-07 실습). 이 PC에서는 Spring Boot 서버를 실행하지 않았다(미실행). 아래는 자료의 단계를 정리한 것이다.
+
+**서버 시작 때 한 번**: `SecurityConfig.filterChain()`이 호출되어 보안 필터 체인을 등록한다. `formLogin`은 로그인 화면 주소와 성공 후 이동 주소를, `logout`은 로그아웃 주소와 세션 삭제 여부를 등록한다. `passwordEncoder()`와 `authenticationManager()`도 이때 객체가 된다.
+
+**로그인 요청 (`POST /user/login`)**
+1. 브라우저가 아이디와 비밀번호를 보낸다.
+2. Security 필터(`UsernamePasswordAuthenticationFilter`)가 가로채서 `AuthenticationManager`에 넘긴다. 컨트롤러 메서드가 아니다.
+3. 인증 관리자는 `UserDetailsService`(여기서는 `UserSecurityService`)의 `loadUserByUsername()`으로 DB에서 사용자를 찾는다.
+4. `PasswordEncoder`가 입력 비밀번호와 저장된 해시를 비교한다.
+5. 성공하면 인증 정보를 세션에 저장하고, 설정된 주소로 이동한다.
+
+**로그인 후 화면**: 템플릿의 `sec:authorize="isAuthenticated()"`가 참이 되어 `[로그아웃]` 링크가 보인다. 세션에 인증 정보가 있기 때문이다.
+
+**로그아웃 요청 (`POST /user/logout`)**: `LogoutFilter`가 처리하고, `invalidateHttpSession(true)`가 세션을 지운다. 세션 안의 로그인 정보도 함께 사라진다.
+
+**자주 헷갈리는 점**
+- 로그인 `POST`를 `UserController`에 만들면 안 된다. 보안 필터가 먼저 가로채므로 컨트롤러의 메서드는 실행되지 않는다. 자료의 퀴즈 1번이 이 점을 묻는다.
+- `loadUserByUsername()`은 컨트롤러가 호출하지 않는다. `AuthenticationManager`가 호출한다.
+
+**면접 기준**: "로그인 POST는 Security 필터가 가로채서 AuthenticationManager가 UserDetailsService로 사용자를 찾고 PasswordEncoder로 비밀번호를 검사합니다. 성공하면 세션에 인증 정보를 저장합니다."
+
 ## 4. 비밀번호 저장과 인증 토큰
 
 - **비밀번호:** bcrypt나 argon2로 해시해서 저장한다. 평문이나 단순 SHA-256/MD5로 저장하지 않는다. (자세한 구분은 30장 암호화 실무 참고)
