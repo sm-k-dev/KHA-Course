@@ -319,6 +319,49 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {   // 클
 
 **면접 기준**: "QueryDSL은 엔티티 필드를 자바 코드로 쓰는 쿼리 도구입니다. Q 클래스가 컴파일 때 만들어져 오타를 컴파일 단계에서 잡고, 검색 조건은 BooleanExpression으로 나눠 조립합니다."
 
+### 동적 검색: Specification과 distinct (2026-11-24 보강, MySQL 8.0과 Hibernate 7.4.5에서 확인함)
+
+**출처**: 선생님 자료 `9_SpringBoot_practice/sbb_2026.10.21_v1.zip`의 `QuestionService.search(kw)`(제목·답변·작성자에서 검색어 찾기)를 바탕으로 정리했다. 원 코드는 `Specification`과 `distinct`를 쓴다.
+
+**구조**: 검색어 `kw`가 들어오면 조건을 **런타임에** 만든다. 제목에서 찾고, 답변 내용에서 찾고, 작성자 이름에서 찾는다. 답변과 작성자는 조인이 필요하다.
+
+```java
+private Specification<Question> search(String kw) {
+    return new Specification<>() {
+        @Override
+        public Predicate toPredicate(Root<Question> q, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            query.distinct(true);                                   // 같은 질문이 여러 번 나오지 않게 한다
+            Join<Question, SiteUser> u = q.join("author", JoinType.LEFT);
+            Join<Question, Answer> a = q.join("answerList", JoinType.LEFT);
+            String p = "%" + kw + "%";
+            return cb.or(cb.like(q.get("subject"), p),
+                         cb.like(a.get("content"), p),
+                         cb.like(u.get("username"), p));
+        }
+    };
+}
+```
+
+**중복이 생기는 이유**: 답변이 여러 개인 질문은 조인하면 **답변 수만큼 행이 늘어난다.** 질문 1에 검색어가 맞는 답변이 2개 있으면 SQL 결과는 그 질문이 2행으로 나온다.
+
+**확인 결과 (확인함)**
+
+| 조회 방식 | 결과 |
+|---|---|
+| SQL, `DISTINCT` 없음 | **4행** (질문 1이 2행, 나머지 각 1행) |
+| SQL, `COUNT(DISTINCT q.id)` | **3개 질문** |
+| Hibernate, `query.distinct(true)` 사용 | 3개 질문 |
+| Hibernate, `distinct` 없이 엔티티 목록 조회 | 3개 질문 |
+
+Hibernate의 엔티티 목록은 중복을 제거해서 `distinct`를 빼도 3개로 보였다. 그러나 **SQL 행은 4행**이다. 그래서 중복 문제는 **개수 계산과 페이징**에서 드러난다. 한 페이지에 10개를 보여 줄 때 중복 행이 섞이면 페이지 크기와 전체 개수가 틀어질 수 있다. 그래서 `distinct`를 명시한다.
+
+**주의**
+- `LEFT JOIN`을 써야 답변이 없는 질문도 검색된다. `INNER JOIN`이면 답변이 없는 질문이 빠진다.
+- `kw`를 그대로 `LIKE`에 넣으면 `%`와 `_`가 특수 문자로 해석된다. 사용자가 입력한 값은 이스케이프하는 것이 안전하다.
+- 답변 내용을 검색하면서 HTML을 허용하면 화면 출력에서 XSS가 생길 수 있다(99장). SBB는 Markdown을 HTML로 바꾸는 `commonmark`를 쓰므로, 원시 HTML 출력 옵션을 확인한다. 이 부분은 라이브러리가 PC에 없어서 실행하지 않았다(미실행).
+
+**면접 기준**: "검색 조건이 선택적이면 Specification이나 QueryDSL로 조건을 조립합니다. 답변처럼 여러 행과 조인하면 중복이 생기므로 `distinct`로 질문 단위를 맞추고, 개수와 페이징이 맞는지 확인합니다."
+
 ## 4. Page·Slice·COUNT
 
 **정의** — Page는 전체 건수·페이지 정보를 포함하는 결과 모델이고 Slice는 다음 구간 존재 여부 중심의 결과 모델이다.
