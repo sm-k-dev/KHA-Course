@@ -241,6 +241,39 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "Gradle 프로젝트는 빌드 파일을 IDE에 연결해서 열고, 공유할 때는 소스와 빌드 설정만 올리고 생성물은 제외합니다. 결과물은 `gradle build`로 만들고, 배포는 그 결과를 서버에 올리는 단계입니다."
 
+### 4-5. STS(이클립스 기반)에서 Gradle 프로젝트 주고받기 (2026-11-24 보강, 선생님 자료 기반, 미실행)
+
+**출처**: 선생님 자료 `Practice_project☆/SpringBootGradle프로젝트ImportExport방법.pdf`(STS 5 실습 자습서, 8쪽)를 읽고 정리했다. 이 PC에서 STS 화면은 실행하지 않았다(미실행). 4-4절의 IntelliJ 흐름과 같은 원리다.
+
+**보내는 쪽 (Export)**
+1. 프로젝트 폴더에 `build.gradle`(또는 `build.gradle.kts`), `settings.gradle`, `gradlew`, `gradlew.bat`, `gradle/wrapper/`가 있는지 확인한다.
+2. 민감 정보(DB 비밀번호, API 키)가 `application.properties`나 `application.yml`에 있으면 전달 전에 빼거나 따로 안전하게 전한다.
+3. 폴더를 ZIP으로 압축한다. `build/`와 `.gradle/` 캐시는 빼도 된다. 단 `gradle/wrapper/`는 캐시가 아니므로 넣는다.
+4. **DB 데이터는 ZIP에 들어가지 않는다.** 필요하면 SQL 백업이나 초기 데이터 스크립트를 따로 준다.
+
+**받는 쪽 (Import)**
+1. ZIP을 먼저 **폴더로 풀어** 둔다. ZIP 파일을 IDE에 바로 가져오지 않는다.
+2. STS에서 `File → Import → Gradle → Existing Gradle Project`를 고르고, `build.gradle`이 있는 폴더를 지정한다.
+3. 가져오기가 끝날 때까지 기다린다. 처음에는 라이브러리를 내려받아서 시간이 걸린다.
+4. 프로젝트에서 `Gradle → Refresh Gradle Project`를 실행한다.
+
+**실행 전 확인**: JDK 설정(프로젝트가 요구하는 Java 버전이 등록되어 있는지), Problems 뷰의 오류, 메인 클래스의 `Run As → Spring Boot App`, 콘솔의 포트(기본 8080)를 본다. DB를 쓰는 프로젝트라면 받는 PC에도 DB 서버, 데이터베이스, 테이블, 초기 데이터를 준비한다.
+
+**자주 나는 오류 (자료 표를 옮김)**
+
+| 증상 | 확인과 해결 |
+|---|---|
+| `Existing Gradle Project`가 보이지 않음 | Gradle 지원 플러그인과 STS 설치 구성을 확인한다 |
+| Gradle 다운로드·동기화 실패 | 인터넷과 프록시 설정, 저장소 접근을 확인하고 Refresh를 다시 실행한다 |
+| `Unsupported class file major version` | 프로젝트가 요구하는 Java 버전과 Gradle 버전의 호환성을 확인한다 |
+| `Could not target platform` 또는 toolchain 오류 | `build.gradle`의 Java toolchain 버전과 PC에 설치된 JDK를 맞춘다 |
+| 포트 8080이 이미 사용 중 | 기존 서버를 끄거나 `server.port=8081`처럼 다른 포트를 쓴다 |
+| 실행은 되지만 데이터가 없음 | 소스와 ZIP만으로는 DB 데이터가 복사되지 않는다. SQL 백업이나 초기 스크립트를 준비한다 |
+
+**연결해서 이해하기**: `Unsupported class file major version`은 19장 4-1절에서 확인한 클래스 파일 버전과 같은 문제다. `javap -v`의 `major version`이 65이면 Java 21 바이트코드다. 실행하는 JDK가 그보다 낮으면 이 오류가 난다.
+
+**면접 기준**: "프로젝트를 옮길 때는 빌드 파일과 Gradle wrapper, 소스만 ZIP으로 보내고, 민감 정보와 DB 데이터는 따로 다룹니다. 받는 쪽은 폴더로 푼 뒤 Gradle 프로젝트로 가져오고, JDK와 toolchain을 맞춘 뒤 실행합니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
