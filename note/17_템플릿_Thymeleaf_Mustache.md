@@ -38,7 +38,7 @@ engine.process("<p th:text=\"${title}\">x</p><p th:utext=\"${title}\">y</p>", ct
 
 - `th:text`는 **이스케이프**한다. 결과는 `&lt;b&gt;안녕&lt;/b&gt;`이라서 태그가 글자로 보인다.
 - `th:utext`는 이스케이프하지 않는다. 결과는 `<b>안녕</b>`이라서 태그가 해석된다.
-- **검증 완료.** 사용자 입력은 항상 `th:text`로 출력한다. `th:utext`에 사용자 입력을 넣으면 XSS가 된다(20장).
+- **검증 완료.** 사용자 입력은 항상 `th:text`로 출력한다. `th:utext`에 사용자 입력을 넣으면 XSS가 된다(21장).
 
 ### 2-2. 반복: `th:each`
 
@@ -89,7 +89,7 @@ String list(Model model) {
 </tr>
 ```
 
-- **컨트롤러는 뷰 이름만 반환한다.** `@RestController`는 객체를 JSON으로 보내고, `@Controller`는 뷰 이름으로 템플릿을 찾는다. 이 차이를 헷갈리면 안 된다(15장).
+- **컨트롤러는 뷰 이름만 반환한다.** `@RestController`는 객체를 JSON으로 보내고, `@Controller`는 뷰 이름으로 템플릿을 찾는다. 이 차이를 헷갈리면 안 된다(16장).
 - **폼 바인딩 (`th:object`, `th:field`, `th:action`):** 폼 값을 객체에 자동으로 채우는 기능이다. Spring 환경에서 확인해야 한다(미검증).
 
 **면접 기준:** "Thymeleaf는 HTML 속성으로 반복과 조건을 쓰고, `th:text`는 이스케이프해서 출력합니다. 사용자 입력은 `th:utext`로 출력하지 않습니다."
