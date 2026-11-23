@@ -223,6 +223,48 @@ cfg.setProperty("hibernate.default_batch_fetch_size", "10");
 
 **면접 기준**: "N+1은 목록 조회 뒤 연관 데이터를 항목마다 다시 조회하는 문제입니다. 해결은 필요한 값만 DTO로 집계하거나, 연관 데이터를 목록 조회 때 함께 가져오는 것(fetch join, EntityGraph)입니다. 설정으로는 batch size로 묶어 줄입니다."
 
+### 컬렉션 연관관계: cascade와 orphanRemoval (2026-11-23 보강, Hibernate 7.4.5에서 확인함)
+
+**출처**: 선생님 자료 `9_Spring_boot_JPA`의 `04 JPA collection-valued association` 강의 제목(컬렉션 연관관계)의 주제를 기준으로 예제를 만들어 확인했다. 강의 PDF는 사진이라서 글자를 옮기지 않았다.
+
+**정의**
+- **cascade**: 부모에 대한 작업(저장, 삭제)을 자식에게도 전달한다.
+- **orphanRemoval**: 부모의 컬렉션에서 뺀 자식을 DB에서도 지운다.
+
+```java
+@Entity
+static class Order {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Item5> items = new ArrayList<>();
+}
+
+@Entity
+static class Item5 {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @ManyToOne(fetch = FetchType.LAZY) Order order;
+}
+```
+
+**확인 결과 (확인함)**
+
+```
+1) items saved with parent: 2          ← 부모만 persist해도 자식 2개가 저장됐다
+2) items after removing one from collection: 1   ← 컬렉션에서 뺀 자식이 DB에서 삭제됐다
+3) items after deleting parent: 0, orders=0      ← 부모를 지우면 자식도 함께 지워졌다
+```
+
+**읽는 법**
+- 자식 쪽 `order` 필드(주인)에 외래키가 있다. 컬렉션은 거울(`mappedBy`)이다(위 "연관관계의 주인" 절).
+- `cascade`를 빼면 자식을 따로 `persist`해야 하고, 빼먹으면 자식이 저장되지 않는다.
+- `orphanRemoval = true`를 빼면 컬렉션에서 뺀 자식은 외래키만 `null`이 되고 행은 남는다.
+
+**주의**
+- `cascade = ALL`은 삭제도 전달한다. 부모가 자식의 생명주기를 소유할 때만 쓴다. 여러 부모가 같은 자식을 공유하면 쓰지 않는다.
+- `orphanRemoval`은 컬렉션에서 뺀 것을 지운다. 실수로 `remove`하면 데이터가 사라지므로 주의한다.
+
+**면접 기준**: "컬렉션 연관관계에서 부모의 생명주기를 자식이 따르면 `cascade`를, 컬렉션에서 뺀 자식도 지우려면 `orphanRemoval`을 씁니다. 외래키는 자식(다) 쪽에 있습니다."
+
 ## 4. Page·Slice·COUNT
 
 **정의** — Page는 전체 건수·페이지 정보를 포함하는 결과 모델이고 Slice는 다음 구간 존재 여부 중심의 결과 모델이다.

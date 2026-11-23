@@ -155,6 +155,52 @@ record CreateUserRequest(@NotBlank String name,@Email String email) {}
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 폼 제출과 검증 오류 표시: @ModelAttribute, @Valid, BindingResult (2026-11-23 보강, MockMvc로 확인함)
+
+**출처**: 선생님 자료 `9_Spring_boot_Basic`의 `03 spring form #1`, `04 spring form #2`, `05 spring form validation` 강의 제목의 내용을 바탕으로 정리했다. 강의 PDF는 사진 형태라서 글자를 옮기지 않고, 제목의 주제(폼 전송, 폼 객체 바인딩, 검증)를 기준으로 예제를 직접 만들어 확인했다.
+
+**흐름**: 브라우저가 폼을 `POST`로 보내면 Spring이 폼 값을 객체에 채우고(`@ModelAttribute`), 검증 규칙(`@Valid`)을 적용한다. 실패한 항목은 `BindingResult`에 모인다. 컨트롤러는 이 결과를 보고 다시 폼을 보여 주거나 저장한다.
+
+```java
+public static class SignupForm {
+    @NotBlank(message = "이름을 입력하세요")
+    private String name;
+    @Min(value = 0, message = "나이는 0 이상이어야 합니다")
+    private int age;
+    // getter, setter 생략
+}
+
+@PostMapping("/signup")
+@ResponseBody
+public String signup(@Valid @ModelAttribute("form") SignupForm form, BindingResult result, Model model) {
+    if (result.hasErrors()) {
+        return "invalid: " + result.getFieldErrors().stream()
+                .map(e -> e.getField() + "=" + e.getDefaultMessage())
+                .sorted()
+                .collect(Collectors.joining(", "));
+    }
+    return "ok: " + form.getName() + " " + form.getAge();
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+bad   -> 200 invalid: age=0 이상이어야 합니다, name=이름을 입력하세요
+good  -> 200 ok: kim 30
+```
+
+- `name=` 빈 값과 `age=-1`을 보냈더니 두 항목의 메시지가 모두 돌아왔다. 검증 실패 시 `BindingResult`가 항목별 오류를 가졌다.
+- 정상 값은 `ok`로 처리됐다.
+
+**설명 시 주의**: 이 예제는 Spring Boot 전체가 아니라 MockMvc standalone 설정으로 확인했다. 검증 엔진(Hibernate Validator)은 EL(표현 언어) 구현이 필요한데, 이 PC에는 EL jar가 없어서 `ParameterMessageInterpolator`로 바꿔 연결했다. Spring Boot 프로젝트에서는 `spring-boot-starter-validation`이 이 설정을 자동으로 맞춘다. 실제 프로젝트에서는 이 연결 코드를 쓰지 않는다.
+
+**흔한 실수**
+- `BindingResult`를 `@Valid` 바로 뒤에 두지 않는다: `@Valid` 객체 바로 다음 인자여야 오류가 `BindingResult`에 담긴다. 사이에 다른 인자가 있으면 검증 실패가 예외로 나간다.
+- 검증 메시지를 템플릿에서 출력하지 않는다: Thymeleaf에서는 `th:errors`나 `th:field`로 항목별 오류를 화면에 보여 준다(24장).
+
+**면접 기준**: "폼 값은 `@ModelAttribute` 객체에 바인딩되고, `@Valid`로 규칙을 확인합니다. 실패한 항목은 `BindingResult`에 모여서 화면에 다시 보여 줍니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
