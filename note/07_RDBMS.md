@@ -257,6 +257,69 @@ COMMIT;
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+## 5-1. 커넥션 풀 HikariCP: 연결을 미리 만들어 빌려 쓴다 (2026-11-23 보강, MySQL 8.0 로컬에서 확인함)
+
+**정의**: DB 연결을 만드는 일은 느리다(네트워크 왕복과 인증). 커넥션 풀은 연결을 미리 여러 개 만들어 두고, 요청이 빌려 쓰고 반납하는 구조다. Spring Boot는 기본 풀로 HikariCP를 쓴다.
+
+**주요 설정**
+- `maximumPoolSize`: 풀에 둘 최대 연결 수
+- `connectionTimeout`: 빌릴 연결이 없을 때 기다리는 시간(ms). 넘으면 예외가 난다.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class PoolDemo {
+    public static void main(String[] args) throws Exception {
+        HikariConfig cfg = new HikariConfig();
+        cfg.setJdbcUrl("jdbc:mysql://localhost:3306/khac_pool_demo");
+        cfg.setUsername("root");
+        cfg.setPassword(System.getenv("MYSQL_PWD"));   // 비밀번호는 코드에 쓰지 않는다
+        cfg.setMaximumPoolSize(2);
+        cfg.setConnectionTimeout(1000);
+        try (HikariDataSource ds = new HikariDataSource(cfg)) {
+            Connection c1 = ds.getConnection();
+            Connection c2 = ds.getConnection();
+            System.out.println("borrowed 2 of max 2");
+            try {
+                ds.getConnection();                     // 풀이 가득 찼다
+                System.out.println("3rd ok (unexpected)");
+            } catch (SQLException e) {
+                System.out.println("3rd failed: " + e.getMessage().split("\n")[0]);
+            }
+            c1.close();                                 // 반납하면 다시 빌릴 수 있다
+            Connection c3 = ds.getConnection();
+            System.out.println("after return, valid=" + c3.isValid(1));
+            c2.close();
+            c3.close();
+        }
+    }
+}
+```
+
+필요한 jar: `HikariCP`, `mysql-connector-j`, `slf4j-api`(HikariCP가 로그에 사용한다. 없으면 `NoClassDefFoundError`가 난다).
+
+**실행 결과 (확인함)**
+
+```
+borrowed 2 of max 2
+3rd failed: HikariPool-1 - Connection is not available, request timed out after 1001ms (total=2, active=2, idle=0, waiting=0)
+after return, valid=true
+```
+
+**읽는 법**
+- 세 번째 요청은 1초를 기다리다가 실패했다. 메시지의 `total=2, active=2`가 풀이 가득 찼다는 뜻이다.
+- `c1.close()`는 연결을 끊는 것이 아니라 풀에 **반납**한다. 그래서 다음 요청이 빌려 쓸 수 있다.
+
+**흔한 실수**
+- **반납 누락**: `close()`를 빼먹으면 풀이 금방 바닥난다. `try-with-resources`로 항상 닫는다(02장 6-2).
+- **긴 트랜잭션**: 연결을 쥔 채 외부 API를 기다리면 풀이 막힌다.
+- **무작정 키우기**: `maximumPoolSize`를 크게 잡으면 DB 쪽 최대 연결 수를 넘을 수 있다. DB와 서버 수를 함께 계산한다.
+
+**면접 기준**: "커넥션 풀은 연결을 미리 만들어 재사용하는 구조입니다. 풀이 가득 차면 `connectionTimeout` 후 예외가 나므로, 연결을 반드시 반납하고 트랜잭션을 짧게 유지합니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

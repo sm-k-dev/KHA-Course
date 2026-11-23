@@ -49,6 +49,23 @@ public class SecurityConfig {
 
 ---
 
+### 2-1. 보안 필터는 컨트롤러보다 먼저 응답한다 (2026-11-23 보강, 미실행)
+
+Spring Security 필터는 `DispatcherServlet`보다 바깥의 서블릿 필터다. 그래서 인증이나 권한이 부족하면 컨트롤러가 실행되기 전에 응답이 끝난다. 20장 6-2에서 확인한 필터 순서와 같은 구조다.
+
+```
+요청 → Security 필터 체인 → (인증 실패: 401 응답 끝)
+                         → (권한 부족: 403 응답 끝)
+                         → DispatcherServlet → Interceptor → Controller
+```
+
+- **401 Unauthorized**: 누구인지 확인할 수 없다(로그인 필요, 인증 정보 없음).
+- **403 Forbidden**: 누구인지는 알지만 권한이 없다.
+
+**미실행 안내**: Spring Security 의존성을 이 PC에서 내려받지 못해, 위 응답 코드를 실제 실행으로 확인하지 않았다. 확인하려면 Spring Boot 프로젝트에 `spring-boot-starter-security`를 넣고 `/api/admin/**`에 요청을 보내 상태 코드를 본다. 사용하는 실행 환경에서 확인한다.
+
+**면접 기준**: "Security 필터 체인은 컨트롤러 전에 인증과 인가를 검사하므로, 실패 요청은 컨트롤러에 도달하지 않고 401 또는 403으로 끝납니다."
+
 ## 3. RBAC와 소유자 검사
 
 **정의** — RBAC(Role-Based Access Control)는 사용자에게 역할을 주고, 역할에 권한을 묶어 접근을 정하는 방식이다.

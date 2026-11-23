@@ -92,6 +92,99 @@ async function fetchPosts(): Promise<Post[]> {
 
 ---
 
+## 테스트: Vitest와 Testing Library (2026-11-23 보강, 확인함)
+
+**정의**: Vitest는 Vite와 같은 설정을 쓰는 테스트 실행기다. Testing Library는 컴포넌트를 **사용자가 보는 방식**(버튼 이름, 화면 글자)으로 찾아 테스트하게 해 준다.
+
+**설치 (확인함)**: 이 장의 예제는 vitest 5.1.1, React 18.3.1, `@testing-library/react` 16.3.3로 실행했다.
+
+```powershell
+npm install --save-dev vitest jsdom @testing-library/react @testing-library/dom react@18 react-dom@18 @vitejs/plugin-react
+```
+
+`vite.config.js`
+
+```javascript
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: { environment: 'jsdom' },   // 브라우저 DOM을 흉내 내는 환경
+});
+```
+
+`src/price.js`
+
+```javascript
+export function total(items) {
+  return items.reduce((sum, item) => sum + item.amount, 0);
+}
+```
+
+`src/Cart.jsx`
+
+```jsx
+import { useState } from 'react';
+
+export function Cart({ initial = 0 }) {
+  const [count, setCount] = useState(initial);
+  return (
+    <div>
+      <p>count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>add</button>
+    </div>
+  );
+}
+```
+
+`src/Cart.test.jsx`
+
+```jsx
+import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { Cart } from './Cart';
+import { total } from './price';
+
+afterEach(cleanup);   // 테스트마다 화면을 정리한다
+
+describe('total', () => {
+  it('sums amounts', () => {
+    expect(total([{ amount: 1200 }, { amount: 3400 }])).toBe(4600);
+  });
+});
+
+describe('Cart', () => {
+  it('increments the count when the button is clicked', () => {
+    render(<Cart initial={1} />);
+    expect(screen.getByText('count: 1')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    expect(screen.getByText('count: 2')).toBeTruthy();
+  });
+});
+```
+
+```powershell
+npx vitest run
+```
+
+**실행 결과 (확인함)**: `Tests  2 passed (2)`
+
+**실패 확인 (확인함)**: 기대값을 일부러 틀리게 쓰면 다음처럼 나온다.
+
+```
+FAIL  src/fail.test.js > wrong expectation on purpose
+AssertionError: expected 1 to be 2 // Object.is equality
+Tests  1 failed (1)
+```
+
+**읽는 법**
+- `getByRole('button', { name: 'add' })`는 "이름이 add인 버튼"을 찾는다. 클래스 이름이나 DOM 구조에 기대지 않으므로 리팩터링에 덜 깨진다.
+- `fireEvent.click`은 클릭 이벤트를 보낸다. 이후 화면이 바뀌었는지 `getByText`로 확인한다.
+- `environment: 'jsdom'`이 없으면 `document`가 없어서 컴포넌트 테스트가 실패한다.
+
+**면접 기준**: "순수 함수는 Vitest로 입력과 출력을 검증하고, 컴포넌트는 Testing Library로 사용자 동작(클릭, 화면 글자)을 기준으로 검증합니다."
+
 ## 단원 통과 기준
 
 - [ ] props와 state의 차이를 설명할 수 있다.
