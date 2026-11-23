@@ -36,6 +36,57 @@ Spring은 빈을 만들 때 클래스를 읽고, 애노테이션이 붙은 메�
 
 ---
 
+### 2-1. 커스텀 애노테이션 만들고 리플렉션으로 읽기 (2026-11-23 보강, JDK 25에서 확인함)
+
+`@Transactional`, `@GetMapping` 같은 애노테이션도 같은 방식으로 만들어졌다. 직접 만들어 보면 "애노테이션은 데이터일 뿐이고, 읽는 코드가 동작을 정한다"는 점이 분명해진다.
+
+```java
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+
+public class CustomAnn {
+    @Retention(RetentionPolicy.RUNTIME)     // 실행 중에도 읽을 수 있게 유지
+    @Target(ElementType.METHOD)              // 메서드에만 붙일 수 있다
+    @interface Audit {
+        String action();
+        int level() default 1;
+    }
+
+    static class OrderService {
+        @Audit(action = "cancel", level = 2)
+        public void cancel() { System.out.println("cancel called"); }
+        public void view() { System.out.println("view called"); }
+    }
+
+    public static void main(String[] args) throws Exception {
+        for (Method m : OrderService.class.getDeclaredMethods()) {
+            Audit a = m.getAnnotation(Audit.class);
+            if (a != null) {
+                System.out.println(m.getName() + " action=" + a.action() + " level=" + a.level());
+                m.invoke(new OrderService());
+            } else {
+                System.out.println(m.getName() + " (no @Audit)");
+            }
+        }
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+cancel action=cancel level=2
+cancel called
+view (no @Audit)
+```
+
+**읽는 법**
+- `@Retention(RUNTIME)`을 빼면 `getAnnotation`이 `null`을 돌려준다. 컴파일 후 애노테이션이 사라지기 때문이다.
+- `getDeclaredMethods()`의 순서는 JVM에 따라 다를 수 있다. 결과를 순서에 기대면 안 된다.
+- Spring은 이 원리로 `@Transactional`이나 `@Cacheable`이 붙은 메서드를 찾고, 프록시로 감싼다.
+
+**면접 기준**: "애노테이션은 메타데이터이고, `RUNTIME` 보존 정책이 있어야 리플렉션으로 읽을 수 있습니다. Spring은 이 정보를 읽어 프록시를 만듭니다."
+
 ## 3. 프록시: 호출을 가로채는 대리 객체
 
 **정의** — 프록시는 원래 객체와 같은 인터페이스를 가진 대리 객체다. 클라이언트는 프록시를 호출하고, 프록시는 **앞뒤에 부가 작업**(트랜잭션 시작, 로그, 권한 검사)을 한 뒤 원래 객체를 호출한다.
@@ -157,6 +208,112 @@ hello kim
 ```
 
 ---
+
+### 6-2. Spring 요청 처리 흐름: Filter → Interceptor → Controller (2026-11-23 보강, 확인함)
+
+**정의**: 요청은 서블릿 필터(Filter)를 거쳐 `DispatcherServlet`에 도착하고, 그 안에서 인터셉터(HandlerInterceptor)가 컨트롤러 전후에 끼어든다. 예외가 나면 `@RestControllerAdvice`가 응답을 만든다.
+
+```
+요청 → Filter(전) → DispatcherServlet → Interceptor.preHandle
+     → Controller → Interceptor.postHandle
+     → 뷰/응답 작성 → Interceptor.afterCompletion → Filter(후) → 응답
+```
+
+**확인 방법**: 이 PC에서는 Java의 루프백 소켓이 막혀 실제 서버를 띄우지 못했다(34장 6-2). 그래서 `MockMvc`의 standalone 설정으로 같은 체인을 만들어 순서를 확인했다. 이 설정은 Spring Boot 전체 기동과 완전히 같지는 않다. 순서만 확인하는 용도다.
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+public class FlowDemo {
+    static final List<String> log = new ArrayList<>();
+
+    @RestController
+    static class HelloController {
+        @GetMapping("/hello")
+        String hello() { log.add("controller"); return "hi"; }
+
+        @GetMapping("/boom")
+        String boom() { log.add("controller"); throw new IllegalStateException("boom"); }
+    }
+
+    static class LogInterceptor implements HandlerInterceptor {
+        @Override public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object h) {
+            log.add("interceptor.pre"); return true;
+        }
+        @Override public void postHandle(HttpServletRequest req, HttpServletResponse res, Object h, ModelAndView mv) {
+            log.add("interceptor.post");
+        }
+        @Override public void afterCompletion(HttpServletRequest req, HttpServletResponse res, Object h, Exception ex) {
+            log.add("interceptor.after");
+        }
+    }
+
+    @RestControllerAdvice
+    static class ErrorAdvice {
+        @ExceptionHandler(IllegalStateException.class)
+        ResponseEntity<String> handle(IllegalStateException e) {
+            log.add("advice");
+            return ResponseEntity.status(409).body("conflict: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Filter logFilter = (req, res, chain) -> {
+            log.add("filter.before");
+            chain.doFilter(req, res);
+            log.add("filter.after");
+        };
+
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new HelloController())
+                .addFilters(logFilter)
+                .addInterceptors(new LogInterceptor())
+                .setControllerAdvice(new ErrorAdvice())
+                .build();
+
+        var ok = mvc.perform(get("/hello")).andReturn();
+        System.out.println("/hello -> " + ok.getResponse().getStatus() + " " + ok.getResponse().getContentAsString());
+        System.out.println("order: " + log);
+        log.clear();
+
+        var err = mvc.perform(get("/boom")).andReturn();
+        System.out.println("/boom -> " + err.getResponse().getStatus() + " " + err.getResponse().getContentAsString());
+        System.out.println("order: " + log);
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+/hello -> 200 hi
+order: [filter.before, interceptor.pre, controller, interceptor.post, interceptor.after, filter.after]
+/boom -> 409 conflict: boom
+order: [filter.before, interceptor.pre, controller, advice, interceptor.after, filter.after]
+```
+
+**읽는 법**
+- `/hello`는 정상 흐름이라 `postHandle`이 실행된다.
+- `/boom`은 컨트롤러에서 예외가 나서 `postHandle`이 빠졌다. 대신 `advice`가 응답을 만들었고, `afterCompletion`은 예외와 상관없이 실행됐다.
+- 필터는 `DispatcherServlet`보다 바깥에 있다. 그래서 인증 같은 공통 처리를 필터나 Security 필터 체인에서 한다. 컨트롤러 기준의 공통 처리(예: 어떤 핸들러가 호출되는지 알아야 하는 것)는 인터셉터에서 한다.
+- 실제 Spring Boot 앱에서는 필터를 `@Component`로, 인터셉터를 `WebMvcConfigurer.addInterceptors`로 등록한다. 이 설정 코드는 **미실행**이다.
+
+**면접 기준**: "요청은 Filter를 먼저 거치고, DispatcherServlet이 핸들러를 고르고 Interceptor가 전후에 끼어듭니다. 예외는 ControllerAdvice가 응답으로 바꿉니다."
 
 ## 7. 실습 과제
 

@@ -352,6 +352,61 @@ SELECT team_id, COUNT(*) AS cnt FROM users WHERE active=1 GROUP BY team_id HAVIN
 **3차: 면접 재현.** *“OFFSET과 키셋 페이징의 장단점은?”*에 대해 **정의 → 왜 필요한가 → 무엇과 다른가 → 코드·상황 하나** 순서로 30~60초 말한다. 답을 읽지 않고 말한 뒤 원문과 대조한다.
 
 
+## 4-1. 서브쿼리·CTE·윈도우 함수 (2026-11-23 보강, MySQL 8.0.21에서 확인함)
+
+세 가지는 면접과 실무 쿼리에서 자주 나온다. 아래 데이터로 모두 실행해 확인했다.
+
+```sql
+CREATE TABLE customer (id INT PRIMARY KEY, name VARCHAR(20));
+CREATE TABLE purchase (id INT PRIMARY KEY, customer_id INT, amount INT, bought_at DATE);
+INSERT INTO customer VALUES (1,'kim'),(2,'lee'),(3,'park');
+INSERT INTO purchase VALUES (1,1,1000,'2026-01-01'),(2,1,3000,'2026-02-01'),(3,2,500,'2026-01-15'),(4,2,700,'2026-03-01'),(5,1,200,'2026-03-05');
+
+-- 서브쿼리: 평균보다 큰 구매
+SELECT id, amount FROM purchase WHERE amount > (SELECT AVG(amount) FROM purchase);
+
+-- IN 서브쿼리: 구매한 적 있는 고객
+SELECT name FROM customer WHERE id IN (SELECT customer_id FROM purchase);
+
+-- NOT EXISTS: 구매 없는 고객
+SELECT c.name FROM customer c WHERE NOT EXISTS (SELECT 1 FROM purchase p WHERE p.customer_id = c.id);
+
+-- CTE(WITH): 고객별 합계 후 정렬
+WITH totals AS (SELECT customer_id, SUM(amount) AS total FROM purchase GROUP BY customer_id)
+SELECT c.name, t.total FROM totals t JOIN customer c ON c.id = t.customer_id ORDER BY t.total DESC;
+
+-- 윈도우 함수: 고객별 구매 순번과 누적합 (GROUP BY처럼 행을 합치지 않는다)
+SELECT customer_id, bought_at, amount,
+       ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY bought_at) AS seq,
+       SUM(amount) OVER (PARTITION BY customer_id ORDER BY bought_at) AS running_total
+FROM purchase ORDER BY customer_id, bought_at;
+
+-- 윈도우 함수로 고객별 최신 구매 1건
+SELECT customer_id, id, amount FROM (
+  SELECT customer_id, id, amount, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY bought_at DESC) AS rn
+  FROM purchase) x WHERE rn = 1 ORDER BY customer_id;
+```
+
+**실행 결과 (확인함)**
+
+| 쿼리 | 결과 |
+|---|---|
+| 평균(1080)보다 큰 구매 | id 2, amount 3000 |
+| 구매한 고객 | kim, lee |
+| 구매 없는 고객 | park |
+| CTE 합계 | kim 4200, lee 1200 |
+| 고객별 최신 구매 | 고객 1은 id 5(200), 고객 2는 id 4(700) |
+
+윈도우 함수 결과 일부: 고객 1의 `running_total`은 1000 → 4000 → 4200으로 늘어난다.
+
+**읽는 법**
+- **서브쿼리**: 안쪽 결과를 바깥 조건에 쓴다. 상관 서브쿼리(`NOT EXISTS`)는 바깥 행마다 안쪽을 확인한다.
+- **CTE**: `WITH`로 중간 결과에 이름을 붙여 쿼리를 읽기 쉽게 나눈다. 재사용이 편하지만 성능은 실행 계획으로 확인한다.
+- **윈도우 함수**: `GROUP BY`는 행을 합치지만, `OVER (PARTITION BY ...)`는 행을 유지하면서 그룹 안에서 순번이나 누적을 구한다. `ROW_NUMBER`는 MySQL 8.0 이상에서 쓸 수 있다.
+- `NOT IN`은 서브쿼리 결과에 NULL이 있으면 결과가 모두 비는 함정이 있다. `NOT EXISTS`가 더 안전하다(3절의 3값 논리와 연결).
+
+**면접 기준**: "서브쿼리는 안쪽 결과를 조건에 쓰고, CTE는 중간 결과에 이름을 붙이며, 윈도우 함수는 행을 합치지 않고 그룹 안의 순번과 합계를 구합니다."
+
 ## 5. Oracle과 MySQL 차이 (곁다리 학습 대비)
 
 | 항목 | MySQL | Oracle |

@@ -653,6 +653,80 @@ done
 
 **면접 기준**: "default 메서드는 인터페이스에 기본 구현을 주는 기능이고, 기존 구현체를 깨지 않고 인터페이스를 확장하려고 도입됐습니다."
 
+## 6-3. enum, Iterator, String과 StringBuilder (2026-11-23 보강, JDK 25에서 확인함)
+
+### enum: 정해진 상수 묶음
+
+`enum`은 고정된 값 목록을 타입으로 만든다. 상수마다 값과 메서드를 가질 수 있다.
+
+```java
+import java.util.*;
+
+public class EnumIter {
+    enum OrderStatus {
+        PAID(1000), SHIPPED(0), CANCELED(0);
+
+        private final int fee;
+        OrderStatus(int fee) { this.fee = fee; }
+        int fee() { return fee; }
+        boolean isFinal() { return this == SHIPPED || this == CANCELED; }
+    }
+
+    public static void main(String[] args) {
+        OrderStatus s = OrderStatus.valueOf("PAID");
+        System.out.println(s + " " + s.fee() + " " + s.ordinal() + " " + s.isFinal());
+        for (OrderStatus o : OrderStatus.values()) System.out.print(o.name() + " ");
+        System.out.println();
+        switch (s) {
+            case PAID -> System.out.println("paid-case");
+            default -> System.out.println("other");
+        }
+        System.out.println(OrderStatus.valueOf("SHIPPED").compareTo(OrderStatus.PAID));
+
+        List<String> names = new ArrayList<>(List.of("kim", "lee", "park"));
+        try {
+            for (String n : names) {
+                if (n.equals("kim")) names.remove(n);   // 첫 원소 제거 → CME
+            }
+        } catch (ConcurrentModificationException e) {
+            System.out.println("ConcurrentModificationException");
+        }
+        Iterator<String> it = names.iterator();
+        while (it.hasNext()) {
+            if (it.next().equals("lee")) it.remove();   // iterator로 안전하게 제거
+        }
+        System.out.println(names);
+
+        String a = "ab";
+        String b = a.concat("c");
+        System.out.println(a + " " + b);
+        StringBuilder sb = new StringBuilder("ab");
+        sb.append("c");
+        System.out.println(sb + " " + sb.length());
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+PAID 1000 0 false
+PAID SHIPPED CANCELED 
+paid-case
+1
+ConcurrentModificationException
+[park]
+ab abc
+abc 3
+```
+
+**읽는 법**
+- `ordinal()`은 선언 순서(0부터)다. 상수 순서를 바꾸면 값이 바뀌므로 **DB에는 `name()`을 저장하고 `ordinal()`은 저장하지 않는다.**
+- 확장 for문으로 순회하는 도중 `list.remove()`를 호출하면 다음 `next()`에서 `ConcurrentModificationException`이 난다. 순회 중 제거는 `Iterator.remove()`나 `removeIf`를 쓴다.
+- `String`은 불변이다. `concat`은 새 문자열을 돌려주고 원본은 그대로다. 반복문에서 `+=`로 문자열을 계속 이어 붙이면 객체가 많이 생기므로 `StringBuilder`를 쓴다.
+
+**면접 기준**: "enum은 정해진 상수 집합을 타입으로 만든 것이고, DB에는 순서 값이 아니라 이름을 저장합니다. 순회 중 제거는 Iterator로 하고, 문자열을 반복해서 이어 붙일 때는 StringBuilder를 씁니다."
+
 ## 7. Collections 프레임워크 한눈에 보기
 
 - **Collection (인터페이스):** 여러 원소를 담는 큰 틀. 아래 둘로 나뉜다.
