@@ -2,7 +2,7 @@
 
 > 중요도: **B** · 이 장의 목표: Pod, Deployment, Service의 관계를 설명하고, 원하는 상태(desired state)를 YAML로 선언한 뒤 롤링 배포와 헬스 체크를 이해한다.
 
-> 2026-11-23 추가 장 (로드맵 M15 "로컬 K8s 배포" 항목). **이 장의 매니페스트는 클러스터에 적용하지 않았다.** 이 컴퓨터에는 `kubectl` 클라이언트가 있지만, 실행 중인 클러스터 확인은 하지 않았다. 문법과 동작은 공식 문서 기준으로 적었고, 실행 확인 전까지 "미실행"으로 표시한다.
+> 2026-11-23 추가 장 (로드맵 M15 "로컬 K8s 배포" 항목). **kind 로컬 클러스터(Kubernetes 노드 이미지 v1.37.0)에서 실행해 확인했다.** 3절 매니페스트는 서버 측 검증(`--dry-run=server`)을 통과했다. 실제 이미지가 없으면 롤아웃이 멈추는 것도 확인했다. 4절의 롤링 업데이트와 롤백은 nginx 이미지로 바꾼 사본에서 확인했다. 확인 후 클러스터는 삭제했다.
 
 ---
 
@@ -35,7 +35,7 @@ Pod의 IP는 바뀔 수 있다. 다른 서비스는 Service 이름으로 접근�
 
 ---
 
-## 3. 매니페스트 예제 (미실행)
+## 3. 매니페스트 예제
 
 ```yaml
 apiVersion: apps/v1
@@ -93,10 +93,11 @@ spec:
 - `selector.matchLabels`와 `template.labels`가 같아야 Deployment가 자기 Pod를 찾는다. 다르면 배포가 시작되지 않는다.
 - `readinessProbe`는 **트래픽을 받을지**, `livenessProbe`는 **다시 띄울지**를 정한다. 둘을 같은 경로로 두면 느린 시작 중에 컨테이너가 계속 재시작될 수 있다.
 - 이미지 태그 `1.0.0`처럼 버전을 고정한다. `latest`를 쓰면 롤백 기준이 사라진다.
+- **실제로 확인한 결과:** 위 매니페스트를 그대로 적용하면 `khac/api:1.0.0` 이미지가 없어서 Pod가 `ErrImagePull`, `ImagePullBackOff`가 되고, `rollout status`가 시간 초과로 끝나지 않는다. 이미지 태그를 맞춰야 하는 이유다.
 
 ---
 
-## 4. 롤링 배포와 롤백 (명령 예시, 미실행)
+## 4. 롤링 배포와 롤백
 
 ```bash
 kubectl apply -f khac-api.yaml          # 선언 적용
@@ -104,6 +105,8 @@ kubectl rollout status deployment/khac-api
 kubectl get pods -l app=khac-api
 kubectl rollout undo deployment/khac-api  # 이전 버전으로 되돌린다
 ```
+
+**실행 결과(nginx 사본):** `rollout status`는 새 Pod가 준비될 때까지 기다렸고, `set image`로 `1.26`을 배포한 뒤 `rollout undo`로 `1.27`로 돌아갔다. `rollout undo`는 `last-applied-configuration` 주석을 갱신하지 않으므로 kubectl이 경고를 낸다. 이후 `apply`를 쓸 때는 주의해야 한다.
 
 Deployment는 이미지를 바꾸면 새 ReplicaSet을 만들고, `maxSurge`와 `maxUnavailable` 규칙에 따라 Pod를 하나씩 교체한다. 새 Pod의 readiness가 통과해야 다음 교체가 진행된다.
 
