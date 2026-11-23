@@ -248,6 +248,46 @@ Ensure that the compiler uses the '-parameters' flag.
 
 **면접 기준**: "REST는 URL로 자원을 가리키고 HTTP 메서드로 동작을 나타냅니다. 생성은 201, 없는 자원은 404, 삭제는 204로 응답하고, 이 계약을 MockMvc 테스트로 확인합니다."
 
+## 요청 값과 응답 본문: @RequestParam, ResponseEntity, HttpMessageConverter (2026-11-24 보강, MockMvc로 확인함)
+
+**출처**: 선생님 자료 `springboot4☆/4장-흐름.html`(퀴즈 컨트롤러 요청 흐름)을 바탕으로 정리했다. 예제는 MockMvc standalone으로 실행해 확인했다.
+
+```java
+@RestController
+public static class QuizController {
+    @GetMapping("/quiz")
+    public ResponseEntity<?> quiz(@RequestParam int code) {   // ?code=1 의 값을 int로 꺼낸다
+        switch (code) {
+            case 1:
+                return ResponseEntity.status(HttpStatus.CREATED).body("created by code 1");
+            case 2:
+                return ResponseEntity.ok(Map.of("code", 2, "message", "ok"));
+            default:
+                return ResponseEntity.badRequest().body("unknown code: " + code);
+        }
+    }
+}
+```
+
+**실행 결과 (확인함)**
+
+```
+code=1 -> 201 type=text/plain;charset=ISO-8859-1 body=created by code 1
+code=2 -> 200 type=application/json body={"message":"ok","code":2}
+code=9 -> 400 type=text/plain;charset=ISO-8859-1 body=unknown code: 9
+```
+
+**읽는 법**
+- `@RequestParam`은 주소의 `?code=1` 같은 **쿼리 값**을 메서드 인자로 가져온다. 값이 없거나 `int`로 바꿀 수 없으면 400 응답이 난다.
+- `ResponseEntity`는 **상태 코드, 헤더, 본문**을 한꺼번에 정한다. `201`, `200`, `400`을 코드에서 고른다.
+- **HttpMessageConverter**가 본문을 바꾼다. 본문이 **글자(String)**면 `text/plain`으로, **객체**(`Map`, DTO)면 Jackson이 JSON으로 바꿔 `application/json`으로 보낸다. 같은 컨트롤러라도 반환 타입에 따라 응답 형식이 달라진다.
+
+**주의**
+- 쿼리 값은 항상 글자로 들어온다. 숫자로 쓰려면 `int`로 선언해서 Spring이 바꾸게 하거나 직접 변환한다.
+- 본문을 글자로 돌려주면서 JSON처럼 보이게 쓰면(`"{...}"`) 클라이언트가 `Content-Type`을 보고 잘못 읽을 수 있다. 객체를 돌려주고 JSON 변환을 맡긴다.
+
+**면접 기준**: "`@RequestParam`으로 쿼리 값을 받고, `ResponseEntity`로 상태 코드와 본문을 정합니다. 본문이 객체면 HttpMessageConverter(Jackson)가 JSON으로 바꿔 보냅니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
