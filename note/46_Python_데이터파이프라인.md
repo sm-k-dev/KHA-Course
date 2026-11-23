@@ -8,8 +8,8 @@
 
 ## 1. 왜 Python인가
 
-- 2장과 13장에서 쓴 Java는 **타입이 엄격하고 서버 애플리케이션**에 강하다.
-- Python은 **데이터 수집, 변환, 분석, AI 라이브러리**에 강하다. 로드맵의 AI 트랙(37–40장)과 데이터 분석(36장)이 모두 Python을 쓴다.
+- 2장과 17장에서 쓴 Java는 **타입이 엄격하고 서버 애플리케이션**에 강하다.
+- Python은 **데이터 수집, 변환, 분석, AI 라이브러리**에 강하다. 로드맵의 AI 트랙(37–52장)과 데이터 분석(47장)이 모두 Python을 쓴다.
 - 문법은 짧고, 들여쓰기로 블록을 나눈다. 대신 타입 실수는 **실행할 때** 드러난다.
 
 ### 1.1 Java와 나란히 보기
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
 **실행 결과:** `2` (확인함). A2는 `sales`가 숫자가 아니어서 건너뛰고, 두 번 적재해도 2행이다.
 
-`ON CONFLICT ... DO UPDATE`는 SQLite 문법이다. MySQL에서는 `INSERT ... ON DUPLICATE KEY UPDATE`를 쓴다. 32장의 ETL 멱등성 설명과 같은 원리다.
+`ON CONFLICT ... DO UPDATE`는 SQLite 문법이다. MySQL에서는 `INSERT ... ON DUPLICATE KEY UPDATE`를 쓴다. 43장의 ETL 멱등성 설명과 같은 원리다.
 
 ---
 
