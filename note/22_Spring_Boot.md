@@ -218,6 +218,29 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "빌드는 소스를 실행 가능한 결과물로 만드는 단계이고, 실행은 그것을 돌려 보는 단계, 배포는 서버에 올려 서비스하는 단계입니다. 각 단계에서 실패 원인이 다르므로 나눠서 확인합니다."
 
+### 4-4. Gradle 프로젝트 가져오기와 내보내기 (2026-11-24 보강, 공식 문서 검색 결과 기반)
+
+**출처**: 웹 검색으로 찾은 공식 문서 요약을 바탕으로 정리했다. 원문은 다음과 같다.
+- [JetBrains, Gradle 도움말](https://www.jetbrains.com/help/idea/gradle.html)
+- [JetBrains, 프로젝트 가져오기](https://www.jetbrains.com/help/idea/import-project-or-module-wizard.html)
+- [JetBrains, Gradle 설정](https://www.jetbrains.com/help/idea/gradle-settings.html)
+- [Spring Boot 레퍼런스, 애플리케이션 실행](https://docs.spring.io/spring-boot/reference/using/running-your-application.html)
+
+**확인 범위**: 검색 결과의 요약만 읽었고 IDE 화면 조작은 이 PC에서 하지 않았다. 아래 단계는 **미실행**이다. 실제 버전에 맞게 원문에서 다시 확인한다.
+
+**가져오기 (Import, 기존 Gradle 프로젝트를 IDE에서 열기)**
+1. 빌드 파일(`build.gradle`)이 있는 폴더를 고른다. IDE는 그 폴더를 열고 Gradle과 동기화한다.
+2. 이미 프로젝트가 열려 있다면 Gradle 도구 창에서 **Link Gradle Project**로 빌드 파일을 연결한다.
+3. 같은 폴더에 Eclipse 설정과 Gradle 설정이 함께 있으면 IDE가 어느 쪽으로 열지 묻는다. Gradle을 고르면 빌드 스크립트를 실행하고 의존성을 내려받는다.
+4. 프로젝트마다 Gradle 배포판과 JDK는 `Build, Execution, Deployment → Gradle` 설정에서 맞춘다.
+
+**내보내기 (Export, 다른 사람이 같은 프로젝트를 받게 하기)**
+- IDE 기능이라기보다 **저장소에 올릴 파일을 고르는 일**이다. `build/`, `.gradle/`, `.idea/`, `bin/` 같은 생성물은 빼고, `build.gradle`, `settings.gradle`, `gradlew`, `src/`를 올린다.
+- 실행 결과물(jar)은 `gradle build`로 만든다(위 4-1절). 배포는 그 jar를 서버에 올리는 별도 단계다.
+- Spring Boot 문서는 IDE가 프로젝트를 바로 읽지 못하면 빌드 플러그인으로 IDE 정보를 만들 수 있다고 안내한다. 대부분의 최신 IDE는 Gradle을 직접 지원한다.
+
+**면접 기준**: "Gradle 프로젝트는 빌드 파일을 IDE에 연결해서 열고, 공유할 때는 소스와 빌드 설정만 올리고 생성물은 제외합니다. 결과물은 `gradle build`로 만들고, 배포는 그 결과를 서버에 올리는 단계입니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
