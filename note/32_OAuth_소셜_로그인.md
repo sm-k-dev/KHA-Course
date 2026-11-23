@@ -165,6 +165,50 @@ public class SecurityConfig {
 
 ---
 
+## 토큰 만료 후 재발급과 재요청 (2026-11-23 보강, Node로 확인함)
+
+**출처**: 선생님 자료 `springboot4☆/11장_OAuth2로 로그인_로그아웃 구현하기.html`의 "화면 자바스크립트: 토큰 재발급과 요청 함수" 절. 액세스 토큰은 짧게 두고, 만료되면 리프레시 토큰으로 새 액세스 토큰을 받아 같은 요청을 한 번 더 보내는 흐름이다.
+
+**흐름**
+1. 액세스 토큰으로 API를 호출한다.
+2. 서버가 만료된 토큰을 보고 **401**을 돌려준다.
+3. 클라이언트는 리프레시 토큰이 있는지 확인한다. 있으면 `/api/token`에 요청해 새 액세스 토큰을 받는다.
+4. 저장된 토큰을 새 값으로 바꾸고, **같은 요청을 한 번 더** 보낸다.
+5. 재발급도 실패하면 로그인 화면으로 보낸다. 리프레시 토큰이 없으면 401을 그대로 돌려준다.
+
+```javascript
+// 클라이언트 (요약): 401이면 재발급 후 한 번만 재요청한다
+async function httpRequest(url, options = {}, allowRetry = true) {
+  const res = await fetch(base + url, {
+    ...options,
+    headers: { ...(options.headers || {}), Authorization: `Bearer ${accessToken}`, Cookie: cookies },
+  });
+  if (res.status === 401 && allowRetry && cookies.includes('refresh_token=')) {
+    const r = await fetch(base + '/api/token', { method: 'POST', headers: { Cookie: cookies } });
+    if (r.status === 200) {
+      accessToken = (await r.json()).accessToken;   // 저장값을 새 액세스 토큰으로 교체
+      return httpRequest(url, options, false);      // 재발급 후 같은 요청을 한 번 더
+    }
+  }
+  return res;
+}
+```
+
+서버 쪽은 `/api/token`이 리프레시 토큰을 확인하고 새 액세스 토큰을 돌려준다. `/api/**` 요청에 인증이 없으면 화면으로 이동시키지 않고 401을 준다(자료의 WebOAuthSecurityConfig).
+
+**확인 결과 (Node 목 서버로 확인함)**: 만료 토큰으로 첫 호출 → 401 → 재발급 1회 → 같은 요청 200. 리프레시 쿠키가 없을 때는 재발급 없이 401이 그대로 나왔다.
+
+```
+first call status: 200 | reissued: 1 | token now: valid-2
+body: [{"id":1,"title":"hello"}]
+no refresh cookie status: 401 | reissued: 1
+```
+
+**주의: HttpOnly 쿠키는 JavaScript로 읽을 수 없다**
+자료의 화면 코드는 `getCookie("refresh_token")`으로 쿠키를 읽어 `/api/token`에 넘긴다. 그런데 리프레시 토큰을 `HttpOnly`로 설정하면 JavaScript에서 쿠키 값을 읽을 수 없다. 이것이 자료 코드의 맹점이다. 이 방식이라면 쿠키를 `HttpOnly`로 두지 않거나, 재발급 요청을 `credentials: 'include'`로 보내서 브라우저가 쿠키를 자동으로 붙이게 한다. 보안을 위해서는 후자가 낫다. 반면 액세스 토큰을 로컬 스토리지에 두면 XSS로 탈취될 수 있다(위 "흔한 실수" 표).
+
+**면접 기준**: "액세스 토큰은 짧게 두고, 401을 받으면 리프레시 토큰으로 재발급해서 같은 요청을 한 번만 다시 보냅니다. 리프레시 토큰은 HttpOnly 쿠키로 두고 JavaScript가 읽지 못하게 합니다."
+
 ## 단원 통과 기준
 
 - [ ] OAuth 2.0의 네 역할을 예시와 함께 설명할 수 있다.

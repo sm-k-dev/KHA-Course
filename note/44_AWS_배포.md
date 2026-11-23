@@ -310,6 +310,45 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
 **면접 기준**: "빈스톡은 EC2와 보안 그룹을 자동으로 만들어 jar를 실행하는 서비스입니다. 빈스톡이 EC2를 만들 권한과 EC2가 쓸 권한을 역할로 나눠 주고, 파일은 S3에 둡니다."
 
+### 3-3. S3 업로드: 키 만들기와 권한 (2026-11-23 보강, 선생님 자료 기반)
+
+**출처**: 선생님 자료 `springboot4☆/12장_S3Upload흐름.html`(30단계 애니메이션 자습서). 키를 만드는 규칙은 이 PC에서 직접 실행해 확인했다. AWS 연결과 업로드 자체는 미실행이다.
+
+**흐름**: 글쓰기 화면에서 이미지를 고르면 `POST /api/upload`로 **먼저** S3에 올라가고, 돌아온 주소(URL)만 글 등록 때 DB에 저장한다. 파일 자체는 DB에 넣지 않는다.
+
+**키 규칙 `uploads/<UUID>.<확장자>`**
+
+```java
+static String keyFor(String originalName) {
+    int dot = originalName.lastIndexOf('.');
+    String ext = dot >= 0 ? originalName.substring(dot + 1).toLowerCase() : "bin";
+    return "uploads/" + UUID.randomUUID() + "." + ext;
+}
+```
+
+**확인 결과 (확인함)**
+```
+prefix ok=true, ext ok=true
+same name -> different key=true
+no extension -> true
+```
+
+- **UUID**: 같은 이름의 파일을 올려도 키가 달라서 기존 파일을 덮어쓰지 않는다.
+- **`uploads/` 접두사**: 버킷 정책을 `uploads/*`에만 공개 읽기로 걸 수 있다. 다른 경로는 공개되지 않는다.
+
+**권한 체계 (자료 기준)**
+- **업로드(쓰기)**: EC2에 붙은 **IAM 역할**에 `s3:PutObject` 권한이 있어야 한다. 없으면 업로드 때 500 오류와 `AccessDenied`가 난다.
+- **읽기**: 버킷 정책의 `s3:GetObject`가 `uploads/*`를 허용해야 브라우저가 이미지를 본다. "모든 퍼블릭 액세스 차단"이 켜져 있으면 막힌다.
+- 업로드가 되는데 `403 Forbidden`이 나면 **읽기** 쪽(버킷 정책, 퍼블릭 차단)을 먼저 본다. IAM 역할 문제는 업로드 때만 나온다.
+
+**프로파일**: `local` 프로파일에서는 내 PC 폴더에 저장하고, 배포 환경에서는 S3에 저장한다. 두 구현은 `@Profile`로 하나만 빈이 된다.
+
+**흔한 실수**
+- 1MB가 넘는 사진만 실패한다: Spring의 기본 업로드 크기 제한(`spring.servlet.multipart.max-file-size`)이 1MB이기 때문이다. 자료 기준으로 설정을 늘린다.
+- 원래 파일 이름을 그대로 키로 쓴다: 같은 이름이 덮어써지고, 한글이나 공백 때문에 주소가 깨질 수 있다.
+
+**면접 기준**: "업로드 파일은 S3에 UUID 키로 저장하고, 글에는 주소만 남깁니다. 업로드 권한은 IAM 역할, 읽기 권한은 버킷 정책으로 나눠 관리합니다."
+
 ## 4. IAM (권한 관리)
 
 - **정의:** 클라우드에서 누가(사용자, 서비스) 어떤 자원에 어떤 작업을 할 수 있는지 정하는 권한 체계다.
