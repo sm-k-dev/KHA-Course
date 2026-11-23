@@ -201,6 +201,126 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "폼 값은 `@ModelAttribute` 객체에 바인딩되고, `@Valid`로 규칙을 확인합니다. 실패한 항목은 `BindingResult`에 모여서 화면에 다시 보여 줍니다."
 
+### 4-1. 빌드 파일 읽고 실행하기 (2026-11-23 보강)
+
+> 확인 범위: Gradle 빌드 파일은 작성했고, 같은 과정을 `javac`·`jar`로 직접 실행해 확인했다. `gradle build` 자체는 이 환경에서 실행하지 못했다(아래 참고). Maven은 이 PC에 설치되어 있지 않아 미실행이다.
+
+**Gradle 빌드 파일 (`build.gradle`)**
+
+```groovy
+plugins {
+    id 'java'
+    id 'application'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21          // 21 바이트코드로 컴파일 (JDK 25로 빌드해도 됨)
+}
+
+application {
+    mainClass = 'app.App'        // java -jar 실행 시 시작 클래스
+}
+```
+
+**확인한 것 (JDK 25에서 실행함)**
+
+```powershell
+javac --release 21 -d out src\main\java\app\App.java
+jar --create --file app.jar --main-class app.App -C out .
+java -jar app.jar
+javap -v out\app\App.class | findstr "major version"
+```
+
+- `java -jar app.jar`가 `Hello from Gradle build`를 출력했다.
+- `major version: 65`가 나왔다. 클래스 파일 버전 65는 Java 21이다. 즉 `--release 21`이 실제로 바이트코드에 반영되었다.
+- 이 순서가 Gradle `build`와 `jar` 태스크가 하는 일이다. 빌드 도구는 의존성 내려받기와 이 순서를 자동화한다.
+
+**`gradle build`가 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
+
+**명령 대응표**
+
+| 목적 | Maven | Gradle |
+|---|---|---|
+| 빌드와 jar 만들기 | `mvn package` | `gradle build` |
+| 테스트 실행 | `mvn test` | `gradle test` |
+| 의존성 트리 보기 | `mvn dependency:tree` | `gradle dependencies` |
+| 빌드 결과 지우기 | `mvn clean` | `gradle clean` |
+| 실행 | `java -jar target/app.jar` | `java -jar build/libs/app.jar` |
+
+**Maven 설정 예 (`pom.xml`, 미실행)**
+
+```xml
+<properties>
+    <java.version>21</java.version>
+</properties>
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**읽는 법**: Spring Boot 프로젝트에서 `spring-boot-starter-web` 한 줄을 넣으면 웹 서버와 JSON 변환 라이브러리가 함께 들어온다. 버전은 Spring Boot 부모 설정이 맞춰 준다. 의존성이 실제로 어떻게 들어오는지는 `mvn dependency:tree`나 `gradle dependencies`로 확인한다.
+
+### 4-2. Lombok과 record (2026-11-23 보강, JDK 25에서 확인함)
+
+Lombok은 getter, `equals`, `toString` 같은 반복 코드를 컴파일 때 만들어 준다. `record`는 언어 기능으로 같은 목적을 달성한다. 둘 다 실무에서 보이므로 차이를 알아야 한다.
+
+```java
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+public class LombokDemo {
+    @Getter @ToString @EqualsAndHashCode @Builder
+    static class MemberDto {
+        private final String name;
+        private final int age;
+    }
+
+    record MemberRecord(String name, int age) {}
+
+    public static void main(String[] args) {
+        MemberDto a = MemberDto.builder().name("kim").age(30).build();
+        MemberDto b = MemberDto.builder().name("kim").age(30).build();
+        System.out.println(a);
+        System.out.println(a.equals(b) + " " + a.getName());
+        MemberRecord r1 = new MemberRecord("kim", 30);
+        System.out.println(r1);
+        System.out.println(r1.equals(new MemberRecord("kim", 30)) + " " + r1.name());
+    }
+}
+```
+
+**실행 방법 (확인함)**: Lombok jar(1.18.46)를 `-cp`와 `-processorpath`에 같이 지정해 컴파일한다. JDK 25에서 `sun.misc.Unsafe` 경고가 나오지만 결과는 정상이다.
+
+```powershell
+javac -cp lombok.jar -processorpath lombok.jar -d out LombokDemo.java
+java -cp out LombokDemo
+```
+
+**실행 결과 (확인함)**
+
+```
+LombokDemo.MemberDto(name=kim, age=30)
+true kim
+MemberRecord[name=kim, age=30]
+true kim
+```
+
+**선택 기준**
+
+| 구분 | Lombok | record |
+|---|---|---|
+| 용도 | 일반 클래스, 엔티티, 가변 객체 | 값만 담는 불변 데이터 (DTO, 응답 객체) |
+| 설정 | 라이브러리 의존성과 IDE 플러그인 필요 | JDK 16 이상이면 바로 사용 |
+| JPA 엔티티 | `@NoArgsConstructor`와 함께 쓰고 상태 변경 메서드를 둔다 | 기본 생성자가 없어 엔티티로 쓰기 어렵다 |
+| 디버깅 | 생성된 코드가 보이지 않아 혼란이 있을 수 있다 | 코드가 그대로 보인다 |
+
+**면접 기준**: "응답용 DTO처럼 값만 담는 객체는 `record`를 쓰고, JPA 엔티티처럼 상태가 바뀌는 객체는 Lombok을 씁니다. 두 방식 모두 반복 코드를 줄입니다."
+
 ### 4-3. 빌드, 실행, 배포는 다른 단계다 (2026-11-24 보강, 선생님 자료 기반)
 
 **참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
@@ -218,7 +338,7 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "빌드는 소스를 실행 가능한 결과물로 만드는 단계이고, 실행은 그것을 돌려 보는 단계, 배포는 서버에 올려 서비스하는 단계입니다. 각 단계에서 실패 원인이 다르므로 나눠서 확인합니다."
 
-### 4-4. Gradle 프로젝트 가져오기와 내보내기 (2026-11-24 보강, 공식 문서 검색 결과 기반)
+### 4-4. Gradle 프로젝트 가져오기와 내보내기 (IntelliJ·STS, 2026-11-24 보강)
 
 **참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 - [JetBrains, Gradle 도움말](https://www.jetbrains.com/help/idea/gradle.html)
@@ -242,7 +362,7 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "Gradle 프로젝트는 빌드 파일을 IDE에 연결해서 열고, 공유할 때는 소스와 빌드 설정만 올리고 생성물은 제외합니다. 결과물은 `gradle build`로 만들고, 배포는 그 결과를 서버에 올리는 단계입니다."
 
-### 4-5. STS(이클립스 기반) 가져오기 절차와 자주 나는 오류 (2026-11-24 보강, 선생님 자료 기반, 미실행)
+**STS(이클립스 기반) 가져오기와 자주 나는 오류** — 4-4절의 가져오기·내보내기 원칙을 STS 메뉴로 옮긴 것이다. (2026-11-24 보강, 선생님 자료 기반, 미실행)
 
 **참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
@@ -406,126 +526,6 @@ spring:
 - **설정 분리:** 프로파일(`application-prod.yml`)과 환경 변수로 DB 주소와 비밀번호를 코드 밖에서 넣는다.
 - **앞단 웹 서버:** 운영에서는 Nginx를 앞에 두고 80/443 요청을 앱의 8080 포트로 넘기는 구성을 흔히 쓴다(리버스 프록시). 앱을 여러 개 띄우고 Nginx가 나눠 보내면 로드밸런싱이 된다.
 - **면접 기준:** "Maven/Gradle로 빌드하고 jar 하나로 배포하며, 설정은 환경 변수로 분리하고, 앞단에 Nginx를 둬서 요청을 앱으로 전달합니다."
-
-### 4-1. 빌드 파일 읽고 실행하기 (2026-11-23 보강)
-
-> 확인 범위: Gradle 빌드 파일은 작성했고, 같은 과정을 `javac`·`jar`로 직접 실행해 확인했다. `gradle build` 자체는 이 환경에서 실행하지 못했다(아래 참고). Maven은 이 PC에 설치되어 있지 않아 미실행이다.
-
-**Gradle 빌드 파일 (`build.gradle`)**
-
-```groovy
-plugins {
-    id 'java'
-    id 'application'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.release = 21          // 21 바이트코드로 컴파일 (JDK 25로 빌드해도 됨)
-}
-
-application {
-    mainClass = 'app.App'        // java -jar 실행 시 시작 클래스
-}
-```
-
-**확인한 것 (JDK 25에서 실행함)**
-
-```powershell
-javac --release 21 -d out src\main\java\app\App.java
-jar --create --file app.jar --main-class app.App -C out .
-java -jar app.jar
-javap -v out\app\App.class | findstr "major version"
-```
-
-- `java -jar app.jar`가 `Hello from Gradle build`를 출력했다.
-- `major version: 65`가 나왔다. 클래스 파일 버전 65는 Java 21이다. 즉 `--release 21`이 실제로 바이트코드에 반영되었다.
-- 이 순서가 Gradle `build`와 `jar` 태스크가 하는 일이다. 빌드 도구는 의존성 내려받기와 이 순서를 자동화한다.
-
-**`gradle build`가 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
-
-**명령 대응표**
-
-| 목적 | Maven | Gradle |
-|---|---|---|
-| 빌드와 jar 만들기 | `mvn package` | `gradle build` |
-| 테스트 실행 | `mvn test` | `gradle test` |
-| 의존성 트리 보기 | `mvn dependency:tree` | `gradle dependencies` |
-| 빌드 결과 지우기 | `mvn clean` | `gradle clean` |
-| 실행 | `java -jar target/app.jar` | `java -jar build/libs/app.jar` |
-
-**Maven 설정 예 (`pom.xml`, 미실행)**
-
-```xml
-<properties>
-    <java.version>21</java.version>
-</properties>
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-</dependencies>
-```
-
-**읽는 법**: Spring Boot 프로젝트에서 `spring-boot-starter-web` 한 줄을 넣으면 웹 서버와 JSON 변환 라이브러리가 함께 들어온다. 버전은 Spring Boot 부모 설정이 맞춰 준다. 의존성이 실제로 어떻게 들어오는지는 `mvn dependency:tree`나 `gradle dependencies`로 확인한다.
-
-### 4-2. Lombok과 record (2026-11-23 보강, JDK 25에서 확인함)
-
-Lombok은 getter, `equals`, `toString` 같은 반복 코드를 컴파일 때 만들어 준다. `record`는 언어 기능으로 같은 목적을 달성한다. 둘 다 실무에서 보이므로 차이를 알아야 한다.
-
-```java
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
-public class LombokDemo {
-    @Getter @ToString @EqualsAndHashCode @Builder
-    static class MemberDto {
-        private final String name;
-        private final int age;
-    }
-
-    record MemberRecord(String name, int age) {}
-
-    public static void main(String[] args) {
-        MemberDto a = MemberDto.builder().name("kim").age(30).build();
-        MemberDto b = MemberDto.builder().name("kim").age(30).build();
-        System.out.println(a);
-        System.out.println(a.equals(b) + " " + a.getName());
-        MemberRecord r1 = new MemberRecord("kim", 30);
-        System.out.println(r1);
-        System.out.println(r1.equals(new MemberRecord("kim", 30)) + " " + r1.name());
-    }
-}
-```
-
-**실행 방법 (확인함)**: Lombok jar(1.18.46)를 `-cp`와 `-processorpath`에 같이 지정해 컴파일한다. JDK 25에서 `sun.misc.Unsafe` 경고가 나오지만 결과는 정상이다.
-
-```powershell
-javac -cp lombok.jar -processorpath lombok.jar -d out LombokDemo.java
-java -cp out LombokDemo
-```
-
-**실행 결과 (확인함)**
-
-```
-LombokDemo.MemberDto(name=kim, age=30)
-true kim
-MemberRecord[name=kim, age=30]
-true kim
-```
-
-**선택 기준**
-
-| 구분 | Lombok | record |
-|---|---|---|
-| 용도 | 일반 클래스, 엔티티, 가변 객체 | 값만 담는 불변 데이터 (DTO, 응답 객체) |
-| 설정 | 라이브러리 의존성과 IDE 플러그인 필요 | JDK 16 이상이면 바로 사용 |
-| JPA 엔티티 | `@NoArgsConstructor`와 함께 쓰고 상태 변경 메서드를 둔다 | 기본 생성자가 없어 엔티티로 쓰기 어렵다 |
-| 디버깅 | 생성된 코드가 보이지 않아 혼란이 있을 수 있다 | 코드가 그대로 보인다 |
-
-**면접 기준**: "응답용 DTO처럼 값만 담는 객체는 `record`를 쓰고, JPA 엔티티처럼 상태가 바뀌는 객체는 Lombok을 씁니다. 두 방식 모두 반복 코드를 줄입니다."
 
 ## 5. 테스트 도구: JUnit 5와 Mockito
 

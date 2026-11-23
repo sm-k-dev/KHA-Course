@@ -221,8 +221,6 @@ cfg.setProperty("hibernate.default_batch_fetch_size", "10");
 - 컬렉션(책 목록)을 fetch join이나 EntityGraph로 가져오면서 **페이징**을 함께 쓰면 DB 페이징이 아니라 메모리에서 잘린다. 이때는 batch size나 2단계 조회를 쓴다.
 - 책 **개수만** 필요하면 위 방법들보다 DTO 집계 조회가 더 가볍다(위 "N+1 (SQL 수 세기)" 절).
 
-**면접 기준**: "N+1은 목록 조회 뒤 연관 데이터를 항목마다 다시 조회하는 문제입니다. 해결은 필요한 값만 DTO로 집계하거나, 연관 데이터를 목록 조회 때 함께 가져오는 것(fetch join, EntityGraph)입니다. 설정으로는 batch size로 묶어 줄입니다."
-
 ### 컬렉션 연관관계: cascade와 orphanRemoval (2026-11-23 보강, Hibernate 7.4.5에서 확인함)
 
 **참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
