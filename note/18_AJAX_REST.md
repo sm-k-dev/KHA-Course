@@ -106,21 +106,21 @@ Network 탭에서 요청과 JSON 응답을 확인한다.
 
 ## REST CRUD 한 번에 보기: 201·200·404·204 (2026-11-23 보강, MockMvc로 확인함)
 
-**출처**: 선생님 자료 `springboot4☆/6장 블로그 기획하고 API 만들기.html`의 글 작성·조회·수정·삭제 API 흐름을 정리했다. 원 자료는 Spring Boot와 JPA(`JpaRepository`)로 만든다. 여기서는 **REST 규칙(URL, 메서드, 상태 코드)만** 보려고 저장소를 메모리 `Map`으로 바꿨다. 실행은 MockMvc standalone 설정으로 했다(서버는 띄우지 않았다).
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **REST 규칙 표**
 
 | 동작 | 요청 | 성공 응답 | 없을 때 |
 |---|---|---|---|
-| 글 작성 | `POST /api/articles` | 201 Created | - |
-| 목록 조회 | `GET /api/articles` | 200 OK | - |
-| 한 건 조회 | `GET /api/articles/{id}` | 200 OK | 404 Not Found |
-| 수정 | `PUT /api/articles/{id}` | 200 OK | 404 Not Found |
-| 삭제 | `DELETE /api/articles/{id}` | 204 No Content | 404 Not Found |
+| 메모 작성 | `POST /api/notes` | 201 Created | - |
+| 목록 조회 | `GET /api/notes` | 200 OK | - |
+| 한 건 조회 | `GET /api/notes/{id}` | 200 OK | 404 Not Found |
+| 수정 | `PUT /api/notes/{id}` | 200 OK | 404 Not Found |
+| 삭제 | `DELETE /api/notes/{id}` | 204 No Content | 404 Not Found |
 
 ```java
 // 실행 시 -parameters 옵션이 필요하다 (아래 "주의" 참고)
-package com.example.blog;
+package com.example.notes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,42 +146,42 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-public class ArticleApi {
+public class NoteApi {
 
-    record Article(Long id, String title, String content) {}
-    record AddArticleRequest(String title, String content) {}
-    record UpdateArticleRequest(String title, String content) {}
+    record Note(Long id, String title, String content) {}
+    record AddNoteRequest(String title, String content) {}
+    record UpdateNoteRequest(String title, String content) {}
 
     @RestController
-    @RequestMapping("/api/articles")
-    static class ArticleController {
-        private final Map<Long, Article> store = new ConcurrentHashMap<>();
+    @RequestMapping("/api/notes")
+    static class NoteController {
+        private final Map<Long, Note> store = new ConcurrentHashMap<>();
         private final AtomicLong seq = new AtomicLong();
 
         @PostMapping
-        ResponseEntity<Article> add(@RequestBody AddArticleRequest req) {
-            Article a = new Article(seq.incrementAndGet(), req.title(), req.content());
+        ResponseEntity<Note> add(@RequestBody AddNoteRequest req) {
+            Note a = new Note(seq.incrementAndGet(), req.title(), req.content());
             store.put(a.id(), a);
             return ResponseEntity.status(HttpStatus.CREATED).body(a);      // 201 Created
         }
 
         @GetMapping
-        List<Article> findAll() {
+        List<Note> findAll() {
             return new ArrayList<>(store.values());                       // 200 OK
         }
 
         @GetMapping("/{id}")
-        ResponseEntity<Article> findOne(@PathVariable Long id) {
-            Article a = store.get(id);
+        ResponseEntity<Note> findOne(@PathVariable Long id) {
+            Note a = store.get(id);
             return a == null ? ResponseEntity.notFound().build()           // 404 Not Found
                              : ResponseEntity.ok(a);                       // 200 OK
         }
 
         @PutMapping("/{id}")
-        ResponseEntity<Article> update(@PathVariable Long id, @RequestBody UpdateArticleRequest req) {
-            Article old = store.get(id);
+        ResponseEntity<Note> update(@PathVariable Long id, @RequestBody UpdateNoteRequest req) {
+            Note old = store.get(id);
             if (old == null) return ResponseEntity.notFound().build();
-            Article updated = new Article(id, req.title(), req.content());
+            Note updated = new Note(id, req.title(), req.content());
             store.put(id, updated);
             return ResponseEntity.ok(updated);                            // 200 OK
         }
@@ -194,25 +194,25 @@ public class ArticleApi {
     }
 
     public static void main(String[] args) throws Exception {
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new ArticleController()).build();
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(new NoteController()).build();
 
-        MvcResult created = mvc.perform(post("/api/articles")
+        MvcResult created = mvc.perform(post("/api/notes")
                         .contentType("application/json")
                         .content("{\"title\":\"hello\",\"content\":\"first post\"}"))
                 .andReturn();
         System.out.println("POST    -> " + created.getResponse().getStatus() + " " + created.getResponse().getContentAsString());
-        System.out.println("GET     -> " + mvc.perform(get("/api/articles")).andReturn().getResponse().getStatus()
-                + " " + mvc.perform(get("/api/articles")).andReturn().getResponse().getContentAsString());
-        System.out.println("GET 1   -> " + mvc.perform(get("/api/articles/1")).andReturn().getResponse().getStatus());
-        System.out.println("GET 999 -> " + mvc.perform(get("/api/articles/999")).andReturn().getResponse().getStatus());
+        System.out.println("GET     -> " + mvc.perform(get("/api/notes")).andReturn().getResponse().getStatus()
+                + " " + mvc.perform(get("/api/notes")).andReturn().getResponse().getContentAsString());
+        System.out.println("GET 1   -> " + mvc.perform(get("/api/notes/1")).andReturn().getResponse().getStatus());
+        System.out.println("GET 999 -> " + mvc.perform(get("/api/notes/999")).andReturn().getResponse().getStatus());
 
-        MvcResult updated = mvc.perform(put("/api/articles/1")
+        MvcResult updated = mvc.perform(put("/api/notes/1")
                         .contentType("application/json")
                         .content("{\"title\":\"hello v2\",\"content\":\"edited\"}"))
                 .andReturn();
         System.out.println("PUT 1   -> " + updated.getResponse().getStatus() + " " + updated.getResponse().getContentAsString());
-        System.out.println("DELETE 1   -> " + mvc.perform(delete("/api/articles/1")).andReturn().getResponse().getStatus());
-        System.out.println("GET 1 after -> " + mvc.perform(get("/api/articles/1")).andReturn().getResponse().getStatus());
+        System.out.println("DELETE 1   -> " + mvc.perform(delete("/api/notes/1")).andReturn().getResponse().getStatus());
+        System.out.println("GET 1 after -> " + mvc.perform(get("/api/notes/1")).andReturn().getResponse().getStatus());
     }
 }
 ```
@@ -243,14 +243,14 @@ Ensure that the compiler uses the '-parameters' flag.
 
 **읽는 법**
 - 상태 코드는 결과를 알리는 약속이다. 새 자원은 201, 없는 자원은 404, 본문 없이 끝나는 삭제는 204다.
-- 자료의 실제 블로그는 `JpaRepository`를 쓰므로 `findById`가 없으면 `Optional.empty()`가 돌아온다. 그 뒤 `orElse(404)`로 바꾸는 방식이 같은 원리다(25장).
+- 원 자료의 예제 앱은 `JpaRepository`를 쓰므로 `findById`가 없으면 `Optional.empty()`가 돌아온다. 그 뒤 `orElse(404)`로 바꾸는 방식이 같은 원리다(25장).
 - 수정(PUT)은 자료에서 트랜잭션과 변경 감지로 처리한다(25장 6-3). 조회 후 필드만 바꾸면 UPDATE가 자동으로 나간다.
 
 **면접 기준**: "REST는 URL로 자원을 가리키고 HTTP 메서드로 동작을 나타냅니다. 생성은 201, 없는 자원은 404, 삭제는 204로 응답하고, 이 계약을 MockMvc 테스트로 확인합니다."
 
 ## 요청 값과 응답 본문: @RequestParam, ResponseEntity, HttpMessageConverter (2026-11-24 보강, MockMvc로 확인함)
 
-**출처**: 선생님 자료 `springboot4☆/4장-흐름.html`(퀴즈 컨트롤러 요청 흐름)을 바탕으로 정리했다. 예제는 MockMvc standalone으로 실행해 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 ```java
 @RestController
@@ -290,7 +290,7 @@ code=9 -> 400 type=text/plain;charset=ISO-8859-1 body=unknown code: 9
 
 ## 브라우저에서 JSON 주고받기와 Bearer 토큰 보내기 (2026-11-24 보강, Node로 확인함)
 
-**출처**: 선생님 자료 `Additional_HandBook★/javascript_실무보충_자습서.html`의 3장(배열·객체·JSON), 6~7장(fetch GET·POST, JWT 인증)을 바탕으로 정리했다. 이 PC에서 Node의 `fetch`로 같은 흐름을 확인했다. 브라우저의 `localStorage` 저장은 Node에 없어서 개념만 적었다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **JSON 변환 두 가지**
 - `JSON.stringify(객체)`: 객체를 JSON **문자열**로 바꾼다. 서버로 보낼 때 쓴다.

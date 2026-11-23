@@ -190,42 +190,42 @@ SQL 로그에서 기본 조회와 fetch join의 쿼리 수를 비교한다.
 
 ### N+1 해결 비교: 지연 로딩, batch size, EntityGraph (2026-11-23 보강, Hibernate 7.4.5에서 SQL 수 확인함)
 
-**출처**: 선생님 자료 `Additional_HandBook★/파이널 준비 점검 1~2교시 실습 노트.html`의 사건 1 해결 4가지(DTO 직접 조회, fetch join, `@EntityGraph`, batch size) 중 세 가지를 실제로 실행해 비교했다. DTO 조회는 위 "N+1 (SQL 수 세기)" 절과 같다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
-**실험 조건**: 맛집 5곳, 맛집마다 리뷰 2개(총 10개). 맛집 목록을 읽고 모든 맛집의 리뷰 수를 센다.
+**실험 조건**: 작가 5명, 작가마다 책 2권(총 10개). 작가 목록을 읽고 모든 작가의 책 수를 센다.
 
-| 방식 | 설정 | SQL 개수 (확인함) | 리뷰 수 |
+| 방식 | 설정 | SQL 개수 (확인함) | 책 수 |
 |---|---|---|---|
-| 기본 지연 로딩 | 아무것도 안 함 | **6** (목록 1 + 맛집마다 1) | 10 |
-| batch size | `hibernate.default_batch_fetch_size = 10` | **2** (목록 1 + 리뷰 묶음 1) | 10 |
-| EntityGraph | 목록을 읽을 때 `reviews`를 함께 지정 | **1** (조인으로 한 번에) | 10 |
+| 기본 지연 로딩 | 아무것도 안 함 | **6** (목록 1 + 작가마다 1) | 10 |
+| batch size | `hibernate.default_batch_fetch_size = 10` | **2** (목록 1 + 책 묶음 1) | 10 |
+| EntityGraph | 목록을 읽을 때 `books`를 함께 지정 | **1** (조인으로 한 번에) | 10 |
 
 ```java
-// EntityGraph: 목록 조회 때 리뷰까지 한 번에 가져온다
-EntityGraph<Store> graph = em.createEntityGraph(Store.class);
-graph.addAttributeNodes("reviews");
-List<Store> stores = em.createQuery("select s from Store s", Store.class)
+// EntityGraph: 목록 조회 때 책까지 한 번에 가져온다
+EntityGraph<Author> graph = em.createEntityGraph(Author.class);
+graph.addAttributeNodes("books");
+List<Author> authors = em.createQuery("select s from Author s", Author.class)
         .setHint("jakarta.persistence.fetchgraph", graph)
         .getResultList();
 
-// batch size: 설정 한 줄 (로딩 시점에 여러 맛집의 리뷰를 IN 절로 묶는다)
+// batch size: 설정 한 줄 (로딩 시점에 여러 작가의 책을 IN 절로 묶는다)
 cfg.setProperty("hibernate.default_batch_fetch_size", "10");
 ```
 
 **읽는 법**
-- **지연 로딩**: 리뷰를 실제로 쓰는 순간 맛집마다 SELECT가 나간다. 맛집 수가 늘면 SQL도 같이 늘어난다.
-- **batch size**: 코드는 그대로 두고 설정만 바꾼다. 여러 맛집의 리뷰를 한 번에 가져와 SQL 수를 줄인다. 기존 코드를 고치기 어려울 때 쓴다.
+- **지연 로딩**: 책을 실제로 쓰는 순간 작가마다 SELECT가 나간다. 작가 수가 늘면 SQL도 같이 늘어난다.
+- **batch size**: 코드는 그대로 두고 설정만 바꾼다. 여러 작가의 책을 한 번에 가져와 SQL 수를 줄인다. 기존 코드를 고치기 어려울 때 쓴다.
 - **EntityGraph**: 필요한 연관 데이터를 **목록 조회 시점에 명시**한다. SQL은 가장 적지만, 목록 쿼리마다 어떤 연관을 가져올지 정해야 한다.
 
 **주의**
-- 컬렉션(리뷰 목록)을 fetch join이나 EntityGraph로 가져오면서 **페이징**을 함께 쓰면 DB 페이징이 아니라 메모리에서 잘린다. 이때는 batch size나 2단계 조회를 쓴다.
-- 리뷰 **개수만** 필요하면 위 방법들보다 DTO 집계 조회가 더 가볍다(위 "N+1 (SQL 수 세기)" 절).
+- 컬렉션(책 목록)을 fetch join이나 EntityGraph로 가져오면서 **페이징**을 함께 쓰면 DB 페이징이 아니라 메모리에서 잘린다. 이때는 batch size나 2단계 조회를 쓴다.
+- 책 **개수만** 필요하면 위 방법들보다 DTO 집계 조회가 더 가볍다(위 "N+1 (SQL 수 세기)" 절).
 
 **면접 기준**: "N+1은 목록 조회 뒤 연관 데이터를 항목마다 다시 조회하는 문제입니다. 해결은 필요한 값만 DTO로 집계하거나, 연관 데이터를 목록 조회 때 함께 가져오는 것(fetch join, EntityGraph)입니다. 설정으로는 batch size로 묶어 줄입니다."
 
 ### 컬렉션 연관관계: cascade와 orphanRemoval (2026-11-23 보강, Hibernate 7.4.5에서 확인함)
 
-**출처**: 선생님 자료 `9_Spring_boot_JPA`의 `04 JPA collection-valued association` 강의 제목(컬렉션 연관관계)의 주제를 기준으로 예제를 만들어 확인했다. 강의 PDF는 사진이라서 글자를 옮기지 않았다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**
 - **cascade**: 부모에 대한 작업(저장, 삭제)을 자식에게도 전달한다.
@@ -265,63 +265,9 @@ static class Item5 {
 
 **면접 기준**: "컬렉션 연관관계에서 부모의 생명주기를 자식이 따르면 `cascade`를, 컬렉션에서 뺀 자식도 지우려면 `orphanRemoval`을 씁니다. 외래키는 자식(다) 쪽에 있습니다."
 
-### QueryDSL: 자바 코드로 조건을 조립하기 (2026-11-24 보강, 미실행)
-
-**출처**: 선생님 자료 `FinalTeamProject☆/tutorial_project/shop-tutorial.html`(쇼핑몰 실습, 상품 검색 Repository)의 설정과 사용 방식을 정리했다. 이 PC에는 QueryDSL 라이브러리가 없어서 **실행하지 않았다(미실행)**. 아래 설정과 코드는 자료의 내용을 옮긴 것이고, 버전은 자료 기준이다. 실제 프로젝트에서는 사용하는 Spring Boot 버전에 맞는 QueryDSL 버전을 확인한다.
-
-**왜 쓰나**: JPQL이나 `@Query` 문자열은 오타가 나도 컴파일이 되고, 실행해야 오류를 본다. QueryDSL은 엔티티 필드를 자바 코드로 가리키므로, 철자가 틀리면 **컴파일 단계에서** 잡힌다. 검색 조건이 여러 개일 때 조건을 조립하기도 쉽다.
-
-**설정 (자료 기준, Gradle)**
-
-```groovy
-implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'   // 컴파일할 때 Q 클래스(QItem 등)를 자동 생성
-```
-
-**핵심 개념**
-- **Q 클래스**: 빌드할 때 엔티티마다 자동으로 만들어진다. `QItem.item.itemNm`처럼 엔티티 필드를 가리키는 객체다.
-- **JPAQueryFactory**: 쿼리를 만드는 시작점이다. `EntityManager`로 생성한다.
-- **BooleanExpression**: `where`에 넣는 조건 하나다. 메서드로 만들어 두면 여러 쿼리에서 재사용한다. 값이 `null`이면 조건을 무시하게 만들 수 있다(검색어가 비어 있을 때 전체 조회).
-
-**사용 예 (자료 흐름을 옮긴 것, 미실행)**
-
-```java
-public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {   // 클래스 이름 끝에 Impl이 있어야 인식된다
-    private final JPAQueryFactory queryFactory;
-
-    public ItemRepositoryCustomImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
-
-    // 판매 상태가 없으면 null을 돌려주고, where는 null 조건을 무시한다
-    private BooleanExpression sellStatusEq(ItemSellStatus status) {
-        return status == null ? null : QItem.item.itemSellStatus.eq(status);
-    }
-
-    public List<Item> search(ItemSellStatus status) {
-        return queryFactory.selectFrom(QItem.item)
-                .where(sellStatusEq(status))
-                .orderBy(QItem.item.id.desc())
-                .offset(0).limit(10)
-                .fetch();
-    }
-}
-```
-
-**읽는 법**
-- `selectFrom(QItem.item)`은 `select … from item`이다. `where`, `orderBy`, `offset`, `limit`은 SQL의 같은 이름 절과 대응한다.
-- `fetch()`는 목록을, `fetchOne()`은 한 건을 돌려준다. 개수는 `select(Wildcard.count)`로 따로 센다.
-- `where` 안의 `null` 조건은 무시된다. 검색 화면에서 선택하지 않은 조건을 그대로 넘길 수 있다.
-
-**주의**
-- Q 클래스가 만들어지지 않으면 `QItem`을 찾을 수 없다는 컴파일 오류가 난다. IDE에서 빌드를 다시 하거나 annotation processing을 켠다(자료도 이 점을 강조한다).
-- 복잡한 조인과 통계는 JPQL보다 읽기 어려울 수 있다. 팀이 함께 쓰는 규칙(메서드 이름, 조건 분리)을 정한다.
-
-**면접 기준**: "QueryDSL은 엔티티 필드를 자바 코드로 쓰는 쿼리 도구입니다. Q 클래스가 컴파일 때 만들어져 오타를 컴파일 단계에서 잡고, 검색 조건은 BooleanExpression으로 나눠 조립합니다."
-
 ### 동적 검색: Specification과 distinct (2026-11-24 보강, MySQL 8.0과 Hibernate 7.4.5에서 확인함)
 
-**출처**: 선생님 자료 `9_SpringBoot_practice/sbb_2026.10.21_v1.zip`의 `QuestionService.search(kw)`(제목·답변·작성자에서 검색어 찾기)를 바탕으로 정리했다. 원 코드는 `Specification`과 `distinct`를 쓴다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **구조**: 검색어 `kw`가 들어오면 조건을 **런타임에** 만든다. 제목에서 찾고, 답변 내용에서 찾고, 작성자 이름에서 찾는다. 답변과 작성자는 조인이 필요하다.
 
@@ -358,7 +304,7 @@ Hibernate의 엔티티 목록은 중복을 제거해서 `distinct`를 빼도 3�
 **주의**
 - `LEFT JOIN`을 써야 답변이 없는 질문도 검색된다. `INNER JOIN`이면 답변이 없는 질문이 빠진다.
 - `kw`를 그대로 `LIKE`에 넣으면 `%`와 `_`가 특수 문자로 해석된다. 사용자가 입력한 값은 이스케이프하는 것이 안전하다.
-- 답변 내용을 검색하면서 HTML을 허용하면 화면 출력에서 XSS가 생길 수 있다(99장). SBB는 Markdown을 HTML로 바꾸는 `commonmark`를 쓰므로, 원시 HTML 출력 옵션을 확인한다. 이 부분은 라이브러리가 PC에 없어서 실행하지 않았다(미실행).
+- 답변 내용을 검색하면서 HTML을 허용하면 화면 출력에서 XSS가 생길 수 있다(99장). 실습 프로젝트는 Markdown을 HTML로 바꾸는 `commonmark`를 쓰므로, 원시 HTML 출력 옵션을 확인한다. 이 부분은 라이브러리가 PC에 없어서 실행하지 않았다(미실행).
 
 **면접 기준**: "검색 조건이 선택적이면 Specification이나 QueryDSL로 조건을 조립합니다. 답변처럼 여러 행과 조인하면 중복이 생기므로 `distinct`로 질문 단위를 맞추고, 개수와 페이징이 맞는지 확인합니다."
 
@@ -380,35 +326,35 @@ Hibernate의 엔티티 목록은 중복을 제거해서 `distinct`를 빼도 3�
 
 ## 연관관계의 주인과 mappedBy, 벌크 UPDATE 함정 (2026-11-23 보강)
 
-**출처와 확인 범위**: 선생님 자료 `AI_Code_Defect★/JPA + AI 코드 검증 시험공부 자습서`의 주제 A·D 내용을 정리했다. 아래 측정값은 **자료에 적힌 결과**다. 이 PC에서 JPA 테스트를 다시 실행하지는 않았다(미실행).
+**참고와 확인 범위**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 ### 외래키는 "다(N)" 쪽에 생긴다
 
 ```
-store 테이블                 review 테이블
+author 테이블                 book 테이블
 ┌────┬─────────┐           ┌────┬────────┬──────────┐
-│ id │ name    │           │ id │ content│ store_id │ ← 외래키(FK)
-│ 1  │ 맛집 1  │◄──────────│ 1  │ 리뷰 1 │    1     │
-│    │         │◄──────────│ 2  │ 리뷰 2 │    1     │
+│ id │ name    │           │ id │ content│ author_id │ ← 외래키(FK)
+│ 1  │ 작가 1  │◄──────────│ 1  │ 책 1 │    1     │
+│    │         │◄──────────│ 2  │ 책 2 │    1     │
 └────┴─────────┘           └────┴────────┴──────────┘
-Store (1) ──────< Review (N)
+Author (1) ──────< Book (N)
 ```
 
 ```java
-// Review.java: 주인 (외래키를 관리한다)
+// Book.java: 주인 (외래키를 관리한다)
 @ManyToOne
-@JoinColumn(name = "store_id")
-private Store store;
+@JoinColumn(name = "author_id")
+private Author author;
 
-// Store.java: 거울 (읽기 전용, DB 컬럼을 만들지 않는다)
-@OneToMany(mappedBy = "store")
-private List<Review> reviews = new ArrayList<>();
+// Author.java: 거울 (읽기 전용, DB 컬럼을 만들지 않는다)
+@OneToMany(mappedBy = "author")
+private List<Book> books = new ArrayList<>();
 ```
 
 - **주인**: `@JoinColumn`이 있는 쪽. 외래키 값을 바꿀 수 있다.
-- **거울**: `mappedBy`가 있는 쪽. `mappedBy`의 값은 **상대 클래스의 필드 이름**(`store`)이다. 컬럼 이름(`store_id`)이 아니다.
+- **거울**: `mappedBy`가 있는 쪽. `mappedBy`의 값은 **상대 클래스의 필드 이름**(`author`)이다. 컬럼 이름(`author_id`)이 아니다.
 
-**측정 결과 (자료 기록)**: 거울 쪽 `Store.reviews`에만 `add`하고 커밋하면 DB의 `review.store_id`는 `null`로 남는다. 저장하려면 **주인 쪽** `Review.store`에 값을 넣어야 한다.
+**측정 결과 (자료 기록)**: 거울 쪽 `Author.books`에만 `add`하고 커밋하면 DB의 `book.author_id`는 `null`로 남는다. 저장하려면 **주인 쪽** `Book.author`에 값을 넣어야 한다.
 
 ### 기본 로딩 방식
 
@@ -441,14 +387,14 @@ int usePoint(@Param("id") Long id, @Param("amount") int amount);
 | 거울(`mappedBy`) 쪽에 `add`하면 저장된다 | 주인 쪽에 넣어야 외래키가 바뀐다 |
 | `@ManyToOne`은 지연 로딩이다 | 기본은 EAGER다 |
 | `mappedBy`에 컬럼 이름을 쓴다 | 상대 클래스의 필드 이름을 쓴다 |
-| 외래키는 Store 테이블에 생긴다 | N 쪽(Review) 테이블에 생긴다 |
+| 외래키는 Author 테이블에 생긴다 | N 쪽(Book) 테이블에 생긴다 |
 | 벌크 UPDATE 하면 읽어 둔 객체도 새 값이다 | 옛 값이 남는다. `clearAutomatically`를 쓴다 |
 
 **면접 기준**: "외래키는 다(N) 쪽 테이블에 있고, 그 필드를 가진 쪽이 주인입니다. 반대쪽의 `mappedBy`는 읽기 전용 거울입니다. 벌크 UPDATE는 영속성 컨텍스트를 거치지 않으므로 `clearAutomatically`로 캐시를 비웁니다."
 
 ## 엔티티 상태 전이와 flush: 실제 SQL로 확인하기 (2026-11-23 보강, Hibernate 7.4.5에서 확인함)
 
-**출처**: 선생님 자료 `springboot4☆/5장_ORM_자습서.html`의 6~7절(영속성 컨텍스트, 엔티티 상태, flush)을 정리했다. 아래 코드는 Hibernate 7.4.5(JPA 3.2)와 MySQL 8.0으로 실행해, 어느 시점에 SQL이 나가는지 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**
 - **비영속**: `new`로 만든 객체. DB와 관계없다.
@@ -557,7 +503,7 @@ Hibernate: select m1_0.id,m1_0.name from Member5 m1_0 where m1_0.id=?
 
 ## 생성·수정 시간 자동 기록 (2026-11-23 보강, Hibernate 7.4.5에서 확인함)
 
-**출처**: 선생님 자료 `springboot4☆/5장_ORM_자습서.html`의 7장 화면 자료(`7장 블로그 화면 구성하기`)에 나오는 `@CreatedDate`, `@LastModifiedDate`, `@EnableJpaAuditing`을 정리했다. Spring Data의 방식은 **미실행**이다. 같은 동작을 Hibernate의 `@CreationTimestamp`·`@UpdateTimestamp`로 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**
 - **생성 시각**: 처음 저장될 때 한 번만 채운다.
@@ -583,7 +529,7 @@ title=second
 
 1초 쉬고 제목을 바꿔 commit하자, `createdAt`은 그대로이고 `updatedAt`만 새 시각으로 바뀌었다.
 
-**Spring Data 방식 (미실행)**: 블로그 프로젝트에서는 다음처럼 쓴다. 이 PC에서는 Spring Data 컨텍스트를 띄우지 않아 실행하지 않았다.
+**Spring Data 방식 (미실행)**: 실제 프로젝트에서는 다음처럼 쓴다. 이 PC에서는 Spring Data 컨텍스트를 띄우지 않아 실행하지 않았다.
 
 ```java
 @Entity
@@ -787,5 +733,6 @@ List<Post> result = queryFactory
     .fetch();
 ```
 
-- **주의:** Q클래스를 생성하는 빌드 설정이 필요하다. 설정이 없으면 `QPost` 클래스를 찾을 수 없다.
+- **설정 (Gradle, 튜토리얼 기준 버전 5.0.0, 미실행):** `implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'`와 `annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'`를 넣는다. 빌드할 때 엔티티마다 `QPost`처럼 Q 클래스가 생성된다. 설정이 없으면 `QPost` 클래스를 찾을 수 없다.
+- **null 조건 무시:** 검색어가 없을 때 `titleContains(null)`이 `null`을 돌려주면 `where`가 그 조건을 무시한다. 조건을 메서드로 나누는 이유가 이것이다. 자세한 조건 조합 예는 "동적 검색" 절을 본다.
 - **면접 기준:** "Querydsl은 JPA 쿼리를 자바 코드로 타입 안전하게 조립하는 도구입니다. 조건부 검색에서 문자열 쿼리의 오류를 줄입니다."

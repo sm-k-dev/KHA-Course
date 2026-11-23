@@ -106,7 +106,7 @@ tail -n 30 app.log
 
 ### 배포 전 함정 체크 (Windows 개발 → Ubuntu 서버, 2026-11-23 보강, 미실행)
 
-**출처**: 선생님 자료 `Practice_project☆/WinToUbuntuDeployGuide.html`. 이 PC에서 Ubuntu 서버에 배포하지 않았다(미실행). 항목별 원인과 해결은 자료의 흐름을 따랐다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 | 함정 | 증상 | 해결 방향 |
 |---|---|---|
@@ -125,7 +125,7 @@ tail -n 30 app.log
 
 ## WSL2: Windows 안에서 Linux 실행하기 (2026-11-23 보강, 확인함)
 
-**출처**: 선생님 자료 `Additional_HandBook★/wsl2_interactive_educational_platform.html`(WSL2 강의자료). 개념을 정리하고, 이 PC에서 WSL 상태를 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**: WSL2(Windows Subsystem for Linux 2)는 Windows 안에서 **실제 Linux 커널**을 실행하는 기능이다. VirtualBox처럼 가상 머신을 직접 만들고 OS를 설치하지 않아도 된다. Windows가 Linux 실행 환경을 관리하고, Ubuntu는 그 위에서 쓰는 배포판이다.
 

@@ -210,7 +210,7 @@ POST 후 새로고침 중복 제출을 줄이는 PRG 패턴을 설명한다.
 
 ## 게시판의 답글 구조: pos와 depth (2026-11-23 보강, MySQL 8.0 로컬에서 확인함)
 
-**출처**: 선생님 자료 `9_JSP_Board/tblboard게시판.txt`(v0~v3 단계별 실습)와 `Practice_project☆/MvcBoardTutorial.html`(답변 기능). 두 자료 모두 답글을 같은 방식으로 저장한다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**: 답글형 게시판은 글을 **시간순이 아니라 화면에 보일 순서**로 정렬해야 한다. 그래서 두 열을 둔다.
 - `pos`: 정렬 순서. 작을수록 위에 보인다. 답글은 부모 바로 아래에 끼어든다.
@@ -269,7 +269,7 @@ A글          2      0
 
 ## JNDI 커넥션 풀: Tomcat의 context.xml에 DB 연결 맡기기 (2026-11-24 보강, 미실행)
 
-**출처**: 선생님 자료 `Practice_project☆/CarProjectEdu-실습워크북.html`(CarProject 실습, `context.xml` 설정과 `lookup` 코드). 이 PC에서 Tomcat을 띄우지 않아 **미실행**이다. 설정과 흐름은 자료의 내용을 정리했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **무엇인가**: JNDI(Java Naming and Directory Interface)는 이름으로 객체를 찾는 기능이다. Tomcat은 `context.xml`에 DB 연결 풀(`DataSource`)을 이름으로 등록하고, 웹 앱은 그 이름으로 가져다 쓴다. 연결을 코드에 직접 만들지 않으므로 DB 주소와 비밀번호를 코드 밖에 둘 수 있다(23장).
 
@@ -287,7 +287,7 @@ A글          2      0
     maxTotal="50"
     maxIdle="10"
     maxWaitMillis="-1"
-    url="jdbc:mysql://localhost:3306/rentcar_edu?serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"/>
+    url="jdbc:mysql://localhost:3306/app_db?serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"/>
 </Context>
 ```
 

@@ -164,7 +164,7 @@ Mustache.compiler().compile(tpl).execute(Map.of("items", List.of()));           
 
 ## 조각 재사용과 분기 확장: fragment, th:switch, th:classappend (2026-11-23 보강, 확인함)
 
-**출처**: 선생님 자료 `Practice_project☆/ThymeleafBeginnerTutorial.html`(fragment, th:switch 등)과 `thymeleaf-guide-deep.html`의 내용을 기준으로 정리했다. 이 장의 예제는 Thymeleaf 3.1.5 독립 실행(서버 없이 템플릿 렌더링)으로 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **정의**
 - **fragment**: 헤더·푸터처럼 여러 페이지에서 쓰는 HTML 조각을 한 곳에 정의한다. `th:fragment`로 정의하고 `th:replace`로 가져온다.
@@ -233,7 +233,7 @@ public class FragDemo {
 
 ## 링크, 지역 변수, 객체 선택, 유틸리티 객체 (2026-11-24 보강, Thymeleaf 3.1.5로 확인함)
 
-**출처**: 선생님 자료 `Practice_project☆/ThymeleafBeginnerTutorial.html`과 `thymeleaf-guide-deep.html`(표현식과 속성 설명)의 내용을 정리했다. 아래 예제는 Thymeleaf 3.1.5를 서버 없이 실행해 결과를 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 ```html
 <ul>

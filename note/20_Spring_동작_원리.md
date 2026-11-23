@@ -317,7 +317,7 @@ order: [filter.before, interceptor.pre, controller, advice, interceptor.after, f
 
 ### 6-3. 한 요청이 DB까지 가는 길: GET /test 추적 (2026-11-24 보강, 선생님 자료 기반)
 
-**출처**: 선생님 자료 `springboot4☆/SpringBoot4-chapter3-request-flow.html`의 14단계 추적을 정리했다. 원 자료는 실제 실행 로그를 함께 보여 준다. 이 PC에서는 Spring Boot 서버를 띄우지 않아서 전체 경로는 **미실행**이다. 각 구간은 교재의 검증된 예제와 연결해서 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 | 순서 | 무슨 일이 일어나나 | 어디서 확인했나 |
 |---|---|---|

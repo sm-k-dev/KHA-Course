@@ -157,7 +157,7 @@ record CreateUserRequest(@NotBlank String name,@Email String email) {}
 
 ## 폼 제출과 검증 오류 표시: @ModelAttribute, @Valid, BindingResult (2026-11-23 보강, MockMvc로 확인함)
 
-**출처**: 선생님 자료 `9_Spring_boot_Basic`의 `03 spring form #1`, `04 spring form #2`, `05 spring form validation` 강의 제목의 내용을 바탕으로 정리했다. 강의 PDF는 사진 형태라서 글자를 옮기지 않고, 제목의 주제(폼 전송, 폼 객체 바인딩, 검증)를 기준으로 예제를 직접 만들어 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **흐름**: 브라우저가 폼을 `POST`로 보내면 Spring이 폼 값을 객체에 채우고(`@ModelAttribute`), 검증 규칙(`@Valid`)을 적용한다. 실패한 항목은 `BindingResult`에 모인다. 컨트롤러는 이 결과를 보고 다시 폼을 보여 주거나 저장한다.
 
@@ -203,7 +203,7 @@ good  -> 200 ok: kim 30
 
 ### 4-3. 빌드, 실행, 배포는 다른 단계다 (2026-11-24 보강, 선생님 자료 기반)
 
-**출처**: 선생님 자료 `springboot4☆/Build.html`(빌드 학습자료). 개념을 정리했고, 빌드 과정 자체는 위 4-1절에서 `javac`·`jar`·`java -jar`로 직접 확인했다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 | 단계 | 하는 일 | 결과물 | 예 |
 |---|---|---|---|
@@ -220,7 +220,7 @@ good  -> 200 ok: kim 30
 
 ### 4-4. Gradle 프로젝트 가져오기와 내보내기 (2026-11-24 보강, 공식 문서 검색 결과 기반)
 
-**출처**: 웹 검색으로 찾은 공식 문서 요약을 바탕으로 정리했다. 원문은 다음과 같다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 - [JetBrains, Gradle 도움말](https://www.jetbrains.com/help/idea/gradle.html)
 - [JetBrains, 프로젝트 가져오기](https://www.jetbrains.com/help/idea/import-project-or-module-wizard.html)
 - [JetBrains, Gradle 설정](https://www.jetbrains.com/help/idea/gradle-settings.html)
@@ -237,19 +237,16 @@ good  -> 200 ok: kim 30
 **내보내기 (Export, 다른 사람이 같은 프로젝트를 받게 하기)**
 - IDE 기능이라기보다 **저장소에 올릴 파일을 고르는 일**이다. `build/`, `.gradle/`, `.idea/`, `bin/` 같은 생성물은 빼고, `build.gradle`, `settings.gradle`, `gradlew`, `src/`를 올린다.
 - 실행 결과물(jar)은 `gradle build`로 만든다(위 4-1절). 배포는 그 jar를 서버에 올리는 별도 단계다.
+- 민감 정보(DB 비밀번호, API 키)는 공유 파일에 넣지 않는다. DB 데이터는 프로젝트 파일에 들어가지 않으므로 SQL 백업이나 초기 스크립트를 따로 전한다.
 - Spring Boot 문서는 IDE가 프로젝트를 바로 읽지 못하면 빌드 플러그인으로 IDE 정보를 만들 수 있다고 안내한다. 대부분의 최신 IDE는 Gradle을 직접 지원한다.
 
 **면접 기준**: "Gradle 프로젝트는 빌드 파일을 IDE에 연결해서 열고, 공유할 때는 소스와 빌드 설정만 올리고 생성물은 제외합니다. 결과물은 `gradle build`로 만들고, 배포는 그 결과를 서버에 올리는 단계입니다."
 
-### 4-5. STS(이클립스 기반)에서 Gradle 프로젝트 주고받기 (2026-11-24 보강, 선생님 자료 기반, 미실행)
+### 4-5. STS(이클립스 기반) 가져오기 절차와 자주 나는 오류 (2026-11-24 보강, 선생님 자료 기반, 미실행)
 
-**출처**: 선생님 자료 `Practice_project☆/SpringBootGradle프로젝트ImportExport방법.pdf`(STS 5 실습 자습서, 8쪽)를 읽고 정리했다. 이 PC에서 STS 화면은 실행하지 않았다(미실행). 4-4절의 IntelliJ 흐름과 같은 원리다.
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
-**보내는 쪽 (Export)**
-1. 프로젝트 폴더에 `build.gradle`(또는 `build.gradle.kts`), `settings.gradle`, `gradlew`, `gradlew.bat`, `gradle/wrapper/`가 있는지 확인한다.
-2. 민감 정보(DB 비밀번호, API 키)가 `application.properties`나 `application.yml`에 있으면 전달 전에 빼거나 따로 안전하게 전한다.
-3. 폴더를 ZIP으로 압축한다. `build/`와 `.gradle/` 캐시는 빼도 된다. 단 `gradle/wrapper/`는 캐시가 아니므로 넣는다.
-4. **DB 데이터는 ZIP에 들어가지 않는다.** 필요하면 SQL 백업이나 초기 데이터 스크립트를 따로 준다.
+**보내는 쪽 (Export)**: 4-4절의 내보내기 원칙과 같다. 빌드 파일, Gradle wrapper, 소스만 ZIP에 넣고, 민감 정보는 빼며, DB 데이터는 ZIP에 들어가지 않는다는 점을 함께 확인한다.
 
 **받는 쪽 (Import)**
 1. ZIP을 먼저 **폴더로 풀어** 둔다. ZIP 파일을 IDE에 바로 가져오지 않는다.

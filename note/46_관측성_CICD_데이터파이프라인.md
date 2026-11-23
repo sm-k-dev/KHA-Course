@@ -128,7 +128,7 @@ Kubernetes의 롤링 업데이트는 48장에서 실행해 확인했다.
 
 ### 2-1. GitHub Actions 워크플로 읽기 (2026-11-23 보강, 선생님 자료 기반, 미실행)
 
-**출처**: 선생님 자료 `springboot4☆/13장_GithubActionsCiCdTutorial.html`. 이 PC에서는 GitHub에 푸시하거나 Actions를 실행하지 않았다. 아래 YAML은 **문법 구조만 확인했다**(PyYAML로 파싱해 `on.push.branches`, `jobs.build.steps` 구조를 읽었다).
+**참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
 
 **CI 워크플로 예 (`.github/workflows/ci.yml`)**
 
