@@ -123,6 +123,37 @@ tail -n 30 app.log
 
 **면접 기준**: "Windows에서 만든 프로젝트를 Linux에 올릴 때는 경로, 권한, 설정 분리, 인코딩, 파일 이름 대소문자를 먼저 확인합니다. 리눅스는 대소문자를 구별하고, 실행 계정에 쓰기 권한이 있어야 합니다."
 
+## WSL2: Windows 안에서 Linux 실행하기 (2026-11-23 보강, 확인함)
+
+**출처**: 선생님 자료 `Additional_HandBook★/wsl2_interactive_educational_platform.html`(WSL2 강의자료). 개념을 정리하고, 이 PC에서 WSL 상태를 확인했다.
+
+**정의**: WSL2(Windows Subsystem for Linux 2)는 Windows 안에서 **실제 Linux 커널**을 실행하는 기능이다. VirtualBox처럼 가상 머신을 직접 만들고 OS를 설치하지 않아도 된다. Windows가 Linux 실행 환경을 관리하고, Ubuntu는 그 위에서 쓰는 배포판이다.
+
+| 구분 | VirtualBox | WSL2 |
+|---|---|---|
+| 가상 머신 | 직접 만들고 OS를 설치한다 | Windows가 자동으로 관리한다 |
+| 커널 | 설치한 Linux 커널 | 실제 Linux 커널 |
+| 파일 공유 | 설정이 필요하다 | Windows와 Linux 경로가 연결된다 |
+| 주된 용도 | 여러 OS를 완전히 격리 | 개발 도구를 Linux에서 쓰기 |
+
+**확인 결과 (이 PC, 읽기만 함)**
+
+```
+  NAME              STATE           VERSION
+* Ubuntu            Stopped         2
+  docker-desktop    Running         2
+```
+
+`VERSION 2`는 WSL2로 실행되는 배포판이라는 뜻이다. `Stopped`는 지금 꺼져 있다는 뜻이고, `wsl -d Ubuntu`로 들어가면 켜진다. Docker Desktop도 같은 WSL2 기반이다.
+
+**개발에서 쓰는 이유**: 배포 서버는 대부분 Linux다. Windows에서 개발하면서 Linux 명령과 권한, 파일 이름 대소문자를 WSL2에서 미리 확인할 수 있다(위 "배포 전 함정" 표와 연결).
+
+**주의**
+- WSL2 안의 파일(`~`)과 Windows 파일(`/mnt/c`)은 위치가 다르다. 성능이 필요한 작업은 Linux 쪽 파일 시스템에서 한다.
+- 가상화 기능(Hyper-V 계열)이 꺼져 있으면 WSL2가 시작되지 않는다. 그럴 때는 BIOS나 Windows 기능 설정을 확인한다.
+
+**면접 기준**: "WSL2는 Windows 안에서 실제 Linux 커널을 돌리는 기능입니다. 가상 머신을 직접 관리하는 VirtualBox와 달리 Windows가 관리하고, 배포 환경과 같은 Linux 명령을 로컬에서 확인할 때 씁니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

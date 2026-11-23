@@ -349,6 +349,57 @@ no extension -> true
 
 **면접 기준**: "업로드 파일은 S3에 UUID 키로 저장하고, 글에는 주소만 남깁니다. 업로드 권한은 IAM 역할, 읽기 권한은 버킷 정책으로 나눠 관리합니다."
 
+### 3-4. Docker 볼륨과 Compose: 데이터를 남기고 여러 컨테이너를 묶기 (2026-11-23 보강, 확인함)
+
+**출처**: 선생님 자료 `Additional_HandBook★/Docker 입문 강의.html`의 9~11절(볼륨, 네트워크, Compose). 아래 파일과 명령은 이 PC에서 실행해 확인했다. 베이스 이미지는 이미 로컬에 있던 `mysql:8.0`을 썼다.
+
+**정의**
+- **볼륨(volume)**: 컨테이너 밖에 두는 저장 공간이다. 컨테이너를 지워도 데이터가 남는다.
+- **네트워크**: 같은 Compose 파일 안의 컨테이너는 **서비스 이름**으로 서로 찾는다(예: `db`).
+- **Compose**: 여러 컨테이너의 설정을 `compose.yaml` 한 파일에 적고 `up`/`down`으로 한꺼번에 올리고 내린다.
+
+```yaml
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: change-me-demo   # 실습용 값. 실제 서비스에서는 환경 변수나 비밀 저장소에서 받는다
+      MYSQL_DATABASE: khac_demo
+    volumes:
+      - dbdata:/var/lib/mysql               # 이름 있는 볼륨을 MySQL 데이터 폴더에 연결
+
+volumes:
+  dbdata:
+```
+
+```powershell
+docker compose config --quiet          # 파일 문법 검사 (확인함: valid)
+docker compose up -d db                # 백그라운드로 시작
+docker compose exec -T db getent hosts db   # 서비스 이름이 IP로 바뀐다 (확인함: 172.20.0.2 db)
+docker compose down                    # 컨테이너 삭제, 볼륨은 남김
+docker compose up -d db                # 다시 시작
+docker compose down -v                 # 볼륨까지 삭제
+```
+
+**확인 결과 (확인함)**
+```
+before down: rows=1
+containers after down: 0
+after up: rows=1          ← 컨테이너를 지웠다 다시 만들어도 데이터가 그대로다
+volume after down -v: 0   ← -v를 붙이면 볼륨도 사라진다
+```
+
+**읽는 법**
+- `down`은 컨테이너를 지우지만 이름 있는 볼륨은 남긴다. 그래서 DB 데이터가 보존된다.
+- `down -v`는 볼륨까지 지운다. 데이터가 영구 삭제되므로 실수로 쓰지 않는다.
+- 볼륨을 쓰지 않고 컨테이너 안에 데이터를 두면, 컨테이너를 지울 때 데이터도 사라진다.
+
+**흔한 실수**
+- `MYSQL_ROOT_PASSWORD`를 Compose 파일에 그대로 적어 저장소에 올린다: `.env` 파일이나 환경 변수로 빼고 `.gitignore`에 넣는다.
+- 포트를 `ports`로 열지 않고 다른 컨테이너 주소(`localhost`)로 접속하려 한다: 같은 Compose 네트워크 안에서는 `db`처럼 서비스 이름을 쓴다.
+
+**면접 기준**: "Compose로 여러 컨테이너를 한 파일에 적고, 데이터는 볼륨에 둬서 컨테이너를 다시 만들어도 남게 합니다. 컨테이너끼리는 서비스 이름으로 접속합니다."
+
 ## 4. IAM (권한 관리)
 
 - **정의:** 클라우드에서 누가(사용자, 서비스) 어떤 자원에 어떤 작업을 할 수 있는지 정하는 권한 체계다.

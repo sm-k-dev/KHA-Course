@@ -259,6 +259,35 @@ undefined [] 10 0
 
 ---
 
+## 콘솔 에러 메시지 해독표 (2026-11-23 보강, Node에서 실제 발생시켜 확인함)
+
+**출처**: 선생님 자료 `Additional_HandBook★/javascript_실무보충_자습서.html`의 부록 1("콘솔에 자주 뜨는 에러 20선")을 바탕으로 정리했다. 아래 문장은 각 상황을 실제로 실행해서 얻은 **정확한 메시지**다. 브라우저 콘솔도 같은 JavaScript 엔진(V8)을 쓰므로 같은 문장이 나온다.
+
+| 콘솔에 보이는 문장 (실제 출력) | 흔한 원인 | 해결 |
+|---|---|---|
+| `ReferenceError: undefinedName is not defined` | 선언하지 않은 이름, 철자 오타, 블록 밖에서 사용 | 철자와 선언 위치(스코프) 확인 |
+| `SyntaxError: Unexpected end of input` | 여는 괄호 `{`를 닫지 않음 | 괄호 짝 확인 (에디터가 짝을 강조해 준다) |
+| `SyntaxError: Identifier 'x' has already been declared` | 같은 이름을 `let`/`const`로 두 번 선언 | 이름을 바꾸거나 두 번째는 대입만 한다 |
+| `TypeError: Assignment to constant variable.` | `const`로 선언한 값을 다시 대입 | `let`으로 바꾸거나 새 이름을 쓴다 |
+| `TypeError: Cannot read properties of null (reading 'textContent')` | `querySelector`가 요소를 못 찾아 `null`을 받음 | 선택자(`#id`, `.class`) 철자, 스크립트 위치 확인 |
+| `TypeError: Cannot read properties of undefined (reading 'name')` | `undefined` 값(없는 인덱스 등)의 속성에 접근 | 앞 단계 값을 `console.log`로 확인 |
+| `TypeError: obj.map is not a function` | 배열이 아닌 값에 `map` 호출 (객체, `{}`, Promise) | `await`, `response.ok`, 배열인지 확인 |
+| `TypeError: n is not a function` | 함수가 아닌 값을 `()`로 호출 | 이름 오타, 함수로 만들었는지 확인 |
+| `SyntaxError: await is only valid in async functions and the top level bodies of modules` | `async` 없는 함수 안에서 `await` | 감싼 함수 앞에 `async` 추가 |
+| `SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON` | JSON 자리에 HTML(로그인 페이지, 404 화면)이 옴 | 응답 본문과 주소 확인 |
+| `SyntaxError: Unexpected end of JSON input` | 빈 응답(예: 204)을 `json()`으로 읽음 | 204면 `json()`을 부르지 않는다 |
+| `ReferenceError: Cannot access 'y' before initialization` | `let`/`const`를 선언 줄 전에 사용 (TDZ) | 선언을 먼저 하고 사용한다 |
+
+**읽는 법**
+- `Cannot read properties of null`과 `undefined`는 **앞에서 값이 없었다**는 뜻이다. 에러가 난 줄보다 **그 값을 만든 줄**을 본다.
+- `is not a function`과 `is not defined`는 이름이 틀렸거나 아직 만들지 않았다는 뜻이다.
+- `Unexpected token '<'`는 서버가 JSON 대신 HTML을 보냈다는 뜻이다. 브라우저의 Network 탭에서 응답 본문을 먼저 확인한다.
+- 같은 괄호 에러라도 상황에 따라 메시지가 다르다. 위 표는 실제로 발생시킨 문장이다. 자료의 `Unexpected token '}'`는 닫는 괄호가 더 많을 때 나오는 메시지다.
+
+**네트워크 쪽 메시지** (`Failed to fetch`, `blocked by CORS policy`, `401`, `403`, `415`)는 브라우저 콘솔과 Network 탭에서 확인해야 해서 이 PC의 Node에서는 재현하지 않았다. 원인과 해결은 18장(AJAX·REST)과 32장(인증)을 본다.
+
+**면접 기준**: "콘솔의 에러 문장을 그대로 검색하면 원인이 대부분 나옵니다. `null`이나 `undefined`의 속성 에러는 그 값을 만든 줄을 확인하고, JSON 파싱 에러는 응답 본문이 JSON인지부터 봅니다."
+
 ## 단원 통과 기준
 
 - [ ] `map`, `filter`, `reduce`를 체이닝해서 데이터를 가공할 수 있다.
