@@ -288,6 +288,53 @@ code=9 -> 400 type=text/plain;charset=ISO-8859-1 body=unknown code: 9
 
 **면접 기준**: "`@RequestParam`으로 쿼리 값을 받고, `ResponseEntity`로 상태 코드와 본문을 정합니다. 본문이 객체면 HttpMessageConverter(Jackson)가 JSON으로 바꿔 보냅니다."
 
+## 브라우저에서 JSON 주고받기와 Bearer 토큰 보내기 (2026-11-24 보강, Node로 확인함)
+
+**출처**: 선생님 자료 `Additional_HandBook★/javascript_실무보충_자습서.html`의 3장(배열·객체·JSON), 6~7장(fetch GET·POST, JWT 인증)을 바탕으로 정리했다. 이 PC에서 Node의 `fetch`로 같은 흐름을 확인했다. 브라우저의 `localStorage` 저장은 Node에 없어서 개념만 적었다.
+
+**JSON 변환 두 가지**
+- `JSON.stringify(객체)`: 객체를 JSON **문자열**로 바꾼다. 서버로 보낼 때 쓴다.
+- `JSON.parse(문자열)`: JSON 문자열을 객체로 바꾼다. 서버 응답을 읽을 때 쓴다.
+
+```javascript
+const member = { name: '김', age: 30, tags: ['a', 'b'] };
+const text = JSON.stringify(member);
+// '{"name":"김","age":30,"tags":["a","b"]}'
+JSON.parse(text);   // 원래 객체와 같은 값
+```
+
+**Bearer 토큰을 붙여 POST하기 (확인함)**
+
+```javascript
+async function post(token, obj) {
+  const res = await fetch(base + '/api/members', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(obj),     // 객체는 문자열로 바꿔서 보낸다
+  });
+  const data = await res.json();   // 응답 본문을 객체로 바꾼다
+  return { status: res.status, data };
+}
+```
+
+확인 결과 (Node에서 같은 구조의 서버를 띄움):
+```
+with token: { status: 201, data: { id: 42, name: '김', age: 30, tags: [ 'a', 'b' ] } }
+wrong token: { status: 401, data: { error: 'unauthorized' } }
+parse error: SyntaxError
+```
+
+**읽는 법**
+- `Content-Type: application/json`은 "본문이 JSON이다"라는 표시다. 서버는 이 값을 보고 본문을 객체로 읽는다.
+- `Authorization: Bearer <토큰>`은 토큰을 증명하는 자리다. 토큰이 틀리면 서버는 401을 돌려준다(32장의 재발급 흐름이 이 응답을 받는다).
+- 응답이 JSON이 아니면(로그인 페이지 HTML 등) `res.json()`이 `SyntaxError`로 실패한다. 14장 해독표의 `Unexpected token '<'`가 이 경우다.
+
+**토큰을 어디에 두나**
+- `localStorage`에 두면 JavaScript로 쉽게 읽고 쓸 수 있다. 대신 XSS 공격으로 스크립트가 실행되면 토큰도 빼앗길 수 있다.
+- `HttpOnly` 쿠키에 두면 JavaScript가 읽지 못해 XSS에 강하다. 대신 같은 사이트 요청에 쿠키가 자동으로 붙도록 설정(`credentials`)을 맞춰야 한다. 32장의 리프레시 토큰은 이 방식이다.
+
+**면접 기준**: "브라우저에서 객체는 `JSON.stringify`로 보내고 응답은 `JSON.parse`(또는 `res.json()`)로 읽습니다. 인증 토큰은 `Authorization: Bearer`로 보내고, 저장은 XSS 위험을 고려해 `HttpOnly` 쿠키를 우선 검토합니다."
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.
