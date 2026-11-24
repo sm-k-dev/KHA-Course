@@ -20,7 +20,7 @@ Student.toString()    → "department=" + department   // Department.toString() 
 
 결과: `StackOverflowError`가 발생한다. 강의 자료의 `StackOverflowError` 메시지와 같은 원인이다.
 
-**해결:** 한쪽 연관 필드를 `toString`에서 빼거나, Lombok에서 `@ToString.Exclude`로 제외한다(Lombok은 미실행).
+**해결:** 한쪽 연관 필드를 `toString`에서 빼거나, Lombok에서 `@ToString.Exclude`로 제외한다. 이 방식은 2026-11-24에 Lombok 1.18.46으로 실행해 확인했다(22장 Lombok 절).
 
 ### 실행 2: JSON 직렬화 (확인함)
 

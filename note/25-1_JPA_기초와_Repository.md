@@ -24,11 +24,11 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
 **주의 (확인함):** 트랜잭션 없이 `save`를 호출하면 **아무것도 저장되지 않았다**(`count = 0`). 실제 스프링 앱에서는 리포지토리 메소드에 `@Transactional`이 붙어 있어서 생기지 않지만, 독립 실행에서는 `EntityManager`의 트랜잭션을 직접 열어야 한다.
 
-**강의의 조회 후 처리 패턴 (미실행):** `Optional<Department> d = repo.findById(id)`를 받고, `d.isEmpty()`이면 `ResponseStatusException(HttpStatus.NOT_FOUND)`를 던져 404로 응답한다. 이 패턴은 Optional을 쓰는 이유(null 대신 빈 상자)를 보여 준다.
+**강의의 조회 후 처리 패턴 (Spring Boot 4.1.1 서버에서 확인함, 2026-11-24):** `Optional<Student> s = repo.findById(id)`를 받고, 없으면 `ResponseStatusException(HttpStatus.NOT_FOUND)`를 던진다. 실행 결과는 `GET /students/1` → 200, `GET /students/999` → 404였다. 이 패턴은 Optional을 쓰는 이유(null 대신 빈 상자)를 보여 준다.
 
 **강의 02의 ModelMapper 매핑 (ModelMapper 3.2.5로 확인함):** `Student student = modelMapper.map(studentEdit, Student.class)`에서 `studentEdit.departmentId = 2`는 `student.department.id = 2`로 채워졌다. `studentNo`, `name`, `sex`, `email` 같은 같은 이름의 필드도 함께 복사되었다. 실행은 getter/setter를 가진 DTO 두 개로 했다.
 
-**강의의 물리 이름 설정 (미실행):** `spring.jpa.hibernate.naming.physical-strategy=...PhysicalNamingStrategyStandardImpl`을 쓰면 `studentNo`가 그대로 컬럼명이 된다. 기본 설정(스프링 부트)은 카멜 케이스를 스네이크 케이스(`student_no`)로 바꾼다는 강의 설명은 이 실행에서 확인하지 않았다.
+**물리 이름 (Spring Boot 4.1.1 기본값, 확인함):** Boot로 띄운 서버의 실행 로그에 `department_id` 컬럼이 찍혔다. 즉 `departmentId` 필드가 스네이크 케이스(`department_id`)로 바뀌어 DB에 쓰인다. 강의의 `physical-strategy=...PhysicalNamingStrategyStandardImpl` 설정을 넣었을 때 `studentNo`가 그대로 남는지는 이 실행에서 확인하지 않았다(미실행).
 
 **면접 기준:** "`save`는 식별자가 없거나 0이면 INSERT, 있으면 UPDATE다. `findById`는 결과 부재를 `Optional.empty()`로 돌려준다. 이 호출들은 트랜잭션 안에서 실행되어야 한다."
 
