@@ -201,9 +201,33 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "폼 값은 `@ModelAttribute` 객체에 바인딩되고, `@Valid`로 규칙을 확인합니다. 실패한 항목은 `BindingResult`에 모여서 화면에 다시 보여 줍니다."
 
+### 실제 서버 실행: Maven 빌드와 Spring Boot 4.1.1 (2026-11-24, 확인함)
+
+> 추가 근거: 9_Spring_boot_Basic `04 spring form #2`의 컨트롤러와 템플릿을 Spring Boot 4.1.1 프로젝트로 옮겨 **Maven으로 빌드하고 실제 서버를 띄운 뒤 curl과 PowerShell로 요청했다.** 이전 MockMvc 확인과 달리 내장 Tomcat이 실제로 응답한다. 강의 화면의 브라우저 조작은 하지 않았다.
+
+- **빌드**: `pom.xml`의 부모는 `spring-boot-starter-parent 4.1.1`이고, 의존성은 `starter-webmvc`, `starter-thymeleaf`, `starter-validation`, Lombok이다. Lombok은 `annotationProcessorPaths`에 따로 지정해야 어노테이션 처리가 된다. `mvn package`가 성공하고 `target/form2app-0.0.1-SNAPSHOT.jar`가 생겼다(Maven 3.9.9).
+- **실행**: `java -jar target/form2app-0.0.1-SNAPSHOT.jar`로 8088 포트에서 `Started Form2App`까지 확인했다.
+
+| 요청 | 결과 (확인함) |
+|---|---|
+| `GET /student/edit` | 200. 이름 `홍길동`이 채워지고 학과 `selected`는 기본값 0 |
+| `POST /student/edit` (학번 빈칸) | 200. 화면에 `학번을 입력하세요` 표시 |
+| `POST /student/edit` (값이 모두 있음) | 302. 목록으로 리다이렉트 |
+| `GET /student/list` | 200 |
+| `GET /first/test1` | `안녕하세요` |
+| `GET /first/test3` | `{"name":"맥주","unitCost":2000}` |
+| `GET /first/test4` | `[{"name":"맥주","unitCost":2000},{"name":"우유","unitCost":1500}]` |
+
+**실행 환경 메모 (이 PC에서 필요했던 우회):**
+- Windows의 Java에서 내장 Tomcat 기본 NIO 커넥터를 올리면 `Unable to establish loopback connection`으로 시작이 실패했다. JDK의 셀렉터가 루프백 연결을 만들지 못하는 문제로 보인다. 같은 이유로 Gradle도 실패했다. 우회로 Tomcat의 프로토콜을 `Http11Nio2Protocol`로 바꾸는 설정 빈을 넣었다(`factory.setProtocol(...)`). 일반 프로젝트에는 필요 없다.
+- WSL에서 실행한 서버는 같은 문제 없이 떴다. 다만 WSL에서 Windows의 `127.0.0.1`로 접속할 수는 없었다.
+- Windows `curl`로 한글을 POST하면 서버가 `MalformedInputException`으로 400을 냈다. PowerShell에서 UTF-8 바이트로 보낸 요청은 정상이었다. 요청 본문의 인코딩을 확인하는 것이 먼저다.
+
+**Maven 빌드와 서버 실행은 확인했다. Gradle 빌드는 여전히 미실행이다**(아래 Gradle 절).
+
 ### 폼 바인딩, 리다이렉트, 검증 오류: 9_ form1·form3 기준 (MockMvc로 확인함, 2026-11-24)
 
-> 추가 근거: 9_Spring_boot_Basic `03 spring form #1`, `05 spring form validation`의 컨트롤러와 `StudentEdit` 모델을 읽고, 같은 코드를 **MockMvc standalone(Spring 7.0.9)**으로 실행했다. 스프링 부트 서버는 띄우지 않았다(아래 gradle 실행 문제 참고). Thymeleaf 화면 렌더링은 뒤의 "폼 템플릿 렌더링" 단락에서 따로 확인했다.
+> 추가 근거: 9_Spring_boot_Basic `03 spring form #1`, `05 spring form validation`의 컨트롤러와 `StudentEdit` 모델을 읽고, 같은 코드를 **MockMvc standalone(Spring 7.0.9)**으로 실행했다. 실제 서버에서의 요청 결과는 앞의 "실제 서버 실행" 절에 있다. Thymeleaf 화면 렌더링은 뒤의 "폼 템플릿 렌더링" 단락에서 따로 확인했다.
 
 ```java
 @GetMapping("edit")
@@ -330,7 +354,7 @@ javap -v out\app\App.class | findstr "major version"
 | 빌드 결과 지우기 | `mvn clean` | `gradle clean` |
 | 실행 | `java -jar target/app.jar` | `java -jar build/libs/app.jar` |
 
-**Maven 설정 예 (`pom.xml`, 미실행)**
+**Maven 설정 예 (`pom.xml`, 2026-11-24 빌드 확인함)** — 위 "실제 서버 실행" 절의 `pom.xml`과 같은 구조다.
 
 ```xml
 <properties>
@@ -434,9 +458,9 @@ jakarta.validation.constraints.Max.message=값이 {value} 이하이어야 합니
 - `@Data`를 양방향 연관 엔티티에 붙이면 `toString`이 서로를 부른다. `@ToString.Exclude`와 `@EqualsAndHashCode.Exclude`를 연관 컬렉션에 붙이면 무한 반복이 사라진다. 실행 결과: `LombokCheck.Department(id=1, name=소프트웨어공학과)`로 출력되고 `equals`도 정상이었다(Lombok 1.18.46, Java 25). 순환 참조의 JSON 쪽은 [25-4 순환 참조와 JSON](25-4_로딩_운영_MyBatis.md)을 본다.
 - JSON 속성 이름이 getter에서 정해지는 규칙과 실행 결과는 [18장 "Java 객체의 getter가 JSON 필드 이름을 정한다"](18_AJAX_REST.md) 절을 본다. 여기서는 중복하지 않는다.
 
-### 9_ 자료 00·01 기준: 빌드 명령과 설정 (미실행)
+### 9_ 자료 00·01 기준: 빌드 명령과 설정 (Maven 확인함, Gradle 미실행)
 
-강의 자료 `00 maven과 gradle`과 `01 Spring Boot 시작하기`의 명령을 정리했다. 이 PC에서 프로젝트를 빌드하거나 서버를 띄우지 않았으므로 모두 **미실행**이다.
+강의 자료 `00 maven과 gradle`과 `01 Spring Boot 시작하기`의 명령을 정리했다. Maven으로 `mvn package`를 실행해 jar를 만들고 서버를 띄운 것은 확인했다(위 "실제 서버 실행" 절). Gradle 명령은 이 PC에서 실행하지 못해 미실행이다.
 
 | 구분 | Maven (`pom.xml`) | Gradle (`build.gradle`) |
 |---|---|---|

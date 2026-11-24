@@ -267,6 +267,15 @@ A글          2      0
 
 **면접 기준**: "답글형 게시판은 `pos`로 화면 순서를, `depth`로 들여쓰기를 저장합니다. 답글을 넣을 때는 부모보다 뒤의 글들을 밀어내고, 두 단계를 한 트랜잭션으로 묶습니다."
 
+## JSP와 JSTL: EL과 c:forEach를 실제 서버에서 실행 (2026-11-24, 확인함)
+
+> 추가 근거: 16장의 JSP 설명이 EL·JSTL을 서블릿 컨테이너가 있어야 실행된다고 적고 있었다. Spring Boot 4.1.1 프로젝트를 `war`로 만들고 내장 Tomcat에서 JSP를 띄워 확인했다(2026-11-24). Maven이 `tomcat-embed-jasper`와 JSTL 구현을 내려받았다.
+
+- **의존성**: `spring-boot-starter-webmvc`, `tomcat-embed-jasper`(provided), `jakarta.servlet.jsp.jstl-api`, `org.glassfish.web:jakarta.servlet.jsp.jstl`. 뷰 위치는 `spring.mvc.view.prefix=/WEB-INF/jsp/`로 정한다.
+- **JSP**: 모델의 `title`은 `${title}`로, 목록은 `<c:forEach var="st" items="${students}">`로 출력한다. `<c:if test="${students.size() > 2}">`도 쓴다.
+- **결과 (확인함)**: `GET /student/list`가 200을 주고, 본문에 학생 3행이 표로 나오며 `학생 수: 3`과 `3명 이상`이 출력된다.
+- **함정 (실행 중 확인함)**: 존재하지 않는 EL 변수(예: `${fn_count}`)는 오류 없이 빈 문자열로 출력된다. 값이 비어 있으면 화면이 아니라 변수 이름부터 확인한다.
+
 ## JNDI 커넥션 풀: Tomcat의 context.xml에 DB 연결 맡기기 (2026-11-24 보강, 미실행)
 
 **참고**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.

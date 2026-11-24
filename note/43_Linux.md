@@ -200,7 +200,8 @@ tail -n 30 app.log
 |---|---|
 | `systemctl is-system-running` | `running`. 이 WSL은 systemd가 켜져 있다 |
 | `journalctl -n 2 --no-pager` | 최근 시스템 로그 2줄 |
-| `systemctl status 서비스명`, `journalctl -u 서비스명` | 운영 서버 서비스 확인용. 이 PC에 서비스를 등록하지 않아 미실행 |
+| `systemctl status 서비스명`, `journalctl -u 서비스명` | 사용자 단위 서비스는 확인함: `~/.config/systemd/user/`에 unit 파일을 만들고 `systemctl --user start`, `is-active`(active), HTTP 200 확인, `stop`, 파일 삭제까지 실행했다. 시스템 단위(`sudo systemctl ...`)는 sudo 암호가 필요해서 미실행이다. |
+| `sudo ufw ...` (방화벽) | 미실행. `sudo -n`이 "interactive authentication is required"로 막혀 암호 없이는 실행할 수 없다 |
 
 **6) 디스크와 메모리**
 
