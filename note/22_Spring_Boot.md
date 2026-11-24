@@ -203,7 +203,7 @@ good  -> 200 ok: kim 30
 
 ### 폼 바인딩, 리다이렉트, 검증 오류: 9_ form1·form3 기준 (MockMvc로 확인함, 2026-11-24)
 
-> 추가 근거: 9_Spring_boot_Basic `03 spring form #1`, `05 spring form validation`의 컨트롤러와 `StudentEdit` 모델을 읽고, 같은 코드를 **MockMvc standalone(Spring 7.0.9)**으로 실행했다. 스프링 부트 서버를 띄우지 않았고, Thymeleaf 화면 렌더링은 **미실행**이다(뷰 이름과 모델만 확인).
+> 추가 근거: 9_Spring_boot_Basic `03 spring form #1`, `05 spring form validation`의 컨트롤러와 `StudentEdit` 모델을 읽고, 같은 코드를 **MockMvc standalone(Spring 7.0.9)**으로 실행했다. 스프링 부트 서버는 띄우지 않았다(아래 gradle 실행 문제 참고). Thymeleaf 화면 렌더링은 뒤의 "폼 템플릿 렌더링" 단락에서 따로 확인했다.
 
 ```java
 @GetMapping("edit")
@@ -240,6 +240,18 @@ public String edit(Model model, @Valid StudentEdit studentEdit, BindingResult bi
 - `redirect:list`는 MockMvc standalone에서 `list`로 나왔다. 실제 서버에서는 현재 주소(`/student/…`) 기준으로 `/student/list`가 된다(강의 설명, 서버 실행은 미실행).
 
 **Student 객체 바인딩 (강의 form1 설명, 미실행):** 요청 파라미터 `studentNo`, `name`은 `setStudentNo`, `setName`으로 채워진다. 객체는 `model`에 자동으로 `student`라는 이름으로 추가된다(form1 강의 예).
+
+**폼 템플릿 렌더링 (Thymeleaf 3.1.5 + MockMvc, 확인함):** 9_ 04 강의의 `student/edit.html`(`th:object`, `th:field`)을 `ThymeleafViewResolver`로 렌더링했다. 모델 값은 학번 `201914099`, 이름 `홍길동`, 학과 `1`, 성별 `남자`, 휴학 `true`, 학년 `4`다. 결과 HTML의 핵심 부분:
+
+```html
+<input type="text" id="studentNo" name="studentNo" value="201914099" />
+<option value="1" selected="selected">소프트웨어공학과</option>
+<label><input type="radio" value="남자" id="gender1" name="gender" checked="checked" />남자</label>
+<label><input type="checkbox" id="absense1" name="absense" value="true" checked="checked" /><input type="hidden" name="_absense" value="on"/>휴학</label>
+<input type="number" id="year" name="year" value="4" />
+```
+
+강의 화면의 예상 HTML과 값(`selected`, `checked`, `value`)은 같다. 차이는 Spring이 추가하는 `id` 속성과 체크박스의 `_absense` 숨김 필드다. 이 숨김 필드는 체크하지 않은 체크박스를 서버에서 구분하려고 붙는다.
 
 **면접 기준:** "폼 POST는 `@ModelAttribute`처럼 객체에 바인딩하고, `@Valid`와 `BindingResult`로 검증한다. 실패하면 같은 화면을 다시 보여 주고, 성공하면 리다이렉트로 POST 중복 제출을 막는다."
 
@@ -306,7 +318,7 @@ javap -v out\app\App.class | findstr "major version"
 - `major version: 65`가 나왔다. 클래스 파일 버전 65는 Java 21이다. 즉 `--release 21`이 실제로 바이트코드에 반영되었다.
 - 이 순서가 Gradle `build`와 `jar` 태스크가 하는 일이다. 빌드 도구는 의존성 내려받기와 이 순서를 자동화한다.
 
-**`gradle build`가 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
+**`gradle build`와 `bootRun`이 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 2026-11-24에는 `gradle help`와 `gradle bootRun`도 같은 오류로 실패했다(`--no-daemon`, `--console=plain` 시도 포함). Gradle이 자기 내부 연결을 만들지 못하는 문제다. 소켓 바인딩 자체는 Java `ServerSocket`으로 성공했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
 
 **명령 대응표**
 
@@ -391,6 +403,31 @@ true kim
 | 디버깅 | 생성된 코드가 보이지 않아 혼란이 있을 수 있다 | 코드가 그대로 보인다 |
 
 **면접 기준**: "응답용 DTO처럼 값만 담는 객체는 `record`를 쓰고, JPA 엔티티처럼 상태가 바뀌는 객체는 Lombok을 씁니다. 두 방식 모두 반복 코드를 줄입니다."
+
+### 검증 오류 문구 바꾸기: ValidationMessages.properties (9_ 05 기준, 확인함)
+
+> 추가 근거: 9_SpringBoot_Basic `05 spring form validation` 강의의 3장(오류 문구 수정, 11~16쪽)을 읽고 보강했다. 아래는 **Hibernate Validator 9.1.3에 `ValidationMessages.properties`를 클래스패스에 두고 실행한 결과**다(2026-11-24). 스프링 웹 화면의 한글 깨짐 해결(IDE 인코딩 설정)은 미실행이다.
+
+```properties
+jakarta.validation.constraints.Size.message=크기가 {min} 이상 {max} 이하이어야 합니다
+jakarta.validation.constraints.Email.message=이메일 주소가 바르지 않습니다
+jakarta.validation.constraints.NotEmpty.message=필수 입력항목입니다
+jakarta.validation.constraints.Min.message=값이 {value} 이상이어야 합니다
+jakarta.validation.constraints.Max.message=값이 {value} 이하이어야 합니다
+```
+
+| 모델의 선언 | 출력 (확인함) |
+|---|---|
+| `@Size(min=8, max=12) studentNo` (값 `123`) | `크기가 8 이상 12 이하이어야 합니다` |
+| `@Email email` (값 `x`) | `이메일 주소가 바르지 않습니다` |
+| `@NotEmpty name` (값 `null`) | `필수 입력항목입니다` |
+| `@Max(4) year` (값 `9`) | `값이 4 이하이어야 합니다` |
+| `@Min(value=1, message="학과를 선택하세요") departmentId` (값 `0`) | `학과를 선택하세요` |
+| `@Size(min=2, max=20, message="이름 길이가 {min} 이상 {max} 이하여야 합니다")` | `이름 길이가 2 이상 20 이하여야 합니다` |
+
+**우선순위 (확인함):** 애노테이션에 직접 쓴 `message`가 `ValidationMessages.properties`보다 우선한다. 나머지는 properties의 기본 문구를 쓴다. `{min}`, `{max}`, `{value}`는 애노테이션 값으로 채워진다.
+
+**주의:** 스프링 폼에서 한글 문구가 깨져 보이면 properties 파일 인코딩을 UTF-8로 맞춘다(강의의 IDE 설정). 이 실행은 파일을 UTF-8로 저장해서 깨지지 않았다.
 
 ### Lombok 제외 설정과 JSON 필드 이름 (9_ JPA 04·02 기준, 확인함)
 

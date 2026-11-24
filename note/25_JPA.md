@@ -111,6 +111,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
 **강의의 조회 후 처리 패턴 (미실행):** `Optional<Department> d = repo.findById(id)`를 받고, `d.isEmpty()`이면 `ResponseStatusException(HttpStatus.NOT_FOUND)`를 던져 404로 응답한다. 이 패턴은 Optional을 쓰는 이유(null 대신 빈 상자)를 보여 준다.
 
+**강의 02의 ModelMapper 매핑 (ModelMapper 3.2.5로 확인함):** `Student student = modelMapper.map(studentEdit, Student.class)`에서 `studentEdit.departmentId = 2`는 `student.department.id = 2`로 채워졌다. `studentNo`, `name`, `sex`, `email` 같은 같은 이름의 필드도 함께 복사되었다. 실행은 getter/setter를 가진 DTO 두 개로 했다.
+
 **강의의 물리 이름 설정 (미실행):** `spring.jpa.hibernate.naming.physical-strategy=...PhysicalNamingStrategyStandardImpl`을 쓰면 `studentNo`가 그대로 컬럼명이 된다. 기본 설정(스프링 부트)은 카멜 케이스를 스네이크 케이스(`student_no`)로 바꾼다는 강의 설명은 이 실행에서 확인하지 않았다.
 
 **면접 기준:** "`save`는 식별자가 없거나 0이면 INSERT, 있으면 UPDATE다. `findById`는 결과 부재를 `Optional.empty()`로 돌려준다. 이 호출들은 트랜잭션 안에서 실행되어야 한다."
@@ -451,7 +453,7 @@ int usePoint(@Param("id") Long id, @Param("amount") int amount);
 
 **측정 결과 (자료 기록)**: 벌크 UPDATE 직후 이미 읽은 엔티티의 값은 옛 값(0)이고, DB는 1이었다. `clear` 후 다시 읽으면 새 값이 나왔다.
 
-### 벌크 UPDATE 메소드: @Modifying과 @Transactional (9_JPA 06 기준, 미실행)
+### 벌크 UPDATE 메소드: @Modifying과 @Transactional (9_JPA 06 기준, Spring Data JPA 4.1.1로 확인함)
 
 강의 자료 `06 JPA query language`의 예는 리포지토리에 이렇게 선언한다.
 
@@ -465,7 +467,10 @@ void updateGradeByLectureId(int lectureId, String before, String after);
 - `clearAutomatically = true`: 실행 뒤 영속성 컨텍스트를 비운다. 벌크 UPDATE가 DB를 바꾸어도 1차 캐시에는 옛 값이 남으므로, 이후 조회가 옛 값을 읽지 않게 한다.
 - `flushAutomatically = true`: 실행 전에 쌓인 변경을 먼저 DB에 반영한다.
 - 호출하는 쪽 메소드에는 `@Transactional`을 붙인다. 강의의 `SugangController`는 `@Transactional` 메소드 안에서 `updateGradeByLectureId`를 호출한다.
-- 이 PC에서 같은 코드는 실행하지 않았다. 위 "벌크 UPDATE 함정" 절의 측정(JPQL 벌크 UPDATE 뒤 옛 값 읽기)이 같은 원리를 확인한 근거다.
+- **확인 결과 (JpaRepositoryFactory로 실행, 과목 3개 C0 → D+):**
+  - `clearAutomatically = true`: 영향 행 3. 같은 `em`에서 이전에 읽은 객체의 성적은 `C0`였지만, clear 뒤 `em.find`로 다시 읽으니 `D+`였다.
+  - `clearAutomatically = false`(기본값): 영향 행 3. 같은 객체 인스턴스(`sameInstance=true`)의 성적이 여전히 `C0`였다. 옛 값이 남는다.
+- 트랜잭션은 이 실행에서 `EntityManager`로 직접 열었다. 스프링 컨테이너의 `@Transactional` 프록시는 쓰지 않았다.
 
 ### 자주 하는 오해
 
@@ -984,6 +989,30 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
 `hbm2ddl.auto=create`로 처음 실행하면 `alter table ... drop foreign key ...` 경고가 로그에 나올 수 있다. 테이블이 아직 없어서 생기는 경고이고, 스키마 생성은 끝까지 진행된다. 엔티티 이름을 지정하지 않으면 `JpqlMain$Lecture`처럼 내부 클래스 이름이 붙어 JPQL에서 엔티티를 찾지 못한다. 실습에서는 `@Entity(name = "Lecture")`처럼 이름을 명시했다.
 
+**강의 06의 student2 스키마와 관계 (강의 자료):** `student`(departmentId), `department`, `professor`(departmentId), `lecture`(professorId), `sugang`(studentId, lectureId, grade). 학생-과목은 `Sugang`이 중간 테이블 역할을 한다. 위 실행은 같은 구조를 축소한 `khac_jpql_demo`에서 했다.
+
+**"모든 과목을 수강한 학생" 쿼리 (강의 06의 #4·#5 예, 축소 데이터에서 확인함):** 강의는 `김진우` 학생이 수강한 과목을 모두 수강한 학생을 찾는다. 아래는 강의 쿼리를 그대로 옮긴 것이다. 강의 DB 컬럼은 `studentId`, `lectureId`처럼 카멜 케이스이고, 이 PC의 축소 DB는 `student_id`, `lecture_id`를 쓰므로 이름만 다르다. 실행에서는 `김진우`가 없어서 기준 학생을 `최하은`(id 1)으로 바꾸었다.
+
+```sql
+WITH lectures AS (
+    SELECT s.id AS studentId, s.name AS studentName, e.id AS lectureId, e.title
+    FROM student s
+    JOIN sugang g ON g.studentId = s.id
+    JOIN lecture e ON g.lectureId = e.id
+)
+SELECT s.id, s.name
+FROM student s
+WHERE NOT EXISTS (
+    SELECT * FROM lectures
+    WHERE studentName = '김진우'                      -- 기준 학생이 수강한 과목 중에서
+      AND lectureId NOT IN (
+          SELECT lectureId FROM lectures WHERE studentId = s.id  -- s가 수강하지 않은 과목이 있으면 제외
+      )
+);
+```
+
+결과: 기준 학생 자신만 나왔다. 다른 학생들은 기준 학생의 과목 중 하나 이상을 빠뜨려서 제외되었다(확인함). "전부 포함"을 `NOT EXISTS` + `NOT IN`으로 푸는 방식이다.
+
 **면접 기준:** "JPQL은 테이블이 아니라 엔티티와 연관 경로를 쓰는 객체 기준 쿼리입니다. 단일 값 연관은 점으로 따라가고, 컬렉션 연관은 JOIN으로 원소를 별칭에 묶어야 합니다. 집계와 대량 수정도 가능하지만, 벌크 연산은 영속성 컨텍스트를 거치지 않는다는 점을 알고 써야 합니다."
 
 ## 4-4. 양방향 연관관계의 순환 참조: toString과 JSON
@@ -1020,6 +1049,8 @@ Student.toString()    → "department=" + department   // Department.toString() 
 - 엔티티를 JSON으로 바로 내보내면 **순환 참조**와 **지연 로딩 예외**(세션 밖에서 연관 접근)가 같이 생긴다.
 - 실무에서는 응답 전용 DTO를 만들고, 필요한 필드만 옮긴다(DTO 조회는 3장 N+1 비교 절에서 다뤘다. 응답 DTO 전용 실습은 이 장에 없음, 미실행).
 - 이 절의 `@JsonIgnore`는 빠른 해결책이다. 응답 구조가 복잡해지면 DTO가 낫다.
+
+**강의 04의 콘솔 로그 (강의 자료, 실행 확인과 같은 결과):** `department/list1`은 학과 조회 SQL 1번만 나갔고, `department/list2`에서 학과 4개를 돌며 `st.department`와 `students`를 쓰자 학생 조회 SQL이 학과 수만큼(4번) 나갔다. 위 4-5절의 "학과 3개 → 추가 3회"와 같은 원리다. 강의 04의 `list2.html`은 `th:each="dp : ${departments}"` 안에 `th:each="st : ${dp.students}"`를 중첩해서 쓴다. 이 화면은 미실행이다.
 
 **면접 기준:** "양방향 연관관계는 객체 그래프가 순환하므로 `toString`과 JSON 직렬화에서 무한 반복이 생긴다. 한쪽에 `@JsonIgnore`를 붙이거나, 엔티티 대신 DTO로 응답한다."
 
