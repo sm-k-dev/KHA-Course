@@ -202,7 +202,7 @@ tail -n 30 app.log
 | `journalctl -n 2 --no-pager` | 최근 시스템 로그 2줄 |
 | `systemctl status 서비스명`, `journalctl -u 서비스명` | 사용자 단위 서비스는 확인함: `~/.config/systemd/user/`에 unit 파일을 만들고 `systemctl --user start`, `is-active`(active), HTTP 200 확인, `stop`, 파일 삭제까지 실행했다. 시스템 단위 서비스도 확인함(사용자 WSL, 2026-11-24): `/etc/systemd/system/`에 unit 파일을 만들고 `daemon-reload`, `start`, `is-active`(active), HTTP 200 확인, `stop`, 파일 삭제, `daemon-reload`까지 실행했다. |
 | `systemctl status` (시스템 전체) | 확인함(사용자 WSL, 2026-11-24): `State: running`, `Failed: 0 units`. 서비스 트리에 chrony, cron, dbus 등이 보였다 |
-| `sudo ufw ...` (방화벽) | 규칙 추가·삭제는 확인함(사용자 WSL, 2026-11-24): `ufw allow 8777/tcp`와 `ufw delete allow 8777/tcp`가 "Rules updated"로 끝났다. 다만 `Status: inactive`라서 방화벽은 켜져 있지 않았다. 차단이 실제로 걸리는지(`ufw enable` 후 접속 시험)는 WSL 네트워크를 건드릴 수 있어서 확인하지 않았다(미실행). |
+| `sudo ufw ...` (방화벽) | 규칙 추가·삭제는 확인함(사용자 WSL, 2026-11-24): `ufw allow 8777/tcp`와 `ufw delete allow 8777/tcp`가 "Rules updated"로 끝났다. 다만 `Status: inactive`라서 방화벽은 켜져 있지 않았다. 차단 시험(사용자 WSL, 2026-11-24): 방화벽 전에는 eth0 주소로 `200`, `deny 8777/tcp` 후 `enable`에도 같은 주소로 `200`이었다. 같은 호스트 안의 접속은 외부 경로를 거치지 않아 규칙이 적용되지 않은 것으로 보이므로 차단을 확인한 것이 아니다. `127.0.0.1`도 `200`이었다. 되돌리기(`disable`, 규칙 삭제, `default deny incoming`)는 `inactive`로 끝났다. 외부(Windows)에서 접속한 시험(2026-11-24): 방화벽이 꺼진 상태에서는 Windows에서 `172.26.206.182:8777`이 `200`이었다. `deny 8777/tcp`와 `enable` 후에는 같은 주소가 타임아웃으로 실패했다. 외부 경로의 접속이 차단된 것을 확인했다. 같은 WSL 안에서의 접속이 차단되지 않은 이유는 위 설명과 같다. |
 
 **6) 디스크와 메모리**
 
