@@ -71,7 +71,7 @@ Student.toString()    → "department=" + department   // Department.toString() 
 
 ### MyBatis 사용법 실습 (2026-11-24, MyBatis 3.5.16 · MySQL 8.0.21로 확인함)
 
-> 이 절은 Spring 없이 MyBatis 코어만 쓴 실행 결과다. `mybatis-spring-boot-starter`와 `@Mapper`를 쓰는 스프링 부트 연동은 **미실행**이다. 공식 설정 방법은 MyBatis 공식 문서를 기준으로 하고, 이 장에서는 같은 동작을 직접 확인했다.
+> 이 절은 Spring 없이 MyBatis 코어만 쓴 실행 결과다. `mybatis-spring-boot-starter`와 `@Mapper`를 쓰는 스프링 부트 연동은 아래 5-2절에서 확인했다. 공식 설정 방법은 MyBatis 공식 문서를 기준으로 하고, 이 장에서는 같은 동작을 직접 확인했다.
 
 **구성 요소 (확인함)**
 
@@ -130,4 +130,48 @@ Student.toString()    → "department=" + department   // Department.toString() 
 - 객체 저장과 변경 추적은 JPA가 편하다. 두 기술을 같이 쓰는 프로젝트가 많다.
 
 **면접 기준:** "MyBatis는 SQL을 개발자가 쓰고, 인터페이스 메소드와 XML의 `id`를 연결해 결과를 객체에 매핑합니다. 값은 `#{}`로 바인딩해서 SQL 인젝션을 막고, `${}`는 바인딩할 수 없는 식별자에만 씁니다."
+
+### 5-2. 스프링 부트 연동: mybatis-spring-boot-starter와 @Mapper (2026-11-24, 확인함)
+
+위 MyBatis 코어 실습은 Spring 없이 설정을 직접 했다. 이 절은 **Spring Boot 4.1.1**에서 `mybatis-spring-boot-starter` 4.0.0을 붙인 프로젝트 `mybatisapp`을 Maven으로 빌드해 서버를 띄운 결과다. 데이터베이스는 이 PC의 MySQL 8.0.21 `khac_mybatis_demo`를 썼다.
+
+```java
+@Mapper
+public interface StudentMapper {
+
+    // #{}는 값을 바인딩하므로 SQL 인젝션을 막는다.
+    @Select("SELECT id, name, dept FROM mb_student WHERE dept = #{dept} ORDER BY id")
+    List<Student> findByDept(@Param("dept") String dept);
+
+    @Select("SELECT dept, COUNT(*) AS cnt FROM mb_student GROUP BY dept ORDER BY dept")
+    List<DeptCount> countByDept();
+
+    record Student(Long id, String name, String dept) {}
+    record DeptCount(String dept, Long cnt) {}
+}
+```
+
+```properties
+# application.properties (발췌)
+spring.sql.init.mode=always
+mybatis.configuration.map-underscore-to-camel-case=true
+```
+
+`schema.sql`로 `mb_student` 테이블을 만들고 `data.sql`로 3행(CS 2명, MATH 1명)을 넣었다. `@Mapper` 인터페이스는 스타터가 구현체를 만들어 빈으로 등록하므로, 컨트롤러는 생성자로 주입만 받는다.
+
+**확인 결과 (확인함)**
+
+| 요청 | 응답 |
+|---|---|
+| `GET /students?dept=CS` | 200, 2행(`김하나`, `이둘`) |
+| `GET /students?dept=MATH` | 200, 1행(`박셋`) |
+| `GET /dept-counts` | 200, `[{"dept":"CS","cnt":2},{"dept":"MATH","cnt":1}]` |
+| `GET /students?dept=' OR '1'='1` | 200, `[]` (값으로 바인딩되어 조건을 깨지 못함) |
+
+- 한글은 응답 바이트를 UTF-8로 풀어 `김하나`, `이둘`, `박셋`을 확인했다(`Content-Type: application/json`).
+- `cnt` 컬럼은 `record`의 `Long cnt`로 매핑되었다. `map-underscore-to-camel-case`는 이 예에서 필요하지 않았지만 켜 두었다.
+
+**환경 메모**: Windows JVM에서 Tomcat NIO 루프백 문제가 같아서, 22장과 같은 NIO2 프로토콜 우회(`TomcatServletWebServerFactory` 빈)를 썼다. 이 우회는 실습 환경 한정이다.
+
+**미실행 범위**: XML 매퍼(`*.xml`)와 `@Select` 방식을 섞은 동적 SQL(`<if>`, `<foreach>`), 트랜잭션 연동, 매퍼 XML의 `id` 불일치 오류는 이번에 확인하지 않았다. 강의의 JPA 화면과 MyBatis 화면 비교도 미실행이다.
 
