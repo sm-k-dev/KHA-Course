@@ -432,7 +432,7 @@ jakarta.validation.constraints.Max.message=값이 {value} 이하이어야 합니
 ### Lombok 제외 설정과 JSON 필드 이름 (9_ JPA 04·02 기준, 확인함)
 
 - `@Data`를 양방향 연관 엔티티에 붙이면 `toString`이 서로를 부른다. `@ToString.Exclude`와 `@EqualsAndHashCode.Exclude`를 연관 컬렉션에 붙이면 무한 반복이 사라진다. 실행 결과: `LombokCheck.Department(id=1, name=소프트웨어공학과)`로 출력되고 `equals`도 정상이었다(Lombok 1.18.46, Java 25). 순환 참조의 JSON 쪽은 [25장 4-4절](25_JPA.md)을 본다.
-- Jackson은 필드 이름이 아니라 **getter 이름**으로 JSON 속성을 정한다. `getUnitCost()`가 있으면 `unitCost`로 나간다. 실행 결과: `{"name":"맥주","unitCost":2000}`(강의 `test3` 예와 같은 형태).
+- JSON 속성 이름이 getter에서 정해지는 규칙과 실행 결과는 [18장 "Java 객체의 getter가 JSON 필드 이름을 정한다"](18_AJAX_REST.md) 절을 본다. 여기서는 중복하지 않는다.
 
 ### 9_ 자료 00·01 기준: 빌드 명령과 설정 (미실행)
 
