@@ -323,13 +323,13 @@ order: [filter.before, interceptor.pre, controller, advice, interceptor.after, f
 |---|---|---|
 | 1 | `main`이 실행되고 스프링 컨테이너가 만들어진다 | 19장 (컨테이너와 빈) |
 | 2 | `@Autowired`로 서비스와 저장소 객체가 연결된다 | 19장 (DI 검증) |
-| 3 | `@Entity` 클래스를 읽어 테이블을 만든다 | 25장 (엔티티와 매핑) |
+| 3 | `@Entity` 클래스를 읽어 테이블을 만든다 | [25-1](25-1_JPA_기초와_Repository.md) (엔티티와 매핑) |
 | 4 | `data.sql`로 초기 데이터를 넣는다 | 이 PC에서 미실행 |
 | 5 | `GET /test` 주소에 맞는 메서드를 찾는다 | 20장 6-2 (DispatcherServlet 흐름) |
 | 6 | 컨트롤러가 서비스에 업무를 맡긴다 | 17장 (계층 구조) |
-| 7 | 저장소가 `findAll()`로 SQL `SELECT`를 보낸다 | 25장 (JPQL과 쿼리) |
+| 7 | 저장소가 `findAll()`로 SQL `SELECT`를 보낸다 | [25-3](25-3_쿼리.md) (JPQL과 쿼리) |
 | 8 | DB가 행 3줄을 돌려준다 | 07장 (SQL 결과) |
-| 9 | 행을 `Member` 객체로 바꾼다 | 25장 (영속성 컨텍스트) |
+| 9 | 행을 `Member` 객체로 바꾼다 | [25-1](25-1_JPA_기초와_Repository.md) (영속성 컨텍스트) |
 | 10 | 목록이 서비스와 컨트롤러로 돌아간다 | 17장 (계층 구조) |
 | 11 | 목록을 JSON 글자로 바꿔 응답한다 | 18장 (JSON과 REST, MockMvc 검증) |
 
