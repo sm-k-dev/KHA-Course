@@ -335,6 +335,29 @@ parse error: SyntaxError
 
 **면접 기준**: "브라우저에서 객체는 `JSON.stringify`로 보내고 응답은 `JSON.parse`(또는 `res.json()`)로 읽습니다. 인증 토큰은 `Authorization: Bearer`로 보내고, 저장은 XSS 위험을 고려해 `HttpOnly` 쿠키를 우선 검토합니다."
 
+## Java 객체의 getter가 JSON 필드 이름을 정한다 (9_SpringBoot_Basic 02 기준, Jackson으로 확인함)
+
+> 추가 근거: 9_Spring_boot_Basic `02 Spring MVC 기초`의 `Product` DTO와 `@RestController` 예를 읽고 보강했다. 아래는 **Jackson 3.1.5(`tools.jackson.databind.ObjectMapper`)로 직접 실행한 결과**다(2026-11-24). 스프링 서버를 띄운 실행(`/first/test3` 브라우저 확인)은 **미실행**이다.
+
+```java
+public class Product {
+    String name;          // 필드
+    int unitCost;
+    public String getName() { return name; }        // JSON 이름: name
+    public void setName(String name) { this.name = name; }
+    public int getUnitCost() { return unitCost; }   // JSON 이름: unitCost
+    public void setUnitCost(int unitCost) { this.unitCost = unitCost; }
+}
+```
+
+| 대상 | 결과 (확인함) |
+|---|---|
+| `new Product("맥주", 2000)` | `{"name":"맥주","unitCost":2000}` |
+
+- JSON 속성 이름은 **필드 이름이 아니라 `get…` 메소드 이름**에서 온다(`getUnitCost` → `unitCost`). 강의도 같은 설명이다.
+- `@RestController`의 액션 메소드가 객체나 배열을 반환하면 이 변환이 자동으로 일어난다. 강의의 `test2`는 문자열 배열, `test4`는 객체 배열을 반환한다.
+- 이 규칙 때문에 JSON에 넣지 말아야 할 값이 있으면 getter를 만들지 않거나 `@JsonIgnore`를 쓴다(순환 참조 절 참고).
+
 ## 단원 통과 기준
 
 - [ ] 각 용어를 자료 없이 30초 안에 정의한다.

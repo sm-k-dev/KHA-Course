@@ -201,6 +201,48 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "폼 값은 `@ModelAttribute` 객체에 바인딩되고, `@Valid`로 규칙을 확인합니다. 실패한 항목은 `BindingResult`에 모여서 화면에 다시 보여 줍니다."
 
+### 폼 바인딩, 리다이렉트, 검증 오류: 9_ form1·form3 기준 (MockMvc로 확인함, 2026-11-24)
+
+> 추가 근거: 9_Spring_boot_Basic `03 spring form #1`, `05 spring form validation`의 컨트롤러와 `StudentEdit` 모델을 읽고, 같은 코드를 **MockMvc standalone(Spring 7.0.9)**으로 실행했다. 스프링 부트 서버를 띄우지 않았고, Thymeleaf 화면 렌더링은 **미실행**이다(뷰 이름과 모델만 확인).
+
+```java
+@GetMapping("edit")
+public String edit(Model model) {
+    StudentEdit studentEdit = new StudentEdit();
+    studentEdit.setName("홍길동");
+    model.addAttribute("studentEdit", studentEdit);
+    return "student/edit";
+}
+
+@PostMapping("edit")
+public String edit(Model model, @Valid StudentEdit studentEdit, BindingResult bindingResult) {
+    try {
+        if (bindingResult.hasErrors()) throw new Exception("저장할 수 없습니다");
+        return "redirect:list";
+    } catch (Exception ex) {
+        bindingResult.reject("", null, ex.getMessage());
+        return "student/edit";
+    }
+}
+```
+
+| 요청 | 결과 (확인함) |
+|---|---|
+| `GET /student/edit` | 200, 뷰 `student/edit`, 모델에 `studentEdit`(이름 `홍길동`)이 들어 있다 |
+| `POST` 잘못된 값 (학번 `123`, 이름 빈칸, 학과 0, 성별 `기타`, 학년 0) | 200, 뷰 `student/edit` 그대로, 오류 **8건** (필드 7건 + 전체 1건) |
+| `POST` 올바른 값 (학번 9자리, 이름 `홍길동`, 학과 1, 성별 `남자`, 학년 4) | **302**, 리다이렉트 위치 `list` |
+
+**확인한 규칙:**
+- 모델 속성 이름은 클래스 이름에서 첫 글자만 소문자로 만든 `studentEdit`다. 검증 결과는 `org.springframework.validation.BindingResult.studentEdit` 키로 모델에 들어간다. 변수 이름 `student`는 상관없다(강의 설명과 같음).
+- 빈 이름 하나에 `@NotEmpty`와 `@NotBlank`가 함께 붙어 있어서 오류가 **두 개** 나온다(`비어 있을 수 없습니다`, `공백일 수 없습니다`). 두 애노테이션의 역할이 다르다는 점을 확인한다.
+- `@Pattern(regexp = "남자|여자")`에 맞지 않는 `기타`는 `"남자|여자"와 일치해야 합니다`로 막혔다. 메시지를 `message`로 바꾸면 그 문구가 나온다.
+- `bindingResult.reject(...)`로 추가한 전체 오류는 필드 오류와 같은 목록에 들어간다.
+- `redirect:list`는 MockMvc standalone에서 `list`로 나왔다. 실제 서버에서는 현재 주소(`/student/…`) 기준으로 `/student/list`가 된다(강의 설명, 서버 실행은 미실행).
+
+**Student 객체 바인딩 (강의 form1 설명, 미실행):** 요청 파라미터 `studentNo`, `name`은 `setStudentNo`, `setName`으로 채워진다. 객체는 `model`에 자동으로 `student`라는 이름으로 추가된다(form1 강의 예).
+
+**면접 기준:** "폼 POST는 `@ModelAttribute`처럼 객체에 바인딩하고, `@Valid`와 `BindingResult`로 검증한다. 실패하면 같은 화면을 다시 보여 주고, 성공하면 리다이렉트로 POST 중복 제출을 막는다."
+
 ### 폼 검증 애노테이션: null과 빈 문자열은 다르게 처리된다 (9_ 자료 05 기준, Bean Validation 실행 확인)
 
 > 추가 근거: 9_SpringBoot_Basic `05 spring form validation` 강의 자료(17쪽)의 `StudentEdit` 모델을 읽고 보강했다. 아래는 **Hibernate Validator 9.1.3을 직접 실행한 결과**다(2026-11-24). 스프링 웹 폼 화면 전체 흐름은 이 절 위의 MockMvc 예와 별개로 **미실행**이다.
@@ -349,6 +391,27 @@ true kim
 | 디버깅 | 생성된 코드가 보이지 않아 혼란이 있을 수 있다 | 코드가 그대로 보인다 |
 
 **면접 기준**: "응답용 DTO처럼 값만 담는 객체는 `record`를 쓰고, JPA 엔티티처럼 상태가 바뀌는 객체는 Lombok을 씁니다. 두 방식 모두 반복 코드를 줄입니다."
+
+### Lombok 제외 설정과 JSON 필드 이름 (9_ JPA 04·02 기준, 확인함)
+
+- `@Data`를 양방향 연관 엔티티에 붙이면 `toString`이 서로를 부른다. `@ToString.Exclude`와 `@EqualsAndHashCode.Exclude`를 연관 컬렉션에 붙이면 무한 반복이 사라진다. 실행 결과: `LombokCheck.Department(id=1, name=소프트웨어공학과)`로 출력되고 `equals`도 정상이었다(Lombok 1.18.46, Java 25). 순환 참조의 JSON 쪽은 [25장 4-4절](25_JPA.md)을 본다.
+- Jackson은 필드 이름이 아니라 **getter 이름**으로 JSON 속성을 정한다. `getUnitCost()`가 있으면 `unitCost`로 나간다. 실행 결과: `{"name":"맥주","unitCost":2000}`(강의 `test3` 예와 같은 형태).
+
+### 9_ 자료 00·01 기준: 빌드 명령과 설정 (미실행)
+
+강의 자료 `00 maven과 gradle`과 `01 Spring Boot 시작하기`의 명령을 정리했다. 이 PC에서 프로젝트를 빌드하거나 서버를 띄우지 않았으므로 모두 **미실행**이다.
+
+| 구분 | Maven (`pom.xml`) | Gradle (`build.gradle`) |
+|---|---|---|
+| 빌드 명령 | `./mvnw package` (Windows: `mvnw package`) | `./gradlew build` (Windows: `gradlew build`) |
+| 결과 파일 | `target/<artifactId>-<version>.war` | `build/libs/<name>-<version>.war` |
+| 설정 | `<packaging>war</packaging>`, `<version>0.0.1-SNAPSHOT</version>` | `version = '0.0.1-SNAPSHOT'` |
+| 외부 설치 | 따로 설치하지 않아도 `mvnw`가 실행한다 | 따로 설치하지 않아도 `gradlew`가 실행한다 |
+
+- `-plain.war`는 내장 톰캣이 없는 파일이다. 독립 톰캣에 배포할 때 쓴다. 일반 `.war`는 내장 톰캣이 있어서 `java -jar`로 바로 실행한다.
+- 강의 설명: 옛 프로젝트는 대부분 Maven·MyBatis·JSP, 최근 프로젝트는 Gradle·JPA·Thymeleaf를 쓴다는 경향이다.
+- 포트 충돌(`8080 port failed to start`)이 나면 `server.port=8088`처럼 `application.properties`에서 포트를 바꾼다. 설정 줄 끝에 공백이 있으면 실행 오류가 날 수 있다는 강의 주의도 있다.
+- `pom.xml`에 빨간 오류가 뜨면 프로젝트 우클릭 → Maven → Update Project를 실행한다. Gradle은 Refresh Gradle Project를 실행한다.
 
 ### 4-3. 빌드, 실행, 배포는 다른 단계다 (2026-11-24 보강, 선생님 자료 기반)
 

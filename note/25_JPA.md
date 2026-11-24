@@ -87,6 +87,34 @@ JPA EntityManager와 Spring Data Repository의 역할을 비교한다.
 
 **3차: 면접 재현.** *“JPA와 Hibernate, Spring Data JPA의 관계는?”*에 대해 **정의 → 왜 필요한가 → 무엇과 다른가 → 코드·상황 하나** 순서로 30~60초 말한다. 답을 읽지 않고 말한 뒤 원문과 대조한다.
 
+## 1-2. JPA Repository 기본 메소드: save, findById, deleteById, count (9_Spring_boot_JPA 01 기준, 확인함)
+
+> 추가 근거: 9_Spring_boot_JPA `01 JPA 기초` 강의 자료(17쪽)를 읽고 보강했다. 아래 결과는 **Spring Data JPA 4.1.1 + Hibernate 7.4.5 + MySQL 8.0.21에서 `JpaRepositoryFactory`로 직접 실행한 결과**다(2026-11-24). 스프링 컨테이너, `DepartmentController`, `ModelMapper` 화면 흐름은 **미실행**이다.
+
+```java
+public interface DepartmentRepository extends JpaRepository<Department, Integer> {}
+```
+
+인터페이스만 선언하면 `findAll`, `findById`, `save`, `deleteById`, `count` 구현이 자동으로 생긴다.
+
+| 호출 | 실행 결과 (확인함) |
+|---|---|
+| `save(d)`, `d.id == 0` (새 객체) | INSERT. 반환된 객체의 `id`가 `1`이 된다 |
+| `save(d)`, `d.id != 0` (기존 객체, 이름 변경) | UPDATE. `count`는 그대로 `1`, 이름이 바뀌었다 |
+| `save(d)`, 새 객체 두 번째 | `count = 2` |
+| `findById(999)` (없는 id) | `Optional.empty()`. `isPresent() = false` |
+| `findById(id)` (있는 id) | `isPresent() = true` |
+| `deleteById(existing)` | 행 하나 삭제, `count` 감소 |
+| `deleteById(999)` (없는 id) | **예외 없이 끝났다** (Spring Data 4.1.1에서 관찰함) |
+
+**주의 (확인함):** 트랜잭션 없이 `save`를 호출하면 **아무것도 저장되지 않았다**(`count = 0`). 실제 스프링 앱에서는 리포지토리 메소드에 `@Transactional`이 붙어 있어서 생기지 않지만, 독립 실행에서는 `EntityManager`의 트랜잭션을 직접 열어야 한다.
+
+**강의의 조회 후 처리 패턴 (미실행):** `Optional<Department> d = repo.findById(id)`를 받고, `d.isEmpty()`이면 `ResponseStatusException(HttpStatus.NOT_FOUND)`를 던져 404로 응답한다. 이 패턴은 Optional을 쓰는 이유(null 대신 빈 상자)를 보여 준다.
+
+**강의의 물리 이름 설정 (미실행):** `spring.jpa.hibernate.naming.physical-strategy=...PhysicalNamingStrategyStandardImpl`을 쓰면 `studentNo`가 그대로 컬럼명이 된다. 기본 설정(스프링 부트)은 카멜 케이스를 스네이크 케이스(`student_no`)로 바꾼다는 강의 설명은 이 실행에서 확인하지 않았다.
+
+**면접 기준:** "`save`는 식별자가 없거나 0이면 INSERT, 있으면 UPDATE다. `findById`는 결과 부재를 `Optional.empty()`로 돌려준다. 이 호출들은 트랜잭션 안에서 실행되어야 한다."
+
 ## 2. 영속성 컨텍스트·변경 감지
 
 **정의** — 영속성 컨텍스트는 관리되는 엔티티의 동일성·상태를 추적하는 환경이며 변경 감지는 관리 엔티티의 상태 변경을 감지해 적절한 시점에 SQL 변경을 반영하는 메커니즘이다.
@@ -324,7 +352,7 @@ Hibernate의 엔티티 목록은 중복을 제거해서 `distinct`를 빼도 3�
 
 ### 실습: Pageable로 페이지 나누기 (확인함, MySQL 8.0.21·Spring Data JPA 4.1.1)
 
-> 추가 근거: 9_Spring_boot_JPA `03 JPA pagination` 강의 자료의 주요 쪽(2~3, 8~11쪽)을 읽고 보강했다. 강의의 나머지 쪽(4~7, 12~20쪽)은 아직 읽지 않았다. 아래 값은 **학생 23명을 넣고 실행한 결과**다. 스프링 컨테이너와 웹 화면(`list.html`, `Pagination` 모델을 쓴 목록 화면)은 **미실행**이다.
+> 추가 근거: 9_Spring_boot_JPA `03 JPA pagination` 강의 자료 2~3, 8~20쪽을 읽고 보강했다. 4~7쪽(프로젝트 생성과 설정 화면)은 읽지 않았다. 아래 값은 **학생 23명을 넣고 실행한 결과**다. 스프링 컨테이너와 웹 화면(`list.html`, `Pagination` 모델을 쓴 목록 화면)은 **미실행**이다.
 
 ```java
 // 리포지토리는 JpaRepository를 상속만 한다. findAll(Pageable)은 자동으로 구현된다.
@@ -354,6 +382,16 @@ Page<Student> page = repo.findAll(PageRequest.of(pg - 1, sz, Sort.by(Sort.Direct
 - `getQueryString()`은 목록 화면에서 "수정 후 같은 쪽으로 돌아가기" 링크에 붙인다(강의 자료의 `redirect:list?` + `getQueryString()`).
 
 **주의:** 강의 자료의 컨트롤러는 `page.getTotalElements()`를 `Pagination.recordCount`에 넣는다. `Page`는 전체 건수를 세는 count 쿼리가 함께 나가는 것이 일반적이다(이 실행에서는 SQL 로그를 확인하지 않아 미확인). 건수가 필요 없는 무한 스크롤에는 `Slice`가 더 가볍다(Slice는 미실행).
+
+**페이지 번호 블록 (강의 `common.js`, Node에서 확인함):** 강의의 페이지 번호 계산 코드를 최소 DOM 스텁으로 실행했다. 데이터 1건부터 `Math.ceil(건수 / 쪽 크기)`로 쪽 수를 구하고, 번호는 10개씩 묶는다.
+
+| 조건 | 출력 (확인함) |
+|---|---|
+| 300건, 15개씩, 3쪽 | `1 2 3(현재) 4 5 6 7 8 9 10 >` |
+| 300건, 15개씩, 11쪽 | `< 11(현재) 12 … 20` (다음 블록 버튼 `>` 없음) |
+| 47건, 15개씩, 2쪽 | `1 2(현재) 3 4` (쪽 수 4) |
+
+위 결과는 강의 화면 캡처(3쪽에서 1~10과 `>`)와 같은 블록 구성이다. 강의 코드는 PDF 이미지에서 옮겨 적었으므로 오탈자 가능성은 있다.
 
 **면접 기준:** "Spring Data의 `Pageable`은 페이지 번호를 0부터 세고, `Page`는 현재 쪽 내용과 전체 건수·쪽 수를 함께 준다. 없는 쪽은 빈 목록으로 응답한다."
 
@@ -412,6 +450,22 @@ int usePoint(@Param("id") Long id, @Param("amount") int amount);
 - `clearAutomatically = true`를 빼면, 같은 트랜잭션에서 다시 읽어도 옛 값이 나올 수 있다.
 
 **측정 결과 (자료 기록)**: 벌크 UPDATE 직후 이미 읽은 엔티티의 값은 옛 값(0)이고, DB는 1이었다. `clear` 후 다시 읽으면 새 값이 나왔다.
+
+### 벌크 UPDATE 메소드: @Modifying과 @Transactional (9_JPA 06 기준, 미실행)
+
+강의 자료 `06 JPA query language`의 예는 리포지토리에 이렇게 선언한다.
+
+```java
+@Modifying(clearAutomatically = true, flushAutomatically = true)
+@Query("UPDATE Sugang g SET g.grade = :after WHERE g.lecture.id = :lectureId AND g.grade = :before")
+void updateGradeByLectureId(int lectureId, String before, String after);
+```
+
+- `@Modifying`이 없으면 Spring Data가 이 쿼리를 조회용으로 다루어 오류가 난다고 알려져 있다(이 실행에서는 확인하지 않음, 미확인). 이 쿼리는 행을 바꾸는 명령이다.
+- `clearAutomatically = true`: 실행 뒤 영속성 컨텍스트를 비운다. 벌크 UPDATE가 DB를 바꾸어도 1차 캐시에는 옛 값이 남으므로, 이후 조회가 옛 값을 읽지 않게 한다.
+- `flushAutomatically = true`: 실행 전에 쌓인 변경을 먼저 DB에 반영한다.
+- 호출하는 쪽 메소드에는 `@Transactional`을 붙인다. 강의의 `SugangController`는 `@Transactional` 메소드 안에서 `updateGradeByLectureId`를 호출한다.
+- 이 PC에서 같은 코드는 실행하지 않았다. 위 "벌크 UPDATE 함정" 절의 측정(JPQL 벌크 UPDATE 뒤 옛 값 읽기)이 같은 원리를 확인한 근거다.
 
 ### 자주 하는 오해
 
@@ -850,7 +904,7 @@ PartTree t = new PartTree(method, Student.class);
 
 ## 4-3. JPQL: 테이블이 아니라 엔티티를 기준으로 쓰는 쿼리
 
-> 추가 근거: 9_Spring_boot_JPA `06 JPA query language` 강의 자료의 JPQL 본문(19~32쪽)을 읽고 보강했다. 강의 2~18쪽과 33~42쪽(고급 SQL 부록 포함)은 아직 읽지 않았다. 아래 쿼리는 **Hibernate 7.4.5와 MySQL 8.0.21에서 실행해 결과를 확인함**(2026-11-24, 임시 엔티티 `Department`·`Student`·`Professor`·`Lecture`·`Sugang`, 실습 DB `khac_jpql_demo`). 강의의 Spring 웹 화면(`/jpql`)은 미실행이다.
+> 추가 근거: 9_Spring_boot_JPA `06 JPA query language` 강의 자료의 JPQL 본문(19~32쪽)을 읽고 보강했다. 33~40쪽(`@Modifying`, `@Transactional`, JPQL 메소드 구현)도 읽었다. 2~18쪽은 프로젝트 설정과 엔티티 생성 화면이라 읽지 않았고, 41~42쪽(고급 SQL)은 08장 4-1절과 겹친다. 아래 쿼리는 **Hibernate 7.4.5와 MySQL 8.0.21에서 실행해 결과를 확인함**(2026-11-24, 임시 엔티티 `Department`·`Student`·`Professor`·`Lecture`·`Sugang`, 실습 DB `khac_jpql_demo`). 강의의 Spring 웹 화면(`/jpql`)은 미실행이다.
 
 ### 정의
 
@@ -934,7 +988,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
 ## 4-4. 양방향 연관관계의 순환 참조: toString과 JSON
 
-> 추가 근거: 9_Spring_boot_JPA `04 JPA collection-valued association` 강의 자료의 목차(3장 순환 참조 문제: `@JsonIgnore`, lombok, StackOverflowError)를 보고 같은 주제를 실행했다. 강의 본문 쪽은 아직 읽지 않았다. 아래 두 실행은 **이 PC에서 확인함**(2026-11-24, Java 25, Jackson 3.1.5). Lombok `@Data`의 자동 `toString`은 **미실행**이고, 같은 동작을 손으로 쓴 `toString`으로 재현했다.
+> 추가 근거: 9_Spring_boot_JPA `04 JPA collection-valued association` 강의 자료 19~22쪽(순환 참조, `@JsonIgnore`, Lombok `@ToString.Exclude`, StackOverflowError 메시지)을 읽고 같은 주제를 실행했다. 아래 두 실행은 **이 PC에서 확인함**(2026-11-24, Java 25, Jackson 3.1.5). Lombok `@Data`의 자동 `toString`은 **미실행**이고, 같은 동작을 손으로 쓴 `toString`으로 재현했다.
 
 ### 왜 생기나
 
@@ -968,6 +1022,26 @@ Student.toString()    → "department=" + department   // Department.toString() 
 - 이 절의 `@JsonIgnore`는 빠른 해결책이다. 응답 구조가 복잡해지면 DTO가 낫다.
 
 **면접 기준:** "양방향 연관관계는 객체 그래프가 순환하므로 `toString`과 JSON 직렬화에서 무한 반복이 생긴다. 한쪽에 `@JsonIgnore`를 붙이거나, 엔티티 대신 DTO로 응답한다."
+
+## 4-5. 기본 로딩 전략: 단일 값은 EAGER, 컬렉션은 LAZY (9_JPA 02·04 기준, SQL 수 확인함)
+
+> 추가 근거: 9_Spring_boot_JPA `02 JPA single-valued association`과 `04 JPA collection-valued association`의 로딩 설명(eager/lazy)을 읽고 보강했다. 아래 SQL 수는 **Hibernate 통계(`prepareStatementCount`)로 센 값**이다(2026-11-24, Hibernate 7.4.5, MySQL 8.0.21). 학과 3개, 학생 4명(학과 1, 2에 2명씩 배정)으로 실행했다.
+
+| 실행 | SQL 수 (확인함) | 해석 |
+|---|---|---|
+| `select d from Department d` (학과 3개) | **1** | 학과만 조회. 학생 목록은 가져오지 않았다 |
+| 위에서 읽은 학과 3개의 `d.students`를 순회 | 추가 **3** | 컬렉션 접근 시점마다 학과 하나씩 학생을 조회했다 (LAZY, N+1) |
+| `select s from Student s` (학생 4명) | **3** | 학생 1번 + 학과 2개를 따로 조회 (`@ManyToOne` 기본 EAGER) |
+| 위 학생들의 `s.department.name` 접근 | 추가 **0** | 이미 EAGER로 채워져 있어서 추가 조회가 없다 |
+
+**기본값 정리 (확인함 + 강의 설명):**
+- `@ManyToOne`, `@OneToOne`은 기본이 EAGER다. 엔티티를 읽을 때 연관 객체를 같이 읽는다.
+- `@OneToMany`, `@ManyToMany`는 기본이 LAZY다. 컬렉션을 실제로 쓸 때 읽는다.
+- 강의 자료의 설정은 `@ManyToOne(fetch = FetchType.LAZY)`, `@OneToMany(mappedBy = "department", fetch = FetchType.EAGER)`처럼 바꿀 수 있다고 설명한다. 이 설정을 바꾼 실행은 **미실행**이다.
+
+**장점과 단점 (강의 설명):** EAGER는 필요 없는 데이터까지 읽어서 낭비될 수 있고, LAZY는 필요할 때 추가 조회가 생겨서 시간이 든다. 어느 쪽이든 연관 조회가 항상 같이 필요한 것은 아니므로, 목록 화면에서 필요한 연관만 fetch join이나 DTO로 가져오는 방법(3장)을 함께 쓴다.
+
+**면접 기준:** "단일 값 연관은 기본 EAGER, 컬렉션은 기본 LAZY입니다. 목록에서 컬렉션을 순회하면 N+1이 생기므로 fetch join이나 DTO 조회로 한 번에 가져옵니다. 설정 변경은 SQL 수로 확인합니다."
 
 ## 5. MyBatis와 JPA 비교 (국내 실무 대비)
 
