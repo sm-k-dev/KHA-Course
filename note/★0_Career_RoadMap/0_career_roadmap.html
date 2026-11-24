@@ -119,7 +119,7 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
 <tr><td>M08</td><td>인증·인가, Spring Security, JWT, RBAC, XSS·CSRF·SQL 인젝션<br/><span class="plus">＋</span> 암호화 실무 1단계 (해시, bcrypt, JWT 서명)<br/><span class="plus">＋</span> ACL·SSH, 암호 기초, 한국 보안 규정 입문, 직장 보안·개인정보</td><td><span class="tag t-r">복습</span> Identity management, Firewall·IDS/IPS·VPN 비교, Intro to Cryptography, Digital Security and Privacy in the Workplace<br/><span class="tag t-r">복습</span> CCNP Security (AAA, 방화벽 정책)</td><td>확률 분포 복습 (1–2h)</td><td>401/403 테스트, bcrypt·JWT 검증</td></tr>
 <tr><td>M09</td><td>동시성: 스레드 풀, 락, 경쟁 조건, DB 락<br/><span class="plus">＋</span> race condition 재현과 해결</td><td><span class="tag t-r">복습</span> Secure programming</td><td>—</td><td>재현 테스트와 해결 전후 비교</td></tr>
 <tr><td>M10</td><td>설계: SOLID, 패턴, API 계약, UML·ERD<br/><span class="plus">＋</span> TypeScript 타입으로 API 계약 공유, OpenAPI 계약 테스트, 개념·논리·물리 데이터 모델 구분, 관리 UI, 기술 부채 기록</td><td><span class="tag t-c">인지</span> Security architecture<br/><span class="tag t-r">복습</span> Business communication (보고서·발표)</td><td>—</td><td>설계 변경 이유와 대안 설명</td></tr>
-<tr><td>M11</td><td>테스트 전략, 단위·통합·계약 테스트, Testcontainers<br/><span class="plus">＋</span> SAST·비밀정보 검사, JUnit5·Mockito, Scrum/Kanban과 Jira·Confluence, 정보처리기사 (구축관리)</td><td><span class="tag t-c">인지</span> Threat data analysis</td><td>—</td><td>정상·예외·경계 테스트 통과</td></tr>
+<tr><td>M11</td><td>테스트 전략, 단위·통합·계약 테스트, Testcontainers<br/><span class="plus">＋</span> SAST·비밀정보 검사, JUnit5·Mockito, Scrum/Kanban과 Jira·Confluence, 정보처리기사 (구축관리)</td><td><span class="tag t-c">인지</span> 위협 모델링 (57장 4-1절, 이수 과목 아님)</td><td>—</td><td>정상·예외·경계 테스트 통과</td></tr>
 <tr><td>M12</td><td>캐시, 비동기 처리, 메시징, 분산 개념 (CAP, 일관성, 복제, 샤딩)<br/><span class="plus">＋</span> Redis, RabbitMQ 또는 Kafka, HSRP·VRRP·EtherChannel과 로드밸런서 비교<br/><span class="plus">＋</span> 코딩테스트 주 2회, SentinelOps 1차 완성, MSA·EIP(Spring Integration) 개념</td><td><span class="tag t-r">복습</span> Incident response, Disaster recovery (백업, RTO·RPO)</td><td>—</td><td>설계 문서와 장애 시나리오 발표</td></tr>
 
 <tr class="stage sC"><td colspan="5"><b>Stage C · 배포·운영 (M13–M16)</b><span>관문: 배포하고, 평가 가능한 서비스로 운영</span></td></tr>
@@ -133,10 +133,10 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
 <tr><td>M18</td><td>RAG, 임베딩, 검색 평가, 권한 분리<br/><span class="plus">＋</span> 문서 접근 권한 테스트</td><td>—</td><td>벡터·코사인 유사도 (1–2h)</td><td>근거 없는 답변 방지 검증</td></tr>
 <tr><td>M19</td><td>Single Agent, Tool Calling<br/><span class="plus">＋</span> 읽기 전용 분석 Agent</td><td>—</td><td>경사 하강법 개념 (0–1h)</td><td>도구 실패 처리 검증</td></tr>
 <tr><td>M20</td><td>Loop Engineering (종료, 재시도, 예산)<br/><span class="plus">＋</span> 반복 상한, 멱등성 검증</td><td>—</td><td>—</td><td>무한 반복 차단 검증</td></tr>
-<tr><td>M21</td><td>Harness (샌드박스, 승인, 감사 로그)<br/><span class="plus">＋</span> 승인 기반 도구 실행</td><td><span class="tag t-c">인지</span> Digital forensics, Mobile computing security</td><td>—</td><td>금지 작업 거부 입증</td></tr>
+<tr><td>M21</td><td>Harness (샌드박스, 승인, 감사 로그)<br/><span class="plus">＋</span> 승인 기반 도구 실행</td><td><span class="tag t-c">인지</span> Mobile computing security</td><td>—</td><td>금지 작업 거부 입증</td></tr>
 <tr><td>M22</td><td>Sub/Multi-Agent 오케스트레이션<br/><span class="plus">＋</span> 단일 Agent 대비 품질·비용 비교</td><td><span class="tag t-c">인지</span> Software defined programmable networks</td><td>—</td><td>비교 실험 결과 기록</td></tr>
-<tr><td>M23</td><td>AI 보안: Prompt Injection, 데이터 유출, SSRF<br/><span class="plus">＋</span> AI 거버넌스 위협 점검</td><td><span class="tag t-r">복습</span> Advanced Network Security<br/><span class="tag t-c">인지</span> Computer and network forensics</td><td>—</td><td>위협 모델과 방어 테스트</td></tr>
-<tr><td>M24</td><td>제품화, 통합 플랫폼, 운영<br/><span class="plus">＋</span> 포트폴리오 최종 정리, 면접 발표 연습</td><td><span class="tag t-r">복습</span> Major projects (capstone)<br/><span class="tag t-r">복습</span> Advanced Diploma 과목 요약 노트 (CCNP·VoIP)</td><td>—</td><td>요구사항 → 설계 → 검증 → 운영 발표</td></tr>
+<tr><td>M23</td><td>AI 보안: Prompt Injection, 데이터 유출, SSRF<br/><span class="plus">＋</span> AI 거버넌스 위협 점검</td><td><span class="tag t-r">복습</span> Advanced Network Security<br/><span class="tag t-c">인지</span> 포렌식 기초 (30장 5절, 이수 과목 아님)<br/><span class="tag t-c">인지</span> Emerging Technologies Security (AI 보안과 양자 내성 암호 개념만, 바이오·우주·자율 시스템은 목표 밖)</td><td>—</td><td>위협 모델과 방어 테스트</td></tr>
+<tr><td>M24</td><td>제품화, 통합 플랫폼, 운영<br/><span class="plus">＋</span> 포트폴리오 최종 정리, 면접 발표 연습</td><td><span class="tag t-r">복습</span> Major projects (capstone)<br/><span class="tag t-r">복습</span> Advanced Diploma 과목 요약 노트 (CCNP Routing·Switch·Security, Enterprise VoIP, Cyber Security resources)</td><td>—</td><td>요구사항 → 설계 → 검증 → 운영 발표</td></tr>
 
 </tbody></table></div>
 
@@ -223,10 +223,10 @@ tbody tr:not(.stage):nth-child(odd) td{background:#fafcfe}
 
 <h2>7. 아직 열려 있는 항목</h2>
 <ul>
-  <li><b>Advanced Diploma 과목 목록:</b> 받으면 M24에 추가합니다.</li>
+  <li><b>Advanced Diploma 과목 목록:</b> 2026-11-24 폴더 기준으로 반영했다. CCNP Routing, CCNP Switch, CCNP Security, Cyber Security resources, Enterprise VoIP. 과목 안의 세부 주제는 자료를 열어 확인한다.</li>
   <li><b>성적표 대조:</b> 호주 과목 목록은 검색 결과 기준입니다. 실제 이수 과목으로 확인합니다.</li>
   <li><b>정보처리기사 필기 접수일:</b> 면접 일정과 겹치지 않도록 확정합니다.</li>
-  <li><b>교재 예제 실행 검증:</b> 아직 실행하지 않았습니다. 실행 전에는 '검증 완료'로 표시하지 않습니다.</li>
+  <li><b>교재 예제 실행 검증:</b> 실행 범위는 장마다 다릅니다. 실행한 항목은 각 장 본문에 '확인함'으로, 나머지는 '미실행'으로 표시합니다. 실행 전에는 '검증 완료'로 표시하지 않습니다.</li>
   <li><b>AI 트랙(M17–M24):</b> AI 도구 제품 사용법은 별도 가이드에서 다룹니다. 이 로드맵은 원리, 설계, 검증, 운영에 집중합니다.</li>
 </ul>
 
