@@ -311,7 +311,33 @@ order: [filter.before, interceptor.pre, controller, advice, interceptor.after, f
 - `/hello`는 정상 흐름이라 `postHandle`이 실행된다.
 - `/boom`은 컨트롤러에서 예외가 나서 `postHandle`이 빠졌다. 대신 `advice`가 응답을 만들었고, `afterCompletion`은 예외와 상관없이 실행됐다.
 - 필터는 `DispatcherServlet`보다 바깥에 있다. 그래서 인증 같은 공통 처리를 필터나 Security 필터 체인에서 한다. 컨트롤러 기준의 공통 처리(예: 어떤 핸들러가 호출되는지 알아야 하는 것)는 인터셉터에서 한다.
-- 실제 Spring Boot 앱에서는 필터를 `@Component`로, 인터셉터를 `WebMvcConfigurer.addInterceptors`로 등록한다. 이 설정 코드는 **미실행**이다.
+- 실제 Spring Boot 앱에서는 필터를 `@Component`로, 인터셉터를 `WebMvcConfigurer.addInterceptors`로 등록한다. 이 설정은 Boot 4.1.1 앱 `flowapp`에서 확인했다(2026-11-24, 확인함).
+
+**Boot 앱 확인 결과 (확인함)**
+
+```java
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class LogFilter extends OncePerRequestFilter { ... }     // filter.before / filter.after
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LogInterceptor());          // interceptor.pre / post / after
+    }
+}
+```
+
+| 요청 | 응답 | 로그 순서 |
+|---|---|---|
+| `/hello` | 200 `hi` | filter.before → interceptor.pre → controller → interceptor.post → interceptor.after → filter.after |
+| `/boom` | 409 | filter.before → interceptor.pre → controller → advice → interceptor.after → filter.after |
+| `/test` | 200 JSON 3행 | filter.before → interceptor.pre → controller → interceptor.post → interceptor.after → filter.after |
+
+- 6-2절의 실행 결과와 같은 순서다. `/boom`에서는 `postHandle`이 빠지고 `advice`가 응답을 만들었다.
+- `/boom`의 응답 상태는 409로 확인했다. 응답 본문(`conflict: boom`)은 두 번째 조회에서 읽지 못해 **본문은 미확인**이다.
+- 연결 설정 시 주의: `@Entity`의 `id`에 `@GeneratedValue`만 쓰면 MySQL 테이블이 `AUTO_INCREMENT` 없이 만들어져 `data.sql`의 `INSERT`가 `Field 'id' doesn't have a default value`로 실패했다. `GenerationType.IDENTITY`로 바꾸자 같은 `data.sql`이 들어갔다.
 
 **면접 기준**: "요청은 Filter를 먼저 거치고, DispatcherServlet이 핸들러를 고르고 Interceptor가 전후에 끼어듭니다. 예외는 ControllerAdvice가 응답으로 바꿉니다."
 
@@ -324,7 +350,7 @@ order: [filter.before, interceptor.pre, controller, advice, interceptor.after, f
 | 1 | `main`이 실행되고 스프링 컨테이너가 만들어진다 | 19장 (컨테이너와 빈) |
 | 2 | `@Autowired`로 서비스와 저장소 객체가 연결된다 | 19장 (DI 검증) |
 | 3 | `@Entity` 클래스를 읽어 테이블을 만든다 | [25-1](25-1_JPA_기초와_Repository.md) (엔티티와 매핑) |
-| 4 | `data.sql`로 초기 데이터를 넣는다 | 이 PC에서 미실행 |
+| 4 | `data.sql`로 초기 데이터를 넣는다 | 확인함: `flowapp`에서 행 3개 저장(`/test` 응답) |
 | 5 | `GET /test` 주소에 맞는 메서드를 찾는다 | 20장 6-2 (DispatcherServlet 흐름) |
 | 6 | 컨트롤러가 서비스에 업무를 맡긴다 | 17장 (계층 구조) |
 | 7 | 저장소가 `findAll()`로 SQL `SELECT`를 보낸다 | [25-3](25-3_쿼리.md) (JPQL과 쿼리) |

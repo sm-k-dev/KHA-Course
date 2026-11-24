@@ -337,7 +337,7 @@ parse error: SyntaxError
 
 ## Java 객체의 getter가 JSON 필드 이름을 정한다 (9_SpringBoot_Basic 02 기준, Jackson으로 확인함)
 
-> 추가 근거: 9_Spring_boot_Basic `02 Spring MVC 기초`의 `Product` DTO와 `@RestController` 예를 읽고 보강했다. 아래는 **Jackson 3.1.5(`tools.jackson.databind.ObjectMapper`)로 직접 실행한 결과**다(2026-11-24). 스프링 서버를 띄운 실행(`/first/test3` 브라우저 확인)은 **미실행**이다.
+> 추가 근거: 9_Spring_boot_Basic `02 Spring MVC 기초`의 `Product` DTO와 `@RestController` 예를 읽고 보강했다. 아래는 **Jackson 3.1.5(`tools.jackson.databind.ObjectMapper`)로 직접 실행한 결과**다(2026-11-24). 스프링 서버를 띄운 실행도 2026-11-24에 확인했다. `form2app`(Boot 4.1.1, 8088)에서 `GET /first/test3`이 200과 `{"name":"맥주","unitCost":2000}`을 반환했다. 이 확인은 `curl`로 한 것이고 브라우저 화면 확인은 아니다.
 
 ```java
 public class Product {

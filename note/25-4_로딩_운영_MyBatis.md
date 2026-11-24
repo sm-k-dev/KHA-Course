@@ -4,7 +4,7 @@
 
 ## 4-4. 양방향 연관관계의 순환 참조: toString과 JSON
 
-> 추가 근거: 9_Spring_boot_JPA `04 JPA collection-valued association` 강의 자료 19~22쪽(순환 참조, `@JsonIgnore`, Lombok `@ToString.Exclude`, StackOverflowError 메시지)을 읽고 같은 주제를 실행했다. 아래 두 실행은 **이 PC에서 확인함**(2026-11-24, Java 25, Jackson 3.1.5). Lombok `@Data`의 자동 `toString`은 **미실행**이고, 같은 동작을 손으로 쓴 `toString`으로 재현했다.
+> 추가 근거: 9_Spring_boot_JPA `04 JPA collection-valued association` 강의 자료 19~22쪽(순환 참조, `@JsonIgnore`, Lombok `@ToString.Exclude`, StackOverflowError 메시지)을 읽고 같은 주제를 실행했다. 아래 두 실행은 **이 PC에서 확인함**(2026-11-24, Java 25, Jackson 3.1.5). Lombok `@Data`의 자동 `toString`은 2026-11-24에 `jpa6app`(Boot 4.1.1)에서도 확인했다. `Student`와 `Department`가 모두 `@Data`이고 서로 참조하므로 `Student.toString()`이 `StackOverflowError`를 던졌다(`/practice/tostring` 응답 `THREW java.lang.StackOverflowError`, 확인함).
 
 ### 왜 생기나
 

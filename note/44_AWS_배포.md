@@ -262,7 +262,7 @@ khac-demo
 
 **Git Bash에서 주의**: Git Bash는 `/hello.txt`를 Windows 경로로 바꿔 버린다. Git Bash에서 컨테이너 안의 절대 경로를 쓸 때는 `MSYS_NO_PATHCONV=1`을 먼저 설정하거나 PowerShell을 쓴다.
 
-**Java 앱을 이미지로 만드는 형태 (미실행)**: 아래는 여러 단계(multi-stage) Dockerfile의 골격이다. 베이스 이미지(`eclipse-temurin`)를 새로 내려받아야 해서 이 PC에서는 실행하지 않았다.
+**Java 앱을 이미지로 만드는 형태 (골격은 Gradle 예, 아래 3-1-2에서 Maven으로 확인함)**: 아래는 여러 단계(multi-stage) Dockerfile의 골격이다. 이 골격의 Gradle 명령은 이 PC에서 실행하지 않았다. 대신 같은 구조를 Maven 프로젝트(`form2app`)로 만들어 3-1-2절에서 빌드와 실행을 확인했다.
 
 ```dockerfile
 FROM eclipse-temurin:21-jdk AS build
@@ -289,7 +289,19 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 | `size-alpine` (Alpine JRE 베이스) | 358MB | 베이스 JRE 설치 약 199MB | 컨테이너를 띄워 `/first/test3`가 `{"name":"맥주","unitCost":2000}`로 응답 |
 
 - 앱 레이어(`COPY app.jar`)는 두 이미지 모두 23.2MB로 같다. 차이는 **베이스 이미지**에서 나온다.
-- 빌드 도구(JDK의 `javac`, Maven)는 실행 이미지에 넣지 않는 것이 원칙이다. 이 실험은 jar를 미리 만들어 복사했으므로 **다단계 빌드(빌드 단계와 실행 단계를 나누는 방식)의 효과는 측정하지 않았다**(미실행).
+- 빌드 도구(JDK의 `javac`, Maven)는 실행 이미지에 넣지 않는 것이 원칙이다. 위 표의 실험은 jar를 미리 만들어 복사한 것이었다.
+
+**다단계 빌드 실측 (2026-11-24, 확인함)**: 같은 `form2app` 소스를 두 방식으로 이미지로 만들었다.
+
+| 방식 | Dockerfile 구조 | 이미지 크기 | 실행 확인 |
+|---|---|---|---|
+| 한 단계 | `FROM eclipse-temurin:25-jdk`, 소스 복사, 그 안에서 `mvn package`, 실행 | 811MB | 실행하지 않음 |
+| 다단계 | 1단계 `eclipse-temurin:25-jdk`에서 `mvn package`, 2단계 `eclipse-temurin:25-jre-alpine`에 jar만 `COPY --from=build` | 358MB | 컨테이너 8098→8088, `/first/test3` 200 `{"name":"맥주","unitCost":2000}` |
+
+- 한 단계 이미지에는 Maven과 소스, `~/.m2` 의존성 캐시가 그대로 남는다. 다단계는 실행 단계에 jar와 JRE만 남는다.
+- Maven은 이 PC의 IntelliJ에 포함된 것을 빌드 컨텍스트에 복사해서 썼다(베이스 이미지에 Maven을 따로 받지 않았다).
+- 빌드 시간은 비교하지 않았다. 두 번째 빌드는 첫 번째 빌드의 Maven 레이어 캐시를 써서 3초로 끝났기 때문이다. 캐시 없이 잰 시간이 아니다.
+- 실험 뒤 두 이미지와 컨테이너는 지웠다.
 - 레이어는 `docker history`로 확인했다. 레이어를 합치거나 나누는 것은 캐시와 빌드 시간에도 영향을 준다.
 - 실행 확인은 이 PC의 Docker Desktop에서 했다. 다른 환경에서는 베이스 이미지 버전에 따라 크기가 다를 수 있다.
 

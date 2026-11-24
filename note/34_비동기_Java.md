@@ -171,7 +171,7 @@ public class VtOnly {
 
 **주의**: 가상 스레드는 블로킹 대기가 많은 작업에 효과가 크다. CPU를 계속 쓰는 계산에는 효과가 작다. JDK 21~23에서는 `synchronized` 블록 안에서 블로킹하면 가상 스레드가 carrier 스레드에 고정(pinning)될 수 있었다. JDK 24부터 이 제약이 크게 줄었지만, 락 안에서 오래 기다리는 설계는 피한다. 고정 여부는 JDK 버전에 따라 다르니 실무에서는 사용하는 JDK 릴리스 노트를 확인한다.
 
-**HttpClient (JDK 11 이상)**: 외부 HTTP 호출을 표준 라이브러리로 한다. 아래 코드는 **미실행**이다. 이 PC의 샌드박스에서는 Java의 루프백 소켓 생성이 막혀 `HttpClient` 객체를 만드는 단계에서 실패했다(`Unable to establish loopback connection`). 같은 환경에서 `HttpServer`도 같은 이유로 시작하지 못했다. 다른 환경에서 서버를 띄운 뒤 실행해 확인한다.
+**HttpClient (JDK 11 이상)**: 외부 HTTP 호출을 표준 라이브러리로 한다. 아래 코드는 **미실행**이다. 2026-11-24에 이 PC에서 `HttpServer`(같은 프로세스에서 띄운 8091 서버)와 `HttpClient`를 함께 실행하려 했지만, 두 번 모두 `Selector.open()` 단계에서 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. Git Bash와 PowerShell 두 곳에서 같은 결과였다. 같은 PC에서 Tomcat NIO와 Netty(Lettuce)도 같은 문제가 났으므로, JVM의 NIO 셀렉터가 이 PC에서 루프백 연결을 만들지 못하는 것으로 보인다. 원인은 확정하지 못했다. 다른 환경에서 서버를 띄운 뒤 실행해 확인한다.
 
 ```java
 HttpClient client = HttpClient.newHttpClient();

@@ -28,7 +28,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
 **강의 02의 ModelMapper 매핑 (ModelMapper 3.2.5로 확인함):** `Student student = modelMapper.map(studentEdit, Student.class)`에서 `studentEdit.departmentId = 2`는 `student.department.id = 2`로 채워졌다. `studentNo`, `name`, `sex`, `email` 같은 같은 이름의 필드도 함께 복사되었다. 실행은 getter/setter를 가진 DTO 두 개로 했다.
 
-**물리 이름 (Spring Boot 4.1.1 기본값, 확인함):** Boot로 띄운 서버의 실행 로그에 `department_id` 컬럼이 찍혔다. 즉 `departmentId` 필드가 스네이크 케이스(`department_id`)로 바뀌어 DB에 쓰인다. 강의의 `physical-strategy=...PhysicalNamingStrategyStandardImpl` 설정을 넣었을 때 `studentNo`가 그대로 남는지는 이 실행에서 확인하지 않았다(미실행).
+**물리 이름 (Spring Boot 4.1.1 기본값, 확인함):** Boot로 띄운 서버의 실행 로그에 `department_id` 컬럼이 찍혔다. 즉 `departmentId` 필드가 스네이크 케이스(`department_id`)로 바뀌어 DB에 쓰인다. 강의의 `physical-strategy=...PhysicalNamingStrategyStandardImpl` 설정을 넣으면 `studentNo`가 그대로 남는다(2026-11-24 확인함, `jpa6app`에서 `--spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl`로 띄운 DDL: `create table Student (departmentId integer, ... studentNo varchar(255) ...)`). 이 실행은 DB 이름을 따로 바꿔서 했다(기존 테이블과 이름이 충돌해 한 번 실패했다).
 
 **면접 기준:** "`save`는 식별자가 없거나 0이면 INSERT, 있으면 UPDATE다. `findById`는 결과 부재를 `Optional.empty()`로 돌려준다. 이 호출들은 트랜잭션 안에서 실행되어야 한다."
 
