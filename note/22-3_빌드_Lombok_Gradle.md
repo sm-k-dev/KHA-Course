@@ -36,7 +36,9 @@ javap -v out\app\App.class | findstr "major version"
 - `major version: 65`가 나왔다. 클래스 파일 버전 65는 Java 21이다. 즉 `--release 21`이 실제로 바이트코드에 반영되었다.
 - 이 순서가 Gradle `build`와 `jar` 태스크가 하는 일이다. 빌드 도구는 의존성 내려받기와 이 순서를 자동화한다.
 
-**`gradle build`와 `bootRun`이 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 2026-11-24에는 `gradle help`와 `gradle bootRun`도 같은 오류로 실패했다(`--no-daemon`, `--console=plain` 시도 포함). Gradle이 자기 내부 연결을 만들지 못하는 문제다. 소켓 바인딩 자체는 Java `ServerSocket`으로 성공했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
+**Gradle 빌드 결과 (사용자 PC, 2026-11-24, 확인함)**: IntelliJ에서 `crm` 프로젝트(Gradle 9.2.1, 브랜치 `feature/ksm`)의 `build` 태스크를 실행해 `BUILD SUCCESSFUL in 1s`를 확인했다. 모든 태스크가 `UP-TO-DATE`였으므로 이미 있던 결과를 재사용한 실행이다. 처음부터 다시 빌드한 확인은 `clean build`로 따로 해야 한다(미실행). 이 프로젝트는 교재 예제가 아니라 사용자의 실습 프로젝트다.
+
+**이 샌드박스에서 `gradle build`와 `bootRun`이 실패한 이유 (미실행)**: Gradle 9.8.2는 `gradle -v`로 실행된다. 그러나 `gradle --offline build`가 `java.io.IOException: Unable to establish loopback connection`으로 실패했다. 2026-11-24에는 `gradle help`와 `gradle bootRun`도 같은 오류로 실패했다(`--no-daemon`, `--console=plain` 시도 포함). Gradle이 자기 내부 연결을 만들지 못하는 문제다. 소켓 바인딩 자체는 Java `ServerSocket`으로 성공했다. 이 환경에서 Gradle이 내부 연결을 만들지 못하는 문제로 보인다. 원인을 확정하지 못했으니 다른 PC나 IntelliJ에서 `gradle build`를 한 번 실행해 확인한다.
 
 **명령 대응표**
 
