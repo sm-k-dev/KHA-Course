@@ -201,6 +201,35 @@ good  -> 200 ok: kim 30
 
 **면접 기준**: "폼 값은 `@ModelAttribute` 객체에 바인딩되고, `@Valid`로 규칙을 확인합니다. 실패한 항목은 `BindingResult`에 모여서 화면에 다시 보여 줍니다."
 
+### 폼 검증 애노테이션: null과 빈 문자열은 다르게 처리된다 (9_ 자료 05 기준, Bean Validation 실행 확인)
+
+> 추가 근거: 9_SpringBoot_Basic `05 spring form validation` 강의 자료(17쪽)의 `StudentEdit` 모델을 읽고 보강했다. 아래는 **Hibernate Validator 9.1.3을 직접 실행한 결과**다(2026-11-24). 스프링 웹 폼 화면 전체 흐름은 이 절 위의 MockMvc 예와 별개로 **미실행**이다.
+
+```java
+public static class StudentEdit {
+    @NotEmpty @NotBlank @Size(min = 8, max = 12) public String studentNo;
+    @NotEmpty @NotBlank @Pattern(regexp = "010-[0-9]{3,4}-[0-9]{4}",
+                                 message = "휴대폰 번호를 입력하세요 예:010-000-0000") public String phone;
+    @NotEmpty @Email public String email;
+    @NotEmpty @NotBlank @Pattern(regexp = "남|여", message = "남, 여 중 하나를 입력하세요.") public String sex;
+    @Min(value = 1, message = "학과를 선택하세요.") public int departmentId;
+}
+```
+
+| 입력 | 나온 오류 (확인함) |
+|---|---|
+| 정상 값 (학번 9자리, 휴대폰 `010-2090-1421`, 메일, 성별 `여`, 학과 1) | 0건 |
+| 잘못된 값 (학번 `123`, 이름 공백, 휴대폰 `0101234`, 메일 `not-an-email`, 성별 `기타`, 학과 `0`) | 7건: 학번 크기, 이름 공백, 이름 크기, 휴대폰 형식, 메일 형식, 성별 형식, 학과 최소값 |
+| 모든 필드가 `null` (빈 객체) | 10건: `@NotEmpty`·`@NotBlank` 오류와 `@Min` 오류. `@Pattern`·`@Email`·`@Size` 오류는 **없다** |
+
+**핵심 규칙 (확인함):** `@Pattern`, `@Email`, `@Size`는 값이 `null`이면 **통과**한다. 그래서 `null`을 막으려면 `@NotNull`·`@NotBlank`·`@NotEmpty`를 함께 붙인다. 강의 자료가 `@NotEmpty @NotBlank`를 같이 쓰는 이유가 이것이다. 빈 문자열 `""`은 `@NotEmpty`가 막고, 공백 `" "`은 `@NotBlank`가 막는다.
+
+**메시지:** `message`를 생략하면 기본 메시지가 나온다. 한국어 기본 메시지는 설정 언어에 따라 바뀐다(위 실행에서 `공백일 수 없습니다`처럼 나옴).
+
+**주의 (확인함):** Hibernate Validator는 EL 구현이 없으면 기본 메시지 보간에서 실패할 수 있다. 실행에서는 `ParameterMessageInterpolator`를 썼다. 스프링 부트 웹 앱에서는 의존성과 설정으로 자동 처리되므로 이 설정은 독립 실행에서만 필요하다.
+
+**면접 기준:** "검증 애노테이션은 `null`을 통과시키는 것이 많다. 필수 값은 `@NotNull`, `@NotBlank`, `@NotEmpty` 중 하나로 명시하고, 형식은 `@Pattern`·`@Email`로 검사한다."
+
 ### 4-1. 빌드 파일 읽고 실행하기 (2026-11-23 보강)
 
 > 확인 범위: Gradle 빌드 파일은 작성했고, 같은 과정을 `javac`·`jar`로 직접 실행해 확인했다. `gradle build` 자체는 이 환경에서 실행하지 못했다(아래 참고). Maven은 이 PC에 설치되어 있지 않아 미실행이다.

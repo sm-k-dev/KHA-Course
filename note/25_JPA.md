@@ -322,6 +322,41 @@ Hibernate의 엔티티 목록은 중복을 제거해서 `distinct`를 빼도 3�
 
 **30초 답변 연습** — 위 정의를 첫 문장으로 말하고, 목적·구별점·실제 예시 순서로 3~4문장으로 설명한다.
 
+### 실습: Pageable로 페이지 나누기 (확인함, MySQL 8.0.21·Spring Data JPA 4.1.1)
+
+> 추가 근거: 9_Spring_boot_JPA `03 JPA pagination` 강의 자료의 주요 쪽(2~3, 8~11쪽)을 읽고 보강했다. 강의의 나머지 쪽(4~7, 12~20쪽)은 아직 읽지 않았다. 아래 값은 **학생 23명을 넣고 실행한 결과**다. 스프링 컨테이너와 웹 화면(`list.html`, `Pagination` 모델을 쓴 목록 화면)은 **미실행**이다.
+
+```java
+// 리포지토리는 JpaRepository를 상속만 한다. findAll(Pageable)은 자동으로 구현된다.
+Page<Student> page = repo.findAll(PageRequest.of(pg - 1, sz, Sort.by(Sort.Direction.ASC, "id")));
+```
+
+| 호출 | 결과 (확인함) |
+|---|---|
+| `PageRequest.of(0, 10, id ASC)` (1쪽) | content 10건, `totalElements=23`, `totalPages=3`, `hasNext=true`, 첫 학번 `20150001`, 마지막 `20150010` |
+| `PageRequest.of(2, 10, id ASC)` (3쪽) | content 3건, 첫 학번 `20150021`, `hasNext=false` |
+| `PageRequest.of(5, 10)` (6쪽, 없는 페이지) | content 0건, `totalElements=23` (전체 건수는 그대로) |
+
+**핵심 규칙:**
+- `PageRequest`의 페이지 번호는 **0부터** 시작한다. 화면 번호(1부터)를 쓰려면 `pg - 1`을 넘긴다. 강의 자료의 `pagination.getPg() - 1`이 이 뜻이다.
+- `Page`는 `getContent()`(현재 페이지 목록), `getTotalElements()`(전체 건수), `getTotalPages()`(전체 쪽 수), `hasNext()`를 준다.
+- 없는 페이지를 요청하면 **오류가 아니라 빈 목록**이다. 전체 건수는 여전히 정확하다.
+
+**강의 자료의 `Pagination` 모델 계산 (확인함):**
+
+| 화면 쪽 `pg` | `getFirstRecordIndex()` = `(pg-1)*sz` | `getQueryString()` |
+|---|---|---|
+| 1 | 0 | `pg=1&sz=10` |
+| 2 | 10 | `pg=2&sz=10` |
+| 3 | 20 | `pg=3&sz=10` |
+
+- 전체 쪽 수는 `ceil(전체 건수 / sz)`로 구하며, 23건이면 `ceil(2.3) = 3`이다.
+- `getQueryString()`은 목록 화면에서 "수정 후 같은 쪽으로 돌아가기" 링크에 붙인다(강의 자료의 `redirect:list?` + `getQueryString()`).
+
+**주의:** 강의 자료의 컨트롤러는 `page.getTotalElements()`를 `Pagination.recordCount`에 넣는다. `Page`는 전체 건수를 세는 count 쿼리가 함께 나가는 것이 일반적이다(이 실행에서는 SQL 로그를 확인하지 않아 미확인). 건수가 필요 없는 무한 스크롤에는 `Slice`가 더 가볍다(Slice는 미실행).
+
+**면접 기준:** "Spring Data의 `Pageable`은 페이지 번호를 0부터 세고, `Page`는 현재 쪽 내용과 전체 건수·쪽 수를 함께 준다. 없는 쪽은 빈 목록으로 응답한다."
+
 ## 연관관계의 주인과 mappedBy, 벌크 UPDATE 함정 (2026-11-23 보강)
 
 **참고와 확인 범위**: 원본 자료와 출처, 확인 범위는 [부록 92](92_선별근거_원본연결.md)의 이 장 항목을 본다.
@@ -708,6 +743,231 @@ SELECT u FROM User u JOIN FETCH u.team
 
 **3차: 면접 재현.** *“Page와 Slice, OFFSET과 키셋의 차이는?”*에 대해 **정의 → 왜 필요한가 → 무엇과 다른가 → 코드·상황 하나** 순서로 30~60초 말한다. 답을 읽지 않고 말한 뒤 원문과 대조한다.
 
+## 4-2. 쿼리 메소드 이름으로 쿼리 만들기 (query creation)
+
+> 추가 근거: 9_Spring_boot_JPA `05 JPA query creation` 강의 자료(23쪽)를 읽고 보강했다. 이름 규칙 해석은 **spring-data-commons 4.1.1의 `PartTree`를 직접 실행해 확인함**(2026-11-24). 실제 SQL 실행은 이 절에서 **미실행**이다.
+
+### 정의
+
+Spring Data JPA는 `JpaRepository`를 상속한 **인터페이스**에 선언한 메소드 이름을 읽어서 구현을 자동으로 만든다. 구현 클래스는 직접 쓰지 않는다. 메소드 이름이 곧 조회 조건, 정렬, 개수 제한이다.
+
+### 예시 엔티티와 리포지토리
+
+```java
+public interface StudentRepository extends JpaRepository<Student, Integer> {
+    Student findByStudentNo(String studentNo);                 // 0건 null, 1건 객체, 2건 이상 에러
+    List<Student> findByName(String name);                     // 0건 빈 List
+    List<Student> findByNameStartsWith(String name);           // name LIKE '김%'
+    List<Student> findByDepartmentNameStartsWith(String name); // department.name LIKE ?
+    List<Student> findByOrderByName();                         // 전체, name 오름차순
+    List<Student> findByDepartmentIdOrderByNameDesc(int id);   // department.id = ? ORDER BY name DESC
+    List<Student> findByStudentNoOrName(String studentNo, String name); // OR 조건
+    int countByName(String name);                              // 건수
+    void deleteByDepartmentId(int departmentId);               // 조건 삭제
+}
+```
+
+### 실행 확인: 메소드 이름을 어떻게 나누는가 (PartTree)
+
+`PartTree`는 메소드 이름을 주어와 조건으로 나누는 Spring Data의 파서다. 아래 코드를 실행해 결과를 얻었다.
+
+```java
+PartTree t = new PartTree(method, Student.class);
+```
+
+| 메소드 이름 | 해석 결과 (확인함) |
+|---|---|
+| `findByName` | `name` 단순 비교 |
+| `findByNameStartsWith` | `name` STARTING_WITH |
+| `findByDepartmentNameStartsWith` | `department.name` STARTING_WITH |
+| `findByDepartmentIdOrderByNameDesc` | `department.id` 비교, 정렬 `name DESC` |
+| `findByOrderByName` | 조건 없음, 정렬 `name ASC` |
+| `countByStudentNoOrName` | 개수 조회, 조건 2개 OR |
+| `findByNameOrStudentNo` | `name` OR `studentNo` |
+| `findTop3ByOrderByIdDesc` | 개수 제한 3, 정렬 `id DESC` |
+| `findByNameIsNull` | `name IS NULL` |
+| `findByNameNotLike` | `name NOT LIKE` |
+| `existsByName` | 존재 여부 조회 |
+| `deleteByDepartmentId` | 삭제 조건 `department.id` |
+| `findByNameAndSexIn` | `name` 비교 AND `sex IN` |
+| `findByNameContaining` | `name` CONTAINING (`%값%`) |
+| `findByDepartment_Name` | `department.name` (밑줄로 중첩 속성 구분) |
+| `findByNamme` | **오류**: `No property 'namme' found for type 'Student'; Did you mean 'name'` |
+
+### 이름 규칙으로 기억할 것
+
+- **이름이 조건이다.** `find…By`, `count…By`, `exists…By`, `delete…By`의 `By` 뒤가 조건이고, 그 뒤 `OrderBy…`가 정렬이다.
+- **속성 이름이 틀리면 시작할 때 에러가 난다.** 메소드 호출 때가 아니라 애플리케이션이 뜰 때 `PropertyReferenceException`이 나온다. 오타 메시지에 `Did you mean`이 함께 나온다.
+- **중첩 속성은 연관 경로로 찾는다.** `departmentId`는 `Student.department`의 `id`를 가리킨다. 경로가 헷갈리면 `findByDepartment_Name`처럼 `_`로 구분한다.
+- **파라미터 이름은 중요하지 않다. 순서가 중요하다.** 강의 자료는 `findByLastNameAndFirstName(String s1, String s2)`에서 첫 번째 값이 `lastName`, 두 번째 값이 `firstName`에 들어간다고 설명한다. 이 호출 동작은 실행하지 않았다(미실행).
+
+### 키워드 표 (강의 자료 기준)
+
+| 키워드 | 예 | 생성되는 조건 |
+|---|---|---|
+| And / Or | `findByLastNameAndFirstName` | AND / OR |
+| Between | `findByStartDateBetween(d1, d2)` | `BETWEEN ? AND ?` |
+| LessThan / GreaterThan | `findByAgeLessThan(int)` | `<` / `>` |
+| LessThanEqual / GreaterThanEqual | `findByAgeGreaterThanEqual(int)` | `<=` / `>=` |
+| After / Before | `findByStartDateAfter(d)` | 날짜 비교 |
+| IsNull / IsNotNull | `findByAgeIsNull()` | `IS NULL` |
+| Like / NotLike | `findByFirstNameLike(pattern)` | `LIKE` (`%`는 직접 넣는다) |
+| StartingWith / EndingWith / Containing | `findByFirstNameStartingWith(name)` | `LIKE '값%'` / `'%값'` / `'%값%'` |
+| OrderBy…Asc/Desc | `findByAgeOrderByLastNameDesc(int)` | 정렬 |
+| Not | `findByLastNameNot(String)` | `<>` |
+| In / NotIn | `findByAgeIn(Collection<Integer>)` | `IN (...)` / `NOT IN (...)` |
+| True / False | `findByActiveTrue()` | `active = true` / `false` |
+| Top / First | `findTop10ByOrderByAge()` | 앞 10건 (`LIMIT 10`) |
+
+강의 자료의 SQL 대응표는 설명용이다. 실제 SQL 모양은 DB 방언과 Hibernate 버전에 따라 다르다. 위 표의 키워드 이름은 `PartTree`에서 해석 결과를 확인했다(`STARTING_WITH`, `CONTAINING`, `IS_NULL`, `NOT_LIKE`, `IN`, 정렬, `Top`·`First` 개수 제한). `Between`, `After`, `True/False` 등 나머지는 강의 자료 설명이며 이 PC에서 해석 실행은 하지 않았다.
+
+### 반환 타입 규칙
+
+| 반환 타입 | 결과 0건 | 1건 | 2건 이상 |
+|---|---|---|---|
+| `List<Student>` | 빈 List | 1개 List | 전부 List |
+| `Student` | `null` | 객체 | 예외 (예외 종류는 미실행으로 확인하지 않음) |
+| `Optional<Student>` | `Optional.empty()` | 객체가 든 Optional | 예외 |
+
+**주의:** 반환 타입이 `Student`인데 조건이 여러 건을 가리키면 에러다. 조건을 더 좁히거나 `List`로 받는다. (에러 발생 시나리오는 실행하지 않았음, 미실행.)
+
+### 개수, 삭제 메소드
+
+- `countBy…`는 조건에 맞는 건수를 `int`/`long`으로 돌려준다.
+- `deleteBy…`, `removeBy…`는 조건에 맞는 엔티티를 **하나씩 읽어서** 삭제한다. 대량 삭제에는 쓰지 않는다. 트랜잭션이 필요하다(`@Transactional`).
+- `existsBy…`는 `boolean`을 돌려준다(`PartTree` 해석에서 exists 표시 확인).
+
+### 연습 문제 (강의 자료 3장)
+
+1. department id 값이 3, 4인 학생만 조회하기: `findByDepartmentIdIn(List<Integer> ids)`
+2. 김씨 이거나 박씨인 학생 조회하기: `findByNameStartsWithOrNameStartsWith(String a, String b)`
+3. 김씨 학생을 이름 오름차순으로 10명만 조회하기: `findTop10ByNameStartsWithOrderByNameAsc(String name)`
+4. 김씨인 소프트웨어학생들만 이름 오름차순으로 조회하기: `findByNameStartsWithAndDepartmentNameOrderByNameAsc(String name, String dept)`
+
+**확인 방법:** 연습 문제 1~4의 메소드 이름은 `PartTree`로 해석해 조건, 정렬, 개수 제한이 문제와 맞는지 확인했다(이름 해석만 확인, 실제 SQL과 결과는 미실행). 실제 실행은 Spring Boot 프로젝트에서 `findBy…`를 호출해 확인한다.
+
+**면접 기준:** "Spring Data JPA는 메소드 이름을 파싱해서 조건, 정렬, 개수 제한을 만든다. 이름이 틀리면 애플리케이션 시작 때 실패하므로 빨리 발견된다. 복잡한 조건은 이름이 길어지므로 `@Query`나 Querydsl로 옮긴다."
+
+## 4-3. JPQL: 테이블이 아니라 엔티티를 기준으로 쓰는 쿼리
+
+> 추가 근거: 9_Spring_boot_JPA `06 JPA query language` 강의 자료의 JPQL 본문(19~32쪽)을 읽고 보강했다. 강의 2~18쪽과 33~42쪽(고급 SQL 부록 포함)은 아직 읽지 않았다. 아래 쿼리는 **Hibernate 7.4.5와 MySQL 8.0.21에서 실행해 결과를 확인함**(2026-11-24, 임시 엔티티 `Department`·`Student`·`Professor`·`Lecture`·`Sugang`, 실습 DB `khac_jpql_demo`). 강의의 Spring 웹 화면(`/jpql`)은 미실행이다.
+
+### 정의
+
+JPQL은 SQL과 문법이 비슷하지만 **테이블과 컬럼이 아니라 엔티티와 필드**를 쓴다. `FROM Student s`는 `student` 테이블이 아니라 `Student` 엔티티 목록을 뜻하고, `s.department.name`처럼 점(`.`)으로 연관 객체를 따라간다. Hibernate가 이것을 SQL로 바꾼다.
+
+### 실행 결과
+
+| 번호 | JPQL (요지) | 결과 (확인함) |
+|---|---|---|
+| 1 | `SELECT d FROM Department d` | 학과 2개 |
+| 2 | `SELECT s FROM Student s WHERE s.department.id = :id` | 학과 1의 학생 3명 |
+| 3 | `SELECT s.studentNo, s.name, s.department.name FROM Student s` | 학생 4명 (학과명 포함) |
+| 4 | `SELECT g.lecture.title FROM Student s JOIN s.sugangs g WHERE s.studentNo = '201532006'` | 자료구조, Java |
+| 5 | `SELECT s FROM Student s WHERE SIZE(s.sugangs) > 1` | 수강 2과목 이상 학생 3명 |
+| 6 | `SELECT s FROM Student s WHERE s.sugangs IS EMPTY` | 수강 0과목 학생 1명 |
+| 7 | `... WHERE EXISTS (SELECT g FROM s.sugangs g WHERE g.lecture.professor.name = :name)` | 이몽룡 교수 과목을 하나라도 수강한 학생 3명 |
+| 8 | `SELECT s.department.name, COUNT(s) FROM Student s GROUP BY s.department.name` | 소프트웨어공학과 3, 컴퓨터공학과 1 |
+| 9 | `SELECT s.studentNo, s.name, SIZE(s.sugangs) FROM Student s ORDER BY SIZE(s.sugangs) DESC` | 수강 수 내림차순 4행 |
+| 10 | `SELECT s FROM Student s JOIN s.sugangs g WHERE g.lecture.title = :t` | 자료구조 수강 학생 2명 |
+| 11 | 같은 쿼리를 `?1` 위치 파라미터로 실행 (`setParameter(1, ...)`) | 2건 |
+| 12 | `UPDATE Sugang g SET g.grade = 'D+' WHERE g.lecture.id = :lid AND g.grade = 'C0'` | 영향 행 수 2 |
+| 13 | 12 실행 뒤 데이터베이스 과목의 성적 조회 | D+ 2건 |
+
+**참고:** 2번 쿼리 결과는 `s.department.id`가 단일 값 연관이므로 SQL에서 조인 없이 외래키 컬럼 비교로 바뀐다. 4번·10번은 컬렉션 연관(`sugangs`)이라 **명시적 `JOIN`**이 필요하다. 이 차이가 강의의 핵심이다.
+
+### 단일 값 연관과 컬렉션 연관의 경로 차이
+
+- **단일 값 (`@ManyToOne`)**: `s.department.name`처럼 점으로 따라간다. 조인을 명시하지 않아도 된다(묵시적 조인).
+- **컬렉션 (`@OneToMany`)**: `s.sugangs.grade`는 **오류**다. `sugangs`는 `List<Sugang>`이라 `grade`가 없다. 먼저 `JOIN s.sugangs g`로 원소를 별칭에 묶은 뒤 `g.grade`를 쓴다.
+- 강의 자료의 SQL 대응은 `student s JOIN sugang g ON g.studentId = s.id JOIN lecture t ON g.lectureId = t.id`이다. JPQL에서는 연관 이름만 쓰고, 조인 조건은 매핑(`@JoinColumn`, `mappedBy`)이 담당한다.
+
+### 집계, 정렬, 조건 함수
+
+- `GROUP BY`는 SQL과 같다. 집계 결과는 `Object[]`로 받는다(실행 결과 8번).
+- `SIZE(컬렉션)`은 원소 개수, `IS EMPTY`는 0개 여부, `EXISTS (서브쿼리)`는 조건 만족 여부다. 5, 6, 7번으로 확인했다.
+- 강의 자료의 JPQL 함수 표(`CONCAT`, `LENGTH`, `LOWER`, `UPPER`, `SUBSTRING`, `TRIM`, `LOCATE`, `MOD`, `SQRT`, `ABS`, `CURRENT_DATE`, `INDEX`, `SIZE`)는 설명용이다. 이 중 `SIZE`만 실행해 확인했고, 나머지 함수는 미실행이다.
+
+### UPDATE와 DELETE
+
+- JPQL로 `INSERT`는 쓰지 않는다. 저장은 `save`(또는 `persist`)가 맡는다.
+- 여러 행을 한 번에 바꿀 때는 `UPDATE` JPQL이 낫다. 12번에서 2행이 바뀌었다.
+- **주의:** 벌크 UPDATE는 영속성 컨텍스트를 거치지 않는다. 같은 트랜잭션에서 이미 읽은 엔티티는 옛 값을 가질 수 있다(이 장의 "벌크 UPDATE 함정" 절 참고).
+- Spring Data 메소드 이름으로도 삭제할 수 있다(`deleteByDepartmentId`). 이 경우 행을 하나씩 읽어서 지운다.
+
+### `@Query`로 JPQL 메소드 구현
+
+```java
+public interface StudentRepository extends JpaRepository<Student, Integer> {
+
+    @Query("SELECT s.studentNo, s.name, SIZE(s.sugangs) FROM Student s ORDER BY SIZE(s.sugangs) DESC")
+    List<Object[]> findSugangCount();                                  // 결과 행을 Object[]로 받는다
+
+    @Query("SELECT s FROM Student s JOIN s.sugangs g WHERE g.lecture.title = ?1")
+    List<Student> findByLectureTitle(String title);                    // ?1: 첫 번째 파라미터
+
+    @Query("""
+        SELECT s FROM Student s
+        WHERE EXISTS (SELECT g FROM s.sugangs g
+                      WHERE g.lecture.professor.id = ?1 OR g.lecture.professor.name = ?2)
+        """)
+    List<Student> findByProfessorIdOrName(int id, String name);       // 위치 파라미터 두 개
+
+    @Query("""
+        SELECT s FROM Student s
+        WHERE EXISTS (SELECT g FROM s.sugangs g
+                      WHERE g.lecture.professor.id = :id OR g.lecture.professor.name = :name)
+        """)
+    List<Student> findByProfessorIdOrNameNamed(@Param("id") int id, @Param("name") String name); // 이름 파라미터
+}
+```
+
+- `?1`, `?2`는 메소드 파라미터의 **순서**를 쓴다. `:name`처럼 이름을 쓰면 `@Param`으로 이름을 연결한다.
+- 위 메소드들은 강의 자료 예이며, 이 PC에서는 Hibernate `Query` 호출로 1·10·11번과 같은 형태를 확인했다. Spring Data 리포지토리에서 `@Query` 메소드 호출은 미실행이다.
+- 실행 중 `No argument for ordinal parameter '?1'`는 파라미터를 넘기지 않아 생기는 오류다(실험 중 확인함).
+
+### 실행 중 나온 주의 로그 (첫 실행의 정상 메시지)
+
+`hbm2ddl.auto=create`로 처음 실행하면 `alter table ... drop foreign key ...` 경고가 로그에 나올 수 있다. 테이블이 아직 없어서 생기는 경고이고, 스키마 생성은 끝까지 진행된다. 엔티티 이름을 지정하지 않으면 `JpqlMain$Lecture`처럼 내부 클래스 이름이 붙어 JPQL에서 엔티티를 찾지 못한다. 실습에서는 `@Entity(name = "Lecture")`처럼 이름을 명시했다.
+
+**면접 기준:** "JPQL은 테이블이 아니라 엔티티와 연관 경로를 쓰는 객체 기준 쿼리입니다. 단일 값 연관은 점으로 따라가고, 컬렉션 연관은 JOIN으로 원소를 별칭에 묶어야 합니다. 집계와 대량 수정도 가능하지만, 벌크 연산은 영속성 컨텍스트를 거치지 않는다는 점을 알고 써야 합니다."
+
+## 4-4. 양방향 연관관계의 순환 참조: toString과 JSON
+
+> 추가 근거: 9_Spring_boot_JPA `04 JPA collection-valued association` 강의 자료의 목차(3장 순환 참조 문제: `@JsonIgnore`, lombok, StackOverflowError)를 보고 같은 주제를 실행했다. 강의 본문 쪽은 아직 읽지 않았다. 아래 두 실행은 **이 PC에서 확인함**(2026-11-24, Java 25, Jackson 3.1.5). Lombok `@Data`의 자동 `toString`은 **미실행**이고, 같은 동작을 손으로 쓴 `toString`으로 재현했다.
+
+### 왜 생기나
+
+`Department.students`가 `Student`를 담고, `Student.department`가 `Department`를 가리키면 객체 그래프가 원을 그린다. `toString()`이나 JSON 변환기가 연관 필드를 따라 들어가면 끝나지 않는다.
+
+### 실행 1: toString 순환 (확인함)
+
+```java
+// Lombok @Data가 만드는 toString과 같은 동작을 직접 쓴 예
+Department.toString() → "students=" + students       // Student.toString() 호출
+Student.toString()    → "department=" + department   // Department.toString() 호출 → 무한 반복
+```
+
+결과: `StackOverflowError`가 발생한다. 강의 자료의 `StackOverflowError` 메시지와 같은 원인이다.
+
+**해결:** 한쪽 연관 필드를 `toString`에서 빼거나, Lombok에서 `@ToString.Exclude`로 제외한다(Lombok은 미실행).
+
+### 실행 2: JSON 직렬화 (확인함)
+
+| 상황 | 결과 (Jackson 3.1.5, `tools.jackson.databind.ObjectMapper`) |
+|---|---|
+| `Department` → `students` → `Student` → `department` 순환 | `StreamConstraintsException`: 중첩 깊이 500 초과 |
+| `Student.department`에 `@JsonIgnore` | `{"name":"소프트웨어공학과","students":[{"name":"최하은"}]}` |
+
+**해석:** 순환이 있으면 직렬화가 끝나지 않는다. Jackson 3는 깊이 500에서 멈추고 오류를 낸다(`StackOverflowError`로 끝나지 않는다). 역방향 필드에 `@JsonIgnore`를 붙이면 한쪽 방향만 나간다.
+
+### 엔티티를 그대로 반환하면 안 되는 이유
+
+- 엔티티를 JSON으로 바로 내보내면 **순환 참조**와 **지연 로딩 예외**(세션 밖에서 연관 접근)가 같이 생긴다.
+- 실무에서는 응답 전용 DTO를 만들고, 필요한 필드만 옮긴다(DTO 조회는 3장 N+1 비교 절에서 다뤘다. 응답 DTO 전용 실습은 이 장에 없음, 미실행).
+- 이 절의 `@JsonIgnore`는 빠른 해결책이다. 응답 구조가 복잡해지면 DTO가 낫다.
+
+**면접 기준:** "양방향 연관관계는 객체 그래프가 순환하므로 `toString`과 JSON 직렬화에서 무한 반복이 생긴다. 한쪽에 `@JsonIgnore`를 붙이거나, 엔티티 대신 DTO로 응답한다."
 
 ## 5. MyBatis와 JPA 비교 (국내 실무 대비)
 
@@ -717,20 +977,105 @@ SELECT u FROM User u JOIN FETCH u.team
 - **실습:** 같은 조회(예: 사용자별 주문 수)를 JPQL과 MyBatis 매퍼 XML로 각각 작성하고, 실행되는 SQL 로그를 비교한다.
 - **면접 기준:** "JPA는 객체를 기준으로 SQL을 자동 생성하고, MyBatis는 SQL을 직접 작성해서 객체에 매핑합니다."
 
+### MyBatis 사용법 실습 (2026-11-24, MyBatis 3.5.16 · MySQL 8.0.21로 확인함)
+
+> 이 절은 Spring 없이 MyBatis 코어만 쓴 실행 결과다. `mybatis-spring-boot-starter`와 `@Mapper`를 쓰는 스프링 부트 연동은 **미실행**이다. 공식 설정 방법은 MyBatis 공식 문서를 기준으로 하고, 이 장에서는 같은 동작을 직접 확인했다.
+
+**구성 요소 (확인함)**
+
+| 파일 | 역할 |
+|---|---|
+| `StudentMapper.java` | 메소드 시그니처만 있는 인터페이스. 구현 클래스는 MyBatis가 만든다 |
+| `StudentMapper.xml` | 같은 이름의 XML. 인터페이스 메소드마다 SQL을 쓴다. 클래스패스에서 짝으로 읽힌다 |
+| `Configuration` + `SqlSessionFactory` | DataSource, 트랜잭션 방식, 매퍼 등록 |
+| `SqlSession` | 요청 한 번에 쓰는 세션. `getMapper()`로 매퍼를 얻고 `commit`/`rollback`으로 끝낸다 |
+
+**인터페이스와 XML의 연결 (확인함):** `cfg.addMapper(StudentMapper.class)`를 하면 MyBatis는 `StudentMapper.xml`을 찾아 `namespace="StudentMapper"`와 메소드 이름(`id`)으로 연결한다. XML의 `id`와 인터페이스 메소드 이름이 다르면 실행할 때 오류가 난다고 알려져 있으나, 이 실행에서는 일부러 어긋나게 하지 않아 확인하지 않았다(미확인).
+
+```xml
+<select id="findById" resultMap="studentWithDept">
+    SELECT ... FROM student s JOIN department d ON s.department_id = d.id
+    WHERE s.id = #{id}
+</select>
+```
+
+**결과 매핑: `resultMap` (확인함)**
+- 컬럼 이름과 필드 이름이 다르면 `resultMap`에서 `<result property="studentNo" column="student_no"/>`처럼 짝을 준다. 컬럼 별칭(`AS student_name`)으로 이름을 맞출 수도 있다.
+- 단일 값 연관(`@ManyToOne`에 해당)은 `<association>`으로 묶는다. 실행 결과 `[소프트웨어공학과]`가 학생 객체 안에 채워졌다.
+- 컬렉션 연관(`@OneToMany`에 해당)은 `<collection ofType="Student">`로 묶는다. 학과 1 → 학생 2명, 학과 2 → 학생 1명이 나왔다. 조인 결과 행 여러 개가 한 객체로 합쳐진다.
+
+**동적 SQL: `<where>`와 `<if>` (확인함)**
+
+| 호출 | 실행 결과 (확인함) |
+|---|---|
+| `search("김", null)` | 김숙홍, 김영우 (이름 포함 검색) |
+| `search(null, 2)` | 박남기, 김영우 (학과 2) |
+| `search(null, null)` | 4건 (조건 없음) |
+
+`<where>`는 조건이 하나도 없으면 `WHERE`를 붙이지 않고, 앞쪽 `AND`를 자동으로 지운다. 실행된 SQL을 확인하면 `WHERE s.name LIKE CONCAT('%', ?, '%') ORDER BY s.id`처럼 조건이 있는 `<if>`만 남는다.
+
+**`#{}`와 `${}`의 차이 (확인함)**
+- `#{name}`: 값을 **바인딩 파라미터(`?`)** 로 보낸다. 값에 SQL 문법이 있어도 문자열로 취급된다.
+- `${name}`: 값을 **SQL 문자열에 그대로 붙인다**. 테이블 이름처럼 바인딩할 수 없는 자리에만 쓴다.
+- 같은 공격 문자열 `' OR '1'='1`을 넣었을 때 `${}` 검색은 **4건**(전체 행)이 나왔고, `#{}` 검색은 **0건**이었다. 30장의 SQL 인젝션 실험과 같은 결과다.
+- 교육용 비교 예제만 `${}`를 쓴다. 실제 코드에서 `${}`에 사용자 입력을 넣지 않는다.
+
+**INSERT와 생성된 키 (확인함)**
+- `useGeneratedKeys="true" keyProperty="id"`를 쓰면 저장 후 `student.id`에 DB가 만든 번호가 들어간다(1, 2, 3, 4가 나왔다).
+- `#{department.id}`처럼 중첩 속성을 쓰면 `Student.department` 객체의 `id`가 들어간다.
+
+**UPDATE, DELETE의 영향 행 수 (확인함)**
+- `int updated = mapper.updateName(1, "최하은2")`은 바뀐 행 수 `1`을 돌려준다.
+- 영향 행 수는 실제로 바뀐 행 수다. 없는 `id`를 지울 때의 결과는 이 실행에서 확인하지 않았다(미확인). 결과 확인은 호출자가 한다.
+
+**트랜잭션 (확인함)**
+- `factory.openSession(false)`는 자동 커밋을 끈 세션이다. 여러 변경을 모아서 `session.commit()`으로 한 번에 확정하거나, `rollback()`으로 되돌린다.
+- 실행에서는 마지막에 `rollback()`을 호출했다.
+
+**JPA와 비교해서 기억할 점**
+- JPA는 엔티티 변경을 추적해서 SQL을 만든다. MyBatis는 **SQL을 직접 쓰고** 결과를 객체에 옮긴다.
+- 복잡한 통계, 조인과 동적 조건이 많은 조회는 MyBatis가 SQL을 그대로 보여 줘서 튜닝과 검토가 쉽다.
+- 객체 저장과 변경 추적은 JPA가 편하다. 두 기술을 같이 쓰는 프로젝트가 많다.
+
+**면접 기준:** "MyBatis는 SQL을 개발자가 쓰고, 인터페이스 메소드와 XML의 `id`를 연결해 결과를 객체에 매핑합니다. 값은 `#{}`로 바인딩해서 SQL 인젝션을 막고, `${}`는 바인딩할 수 없는 식별자에만 씁니다."
+
 ## 6. Querydsl (타입 안전한 쿼리)
 
 - **정의:** 자바 코드로 JPA 쿼리를 작성하는 라이브러리. 문자열 JPQL 대신 메서드 체인을 쓰므로 컴파일 시점에 오타를 잡는다.
 - **왜 쓰나:** 조건이 많은 검색 화면에서 조건을 조합할 때 JPQL 문자열이 복잡해진다. Querydsl은 조건을 메서드로 조립한다.
-- **예 (미검증 — Querydsl 설정 필요):**
+- **설정 (Gradle, 튜토리얼 기준 버전 5.0.0):** `implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'`와 `annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'`를 넣는다. 빌드할 때 엔티티마다 `QBook`처럼 Q 클래스가 생성된다.
+
+**확인 결과 (확인함, 직접 내려받은 Querydsl 5.0.0 jar와 MySQL 8.0)**: 엔티티 `Author`(1)와 `Book`(N)을 만들고 `javac`의 annotation processing으로 `QBook`, `QAuthor`를 생성했다. 조건이 `null`이면 `BooleanBuilder`가 그 조건을 무시하게 했다.
 
 ```java
-List<Post> result = queryFactory
-    .selectFrom(post)
-    .where(titleContains(keyword), authorIdEq(authorId))   // 값이 null인 조건은 자동으로 빠진다
-    .orderBy(post.createdAt.desc(), post.id.desc())
-    .fetch();
+static BooleanExpression titleContains(String keyword) {
+    return keyword == null ? null : QBook.book.title.contains(keyword);
+}
+static BooleanExpression priceAtMost(Integer max) {
+    return max == null ? null : QBook.book.price.loe(max);
+}
+
+BooleanBuilder where = new BooleanBuilder();
+where.and(titleContains(keyword));
+where.and(priceAtMost(max));
+List<String> titles = new JPAQueryFactory(em)
+        .select(QBook.book.title).from(QBook.book)
+        .where(where)
+        .orderBy(QBook.book.title.asc())
+        .fetch();
 ```
 
-- **설정 (Gradle, 튜토리얼 기준 버전 5.0.0, 미실행):** `implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'`와 `annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'`를 넣는다. 빌드할 때 엔티티마다 `QPost`처럼 Q 클래스가 생성된다. 설정이 없으면 `QPost` 클래스를 찾을 수 없다.
-- **null 조건 무시:** 검색어가 없을 때 `titleContains(null)`이 `null`을 돌려주면 `where`가 그 조건을 무시한다. 조건을 메서드로 나누는 이유가 이것이다. 자세한 조건 조합 예는 "동적 검색" 절을 본다.
-- **면접 기준:** "Querydsl은 JPA 쿼리를 자바 코드로 타입 안전하게 조립하는 도구입니다. 조건부 검색에서 문자열 쿼리의 오류를 줄입니다."
+```
+1) all: [Java Basics, Java Concurrency, Spring Boot Guide]
+2) title has 'Java': [Java Basics, Java Concurrency]
+3) title 'Java' and price <= 25000: [Java Basics]
+4) author kim only: [Java Basics, Spring Boot Guide]
+5) all conditions: [Java Concurrency]
+```
+
+**실행에 필요한 jar (확인함)**: `querydsl-core`, `querydsl-jpa`(jakarta), `querydsl-apt`, `querydsl-codegen`, `codegen-utils`, `mysema-commons-lang 0.2.4`, `javapoet`, `classgraph`, `javax.inject`, `antlr4-runtime`. 빌드 도구를 쓰면 이 의존성은 자동으로 내려받는다. 직접 실행할 때는 `mysema-commons-lang`을 빠뜨리면 `NoClassDefFoundError`가 난다.
+
+- **null 조건 무시:** 검색어가 없을 때 `null`을 돌려주면 `where`가 그 조건을 무시한다. 조건을 메서드로 나누는 이유가 이것이다. 자세한 조건 조합 예는 "동적 검색" 절을 본다.
+- **면접 기준:** "Querydsl은 JPA 쿼리를 자바 코드로 타입 안전하게 조립하는 도구입니다. 빌드 때 생성된 Q 클래스가 엔티티 필드를 가리키므로 오타를 컴파일 단계에서 잡고, 조건이 없으면 null로 빼서 검색 조건을 조합합니다."
+
+

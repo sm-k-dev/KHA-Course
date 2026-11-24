@@ -49,7 +49,7 @@ public class SecurityConfig {
 
 ---
 
-### 2-1. 보안 필터는 컨트롤러보다 먼저 응답한다 (2026-11-23 보강, 미실행)
+### 2-1. 보안 필터는 컨트롤러보다 먼저 응답한다 (2026-11-23 보강, Spring Security 7.0.9에서 확인함)
 
 Spring Security 필터는 `DispatcherServlet`보다 바깥의 서블릿 필터다. 그래서 인증이나 권한이 부족하면 컨트롤러가 실행되기 전에 응답이 끝난다. 20장 6-2에서 확인한 필터 순서와 같은 구조다.
 
@@ -62,7 +62,18 @@ Spring Security 필터는 `DispatcherServlet`보다 바깥의 서블릿 필터�
 - **401 Unauthorized**: 누구인지 확인할 수 없다(로그인 필요, 인증 정보 없음).
 - **403 Forbidden**: 누구인지는 알지만 권한이 없다.
 
-**미실행 안내**: Spring Security 의존성을 이 PC에서 내려받지 못해, 위 응답 코드를 실제 실행으로 확인하지 않았다. 확인하려면 Spring Boot 프로젝트에 `spring-boot-starter-security`를 넣고 `/api/admin/**`에 요청을 보내 상태 코드를 본다. 사용하는 실행 환경에서 확인한다.
+**확인 결과 (실행함)**: `SecurityFilterChain`에 `/public/**`은 허용, `/admin/**`은 `ADMIN`만, 나머지는 로그인 필요를 설정하고 MockMvc로 요청했다. `httpBasic`을 켰다. 실행 환경은 Spring Security 7.0.9와 Spring Framework 7.0.9다.
+
+```
+public, no login -> 200
+admin page, no login -> 401   ← 인증 정보가 없다
+admin page, USER login -> 403  ← 로그인은 했지만 권한이 없다
+admin page, ADMIN login -> 200
+me, no login -> 401
+me, USER login -> 200
+```
+
+컨트롤러 메서드는 401과 403 응답에서 실행되지 않았다. 필터가 먼저 막았다.
 
 **면접 기준**: "Security 필터 체인은 컨트롤러 전에 인증과 인가를 검사하므로, 실패 요청은 컨트롤러에 도달하지 않고 401 또는 403으로 끝납니다."
 
